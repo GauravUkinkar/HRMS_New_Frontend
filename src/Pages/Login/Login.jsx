@@ -7,6 +7,12 @@ import { MenuItem } from "@mui/material"
 const Login = () => {
   return (
     <>
+    <div className="login-parent parent">
+      <img src="" alt="" />
+     <div className="login-cont cont">
+
+     </div>
+    </div>
      
     </>
   )
