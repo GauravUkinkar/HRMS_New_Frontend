@@ -1,7 +1,52 @@
-.verification-parent{
-    background-image: url(../../assets/vintage-pastel-tiles-background.jpg);
+.verification-parent {
+  background-image: url(../../assets/bg-image.png);
+  height: 100dvh;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
-    .verification-cont{
+  .verification-cont {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 0px;
 
+    .left {
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      border-radius: 10px 0px 0px 10px;
+      background: linear-gradient(
+        180deg,
+        #0e4653 0%,
+        #3e6f7a 60%,
+        #6f98a0 100%
+      );
+
+      .logo {
+        height: 50px;
+        width: 150px;
+        img {
+          height: 100%;
+          width: 100%;
+        }
+      }
     }
+    .right {
+      width: 50%;
+      height: 100%;
+      border-radius: 0px 10px 10px 0px;
+      background: linear-gradient(
+        180deg,
+        rgba(37, 98, 110, 0.75),
+        rgba(90, 155, 165, 0.65),
+        rgba(134, 194, 201, 0.7)
+      );
+    }
+  }
 }
