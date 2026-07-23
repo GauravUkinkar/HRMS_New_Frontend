@@ -3,7 +3,7 @@ import "./MainPanel.scss";
 import Sidebar from "../sidebar/Sidebar";
 import Table_Comp from "../table/Table";
 
-const MainPanel = () => {
+const MainPanel = ({children}) => {
  
 
 
@@ -25,7 +25,9 @@ const MainPanel = () => {
              
             </div>
           </div>
-          <div class="botttom_page"></div>
+          <div class="botttom_page">
+            {children}
+          </div>
         </div>
       </div>
     </>
