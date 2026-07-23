@@ -1,3 +1,19 @@
 // .css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input{
 //     padding: 12px 14px !important;
 // }
+
+.input{
+width: 100%;
+position: relative;
+
+.password{
+    position: absolute;
+    top: 50%;
+    right: 2%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+    .MuiFormControl-root{
+    width: 100%;
+}
+}
