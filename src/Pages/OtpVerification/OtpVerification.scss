@@ -197,17 +197,19 @@
       }
 
       .right {
-        padding: 30px 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        img {
-          width: 100%;
-          max-width: 400px;
-          height: auto;
-        }
+        display: none;
       }
     }
   }
+}
+@media (max-width: 520px) {
+  .otp-container > div {
+    gap: 5px !important;
+  }
+}
+@media (max-width: 1070px) {
+    .otp-container > div {
+    gap: 15px !important;
+  }
+
 }
