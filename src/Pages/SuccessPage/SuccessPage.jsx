@@ -1,16 +1,15 @@
 import React from 'react'
 import "./SuccessPage.scss"
 import Logo from "../../assets/logo.png"
-import otpimage from "../../assets/otpimage.png"
 import { Link } from 'react-router-dom'
-import Success from "../../assets/success.png"
+import Success from "../../assets/success.webp"
 import right from "../../assets/right.png"
  
 const SuccessPage = () => {
   return (
     <>
-        <div className="verification-parent parent">
-        <div className="verification-cont cont">
+        <div className="sucess-parent parent">
+        <div className="sucess-cont cont">
           <div className="left">
             <div className="logo">
               <img src={Logo} alt="Logo" />
@@ -21,10 +20,7 @@ const SuccessPage = () => {
             </p>
             <img className='right' src={right} alt='right'/>
 
-            <Link className="btn" to="#">Return To Login</Link>
-            <div className="links">
-                <Link>Logout</Link>
-            </div>
+            <Link className="btn" to="/login">Return To Login</Link>
           </div>
           <div className="right">
             <img src={Success} alt="Success" />

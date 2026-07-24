@@ -1,15 +1,15 @@
 import React from "react";
 import "./ChangePass.scss";
 import Logo from "../../assets/logo.png";
-import otpimage from "../../assets/otpimage.png";
+import otpimage from "../../assets/rightimg.webp";
 import Input from "../../comp/input/Input";
 import { Link } from "react-router-dom";
 
 const ChangePass = () => {
   return (
     <>
-      <div className="verification-parent parent">
-        <div className="verification-cont cont">
+      <div className="password-parent parent">
+        <div className="password-cont cont">
           <div className="left">
             <div className="logo">
               <img src={Logo} alt="Logo" />

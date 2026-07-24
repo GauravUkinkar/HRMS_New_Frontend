@@ -1,7 +1,7 @@
 import React from "react";
 import "./OtpVerification.scss";
 import Logo from "../../assets/PandozaLogo.png";
-import otpimage from "../../assets/otpimage.png";
+import otpimage from "../../assets/rightimg.webp";
 import OTPInput from "react-otp-input";
 import { Link } from "react-router-dom";
 
