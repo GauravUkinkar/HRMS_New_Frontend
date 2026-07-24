@@ -70,8 +70,15 @@
         align-items: center;
       }
 
-      .remember {
-
+      .rem {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+ 
+        .remember{
+          color: var(--white);
+        }
 
     
       }
