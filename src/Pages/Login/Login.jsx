@@ -1,90 +1,55 @@
-import MainPanel from "../../comp/MainPanel/MainPanel";
-import "./Login.scss";
+import React from "react";
+import "./login.scss";
+import Logo from "../../assets/logo.png";
+import login from "../../assets/login.webp";
 import Input from "../../comp/input/Input";
-import SelectInput from "../../comp/selectInput/SelectInput";
-import { MenuItem } from "@mui/material";
-import bgimg from "../../assets/bgimg.png";
+import { Link } from "react-router-dom";
 
-const Login = () => {
+const ChangePass = () => {
   return (
     <>
       <div className="login-parent parent">
-        
-
         <div className="login-cont cont">
-
-          <div className="login-card">
-
-          <div className="logo">
-            <div className="logo-icon">◉</div>
-
-            <div>
-              <h4>WorkPulse</h4>
-              <span>HRMS</span>
+          <div className="left">
+            <div className="logo">
+              <img src={Logo} alt="Logo" />
             </div>
-          </div>
+            <h1>Hi There!</h1>
+            <p>Have we met before?</p>
 
-          <h1>Hi there!</h1>
-          <p className="subtitle">Have we met before?</p>
-
-          <form>
-
-            <div className="input-group">
-              <label>Email</label>
-              <input
-                type="email"
-                placeholder="sarah@tubik"
+            <div className="inputs">
+            <div className="form-row">
+              <Input
+                text_color="white"
+                fc_color="white"
+                bd_color="white"
+                lb_color="white"
+                label="Email"
               />
             </div>
-
-            <div className="input-group">
-              <label>Password</label>
-              <input
+            <div className="form-row">
+              <Input
+                text_color="white"
                 type="password"
-                placeholder="Enter your password"
+                fc_color="white"
+                bd_color="white"
+                lb_color="white"
+                label="Password"
               />
             </div>
-
-            <div className="options">
-              <label>
-                <input type="checkbox" />
-                Remember me
-              </label>
-
-              <a href="/">Forgot my password</a>
-            </div>
-
-            <button>Log in</button>
-
-          </form>
-
-        </div>
-
-         <div className="illustration">
-
-          <div className="glass-frame">
-
-            <img
-              src="/images/login-illustration.png"
-              alt="Login Illustration"
-            />
-
+          </div>
+            <Link className="btn" to="#" >Log in</Link>
           </div>
 
-        </div>
+          
 
-
+          <div className="right">
+            <img src={login} alt="loginimage" />
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default Login;
-
-
-
-
-
-
-      
+export default ChangePass;
