@@ -43,7 +43,9 @@ const Forgot = () => {
           </div>
         </div>
       </div>
-    </>
+    </> 
+     
+     
   );
 };
 
