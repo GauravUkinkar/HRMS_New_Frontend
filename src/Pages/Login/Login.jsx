@@ -27,6 +27,9 @@ const ChangePass = () => {
                 label="Email"
               />
             </div>
+
+
+            
             <div className="form-row">
               <Input
                 text_color="white"
