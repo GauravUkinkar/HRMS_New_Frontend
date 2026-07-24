@@ -1,4 +1,4 @@
-.verification-parent {
+.password-parent {
   background-image: url(../../assets/bg-image.png);
   height: 100dvh;
   width: 100%;
@@ -6,7 +6,7 @@
   background-position: center;
   background-repeat: no-repeat;
    padding: 150px 0px;
-  .verification-cont {
+  .password-cont {
     width: 100%;
     height: 100%;
     display: flex;
@@ -20,10 +20,12 @@
     .left {
       width: 50%;
       height: 100%;
+
       display: flex;
       flex-direction: column;
       padding: 10px 30px;
-      gap: 20px;
+      gap: 30px;
+      
 
       background: linear-gradient(
         180deg,
@@ -33,8 +35,8 @@
       );
 
       .logo {
-        height: 100px;
-        width: 350px;
+       height: 70px;
+        width:fit-content;
         img {
           height: 100%;
           width: 100%;
@@ -55,7 +57,6 @@
         display: flex;
         flex-direction: column;
         gap: 30px;
-        margin-top: 30px;
       }
       .links {
         display: flex;
@@ -65,7 +66,7 @@
           text-decoration: none;
           color: white;
           &:hover {
-            color: #1d4869;
+            color: #104855;
           }
         }
       }
@@ -73,6 +74,8 @@
     .right {
       width: 50%;
       height: 100%;
+      display: flex;
+      justify-content: center;
       background: linear-gradient(
         180deg,
         rgba(37, 98, 110, 0.75),
@@ -82,8 +85,92 @@
       img {
         width: 100%;
         height: 100%;
-        background-size: cover;
+        object-fit: contain;
         background-position: center;
+      }
+    }
+  }
+}
+@media (max-width: 900px) {
+  .password-parent {
+    height: 100%;
+  
+    padding: 20px;
+
+    .password-cont {
+      flex-direction: column-reverse;
+      height: auto;
+
+      .left,
+      .right {
+        img{
+            border-radius: 15px;
+        }
+      }
+
+      .left {
+        padding: 30px 20px;
+        align-items: center;
+        text-align: center;
+
+        .logo {
+          width: 220px;
+          height: auto;
+
+          img {
+            width: 100%;
+            height: auto;
+          }
+        }
+
+        h1 {
+          font-size: 34px;
+        }
+
+        p {
+          font-size: 18px;
+          line-height: 1.6;
+
+          .mail {
+            display: block;
+            margin-top: 5px;
+          }
+        }
+
+        .otp-container {
+          justify-content: center;
+          gap: 10px;
+        
+
+          input {
+            width: 62px !important;
+            height: 55px;
+            font-size: 24px;
+          }
+        }
+
+        button {
+          width: 100%;
+          max-width: 350px;
+          height: 60px;
+          font-size: 20px;
+        }
+
+        .links {
+          width: 100%;
+          justify-content: space-between;
+          gap: 20px;
+          margin-top: 20px;
+          flex-wrap: wrap;
+
+          a {
+            font-size: 16px;
+          }
+        }
+      }
+
+      .right {
+        display: none;
       }
     }
   }
