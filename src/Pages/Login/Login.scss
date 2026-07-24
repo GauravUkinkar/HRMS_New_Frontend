@@ -5,7 +5,8 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  padding: 150px 0px;
+  padding: 150px 20px;
+
   .login-cont {
     width: 100%;
     height: 100%;
@@ -23,7 +24,9 @@
       display: flex;
       flex-direction: column;
       padding: 10px 30px;
-      gap: 20px;
+      gap: var(--unit);
+      justify-content: center;
+      align-items: flex-start;
 
       background: linear-gradient(
         180deg,
@@ -32,18 +35,16 @@
         #6f98a0 100%
       );
 
-      .logo {
+      img {
         height: 100px;
-        width: 350px;
-        img {
-          height: 100%;
-          width: 100%;
-        }
+        object-fit: contain;
       }
+
       h1 {
         color: #a7c5cf;
         font-size: 45px;
       }
+
       p {
         color: #d6e4e8bb;
         font-size: 22px;
@@ -64,25 +65,27 @@
           }
         }
       }
+
       .password-footer {
+        width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
-      }
 
-      .rem {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 2px;
- 
-        .remember{
-          color: var(--white);
+        .rem {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: calc(var(--unit) / 2);
+
+          .remember {
+            color: var(--white);
+          }
         }
-
-    
       }
-
+      .login_btn {
+        width: 100%;
+      }
 
       .forgot-password {
         text-decoration: none;
