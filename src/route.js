@@ -3,6 +3,7 @@ import { lazy } from "react";
 
 const HrmsDash = lazy(()=>import("../src/Pages/HrmsDash/HrmsDash"));
 const Login = lazy(()=>import("../src/Pages/Login/Login"));
+const Forgot = lazy(()=>import("../src/Pages/Forgot/Forgot"));
 const OtpVerification =lazy(()=>import("./Pages/OtpVerification/OtpVerification"));
 const ChangePass =lazy(()=>import("../src/Pages/ChangePass/ChangePass"));
 const SuccessPage =lazy(()=>import("../src/Pages/SuccessPage/SuccessPage"));
@@ -42,7 +43,7 @@ export const routes = [
                {
          name:"Forgot",
         path:"/forgot",
-        comp:SuccessPage,
+        comp:Forgot,
         adminonly:false
     }
 ]
