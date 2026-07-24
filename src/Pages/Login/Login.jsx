@@ -1,6 +1,6 @@
 import "./Login.scss";
 import Logo from "../../assets/logo.png";
-import login from "../../assets/login.webp";
+import login from "../../assets/login.png";
 import Input from "../../comp/input/Input";
 import { Link } from "react-router-dom";
 
@@ -12,8 +12,10 @@ const Login = () => {
           <div className="left">
             <img src={Logo} alt="Logo" />
 
-            <h1>Hi There!</h1>
-            <p>Have we met before?</p>
+            <div class="ct">
+              <h1>Hi There!</h1>
+              <p>Have we met before?</p>
+            </div>
 
             <div className="form-row">
               <Input
@@ -25,8 +27,6 @@ const Login = () => {
               />
             </div>
 
-
-            
             <div className="form-row">
               <Input
                 text_color="white"
@@ -45,7 +45,7 @@ const Login = () => {
               </div>
 
               <a href="/" className="forgot-password">
-                Forgot my password
+                Forgot password
               </a>
             </div>
             <Link className="btn login_btn" to="#">
