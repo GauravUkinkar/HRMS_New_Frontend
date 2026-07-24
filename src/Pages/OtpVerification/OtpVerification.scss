@@ -5,7 +5,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  padding: 180px 0px;
+  padding: 180px 20px;
   .verification-cont {
     width: 100%;
     height: 100%;
@@ -24,9 +24,7 @@
       flex-direction: column;
       padding: 10px 20px;
       gap: 30px;
-    justify-content: center;
-
-      
+      justify-content: center;
 
       background: linear-gradient(
         180deg,
@@ -37,13 +35,16 @@
 
       .logo {
         height: 70px;
-        width:fit-content;
+        width: fit-content;
         img {
           height: 100%;
           width: 100%;
         }
       }
-      h1 {
+      .des{
+        display: flex;
+        flex-direction: column;
+              h1 {
         color: #a7c5cf;
         font-size: 45px;
       }
@@ -56,17 +57,18 @@
           color: white;
         }
       }
-      div{
+
+      }
+
+      div {
         display: flex;
-        gap: 40px;
-        
-     
-        
-        input {
-          width: 48px !important;
-          height: 64px;
+        gap: var(--unit);
+
+       input {
+          width: 48px;
+          aspect-ratio: 1;
           border: 2px solid rgba(255, 255, 255, 0.45);
-          border-radius: 12px;
+          border-radius: 8px;
           background: rgba(255, 255, 255, 0.05);
           backdrop-filter: blur(10px);
           color: #fff;
@@ -87,24 +89,24 @@
         color: rgba(255, 255, 255, 0.4);
       }
 
-      .links{
+      .links {
         display: flex;
         justify-content: space-between;
-    
-        a{
-            text-decoration: none;
-            color:white ;
-            &:hover{
-                color: #104855;
-            }
+
+        a {
+          text-decoration: none;
+          color: white;
+          &:hover {
+            color: #104855;
+          }
         }
       }
     }
     .right {
       width: 50%;
       height: 100%;
-         display: flex;
-         justify-content: center;
+      display: flex;
+      justify-content: center;
       background: linear-gradient(
         180deg,
         rgba(37, 98, 110, 0.75),
@@ -115,186 +117,29 @@
         width: 90%;
         height: 100%;
         object-fit: contain;
-         background-position: center;
-      
+        background-position: center;
       }
     }
   }
 }
-@media (max-width: 875px) {
+
+@media only screen and (max-width: 710px) {
   .verification-parent {
-    height: 100%;
-  
-    padding: 20px;
-
     .verification-cont {
-      flex-direction: column-reverse;
-      height: auto;
-
-      .left,
-      .right {
-        img{
-            border-radius: 15px;
-        }
-      }
-
       .left {
-        padding: 30px 20px;
-        align-items: center;
-        text-align: center;
-
-        .logo {
-          width: 220px;
-          height: auto;
-
-          img {
-            width: 100%;
-            height: auto;
-          }
-        }
-
-        h1 {
-          font-size: 34px;
-        }
-
-        p {
-          font-size: 18px;
-          line-height: 1.6;
-
-          .mail {
-            display: block;
-            margin-top: 5px;
-          }
-        }
-
-        .otp-container {
-          justify-content: center;
-          gap: 10px;
-          margin-top: 20px;
-
-          input {
-            width: 42px !important;
-            height: 55px;
-            font-size: 24px;
-          }
-        }
-
-        button {
-          width: 100%;
-          max-width: 350px;
-          height: 60px;
-          font-size: 20px;
-        }
-
-        .links {
-          width: 100%;
-          justify-content: space-between;
-          gap: 20px;
-          margin-top: 20px;
-          flex-wrap: wrap;
-
-          a {
-            font-size: 16px;
-          }
-        }
-      }
-
-      .right {
-        display: none;
-      }
-    }
-  }
-}
-@media (max-width: 520px) {
-  .otp-container > div {
-    gap: 5px !important;
-  }
-}
-@media (max-width: 1070px) {
-    .otp-container > div {
-    gap: 15px !important;
-  }
-
-}
-@media (max-width: 720px) {
-  .verification-parent {
-    height: 100%;
-  
-    padding: 20px;
-
-    .verification-cont {
-      flex-direction: column-reverse;
-      height: auto;
-
-      .left,
-      .right {
         width: 100%;
-        img{
-            border-radius: 15px;
-        }
-      }
-
-      .left {
-        padding: 30px 20px;
         align-items: center;
         text-align: center;
-
-        .logo {
-          width: 220px;
-          height: auto;
-
-          img {
-            width: 100%;
-            height: auto;
-          }
-        }
-
-        h1 {
-          font-size: 34px;
-        }
-
-        p {
-          font-size: 18px;
-          line-height: 1.6;
-
-          .mail {
-            display: block;
-            margin-top: 5px;
-          }
-        }
-
-        .otp-container {
-          display: flex;
-          justify-content: center;
-          gap: 10px;
-
-          input {
-            width: 42px !important;
-            height: 55px;
-            font-size: 24px;
-          }
-        }
-
-        button {
-          width: 100%;
-          max-width: 350px;
-          height: 60px;
-          font-size: 20px;
-        }
-
-        .links {
-          width: 100%;
-          justify-content: space-between;
-          gap: 20px;
-          margin-top: 20px;
-          flex-wrap: wrap;
-
-          a {
-            font-size: 16px;
-          }
-        }
+        background: linear-gradient(
+        180deg,
+        rgba(37, 98, 110, 0.75),
+        rgba(90, 155, 165, 0.877),
+        rgba(134, 194, 201, 0.863)
+      ),url("../../assets/rightimg.webp");
+      background-position: center center;
+      background-size: contain;
+      background-repeat: no-repeat;
       }
-
       .right {
         display: none;
       }
