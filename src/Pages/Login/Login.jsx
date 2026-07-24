@@ -26,6 +26,8 @@ const ChangePass = () => {
                 lb_color="white"
                 label="Email"
               />
+
+              
             </div>
             <div className="form-row">
               <Input
