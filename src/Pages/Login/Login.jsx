@@ -1,15 +1,47 @@
 import "./Login.scss";
 import Logo from "../../assets/logo.png";
-import login from "../../assets/login.png";
 import Input from "../../comp/input/Input";
-import { Link } from "react-router-dom";
-
+import UseForm from "../../UseForm";
+import { loginValidate } from "../../validators/LoginValidtate";
+import axios from "axios";
+import LoginImg from "../../assets/login.png"
 const Login = () => {
+  const formObj = {
+    email: "",
+    password: "",
+  };
+
+  const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+
+  const login = async () => {
+    try {
+      const response = await axios.post(`${BASE_URL}AuthController/Login`,values);
+      if(response.status === 200){
+        const token = response?.data?.data?.token
+           localStorage.setItem("token",token)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
+  const {
+    handleChange,
+    handleSubmit,
+    handleBlur,
+    values,
+    setValues,
+    error,
+    setError,
+    isSubmitting,
+  } = UseForm(formObj, loginValidate, login);
+
+  console.log(values)
   return (
     <>
       <div className="login-parent parent">
         <div className="login-cont cont">
-          <div className="left">
+          <form onSubmit={handleSubmit} className="left">
             <img src={Logo} alt="Logo" />
 
             <div class="ct">
@@ -19,6 +51,10 @@ const Login = () => {
 
             <div className="form-row">
               <Input
+              name="email"
+              error={error.email}
+                onChange={handleChange}
+                value={values.email}
                 text_color="white"
                 fc_color="white"
                 bd_color="white"
@@ -29,7 +65,11 @@ const Login = () => {
 
             <div className="form-row">
               <Input
+              name="password"
                 text_color="white"
+                error={error.password}
+                onChange={handleChange}
+                value={values.password}
                 type="password"
                 fc_color="white"
                 bd_color="white"
@@ -48,13 +88,13 @@ const Login = () => {
                 Forgot password
               </a>
             </div>
-            <Link className="btn login_btn" to="#">
+            <button type="submit" className="btn login_btn" >
               Log in
-            </Link>
-          </div>
+            </button>
+          </form>
 
           <div className="right">
-            <img src={login} alt="loginimage" />
+            <img src={LoginImg} alt="loginimage" />
           </div>
         </div>
       </div>
