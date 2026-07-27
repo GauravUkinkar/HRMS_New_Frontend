@@ -38,4 +38,11 @@ export const routes = [
         comp:SuccessPage,
         adminonly:false
     }
+    ,
+               {
+         name:"Forgot",
+        path:"/forgot",
+        comp:SuccessPage,
+        adminonly:false
+    }
 ]

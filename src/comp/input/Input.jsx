@@ -13,7 +13,8 @@ const Input = ({
   bd_color,
   lb_color,
   fc_color,
-  text_color
+  text_color,
+  name
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -22,20 +23,14 @@ const Input = ({
       <TextField
         id="outlined-basic"
         error={error}
+        name={name}
         required={required}
-        label={label}
+        label={error ? error : label}
         onChange={onChange}
         value={value}
-        type={
-          type === "password"
-            ? showPassword
-              ? "text"
-              : "password"
-            : type
-        }
+        type={type === "password" ? (showPassword ? "text" : "password") : type}
         variant="outlined"
        sx={{
-  // Label
   "& .MuiInputLabel-root": {
     color: lb_color || "black",
   },
@@ -43,12 +38,6 @@ const Input = ({
     color: fc_color || "var(--accent)",
   },
 
-  // Input text
-  "& .MuiInputBase-input": {
-    color: text_color || "black",
-  },
-
-  // Border
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
       borderColor: bd_color || "black",
@@ -58,8 +47,29 @@ const Input = ({
     },
     "&.Mui-focused fieldset": {
       borderColor: fc_color || "var(--accent)",
-      borderWidth: "2px",
+      borderWidth: 2,
     },
+  },
+
+  "& input": {
+    color: text_color || "#000",
+  },
+
+  "& input:-webkit-autofill": {
+    WebkitTextFillColor: `white`,
+    WebkitBoxShadow: "0 0 0px 1000px #0000 inset !important",
+    boxShadow: "0 0 0px 1000px #0000 inset !important",
+    transition: "background-color 50000s ease-in-out 0s",
+  },
+
+  "& input:-webkit-autofill:hover": {
+    WebkitTextFillColor: ` #ffff`,
+    WebkitBoxShadow: "0 0 0px 1000px transparent inset !important",
+  },
+
+  "& input:-webkit-autofill:focus": {
+    WebkitTextFillColor: ` "#fffff`,
+    WebkitBoxShadow: "0 0 0px 1000px transparent inset !important",
   },
 }}
       />

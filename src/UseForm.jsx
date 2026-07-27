@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 const UseForm = (formObj, validate, callback) => {
-  const [values, setValues] = useState({});
-  const [error, setError] = useState({});
+  const [values, setValues] = useState(formObj);
+  const [error, setError] = useState(formObj);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 const handleChange = (e) => {
