@@ -14,12 +14,16 @@ const Input = ({
   lb_color,
   fc_color,
   text_color,
-  name
+  name,
+  mq_label
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="input">
+  { mq_label &&   <div className="mq_label">
+        {mq_label}
+      </div>}
       <TextField
         id="outlined-basic"
         error={error}
@@ -33,26 +37,35 @@ const Input = ({
        sx={{
   "& .MuiInputLabel-root": {
     color: lb_color || "black",
+    marginLeft:mq_label ? "10%" : "10px"
   },
   "& .MuiInputLabel-root.Mui-focused": {
     color: fc_color || "var(--accent)",
+     marginLeft: mq_label ? "10%" : "10px"
+  },
+
+  "& .MuiOutlinedInput-notchedOutline legend": {
+    marginLeft: mq_label ? "10%" :  "10px", // or paddingLeft
   },
 
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
       borderColor: bd_color || "black",
+      
     },
     "&:hover fieldset": {
       borderColor: fc_color || "var(--accent)",
     },
     "&.Mui-focused fieldset": {
       borderColor: fc_color || "var(--accent)",
-      borderWidth: 2,
+      borderWidth: 1,
     },
   },
 
   "& input": {
     color: text_color || "#000",
+    paddingLeft: mq_label ? "10%" :  "10px", 
+   
   },
 
   "& input:-webkit-autofill": {

@@ -53,6 +53,8 @@ body {
 .form-row {
   display: flex;
   width: 100%;
+  gap: var(--unit);
+  justify-content: space-between;
 }
 
 

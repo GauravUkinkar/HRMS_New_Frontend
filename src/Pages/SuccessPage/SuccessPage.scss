@@ -24,6 +24,10 @@
       flex-direction: column;
       padding: 10px 30px;
       gap: 20px;
+      justify-content: center;
+        align-items: center;   
+  text-align: center; 
+    
 
       background: linear-gradient(
         180deg,
@@ -35,6 +39,7 @@
       .logo {
        height: 70px;
         width:fit-content;
+
         img {
           height: 100%;
           width: 100%;
@@ -42,20 +47,25 @@
       }
       h1 {
         color: #a7c5cf;
-        font-size: 45px;
+        font-size: 35px;
       }
       p {
         color: #d6e4e8bb;
-        font-size: 22px;
+        font-size: 18px;
+        line-height: 140%;
         .mail {
           color: white;
         }
       }
-      .right{
+      .rightimg{
         height: 200px;
         width: 200px;
-        margin-left: 150px;
+        
         background: transparent;
+        img{
+          width: 50px;
+          height: 100%;
+        }
       }
     }
     .right {
@@ -76,9 +86,10 @@
     }
   }
 }
-@media only screen and (max-width: 870px) {
-  .success-parent {
-    .success-cont {
+@media only screen and (max-width: 620px) {
+  .sucess-parent {
+     
+    .sucess-cont {
       .left {
         width: 100%;
         align-items: center;

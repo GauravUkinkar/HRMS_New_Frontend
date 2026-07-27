@@ -25,6 +25,7 @@
       flex-direction: column;
       padding: 10px 30px;
       gap: 30px;
+      justify-content: center;
       
 
       background: linear-gradient(
@@ -48,11 +49,12 @@
         gap: 8px;
         h1 {
           color: #a7c5cf;
-          font-size: 45px;
+          font-size: 35px;
         }
         p {
           color: #d6e4e8bb;
-          font-size: 22px;
+          font-size: 18px;
+          line-height: 140%;
           .mail {
             color: white;
           }
