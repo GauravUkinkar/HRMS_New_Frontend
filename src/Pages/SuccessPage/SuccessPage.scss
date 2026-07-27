@@ -76,3 +76,29 @@
     }
   }
 }
+@media only screen and (max-width: 870px) {
+  .success-parent {
+    .success-cont {
+      .left {
+        width: 100%;
+        align-items: center;
+        text-align: center;
+ 
+        background:
+          linear-gradient(
+            180deg,
+            rgba(37, 98, 110, 0.75),
+            rgba(90, 155, 165, 0.877),
+            rgba(134, 194, 201, 0.863)
+          ),
+          url("../../assets/success.webp");
+        background-position: center center;
+        background-size: contain;
+        background-repeat: no-repeat;
+      }
+      .right {
+        display: none;
+      }
+    }
+  }
+}

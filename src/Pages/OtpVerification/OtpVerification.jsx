@@ -14,23 +14,28 @@ const OtpVerification = () => {
             <div className="logo">
               <img src={Logo} alt="Logo" />
             </div>
-            <h1>Enter OTP</h1>
-            <p>
-              Please enter the 6-digit One Time <br /> Password sent to your
-              email <br />
-              <p className="mail">admin@gmail.com</p>
-              
-            </p>
+            <div className="des">
+              <h1>Enter OTP</h1>
+              <p>
+                Please enter the 6-digit One Time <br /> Password sent to your
+                email <br />
+                <p className="mail">admin@gmail.com</p>
+              </p>
+            </div>
+
             <div className="otp-container">
               <OTPInput
                 numInputs={6}
-                renderInput={(props) => <input {...props}  />}
+                renderInput={(props) => (
+                  <input style={{ width: "48px" }} {...props} />
+                )}
               />
-              
             </div>
-            <Link className="btn" to="/changepass" >Verify OTP</Link>
+            <Link className="btn" to="/changepass">
+              Verify OTP
+            </Link>
             <div className="links">
-              <Link  >Resend OTP</Link>
+              <Link>Resend OTP</Link>
               <Link>Back to Login</Link>
             </div>
           </div>

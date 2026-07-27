@@ -16,7 +16,8 @@ const SuccessPage = () => {
             </div>
             <h1>Password Changed Successfully</h1>
             <p>
-              Congratulations,admin@gmail.com! <br /> Your new password is now active.      
+              Congratulations,admin@gmail.com! <br /> Your new password is now
+              active.
             </p>
             <img className='right' src={right} alt='right'/>
 
@@ -27,9 +28,8 @@ const SuccessPage = () => {
           </div>
         </div>
       </div>
-      
     </>
-  )
-}
+  );
+};
 
-export default SuccessPage
+export default SuccessPage;
