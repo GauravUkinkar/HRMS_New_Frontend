@@ -19,7 +19,6 @@ const Table_Comp = ({
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
-
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
