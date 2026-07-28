@@ -2,12 +2,21 @@
 //     padding: 12px 14px !important;
 // }
 
-.input{
-width: 100%;
-position: relative;
+.input {
+  width: 100%;
+  position: relative;
 
+.left-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  font-size: 18px;
+  color: var(--accent);
+}
 
-.mq_label{
+  .mq_label {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -21,28 +30,27 @@ position: relative;
     background-color: var(--accent2);
     border-radius: 4px 0px 0px 4px;
     color: white;
-}
+  }
 
-.password{
+  .password {
     position: absolute;
     top: 50%;
     right: 2%;
     transform: translateY(-50%);
     cursor: pointer;
-}
-    .MuiFormControl-root{
+  }
+  .MuiFormControl-root {
     width: 100%;
-}
-}
-
-.css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input{
-    padding-top: 8.5px !important;
-    padding-bottom: 8.5px !important;
+  }
 }
 
-.css-19qnlrw-MuiFormLabel-root-MuiInputLabel-root{
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    left: 10px ;
-   
+.css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input {
+  padding-top: 8.5px !important;
+  padding-bottom: 8.5px !important;
+}
+
+.css-19qnlrw-MuiFormLabel-root-MuiInputLabel-root {
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  left: 10px;
 }

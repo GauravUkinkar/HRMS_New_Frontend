@@ -1,18 +1,10 @@
-.employee-parent {
-  display: flex;
-  flex-direction: column;
-  gap: 50px;
-
-  // padding-top:50px ;
-  .empdetails,
-  .personaldetails {
+.upload-parent{
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     gap: 30px;
-
-    h1 {
+    align-items: center;
+    justify-content: center;
+        h1 {
       width: 100%;
       text-align: left;
       background-color: var(--accent2);
@@ -31,16 +23,13 @@
       padding: 20px 0px;
       align-items: center;
     }
-  }
+    .btn{
+        padding: 10px 20px;
+    }
 
-  .btn {
-    width: fit-content;
-    padding: 10px 30px;
-    align-self: center;
-  }
 }
-@media only screen and (max-width: 900px) {
-  .form-row {
-    flex-wrap: wrap;
-  }
+@media only screen and (max-width:600px){
+    .form-row{
+        flex-wrap: wrap;
+    }
 }

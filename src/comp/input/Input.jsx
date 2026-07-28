@@ -2,6 +2,7 @@ import { TextField } from "@mui/material";
 import "./Input.scss";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { useState } from "react";
+import { InputAdornment } from "@mui/material";
 
 const Input = ({
   label,
@@ -15,15 +16,15 @@ const Input = ({
   fc_color,
   text_color,
   name,
-  mq_label
+  mq_label,
+  icon,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="input">
-  { mq_label &&   <div className="mq_label">
-        {mq_label}
-      </div>}
+      {mq_label && <div className="mq_label">{mq_label}</div>}
+      {icon && <span className="left-icon">{icon}</span>}
       <TextField
         id="outlined-basic"
         error={error}
@@ -34,57 +35,44 @@ const Input = ({
         value={value}
         type={type === "password" ? (showPassword ? "text" : "password") : type}
         variant="outlined"
-       sx={{
-  "& .MuiInputLabel-root": {
-    color: lb_color || "black",
-    marginLeft:mq_label ? "10%" : "10px"
-  },
-  "& .MuiInputLabel-root.Mui-focused": {
-    color: fc_color || "var(--accent)",
-     marginLeft: mq_label ? "10%" : "10px"
-  },
+        sx={{
+          "& input": {
+            color: text_color || "#000",
+            paddingLeft: icon ? "52px" : mq_label ? "10%" : "10px",
+          },
+          "& .MuiInputLabel-root": {
+            color: lb_color || "black",
+            left: icon ? "28px" : mq_label ? "10%" : "10px",
+          },
 
-  "& .MuiOutlinedInput-notchedOutline legend": {
-    marginLeft: mq_label ? "10%" :  "10px", // or paddingLeft
-  },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: fc_color || "var(--accent)",
+            left: icon ? "28px" : mq_label ? "10%" : "10px",
+          },
 
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: bd_color || "black",
-      
-    },
-    "&:hover fieldset": {
-      borderColor: fc_color || "var(--accent)",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: fc_color || "var(--accent)",
-      borderWidth: 1,
-    },
-  },
+          "& .MuiOutlinedInput-notchedOutline legend": {
+            marginLeft: mq_label ? "10%" : "10px",
+          },
 
-  "& input": {
-    color: text_color || "#000",
-    paddingLeft: mq_label ? "10%" :  "10px", 
-   
-  },
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: bd_color || "black",
+            },
+            "&:hover fieldset": {
+              borderColor: fc_color || "var(--accent)",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: fc_color || "var(--accent)",
+              borderWidth: 1,
+            },
+          },
 
-  "& input:-webkit-autofill": {
-    WebkitTextFillColor: `white`,
-    WebkitBoxShadow: "0 0 0px 1000px #0000 inset !important",
-    boxShadow: "0 0 0px 1000px #0000 inset !important",
-    transition: "background-color 50000s ease-in-out 0s",
-  },
-
-  "& input:-webkit-autofill:hover": {
-    WebkitTextFillColor: ` #ffff`,
-    WebkitBoxShadow: "0 0 0px 1000px transparent inset !important",
-  },
-
-  "& input:-webkit-autofill:focus": {
-    WebkitTextFillColor: ` "#fffff`,
-    WebkitBoxShadow: "0 0 0px 1000px transparent inset !important",
-  },
-}}
+          "& .MuiInputAdornment-root": {
+            color: fc_color || "var(--accent)",
+            fontSize: "22px",
+            marginLeft: "8px",
+          },
+        }}
       />
 
       {type === "password" && (

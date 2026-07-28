@@ -31,18 +31,20 @@
       align-items: center;
     }
   }
-    .buttons {
+  .buttons {
     display: flex;
     gap: 50px;
     padding-top: 50px;
-         align-self: center;    
+    align-self: center;
 
-  .btn {
-    width: fit-content;
-    padding: 10px 30px;
-
+    .btn {
+      width: fit-content;
+      padding: 10px 30px;
+    }
   }
+}
+@media only screen and (max-width: 900px) {
+  .form-row {
+    flex-wrap: wrap;
   }
-
-
 }
