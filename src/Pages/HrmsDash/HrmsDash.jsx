@@ -4,7 +4,7 @@ import "./HrmsDash.scss"
 const HrmsDash = () => {
   return (
     <>
-      <MainPanel/>
+    
     </>
   )
 }

@@ -27,6 +27,10 @@ const Sidebar = ({ active }) => {
           name: "Register User",
           link: "/addEmployee",
         },
+        {
+          name: "List Views",
+          link: "/addEmployee"
+        },
       ],
     },
   ];
