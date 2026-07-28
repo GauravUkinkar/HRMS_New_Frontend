@@ -1,0 +1,48 @@
+
+.salarydetails-parent {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  .emergency-details,
+  .salary-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    
+    h1 {
+      width: 100%;
+      text-align: left;
+      background-color: var(--accent2);
+      padding: 8px;
+      font-size: 18px;
+      color: white;
+      border-radius: 5px;
+      box-shadow: var(--shadow);
+    }
+
+    .inputs {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      padding: 20px 0px;
+      align-items: center;
+    }
+  }
+    .buttons {
+    display: flex;
+    gap: 50px;
+    padding-top: 50px;
+         align-self: center;    
+
+  .btn {
+    width: fit-content;
+    padding: 10px 30px;
+
+  }
+  }
+
+
+}

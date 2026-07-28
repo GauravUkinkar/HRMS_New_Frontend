@@ -19,7 +19,7 @@ const SuccessPage = () => {
               Congratulations,admin@gmail.com! <br /> Your new password is now
               active.
             </p>
-            <img className='right' src={right} alt='right'/>
+            <img className='rightimg' src={right} alt='right'/>
 
             <Link className="btn" to="/login">Return To Login</Link>
           </div>
