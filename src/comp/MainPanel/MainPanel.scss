@@ -14,9 +14,27 @@
     }
   }
 
-    .main_section{
-        width: calc(100% - 250px);
-        padding: 0px 40px;
+  .main_section {
+    width: calc(100% - 250px);
+    padding: 0px 40px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: var(--trans);
+
+    &.active {
+      width: calc(100% - 50px);
+    }
+
+    .header {
+      height: 80px;
+
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      gap: 5px;
+
+      .hanburger {
         display: flex;
         flex-direction: column;
         justify-content: center;
