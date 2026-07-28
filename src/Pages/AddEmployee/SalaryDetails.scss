@@ -1,12 +1,10 @@
-.employee-parent {
+
+.salarydetails-parent {
   display: flex;
   flex-direction: column;
   gap: 50px;
-
-
-  // padding-top:50px ;
-  .empdetails,
-  .personaldetails {
+  .emergency-details,
+  .salary-details {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -33,10 +31,18 @@
       align-items: center;
     }
   }
+    .buttons {
+    display: flex;
+    gap: 50px;
+    padding-top: 50px;
+         align-self: center;    
 
   .btn {
     width: fit-content;
     padding: 10px 30px;
-     align-self: center;
+
   }
+  }
+
+
 }
