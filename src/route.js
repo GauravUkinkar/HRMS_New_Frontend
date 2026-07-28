@@ -9,6 +9,8 @@ const ChangePass =lazy(()=>import("../src/Pages/ChangePass/ChangePass"));
 const SuccessPage =lazy(()=>import("../src/Pages/SuccessPage/SuccessPage"));
 const AddEmployee =lazy(()=>import("../src/Pages/AddEmployee/AddEmployee"));
 const SalaryDetails =lazy(()=>import("../src/Pages/AddEmployee/SalaryDetails"));
+const UploadDoc =lazy(()=>import("../src/Pages/UploadDoc/UploadDoc"));
+
 export const routes = [
     {
         name:"HrmsDashboard",
@@ -59,5 +61,11 @@ export const routes = [
         path:"/salaryDetails",
         comp:SalaryDetails,
         adminonly:true
+    },
+            {
+        name:"UploadDoc",
+        path:"/uploadDoc",
+        comp:UploadDoc,
+        adminonly:false
     }
 ]
