@@ -30,9 +30,9 @@ const MainPanel = ({
             className="hanburger"
             onClick={() => setActive(!active)}
           >
-            <span></span>
-            <span></span>
-            <span></span>
+            <span className="hm" ></span>
+            <span className="hm" ></span>
+            <span className="hm" ></span>
           </div>
           {/* header data start hare  */}
           <div className="all-main-group">
