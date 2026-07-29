@@ -55,6 +55,7 @@ const Login = () => {
               error={error.email}
                 onChange={handleChange}
                 value={values.email}
+                onblur={handleBlur}
                 text_color="white"
                 fc_color="white"
                 bd_color="white"
@@ -69,6 +70,7 @@ const Login = () => {
                 text_color="white"
                 error={error.password}
                 onChange={handleChange}
+                onblur={handleBlur}
                 value={values.password}
                 type="password"
                 fc_color="white"
