@@ -2,13 +2,12 @@ import { createRoot } from "react-dom/client";
 
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
-import ContextProvider from "../Context.js";
-
+import ContextProvider from "../Context.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <ContextProvider>
-    <BrowserRouter>
+  <BrowserRouter>
+    <ContextProvider>
       <App />
-    </BrowserRouter>
-  </ContextProvider>,
+    </ContextProvider>
+  </BrowserRouter>,
 );

@@ -6,7 +6,7 @@ import { BsClockHistory } from "react-icons/bs";
 import { FaChevronDown } from "react-icons/fa6";
 const MainPanel = ({
   children,
-  title = "Dashboard",
+  title ,
   breadcrumbs = [{ label: "Dashboard" }],
 }) => {
   const [active, setActive] = useState(false);
@@ -25,8 +25,10 @@ const MainPanel = ({
       <div className={active ? "main_section active" : "main_section"}>
         {/* Header */}
         <div className="header">
-          {/* Hamburger */}
-          <div
+
+          <div class="left_section">
+           <div class="top_sec">
+               <div
             className="hanburger"
             onClick={() => setActive(!active)}
           >
@@ -34,12 +36,12 @@ const MainPanel = ({
             <span className="hm" ></span>
             <span className="hm" ></span>
           </div>
-          {/* header data start hare  */}
-          <div className="all-main-group">
-            <div className="left-side">
+             <h2 className="title">{title}</h2>
+           </div>
+
               {/* Page ttitle & Breadcrumb */}
 
-              <h2 className="title">{title}</h2>
+           
 
               <div className="breadcrumb">
                 {breadcrumbs.map((item, index) => (
@@ -57,7 +59,14 @@ const MainPanel = ({
                 ))}
               </div>
 
-            </div>
+          
+
+          </div>
+          {/* Hamburger */}
+       
+          {/* header data start hare  */}
+     
+           
 
             <div className="right-side">
               {/* Time */}
@@ -96,7 +105,7 @@ const MainPanel = ({
               </div>
             </div>
 
-          </div>
+        
 
 
 
