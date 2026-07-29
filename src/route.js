@@ -10,6 +10,7 @@ const SuccessPage =lazy(()=>import("../src/Pages/SuccessPage/SuccessPage"));
 const AddEmployee =lazy(()=>import("../src/Pages/AddEmployee/AddEmployee"));
 const SalaryDetails =lazy(()=>import("../src/Pages/AddEmployee/SalaryDetails"));
 const UploadDoc =lazy(()=>import("../src/Pages/UploadDoc/UploadDoc"));
+const empList = lazy(()=>import("../src/Pages/EmployeeList/EmployeeList"));
 
 export const routes = [
     {
@@ -67,5 +68,11 @@ export const routes = [
         path:"/uploadDoc",
         comp:UploadDoc,
         adminonly:false
-    }
+    },
+            {
+        name:"Employee List",
+        path:"/empList",
+        comp:empList,
+        adminonly:true
+    },
 ]

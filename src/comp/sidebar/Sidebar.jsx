@@ -9,7 +9,7 @@ import { LuLogOut } from "react-icons/lu";
 import { IoCloudUploadOutline } from "react-icons/io5";
 
 const Sidebar = ({ active }) => {
-    const [childindex,setChildIndex] = useState()
+  const [childindex, setChildIndex] = useState();
   const navs = [
     {
       icon: <FiHome />,
@@ -17,7 +17,7 @@ const Sidebar = ({ active }) => {
       link: "/",
     },
     {
-      icon:<BsPerson />,
+      icon: <BsPerson />,
       name: "Employee",
       children: [
         {
@@ -30,24 +30,22 @@ const Sidebar = ({ active }) => {
         },
         {
           name: "List Views",
-          link: "/addEmployee"
+          link: "/empList",
         },
       ],
     },
     {
-      icon:<IoCloudUploadOutline />,
+      icon: <IoCloudUploadOutline />,
       name: "Upload",
       children: [
         {
           name: "Upload Documents",
-          link: "/uploadDoc"
+          link: "/uploadDoc",
         },
         {
           name: "View Documents",
-          
         },
       ],
-      
     },
   ];
   return (
@@ -61,27 +59,35 @@ const Sidebar = ({ active }) => {
           <div class="navsection">
             {navs &&
               navs.map((item, index) => (
-                <Link onClick={() => item?.children && setChildIndex(index)} className="link" to={item.link}>
+                <Link
+                  onClick={() => item?.children && setChildIndex(index)}
+                  className="link"
+                  to={item.link}
+                >
                   <span>{item.icon}</span>
                   {item.name}
 
-                  {index === childindex &&
-                    <div class="child_list" onMouseLeave={()=>setChildIndex()}>
-                   {     item.children?.map((child, index) => <Link key={index} >
-                    {child.name}</Link>)}
+                  {index === childindex && (
+                    <div
+                      class="child_list"
+                      onMouseLeave={() => setChildIndex()}
+                     
+                    >
+                      {item.children?.map((child, index) => (
+                        <Link  to={child.link} key={index}>{child.name}</Link>
+                      ))}
                     </div>
-                    
-                    }
+                  )}
                 </Link>
               ))}
           </div>
         </div>
 
         <Link className="logout">
-        <span>
+          <span>
             <LuLogOut />
-        </span>
-        Logout
+          </span>
+          Logout
         </Link>
       </div>
     </>
