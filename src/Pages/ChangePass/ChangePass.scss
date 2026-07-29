@@ -1,6 +1,6 @@
 .password-parent {
   background-image: url(../../assets/bg-image.png);
-  height: 100dvh;
+  height: 100svh;
   width: 100%;
   background-size: cover;
   background-position: center;
@@ -25,6 +25,7 @@
       flex-direction: column;
       padding: 10px 30px;
       gap: 30px;
+      justify-content: center;
       
 
       background: linear-gradient(
@@ -42,17 +43,23 @@
           width: 100%;
         }
       }
-      h1 {
-        color: #a7c5cf;
-        font-size: 45px;
-      }
-      p {
-        color: #d6e4e8bb;
-        font-size: 22px;
-        .mail {
-          color: white;
+      .pass-des {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        h1 {
+          color: #a7c5cf;
+          font-size: 45px;
+        }
+        p {
+          color: #d6e4e8bb;
+          font-size: 22px;
+          .mail {
+            color: white;
+          }
         }
       }
+
       .inputs {
         display: flex;
         flex-direction: column;

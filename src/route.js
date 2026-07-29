@@ -1,11 +1,16 @@
 import { lazy } from "react";
 
 
+
 const HrmsDash = lazy(()=>import("../src/Pages/HrmsDash/HrmsDash"));
 const Login = lazy(()=>import("../src/Pages/Login/Login"));
 const OtpVerification =lazy(()=>import("./Pages/OtpVerification/OtpVerification"));
 const ChangePass =lazy(()=>import("../src/Pages/ChangePass/ChangePass"));
 const SuccessPage =lazy(()=>import("../src/Pages/SuccessPage/SuccessPage"));
+const AddEmployee =lazy(()=>import("../src/Pages/AddEmployee/AddEmployee"));
+const SalaryDetails =lazy(()=>import("../src/Pages/AddEmployee/SalaryDetails"));
+const UploadDoc =lazy(()=>import("../src/Pages/UploadDoc/UploadDoc"));
+
 export const routes = [
     {
         name:"HrmsDashboard",
@@ -43,6 +48,24 @@ export const routes = [
          name:"Forgot",
         path:"/forgot",
         comp:SuccessPage,
+        adminonly:false
+    },
+    {
+        name:"Add Employee",
+        path:"/addEmployee",
+        comp:AddEmployee,
+        adminonly:true
+    },
+        {
+        name:"SalaryDetails",
+        path:"/salaryDetails",
+        comp:SalaryDetails,
+        adminonly:true
+    },
+            {
+        name:"UploadDoc",
+        path:"/uploadDoc",
+        comp:UploadDoc,
         adminonly:false
     }
 ]

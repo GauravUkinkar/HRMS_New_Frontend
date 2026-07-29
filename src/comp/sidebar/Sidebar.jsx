@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { BsPerson } from "react-icons/bs";
 import { LuLogOut } from "react-icons/lu";
+import { IoCloudUploadOutline } from "react-icons/io5";
 
 const Sidebar = ({ active }) => {
     const [childindex,setChildIndex] = useState()
@@ -27,7 +28,26 @@ const Sidebar = ({ active }) => {
           name: "Register User",
           link: "/addEmployee",
         },
+        {
+          name: "List Views",
+          link: "/addEmployee"
+        },
       ],
+    },
+    {
+      icon:<IoCloudUploadOutline />,
+      name: "Upload",
+      children: [
+        {
+          name: "Upload Documents",
+          link: "/uploadDoc"
+        },
+        {
+          name: "View Documents",
+          
+        },
+      ],
+      
     },
   ];
   return (

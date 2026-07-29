@@ -53,6 +53,8 @@ body {
 .form-row {
   display: flex;
   width: 100%;
+  gap: var(--unit);
+  justify-content: space-between;
 }
 
 
@@ -60,7 +62,7 @@ body {
       .btn{
         background-color: #1D4869;
         padding: 10px;
-        border-radius: 10px;
+        border-radius: 5px;
         border: none;
         color: white;
         font-weight: 500;
