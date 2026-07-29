@@ -19,6 +19,8 @@ const MainPanel = ({
         <Sidebar active={active} />
       </div>
 
+
+      
       {/* Main Section */}
       <div className={active ? "main_section active" : "main_section"}>
         {/* Header */}
