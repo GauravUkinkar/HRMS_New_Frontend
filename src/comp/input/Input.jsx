@@ -4,6 +4,7 @@ import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { useState } from "react";
 import { InputAdornment } from "@mui/material";
 
+
 const Input = ({
   label,
   type = "text",
@@ -31,6 +32,7 @@ const Input = ({
         name={name}
         required={required}
         label={error ? error : label}
+        onBlur={onblur}
         onChange={onChange}
         value={value}
         type={type === "password" ? (showPassword ? "text" : "password") : type}
