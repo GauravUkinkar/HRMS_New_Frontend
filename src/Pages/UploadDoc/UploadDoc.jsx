@@ -2,8 +2,8 @@ import React from "react";
 import "./UploadDoc.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import Input from "../../comp/input/Input";
-import { MdOutlineFileUpload } from "react-icons/md";
-import FileUpload from "../../comp/FileUpload/FileUpload";
+
+
 import { Link } from "react-router-dom";
 
 const UploadDoc = () => {
@@ -17,70 +17,28 @@ const UploadDoc = () => {
               <Input label="UID" required={true} />
             </div>
             <div className="form-row">
-              <FileUpload
-                label="Aadhar Card"
-                required
-                onChange={(e) => console.log(e.target.files[0])}
-              />
-              <FileUpload
-                label="Pan Card"
-                required
-                onChange={(e) => console.log(e.target.files[0])}
-              />
+              <Input label="Aadhar Card" type="file" required={true} />
+              <Input label="Pan Card" type="file" required={true} />
             </div>
             <div className="form-row">
-              <FileUpload
-                label="10th Certificate"
-                required
-                onChange={(e) => console.log(e.target.files[0])}
-              />
-              <FileUpload
-                label="12th Certificate"
-                required
-                onChange={(e) => console.log(e.target.files[0])}
-              />
+              <Input label="10th Certificate" type="file" required={true} />
+              <Input label="12th Certificate" type="file" required={true} />
             </div>
             <div className="form-row">
-              <FileUpload
-                label="Degree Certificate"
-                required
-                onChange={(e) => console.log(e.target.files[0])}
-              />
-              <FileUpload
-                label="Diploma Certificate"
-                onChange={(e) => console.log(e.target.files[0])}
-              />
+              <Input label="Degree Certificate" type="file" required={true} />
+              <Input label="Diploma Certificate" type="file" required={true} />
             </div>
             <div className="form-row">
-              <FileUpload
-                label="Post-Graduation Certificate"
-                onChange={(e) => console.log(e.target.files[0])}
-              />
-              <FileUpload
-                label="Releiving Certificate"
-                required
-                onChange={(e) => console.log(e.target.files[0])}
-              />
+              <Input label="Post-Graduation Certificate" type="file" />
+              <Input label="Releiving Certificate" type="file" required={true} />
             </div>
             <div className="form-row">
-              <FileUpload
-                label="Experience Letter"
-                onChange={(e) => console.log(e.target.files[0])}
-              />
-              <FileUpload
-                label="Bank Statement"
-                onChange={(e) => console.log(e.target.files[0])}
-              />
+              <Input label="Experience Letter" type="file"  />
+              <Input label="Bank Statement" type="file"  />
             </div>
             <div className="form-row">
-              <FileUpload
-                label="Salary-Slip1"
-                onChange={(e) => console.log(e.target.files[0])}
-              />
-              <FileUpload
-                label="Salary-Slip2"
-                onChange={(e) => console.log(e.target.files[0])}
-              />
+              <Input label="Salary-Slip1" type="file"  />
+              <Input label="Salary-Slip2" type="file"  />
             </div>
           </div>
                     <Link className="btn" >
