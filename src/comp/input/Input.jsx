@@ -2,6 +2,7 @@ import { TextField } from "@mui/material";
 import "./Input.scss";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { useState } from "react";
+import { InputAdornment } from "@mui/material";
 
 
 const Input = ({
@@ -17,7 +18,6 @@ const Input = ({
   text_color,
   name,
   mq_label,
-  onblur,
   icon,
 }) => {
   const [showPassword, setShowPassword] = useState(false);

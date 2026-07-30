@@ -9,13 +9,12 @@ import { Link } from "react-router-dom";
 const AddEmployee = () => {
   return (
     <>
-      <MainPanel
+      <MainPanel>
         title="Add Employee"
         breadcrumbs={[
           { label: "Dashboard", link: "/dashboard" },
           { label: "Add Employee" },
         ]}
-      >
         <div className="employee-parent  ">
           <div className="empdetails">
             <h1>Employee Details</h1>
