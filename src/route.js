@@ -21,6 +21,7 @@ export const routes = [
         comp:Login,
         adminonly:false
     },
+    
         {
          name:"OtpVerification",
         path:"/otpverification",
