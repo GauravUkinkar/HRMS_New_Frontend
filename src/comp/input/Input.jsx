@@ -17,6 +17,7 @@ const Input = ({
   text_color,
   name,
   mq_label,
+  onblur,
   icon,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,6 +32,7 @@ const Input = ({
         name={name}
         required={required}
         label={error ? error : label}
+        onBlur={onblur}
         onChange={onChange}
         value={value}
         type={type === "password" ? (showPassword ? "text" : "password") : type}
