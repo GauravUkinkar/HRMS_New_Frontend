@@ -4,7 +4,9 @@ import "./HrmsDash.scss"
 const HrmsDash = () => {
   return (
     <>
-      <MainPanel/>
+    <MainPanel title="Admin Dashboard">
+
+    </MainPanel>
     </>
   )
 }

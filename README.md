@@ -1,16 +1,10 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Sr. no. |      Page      | Name      | Frontend Status | Intigration |
+| :-----: | :-------------: | --------- | :-------------: | :---------: |
+|    1    |      Login      | Aishwarya |   Inprogress   |   Pending   |
+|    2    | Forgot Password | Aishwarya |   Inprogress    |   Pending   |
+|    3    |    Send Otp    | Varad     |     Complete     |   Pending   |
+|    4    | Change Password | Varad     |     Complete     |   Pending   |
+|    5    |     Success     | Varad     |     Complete     |   Pending   |
+|    6    |  Register User  | Aishwarya |     Pending     |   Pending   |
+|    7    |  Add Employee  | Varad     |     Complete     |   Pending   |
+|    8    |  Upload Documents(Employee)  | Varad     |     Complete     |   Pending   |

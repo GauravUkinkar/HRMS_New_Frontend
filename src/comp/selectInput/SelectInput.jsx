@@ -6,7 +6,14 @@ const SelectInput = ({ children, value, onChange,label,error,required }) => {
   return (
     <>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">{label}</InputLabel>
+        <InputLabel
+// sx={{
+//     // transform: "translate(10px, 16px) scale(1)",
+//     "&.MuiInputLabel-shrink": {
+//       // transform: "translate(10px, -9px) scale(0.75)",
+//     },
+//   }}
+        id="demo-simple-select-label">{label}</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
@@ -15,6 +22,7 @@ const SelectInput = ({ children, value, onChange,label,error,required }) => {
           onChange={onChange}
           error={error}
           required={required}
+  
         >
           {children}
         </Select>
