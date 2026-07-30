@@ -3,7 +3,7 @@ import MainPanel from "../../comp/MainPanel/MainPanel";
 import Table_Comp from "../../comp/table/Table";
 import "./EmployeeList.scss";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { render } from "sass";
+
 import { CiEdit } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
 
