@@ -2,7 +2,7 @@ import { TextField } from "@mui/material";
 import "./Input.scss";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { useState } from "react";
-import { InputAdornment } from "@mui/material";
+
 
 
 const Input = ({
@@ -30,7 +30,7 @@ const Input = ({
         id="outlined-basic"
         error={error}
         name={name}
-        required={required}
+        // required={required ? true : required}
         label={error ? error : label}
         onBlur={onblur}
         onChange={onChange}

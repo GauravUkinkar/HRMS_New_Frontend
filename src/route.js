@@ -13,6 +13,9 @@ const UploadDoc =lazy(()=>import("../src/Pages/UploadDoc/UploadDoc"));
 const Viewdoc =lazy(()=>import("../src/Pages/Viewdoc/Viewdoc"));
 const EmployeeList =lazy(()=>import("../src/Pages/EmployeeList/EmployeeList"));
 const AdminDash =lazy(()=>import("../src/Pages/AdminDash/AdminDash"));
+const Forgot =lazy(()=>import("../src/Pages/Forgot/Forgot"));
+
+
 
 
 export const routes = [
@@ -51,7 +54,7 @@ export const routes = [
                {
          name:"Forgot",
         path:"/forgot",
-        comp:SuccessPage,
+        comp:Forgot,
         adminonly:false
     },
     {

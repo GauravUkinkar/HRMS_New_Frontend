@@ -5,6 +5,7 @@ import UseForm from "../../UseForm";
 import { loginValidate } from "../../validators/LoginValidtate";
 import axios from "axios";
 import LoginImg from "../../assets/login.png"
+import { useEffect } from "react";
 const Login = () => {
   const formObj = {
     email: "",
@@ -36,7 +37,10 @@ const Login = () => {
     isSubmitting,
   } = UseForm(formObj, loginValidate, login);
 
-  console.log(values)
+
+
+
+
   return (
     <>
       <div className="login-parent parent">
