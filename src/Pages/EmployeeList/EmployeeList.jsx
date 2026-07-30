@@ -70,6 +70,17 @@ const EmployeeList = () => {
       title: "Date of Birth",
       search: true,
     },
+        {
+      key: "AadharCard ",
+      dataIndex: "Date of Birth",
+      title: "Date of Birth",
+      search: true,
+    },    {
+      key: "Date of Birth",
+      dataIndex: "Date of Birth",
+      title: "Date of Birth",
+      search: true,
+    },
 
 
 
