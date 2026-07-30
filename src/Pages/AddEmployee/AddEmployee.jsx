@@ -53,7 +53,6 @@ const AddEmployee = () => {
 
   const addEmployee = async ()=>{
   try {
-    console.log("dfgdfg")
     const response = await axios.post(`${BASE_URL}Admin/AddEmployee`,values);
     console.log(response)
   } catch (error) {
@@ -99,8 +98,8 @@ const AddEmployee = () => {
                 value={values.employeeId}
                 onChange={handleChange}
                 label="Employee ID" mq_label="PSPL"  />
-                <Input label="UserName" required="true" />
-                <SelectInput label="Role" required="true">
+                <Input label="UserName" required />
+                <SelectInput label="Role" required>
                   <MenuItem>Admin </MenuItem>
                   <MenuItem>SuperAdmin </MenuItem>
                   <MenuItem>Employee </MenuItem>
