@@ -2,7 +2,7 @@ import { FormControl, InputLabel, Select } from "@mui/material";
 import "./SelectInput.scss";
 
 
-const SelectInput = ({ children, value, onChange,label,error,required }) => {
+const SelectInput = ({ children,name, value, onChange,label,error,required }) => {
   return (
     <>
       <FormControl fullWidth>
@@ -19,6 +19,7 @@ const SelectInput = ({ children, value, onChange,label,error,required }) => {
           id="demo-simple-select"
           value={value}
           label={label}
+          name={name}
           onChange={onChange}
           error={error}
           required={required}
