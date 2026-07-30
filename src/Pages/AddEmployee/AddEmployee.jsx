@@ -1,27 +1,104 @@
-import React from "react";
 import "./AddEmployee.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
 import Input from "../../comp/input/Input";
-import { Link } from "react-router-dom";
+
+import UseForm from "../../UseForm";
+import axios from "axios";
+import { ValidateEmployee } from "../../validators/ValidEmployee";
+
+
+
+
+
+  const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const AddEmployee = () => {
+  const formObj = {
+    employeeName: "",
+    employeeId: "",
+    gender: "",
+    employeeStatus: "",
+    designation: "",
+    department: "",
+    dateOfJoining: "",
+    dateOfLiving: "",
+    contactNumber: "",
+    ifscCode: "",
+    dateOfBirth: "",
+    aadharNumber: "",
+    panNumber: "",
+    accountNumber: "",
+    costtoCompany: 0,
+    employeeSalary: 0,
+    bankName: "",
+    companyName: "",
+    diduction: 0,
+    address: "",
+    uanNo: "",
+    policyNumber: "",
+    insuranceCompany: "",
+    emergencyContactNumber: "",
+    emergencyContactName: "",
+    emergencyContactRelation: "",
+    emergencyContactAddress: "",
+    status: "",
+    esicNumber: "",
+    editableAccess: true,
+    email: "",
+    password: "",
+    role: "",
+  };
+
+  const addEmployee = async ()=>{
+  try {
+    console.log("dfgdfg")
+    const response = await axios.post(`${BASE_URL}Admin/AddEmployee`,values);
+    console.log(response)
+  } catch (error) {
+    console.log(error)
+  }
+  }
+
+
+  const {handleChange,
+    handleSubmit,
+    handleBlur,
+    values,
+    setValues,
+    error,
+    setError,
+    isSubmitting} = UseForm(
+      formObj,
+     ValidateEmployee,
+      addEmployee
+    );
+
+     
+
+    console.log(error, "error")
   return (
     <>
-      <MainPanel>
+      <MainPanel
         title="Add Employee"
         breadcrumbs={[
           { label: "Dashboard", link: "/dashboard" },
           { label: "Add Employee" },
         ]}
-        <div className="employee-parent  ">
+      >
+        <form onSubmit={handleSubmit} className="employee-parent  ">
           <div className="empdetails">
             <h1>Employee Details</h1>
 
             <div className="inputs">
               <div className="form-row">
-                <Input label="Employee ID" mq_label="PSPL" required="true" />
+                <Input 
+                error={error.employeeId}
+                name="employeeId"
+                value={values.employeeId}
+                onChange={handleChange}
+                label="Employee ID" mq_label="PSPL"  />
                 <Input label="UserName" required="true" />
                 <SelectInput label="Role" required="true">
                   <MenuItem>Admin </MenuItem>
@@ -73,11 +150,50 @@ const AddEmployee = () => {
               </div>
             </div>
           </div>
+            <div className="personaldetails">
+            <h1>Emergency Details</h1>
+            <div className="inputs">
+              <div className="form-row">
+                <Input label="Emergency Contact Name" required="true" />
+                <Input label="Emergency Contact No" required="true" />
+                <Input
+                  label="Emergency Contact Person Relation"
+                  required="true"
+                />
+              </div>
+              <div className="form-row">
+                <Input
+                  label="Emergency Contact Person Address"
+                  required="true"
+                />
+              </div>
+            </div>
+          </div>
+           <div className="personaldetails">
+            <h1>Salary Details</h1>
+            <div className="inputs">
+              <div className="form-row">
+                <Input label="Employee Salary" required="true" />
+                <Input label="Cost to Comapany" required="true" />
+                <Input label="Bank Name" required="true" />
+              </div>
+              <div className="form-row">
+                <Input label="Account Number" required="true" />
+                <Input label="IFSC Code" required="true" />
+                <Input label="UAN Number" />
+              </div>
+              <div className="form-row">
+                <Input label="Insurance Comapany Name" />
+                <Input label="ESIC Number" />
+                <Input label="Policy Number" />
+              </div>
+            </div>
+          </div>
 
-          <Link className="btn" to="/salaryDetails">
-            Next
-          </Link>
-        </div>
+          <button className="btn" type="submit">
+            Submit
+          </button>
+        </form>
       </MainPanel>
     </>
   );
