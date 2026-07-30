@@ -98,31 +98,70 @@ const AddEmployee = () => {
                 value={values.employeeId}
                 onChange={handleChange}
                 label="Employee ID" mq_label="PSPL"  />
-                <Input label="UserName" required />
-                <SelectInput label="Role" required>
-                  <MenuItem>Admin </MenuItem>
-                  <MenuItem>SuperAdmin </MenuItem>
-                  <MenuItem>Employee </MenuItem>
+                <Input
+                error={error.employeeName}
+                name="employeeName"
+                value={values.employeeName}
+                onChange={handleChange}
+                label="UserName" required />
+                <SelectInput
+                error={error.role}
+                name="role"
+                value={values.role}
+                onChange={handleChange}
+                label="Role" required>
+                  <MenuItem value="Admin">Admin </MenuItem>
+                  <MenuItem value="SuperAdmin">SuperAdmin </MenuItem>
+                  <MenuItem value="Employee">Employee </MenuItem>
                 </SelectInput>
               </div>
               <div className="form-row">
-                <SelectInput label="Employee Status" required="true">
-                  <MenuItem>On Board </MenuItem>
-                  <MenuItem>Provision </MenuItem>
-                  <MenuItem>Intern </MenuItem>
+                <SelectInput
+                error={error.status}
+                name="status"
+                value={values.status}
+                onChange={handleChange}
+                label="Employee Status" required>
+                  <MenuItem value="On Board">On Board </MenuItem>
+                  <MenuItem value="Provision">Provision </MenuItem>
+                  <MenuItem value="Intern">Intern </MenuItem>
                 </SelectInput>
-                <SelectInput label="Company Name" required="true">
-                  <MenuItem>Pandoza Solutions Pvt.Ltd </MenuItem>
-                  <MenuItem>Akka Foundation </MenuItem>
-                  <MenuItem>NVM Infratech </MenuItem>
-                  <MenuItem>The Indian Journey </MenuItem>
+                <SelectInput
+                error={error.companyName}
+                name="companyName"
+                value={values.companyName}
+                onChange={handleChange}
+                label="Company Name" required>
+                  <MenuItem value="Pandoza Solutions Pvt.Ltd ">Pandoza Solutions Pvt.Ltd </MenuItem>
+                  <MenuItem value="Akka Foundation ">Akka Foundation </MenuItem>
+                  <MenuItem value="NVM Infratech ">NVM Infratech </MenuItem>
+                  <MenuItem value="The Indian Journey">The Indian Journey </MenuItem>
                 </SelectInput>
-                <Input label="Date of Joining" required="true" type="date" />
+                <Input
+                error={error.dateOfJoining}
+                name="dateOfJoining"
+                value={values.dateOfJoining}
+                onChange={handleChange}
+                label="Date of Joining" required type="date" />
               </div>
               <div className="form-row">
-                <Input label="Last Working Day" type="date" />
-                <Input label="Designation" required="true" />
-                <Input label="Department" required="true" />
+                <Input 
+                name="dateOfLiving"
+                value={values.dateOfLiving}
+                onChange={handleChange}
+                label="Last Working Day" type="date" />
+                <Input
+                error={error.department}
+                name="department"
+                value={values.department}
+                onChange={handleChange}
+                label="Department" required="true" />
+                <Input
+                error={error.designation}
+                name="Department"
+                value={values.designation}
+                onChange={handleChange}
+                label="Designation" required="true" />
               </div>
             </div>
           </div>
