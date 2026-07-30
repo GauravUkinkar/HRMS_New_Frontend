@@ -1,0 +1,31 @@
+.dashboard{
+
+    width: 100%;
+    height: 1000px;
+    border: 1px solid green;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .left-sec{
+        width: 30%;
+        border: 1px solid blue;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .right-sec{
+        width: 70%;
+        border: 1px solid red;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+    }
+
+}

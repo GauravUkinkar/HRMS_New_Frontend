@@ -23,6 +23,7 @@
     align-items: flex-start;
     gap: calc(var(--unit) / 3);
     cursor: pointer;
+    overflow-y: auto;
 
     .header{
       width: 100%;
