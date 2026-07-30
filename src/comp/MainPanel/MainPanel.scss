@@ -14,23 +14,9 @@
     }
   }
 
-  .main_section {
-    width: calc(100% - 250px);
-    padding: 0px 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: calc(var(--unit) / 3);
-    cursor: pointer;
-
-    .header{
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .left_section{
+    .main_section{
+        width: calc(100% - 250px);
+        padding: 0px 40px;
         display: flex;
         flex-direction: column;
         justify-content: center;

@@ -47,6 +47,21 @@ const Sidebar = ({ active }) => {
         },
       ],
     },
+    {
+      icon:<IoCloudUploadOutline />,
+      name: "Upload",
+      children: [
+        {
+          name: "Upload Documents",
+          link: "/uploadDoc"
+        },
+        {
+          name: "View Documents",
+          
+        },
+      ],
+      
+    },
   ];
   return (
     <>
