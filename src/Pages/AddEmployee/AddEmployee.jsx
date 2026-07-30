@@ -10,6 +10,11 @@ const AddEmployee = () => {
   return (
     <>
       <MainPanel>
+        title="Add Employee"
+        breadcrumbs={[
+          { label: "Dashboard", link: "/dashboard" },
+          { label: "Add Employee" },
+        ]}
         <div className="employee-parent  ">
           <div className="empdetails">
             <h1>Employee Details</h1>

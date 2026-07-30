@@ -11,6 +11,9 @@ const AddEmployee =lazy(()=>import("../src/Pages/AddEmployee/AddEmployee"));
 const SalaryDetails =lazy(()=>import("../src/Pages/AddEmployee/SalaryDetails"));
 const UploadDoc =lazy(()=>import("../src/Pages/UploadDoc/UploadDoc"));
 const Viewdoc =lazy(()=>import("../src/Pages/Viewdoc/Viewdoc"));
+const EmployeeList =lazy(()=>import("../src/Pages/EmployeeList/EmployeeList"));
+const AdminDash =lazy(()=>import("../src/Pages/AdminDash/AdminDash"));
+
 
 export const routes = [
     {
@@ -74,5 +77,17 @@ export const routes = [
         path:"/Viewdoc",
         comp:Viewdoc,
         adminonly:false
+    },
+                    {
+        name:"EmployeeList",
+        path:"/empList",
+        comp:EmployeeList,
+        adminonly:false
+    },
+                        {
+        name:"AdminDash",
+        path:"/adminDash",
+        comp:AdminDash,
+        adminonly:true
     }
 ]

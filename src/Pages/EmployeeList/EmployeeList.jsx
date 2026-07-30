@@ -50,7 +50,7 @@ const EmployeeList = () => {
       key: "Contact",
       dataIndex: "Contact",
       title: "Contact",
-      search: true,
+ 
     },
     {
       key: "Email",
@@ -62,17 +62,72 @@ const EmployeeList = () => {
       key: "IFSC Code",
       dataIndex: "IFSC Code",
       title: "IFSC Code",
-      search: true,
+  
     },
     {
       key: "Date of Birth",
       dataIndex: "Date of Birth",
       title: "Date of Birth",
+  
+    },
+            {
+      key: "AadharCard No",
+      dataIndex: "AadharCard No",
+      title: "AadharCard No",
+  
+    },        {
+      key: "PanCard No",
+      dataIndex: "PanCard No",
+      title: "PanCard No",
+   
+    },
+    {
+          key: "Account No",
+      dataIndex: "Account No",
+      title: "Account No",
+     
+    },
+    {
+          key: "Cost to Company",
+      dataIndex: "Cost to Company",
+      title: "Cost to Company",
+
+    },
+        {
+          key: "Employee Salary",
+      dataIndex: "Employee Salary",
+      title: "Employee Salary",
+  
+    },
+        {
+          key: "Bank Name",
+      dataIndex: "Bank Name",
+      title: "Bank Name",
       search: true,
     },
+           {
+          key: "Company Name",
+      dataIndex: "Company Name",
+      title: "Company Name",
+      search: true,
+    },
+           {
+          key: "Image",
+      dataIndex: "Image",
+      title: "Image",
+  
+    },
+               {
+          key: "Address",
+      dataIndex: "Address",
+      title: "Address",
 
-
-
+    },           {
+          key: "UAN No",
+      dataIndex: "UAN No",
+      title: "UAN No",
+ 
+    },
     {
       key: "Action",
       dataIndex: "Action",
@@ -80,10 +135,6 @@ const EmployeeList = () => {
       render: () => (
         <Link>
           <RiDeleteBin6Line />
-        </Link>
-      ),
-      render: () => (
-        <Link>
           <CiEdit />
         </Link>
       ),
