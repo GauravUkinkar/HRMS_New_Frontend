@@ -56,6 +56,7 @@ const Login = () => {
             <div className="form-row">
               <Input
               name="email"
+              required
               error={error.email}
                 onChange={handleChange}
                 value={values.email}

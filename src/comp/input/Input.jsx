@@ -24,14 +24,14 @@ const Input = ({
 
   return (
     <div className="input">
-      {mq_label && <div className="mq_label">{mq_label}</div>}
+      {mq_label && <div className="mq_label">{mq_label} </div>}
       {icon && <span className="left-icon">{icon}</span>}
       <TextField
         id="outlined-basic"
         error={error}
         name={name}
-        // required={required ? true : required}
-        label={error ? error : label}
+        
+         label={required ? `${error || label} *` : (error || label)}
         onBlur={onblur}
         onChange={onChange}
         value={value}
