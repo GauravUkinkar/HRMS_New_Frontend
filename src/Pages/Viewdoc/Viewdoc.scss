@@ -1,12 +1,12 @@
 .view-doc {
-
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--unit);
-  padding: 20px 20px;
+  //   gap: var(--unit);
+  gap: 30px;
+  padding: 50px 20px;
   border: 1px solid var(--bg-color);
   border-radius: 10px;
 
@@ -16,8 +16,7 @@
     text-align: left;
     font-weight: 700;
     color: var(--black);
-    line-height: 40px;
-    
+    line-height: 100%;
   }
 
   .document-list {
@@ -25,7 +24,6 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     width: 100%;
-   
 
     .document-card {
       border: 1px solid var(--bg-color);
@@ -36,9 +34,9 @@
       justify-content: center;
       align-items: center;
       gap: 10px;
-      padding: 20px 0px;
+      padding: 20px 10px;
       .pdf-icon {
-        font-size: 28px;
+        font-size: 20px;
         color: red;
       }
 
@@ -46,20 +44,28 @@
         font-size: 16px;
         font-weight: 500;
       }
-
-      button {
-        border: 1px solid var(--accent2);
-        color: var(--accent2);
-        padding: 6px 14px;
-        border-radius: 4px;
+      .btn-parent {
         display: flex;
         align-items: center;
-        gap: 6px;
-        cursor: pointer;
+        justify-content: center;
+        gap: 10px;
 
-        &:hover {
-          background: var(--accent2);
-          color: var(--white);
+        button {
+          border: 1px solid var(--accent2);
+          color: var(--accent2);
+          padding: 5px 15px;
+          border-radius: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          font-size: 10px;
+          cursor: pointer;
+
+          &:hover {
+            background: var(--accent2);
+            color: var(--white);
+          }
         }
       }
     }
@@ -69,17 +75,35 @@
     background: var(--accent2);
     color: var(--white);
     border: 1px solid var(--accent2);
-    padding: 12px 24px;
-    border-radius: 6px;
+    padding: 8px 20px;
+    border-radius: 5px;
     font-size: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
     cursor: pointer;
+    transition: var(--trans);
 
     &:hover {
       background: var(--accent);
     }
   }
 }
+
+@media only screen and (max-width: 1020px) {
+  .view-doc{
+    .document-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .view-doc{
+    .document-list {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  }
+}
+
