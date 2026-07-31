@@ -254,13 +254,38 @@ const AddEmployee = () => {
             <h1>Salary Details</h1>
             <div className="inputs">
               <div className="form-row">
-                <Input label="Employee Salary" required="true" />
-                <Input label="Cost to Comapany" required="true" />
-                <Input label="Bank Name" required="true" />
+                <Input
+                error={error.employeeSalary}
+                name="Employee Salary"
+                value={values.employeeSalary}
+                onChange={handleChange}
+                label="Employee Salary" required/>
+                <Input
+                error={error.costtoCompany}
+                name="Cost to Company"
+                value={values.costtoCompany}
+                onChange={handleChange}
+                label="Cost to Comapany" required />
+                <Input
+                error={error.bankName}
+                name="Bank Name"
+                value={values.bankName}
+                onChange={handleChange}
+                label="Bank Name" required />
               </div>
               <div className="form-row">
-                <Input label="Account Number" required="true" />
-                <Input label="IFSC Code" required="true" />
+                <Input
+                error={error.accountNumber}
+                name="Account Number"
+                value={values.accountNumber}
+                onChange={handleChange}
+                label="Account Number" required />
+                <Input
+                error={error.ifscCode}
+                name="IFSC Code"
+                value={values.ifscCode}
+                onChange={handleChange}
+                label="IFSC Code" required/>
                 <Input label="UAN Number" />
               </div>
               <div className="form-row">

@@ -136,12 +136,32 @@
       justify-content: center;
       align-items: flex-start;
       gap: var(--unit);
-      padding: 10px;
-
-
-
+      padding: 15px;
       h1{
         color: var(--accent);
+      }
+      .bottom{
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        .absent,.today,.halfday{
+          display: flex;  
+          align-items: center;
+          gap:10px;
+          justify-content: center;
+          .red,.blue,.grey{
+            height: 15px;
+            width: 15px;
+            background-color: red;
+            border-radius: 50%;
+          }
+          .blue{
+            background-color: var(--accent2);
+          }
+          .grey{
+            background-color: grey;
+          }
+        }
       }
     }
     .right2 {

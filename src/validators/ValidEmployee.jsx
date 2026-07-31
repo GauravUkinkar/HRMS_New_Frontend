@@ -49,5 +49,20 @@ export const ValidateEmployee = (values)=>{
         if(values.emergencyContactNumber ===""){
    error.emergencyContactNumber = "Emergency Number name is Required"
  }
+         if(values.employeeSalary ===""){
+   error.employeeSalary = "Employee Salary is Required"
+ }
+          if(values.costtoCompany ===""){
+   error.costtoCompany = "Cost to Company is Required"
+ }
+           if(values.bankName ===""){
+   error.bankName = "Bank Name is Required"
+ }
+            if(values.accountNumber ===""){
+   error.accountNumber = "Account Number is Required"
+ }
+             if(values.ifscCode ===""){
+   error.ifscCode = "IFSC Code is Required"
+ }
  return error
 }

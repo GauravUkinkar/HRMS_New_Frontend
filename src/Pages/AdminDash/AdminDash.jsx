@@ -66,7 +66,18 @@ const AdminDash = () => {
                </h1>
                 <Calender/>
                 <div className="bottom">
-                    
+                    <div className="absent">
+                      <div className="red"></div>
+                      <p>Absent</p>
+                    </div>
+                     <div className="today">
+                      <div className="blue"></div>
+                      <p>Today</p>
+                    </div>
+                     <div className="halfday">
+                      <div className="grey"></div>
+                      <p>Half Day</p>
+                    </div>
                 </div>
             </div>
             <div className="right2">
