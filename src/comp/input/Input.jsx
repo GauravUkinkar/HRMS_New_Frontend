@@ -61,14 +61,16 @@ const Input = ({
 
           "& .MuiInputLabel-root": {
             color: lb_color || "black",
+            // padding:"0px 20px",
             marginLeft:
               types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10%" : "10px",
           },
 
           "& .MuiInputLabel-root.Mui-focused": {
             color: fc_color || "var(--accent)",
+            
             left:
-              types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10%" : "10px",
+              types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10px" : "10px",
           },
 
           "& .MuiOutlinedInput-notchedOutline legend": {

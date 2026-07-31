@@ -5,24 +5,33 @@ import UseForm from "../../UseForm";
 import { loginValidate } from "../../validators/LoginValidtate";
 import axios from "axios";
 import LoginImg from "../../assets/login.png"
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import { api } from "../../api";
+import { toast } from "react-toastify";
+import { UserContext } from "../../../Context";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
   const formObj = {
     email: "",
     password: "",
   };
+const {getEmpDetails} =useContext(UserContext)
+const navigate = useNavigate()
 
-  const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
   const login = async () => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}AuthController/Login`,
+      const response = await api.post(
+        `AuthController/Login`,
         values,
-        {
-          withCredentials: true,
-        },
       );
+
+      if(response.status === 200){
+        toast.success("Login Successfully");
+        localStorage.setItem("LoggedIn",true)
+        getEmpDetails();
+        navigate("/")
+      }
       
     } catch (error) {
       console.log(error)

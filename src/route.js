@@ -26,14 +26,16 @@ export const routes = [
         name:"HrmsDashboard",
         path:"/",
         comp:HrmsDash,
-        adminonly:true
+     
+      
     },
 
     {
          name:"Login",
         path:"/login",
         comp:Login,
-        adminonly:false
+      
+
     },
         {
          name:"OtpVerification",
