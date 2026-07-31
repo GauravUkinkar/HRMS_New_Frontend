@@ -97,11 +97,11 @@ const AddEmployee = () => {
                 name="employeeId"
                 value={values.employeeId}
                 onChange={handleChange}
-                label="Employee ID" mq_label="PSPL"  />
+                label="Employee ID" mq_label="PSPL" required />
                 <Input
-                error={error.employeeName}
-                name="employeeName"
-                value={values.employeeName}
+                error={error.email}
+                name="email"
+                value={values.email}
                 onChange={handleChange}
                 label="UserName" required />
                 <SelectInput
@@ -155,13 +155,13 @@ const AddEmployee = () => {
                 name="department"
                 value={values.department}
                 onChange={handleChange}
-                label="Department" required="true" />
+                label="Department" required />
                 <Input
                 error={error.designation}
                 name="Department"
                 value={values.designation}
                 onChange={handleChange}
-                label="Designation" required="true" />
+                label="Designation" required/>
               </div>
             </div>
           </div>
@@ -169,7 +169,9 @@ const AddEmployee = () => {
             <h1>Personal Details</h1>
             <div className="inputs">
               <div className="form-row">
-                <Input label="Employee Name" required="true" />
+                <Input
+                
+                label="Employee Name" required />
                 <SelectInput label="Gender">
                   <MenuItem>Male</MenuItem>
                   <MenuItem>Female</MenuItem>
