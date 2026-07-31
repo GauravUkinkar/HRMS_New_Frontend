@@ -98,8 +98,8 @@ export const routes = [
     },
     {
         name:"Generatesalary",
-        path:"/generatedalary",
-        comp:"Generatesalary",
+        path:"/generatesalary",
+        comp:Generatesalary,
         adminonly:true
     }
 ]
