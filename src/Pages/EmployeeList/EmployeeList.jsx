@@ -3,15 +3,28 @@ import MainPanel from "../../comp/MainPanel/MainPanel";
 import Table_Comp from "../../comp/table/Table";
 import "./EmployeeList.scss";
 import { RiDeleteBin6Line } from "react-icons/ri";
-
+import axios from "axios";
 import { CiEdit } from "react-icons/ci";
 import { FaPlus } from "react-icons/fa";
+import { useEffect, useState } from "react";
 
 const EmployeeList = () => {
+const [data,setData] = useState();
+const [loader,setLoader] =useState(false)
+    const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+
+    const deleteEmployee = ()=>{
+      try {
+        console.log("deletyedddded")
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
   const columns = [
     {
-      key: "Employee Name",
-      dataIndex: "Employee Name",
+      key: "employeeName",
+      dataIndex: "employeeName",
       title: "Employee Name",
       search: true,
       fixed:"left"
@@ -134,23 +147,41 @@ const EmployeeList = () => {
       dataIndex: "Action",
       title: "Action",
       render: () => (
-        <Link>
-          <RiDeleteBin6Line />
-          <CiEdit />
-        </Link>
+        <div>
+          <span  onClick={deleteEmployee} ><RiDeleteBin6Line /></span>
+          <span><CiEdit /></span>
+        </div>
       ),
     },
   ];
 
-  const data = [
-    {
-      name: "Ketan r d",
-      
-    },
-  ];
+  const getAllEmployee = async ()=>{
+    try {
+      setLoader(true)
+      const response = await axios.get(`${BASE_URL}Admin/GetAllEmployee`);
+      setData(response?.data?.data)
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setLoader(false)
+    }
+  }
+
+
+
+  useEffect(()=>{
+    const fetchEmp = async ()=>{
+      await getAllEmployee()
+    }
+
+    fetchEmp()
+  },[])
+
   return (
     <>
       <MainPanel title="Admin Dashboard">
+{   loader &&     <p>laoding.....</p>}
         <div className="top-parent">
           <h1>Employees</h1>
           <button className="btn"><FaPlus />Add</button>
