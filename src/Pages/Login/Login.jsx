@@ -4,7 +4,7 @@ import Input from "../../comp/input/Input";
 import UseForm from "../../UseForm";
 import { loginValidate } from "../../validators/LoginValidtate";
 import axios from "axios";
-import LoginImg from "../../assets/login.png"
+import LoginImg from "../../assets/login.png";
 import { useEffect } from "react";
 const Login = () => {
   const formObj = {
