@@ -99,11 +99,11 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 label="Employee ID" mq_label="PSPL" required />
                 <Input
-                error={error.email}
-                name="email"
-                value={values.email}
+                error={error.password}
+                name="password"
+                value={values.password}
                 onChange={handleChange}
-                label="UserName" required />
+                label="Password" required />
                 <SelectInput
                 error={error.role}
                 name="role"
@@ -170,23 +170,56 @@ const AddEmployee = () => {
             <div className="inputs">
               <div className="form-row">
                 <Input
-                
+                error={error.employeeName}
+                name="Employee Name"
+                value={values.employeeName}
+                onChange={handleChange}
                 label="Employee Name" required />
                 <SelectInput label="Gender">
-                  <MenuItem>Male</MenuItem>
-                  <MenuItem>Female</MenuItem>
-                  <MenuItem>Other</MenuItem>
+                  <MenuItem value="Male">Male</MenuItem>
+                  <MenuItem value="Female">Female</MenuItem>
+                  <MenuItem value="Other">Other</MenuItem>
                 </SelectInput>
-                <Input label="Contact Number" required="true" />
+                <Input
+                error={error.contactNumber}
+                name="Contact Number"
+                value={values.contactNumber}
+                onChange={handleChange}
+                label="Contact Number" required />
               </div>
               <div className="form-row">
-                <Input label="Email" required="true" />
-                <Input label="Date of Birth" required="true" type="date" />
-                <Input label="Aadhar No" required="true" />
+                <Input
+                error={error.email}
+                name="Email"
+                value={values.email}
+                onChange={handleChange}
+                label="Email" required />
+                <Input 
+                error={error.dateOfBirth}
+                name="Date of Birth"
+                value={values.dateOfBirth}
+                onChange={handleChange}
+                label="Date of Birth" required type="date" />
+                <Input
+                error={error.aadharNumber}
+                name="Aadhar Number"
+                value={values.aadharNumber}
+                onChange={handleChange}
+                label="Aadhar No" required />
               </div>
               <div className="form-row">
-                <Input label="Pan No" required="true" />
-                <Input label="Current Address" required="true" />
+                <Input
+                error={error.panNumber}
+                name="Pan Number"
+                value={values.panNumber}
+                onChange={handleChange}
+                label="Pan No" required />
+                <Input
+                error={error.address}
+                name="Current Address"
+                value={values.address}
+                onChange={handleChange}
+                label="Current Address" required/>
               </div>
             </div>
           </div>
@@ -194,17 +227,25 @@ const AddEmployee = () => {
             <h1>Emergency Details</h1>
             <div className="inputs">
               <div className="form-row">
-                <Input label="Emergency Contact Name" required="true" />
-                <Input label="Emergency Contact No" required="true" />
+                <Input
+                error={error.emergencyContactName}
+                name="Emergency Contact Name"
+                value={values.emergencyContactName}
+                onChange={handleChange}
+                label="Emergency Contact Name" required />
+                <Input
+                error={error.emergencyContactNumber}
+                name="Emergency Contact Number"
+                value={values.emergencyContactNumber}
+                onChange={handleChange}
+                label="Emergency Contact No" required />
                 <Input
                   label="Emergency Contact Person Relation"
-                  required="true"
                 />
               </div>
               <div className="form-row">
                 <Input
                   label="Emergency Contact Person Address"
-                  required="true"
                 />
               </div>
             </div>

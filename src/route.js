@@ -56,6 +56,7 @@ export const routes = [
         path:"/forgot",
         comp:Forgot,
         adminonly:false
+        
     },
     {
         name:"Add Employee",
