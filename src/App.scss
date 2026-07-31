@@ -24,6 +24,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  // border: 1px solid red;
 }
 
 p,a{
@@ -78,3 +79,8 @@ body {
         }
       }
 
+@media only screen and (max-width: 900px) {
+  .form-row {
+    flex-wrap: wrap;
+  }
+}
