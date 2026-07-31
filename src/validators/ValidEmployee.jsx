@@ -4,22 +4,25 @@ export const ValidateEmployee = (values)=>{
  if(values.employeeId === ""){
     error.employeeId = "Employee Id Required"
  }
- if(values.password ===""){
+ if(values.password === ""){
    error.password = "Password is Required"
  }
-  if(values.role ===""){
+  if(values.role === ""){
    error.role = "Role is Required"
  }
-  if(values.status ===""){
+  if(values.status === ""){
    error.status = "Status is Required"
  }
- if(values.companyName ===""){
+ if(values.gender === ""){
+      error.gender = "gender is Required"
+ }
+ if(values.companyName === ""){
    error.companyName = "Company Name is Required"
  }
-  if(values.department ===""){
+  if(values.department === ""){
    error.department = "Department is Required"
  }
-   if(values.designation ===""){
+   if(values.designation === ""){
    error.designation = "Designation is Required"
  }
     if(values.employeeName ===""){

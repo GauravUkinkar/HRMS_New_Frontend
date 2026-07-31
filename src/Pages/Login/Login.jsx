@@ -17,10 +17,7 @@ const Login = () => {
   const login = async () => {
     try {
       const response = await axios.post(`${BASE_URL}AuthController/Login`,values);
-      if(response.status === 200){
-        const token = response?.data?.data?.token
-           localStorage.setItem("token",token)
-      }
+   
     } catch (error) {
       console.log(error)
     }
