@@ -16,10 +16,15 @@ const Login = () => {
 
   const login = async () => {
     try {
-      const response = await axios.post(`${BASE_URL}AuthController/Login`,values);
-   
+      const response = await axios.post(
+        `${BASE_URL}AuthController/Login`,
+        values,
+        {
+          withCredentials: true,
+        },
+      );
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -33,10 +38,6 @@ const Login = () => {
     setError,
     isSubmitting,
   } = UseForm(formObj, loginValidate, login);
-
-
-
-
 
   return (
     <>
@@ -52,9 +53,9 @@ const Login = () => {
 
             <div className="form-row">
               <Input
-              name="email"
-              required
-              error={error.email}
+                name="email"
+                required
+                error={error.email}
                 onChange={handleChange}
                 value={values.email}
                 onblur={handleBlur}
@@ -64,13 +65,11 @@ const Login = () => {
                 lb_color="white"
                 label="Email"
               />
-
-              
             </div>
 
             <div className="form-row">
               <Input
-              name="password"
+                name="password"
                 text_color="white"
                 error={error.password}
                 onChange={handleChange}
@@ -94,7 +93,7 @@ const Login = () => {
                 Forgot password
               </a>
             </div>
-            <button type="submit" className="btn login_btn" >
+            <button type="submit" className="btn login_btn">
               Log in
             </button>
           </form>
