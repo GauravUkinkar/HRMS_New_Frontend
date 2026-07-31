@@ -50,7 +50,6 @@ export const routes = [
         adminonly:false
     }
     ,
-
     {
         name:"Add Employee",
         path:"/addEmployee",
