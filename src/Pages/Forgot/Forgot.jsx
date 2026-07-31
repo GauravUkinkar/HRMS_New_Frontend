@@ -3,7 +3,8 @@ import "./Forgot.scss";
 import Logo from "../../assets/logo.png";
 import Input from "../../comp/input/Input";
 import UseForm from "../../UseForm";
-import { forgotValidate } from "../../validators/ForgotValidtate";
+
+import { ForgotValidate } from "../../validators/ForgotValidate";
 import axios from "axios";
 import forgot from "../../assets/forgot.png";
 import { useEffect } from "react";
@@ -40,7 +41,7 @@ const Forgot = () => {
     error,
     setError,
     isSubmitting,
-  } = UseForm(formObj, forgotValidate, forgot);
+  } = UseForm(formObj, ForgotValidate, forgot);
 
   return (
     <>
@@ -51,7 +52,9 @@ const Forgot = () => {
 
             <div class="ct">
               <h2>Forgot password ?</h2>
-              <p>Have we met before?</p>
+              <p>
+                To reset your password,please enter your email address below.
+              </p>
             </div>
 
             <div className="form-row">
@@ -66,39 +69,17 @@ const Forgot = () => {
                 fc_color="white"
                 bd_color="white"
                 lb_color="white"
-                label="Email"
+                label="Enter your email address"
               />
             </div>
 
-            <div className="form-row">
-              <Input
-                name="password"
-                text_color="white"
-                error={error.password}
-                onChange={handleChange}
-                onblur={handleBlur}
-                value={values.password}
-                type="password"
-                fc_color="white"
-                bd_color="white"
-                lb_color="white"
-                label="Password"
-              />
-            </div>
-
-            <div className="password-footer">
-              <div className="rem">
-                <input type="checkbox" className="checkbox" />
-                <label className="remember">Remember me</label>
-              </div>
-
-              <a href="/" className="forgot-password">
-                Forgot password
-              </a>
-            </div>
             <button type="submit" className="btn forgot_btn">
-              Log in
+              Send OTP
             </button>
+
+            <a href="/" className="forgot-password">
+              Back to Login
+            </a>
           </form>
 
           <div className="right">

@@ -14,6 +14,8 @@ const Viewdoc =lazy(()=>import("../src/Pages/Viewdoc/Viewdoc"));
 const EmployeeList =lazy(()=>import("../src/Pages/EmployeeList/EmployeeList"));
 const AdminDash =lazy(()=>import("../src/Pages/AdminDash/AdminDash"));
 const Forgot =lazy(()=>import("../src/Pages/Forgot/Forgot"));
+const Generatesalary =lazy(()=>import("../src/Pages/Generatesalary/Generatesalary"));
+
 
 
 
@@ -92,6 +94,12 @@ export const routes = [
         name:"AdminDash",
         path:"/adminDash",
         comp:AdminDash,
+        adminonly:true
+    },
+    {
+        name:"Generatesalary",
+        path:"/generatesalary",
+        comp:Generatesalary,
         adminonly:true
     }
 ]
