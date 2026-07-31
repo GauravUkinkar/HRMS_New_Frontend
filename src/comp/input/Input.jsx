@@ -3,8 +3,6 @@ import "./Input.scss";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { useState } from "react";
 
-
-
 const Input = ({
   label,
   type = "text",
@@ -21,39 +19,60 @@ const Input = ({
   icon,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const types = ["date","file"]
 
   return (
     <div className="input">
       {mq_label && <div className="mq_label">{mq_label} </div>}
       {icon && <span className="left-icon">{icon}</span>}
+      { types.includes(type) && (
+        <label className="date-label">{required ? `${label} *` : label}</label>
+      )}
+
+
       <TextField
-        id="outlined-basic"
-        error={error}
+        error={!!error}
         name={name}
-        
-         label={required ? `${error || label} *` : (error || label)}
-        onBlur={onblur}
+        label={
+          types.includes(type)
+            ? undefined
+            : required
+              ? `${error || label} *`
+              : error || label
+        }
         onChange={onChange}
         value={value}
         type={type === "password" ? (showPassword ? "text" : "password") : type}
         variant="outlined"
+        // Required for date field
+        InputLabelProps={types.includes(type) ? { shrink: true } : {}}
         sx={{
           "& input": {
             color: text_color || "#000",
-            paddingLeft: icon ? "52px" : mq_label ? "10%" : "10px",
+            paddingLeft:
+              types.includes(type)
+                ? "14px"
+                : icon
+                  ? "52px"
+                  : mq_label
+                    ? "10%"
+                    : "10px",
           },
+
           "& .MuiInputLabel-root": {
             color: lb_color || "black",
-            left: icon ? "28px" : mq_label ? "10%" : "10px",
+            marginLeft:
+              types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10%" : "10px",
           },
 
           "& .MuiInputLabel-root.Mui-focused": {
             color: fc_color || "var(--accent)",
-            left: icon ? "28px" : mq_label ? "10%" : "10px",
+            left:
+              types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10%" : "10px",
           },
 
           "& .MuiOutlinedInput-notchedOutline legend": {
-            marginLeft: mq_label ? "10%" : "10px",
+            marginLeft: types.includes(type) ? 0 : mq_label ? "10%" : "10px",
           },
 
           "& .MuiOutlinedInput-root": {
@@ -65,14 +84,7 @@ const Input = ({
             },
             "&.Mui-focused fieldset": {
               borderColor: fc_color || "var(--accent)",
-              borderWidth: 1,
             },
-          },
-
-          "& .MuiInputAdornment-root": {
-            color: fc_color || "var(--accent)",
-            fontSize: "22px",
-            marginLeft: "8px",
           },
         }}
       />

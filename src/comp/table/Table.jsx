@@ -7,6 +7,7 @@ const Table_Comp = ({
   data = [],
   columns = [],
   rowKey = "id",
+  xscroll,
   ...tableProps
 }) => {
   const [searchText, setSearchText] = useState("");
@@ -147,6 +148,7 @@ const Table_Comp = ({
       columns={updatedColumns}
       dataSource={data}
       {...tableProps}
+       scroll={{ x: xscroll }}
     />
   );
 };

@@ -14,6 +14,7 @@ const EmployeeList = () => {
       dataIndex: "Employee Name",
       title: "Employee Name",
       search: true,
+      fixed:"left"
     },
     {
       key: "Employee Id",
@@ -155,7 +156,8 @@ const EmployeeList = () => {
           <button className="btn"><FaPlus />Add</button>
         </div>
 
-        <Table_Comp columns={columns} data={data} />
+        <Table_Comp columns={columns} data={data}
+        xscroll={3000} />
       </MainPanel>
     </>
   );
