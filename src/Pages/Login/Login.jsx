@@ -4,7 +4,7 @@ import Input from "../../comp/input/Input";
 import UseForm from "../../UseForm";
 import { loginValidate } from "../../validators/LoginValidtate";
 import axios from "axios";
-import LoginImg from "../../assets/login.png";
+import LoginImg from "../../assets/login.png"
 import { useEffect } from "react";
 const Login = () => {
   const formObj = {
@@ -25,7 +25,7 @@ const Login = () => {
       );
       
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   };
 
@@ -39,6 +39,10 @@ const Login = () => {
     setError,
     isSubmitting,
   } = UseForm(formObj, loginValidate, login);
+
+
+
+
 
   return (
     <>
@@ -54,9 +58,9 @@ const Login = () => {
 
             <div className="form-row">
               <Input
-                name="email"
-                required
-                error={error.email}
+              name="email"
+              required
+              error={error.email}
                 onChange={handleChange}
                 value={values.email}
                 onblur={handleBlur}
@@ -66,11 +70,13 @@ const Login = () => {
                 lb_color="white"
                 label="Email"
               />
+
+              
             </div>
 
             <div className="form-row">
               <Input
-                name="password"
+              name="password"
                 text_color="white"
                 error={error.password}
                 onChange={handleChange}
@@ -94,7 +100,7 @@ const Login = () => {
                 Forgot password
               </a>
             </div>
-            <button type="submit" className="btn login_btn">
+            <button type="submit" className="btn login_btn" >
               Log in
             </button>
           </form>
