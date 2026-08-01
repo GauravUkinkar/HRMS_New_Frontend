@@ -4,13 +4,40 @@ import Logo from "../../assets/logo.png";
 import otpimage from "../../assets/rightimg.webp";
 import Input from "../../comp/input/Input";
 import { Link } from "react-router-dom";
+import UseForm from "../../UseForm";
+import { validatePassword } from "../../validators/ValidatePassword";
+import axios from "axios";
 
 const ChangePass = () => {
+  const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+  const formObj = {
+    email: "",
+    newPassword: "",
+    confirmPassword: "",
+  };
+
+  const updatePassword = async () => {
+    try {
+      const response = await axios.put(`${BASE_URL}AuthController/updatePassword`,values)
+    } catch (error) {}
+  };
+
+  const {
+    handleChange,
+    handleSubmit,
+    handleBlur,
+    values,
+    setValues,
+    error,
+    setError,
+    isSubmitting,
+  } = UseForm(formObj, validatePassword, updatePassword);
+
   return (
     <>
       <div className="password-parent parent">
         <div className="password-cont cont">
-          <div className="left">
+          <form onSubmit={handleSubmit} className="left">
             <div className="logo">
               <img src={Logo} alt="Logo" />
             </div>
@@ -26,6 +53,12 @@ const ChangePass = () => {
             <div className="inputs">
               <div className="form-row">
                 <Input
+                  name="newPassword"
+                  required
+                  error={error.newPassword}
+                  onChange={handleChange}
+                  value={values.newPassword}
+                  onblur={handleBlur}
                   text_color="white"
                   type="password"
                   fc_color="white"
@@ -36,6 +69,12 @@ const ChangePass = () => {
               </div>
               <div className="form-row">
                 <Input
+                  name="confirmPassword"
+                  required
+                  error={error.confirmPassword}
+                  onChange={handleChange}
+                  value={values.confirmPassword}
+                  onblur={handleBlur}
                   text_color="white"
                   type="password"
                   fc_color="white"
@@ -45,14 +84,14 @@ const ChangePass = () => {
                 />
               </div>
             </div>
-            <Link className="btn" to="#">
+            <button className="btn" type="submit">
               Verify OTP
-            </Link>
+            </button>
             <div className="links">
               <Link to="/otpverification">Back To Previous Screen</Link>
               <Link>Cancel</Link>
             </div>
-          </div>
+          </form>
           <div className="right">
             <img src={otpimage} alt="otpimage" />
           </div>

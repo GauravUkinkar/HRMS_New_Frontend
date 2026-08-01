@@ -1,6 +1,6 @@
 import { lazy } from "react";
 
-const HrmsDash = lazy(() => import("../src/Pages/HrmsDash/HrmsDash"));
+
 
 
 const AddEmployee = lazy(() => import("../src/Pages/AddEmployee/AddEmployee"));

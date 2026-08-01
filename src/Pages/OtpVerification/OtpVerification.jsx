@@ -1,55 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import "./OtpVerification.scss";
 import Logo from "../../assets/PandozaLogo.png";
 import otpimage from "../../assets/rightimg.webp";
 import OTPInput from "react-otp-input";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const OtpVerification = () => {
-const VerifyOTP = () => {
-  const formObj = {
-    otp: "",
-  };
 
-  const { getEmpDetails, setLoader } = useContext(UserContext);
-  const navigate = useNavigate();
+const [otp,setOtp] =useState("")
 
-  const verifyOtp = async () => {
-    try {
-      setLoader(true);
+  const [searchParams] = useSearchParams();
+  const email = searchParams.get("email");
+  console.log(email)
 
-      const response = await api.post(
-        "AuthController/VerifyOtp", 
-        values
-      );
 
-      if (response.status === 200) {
-        toast.success("OTP Verified Successfully");
 
-        localStorage.setItem("LoggedIn", true);
-
-        getEmpDetails();
-
-     
-      }
-    } catch (error) {
-      console.log(error);
-
-      toast.error(
-        error.response?.data?.message || "OTP Verification Failed"
-      );
-    } finally {
-      setLoader(false);
-    }
-  };
-
-  const {
-    handleChange,
-    handleSubmit,
-    handleBlur,
-    values,
-    error,
-  } = UseForm(formObj, otpValidate, verifyOtp);
+console.log(otp)
   return (
     <>
       <div className="verification-parent parent">
@@ -63,12 +29,14 @@ const VerifyOTP = () => {
               <p>
                 Please enter the 6-digit One Time <br /> Password sent to your
                 email <br />
-                <p className="mail">admin@gmail.com</p>
+                <p className="mail">{email}</p>
               </p>
             </div>
 
             <div className="otp-container">
               <OTPInput
+               value={otp}
+                onChange={setOtp}
                 numInputs={6}
                 renderInput={(props) => (
                   <input style={{ width: "48px" }} {...props} />
@@ -91,5 +59,6 @@ const VerifyOTP = () => {
     </>
   );
 };
+
 
 export default OtpVerification;

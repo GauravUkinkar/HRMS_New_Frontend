@@ -3,32 +3,44 @@ import "./Forgot.scss";
 import Logo from "../../assets/logo.png";
 import Input from "../../comp/input/Input";
 import UseForm from "../../UseForm";
-
+import { api } from "../../api";
 import { ForgotValidate } from "../../validators/ForgotValidate";
 import axios from "axios";
 import forgot from "../../assets/forgot.png";
-import { useEffect } from "react";
-
+import { useEffect,useContext } from "react";
+import { UserContext } from "../../../Context";
+import { toast } from "react-toastify";
+import {  useNavigate } from "react-router-dom";
 const Forgot = () => {
   const formObj = {
     email: "",
-    password: "",
   };
+
+  const {setLoader} = useContext(UserContext);
+const navigate = useNavigate()
 
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
   const Forgot = async () => {
     try {
+      setLoader(true)
       const response = await axios.post(
-        `${BASE_URL}AuthController/Forgot`,
-        values,
+        `${BASE_URL}AuthController/SendOtp?Email=${values.email}`,
+        {},
       );
-      if (response.status === 200) {
-        const token = response?.data?.data?.token;
-        localStorage.setItem("token", token);
+      if(response?.status === 200){
+        toast.success("Send Otp Success");
+        navigate(`/otpverification?email=${values.email}`)
       }
+      console.log(response)
     } catch (error) {
-      console.log(error.response);
+      const message = error.response.data
+      if(message?.responseMessage === "Invalid credentials"){
+        toast.error(message?.responseMessage)
+      }
+      
+    }finally{
+      setLoader(false)
     }
   };
 
@@ -41,7 +53,9 @@ const Forgot = () => {
     error,
     setError,
     isSubmitting,
-  } = UseForm(formObj, ForgotValidate, forgot);
+  } = UseForm(formObj, ForgotValidate, Forgot);
+
+  
 
   return (
     <>
@@ -61,6 +75,7 @@ const Forgot = () => {
               <Input
                 name="email"
                 required
+                type="email"
                 error={error.email}
                 onChange={handleChange}
                 value={values.email}

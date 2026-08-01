@@ -9,7 +9,7 @@ const ContextProvider = ({ children }) => {
   const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
 
-  console.log(user, "setUser")
+ 
 
   const getEmpDetails = async () => {
     try {
