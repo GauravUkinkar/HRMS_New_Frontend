@@ -19,11 +19,7 @@ const Generatesalary = lazy(
 );
 
 export const routes = [
-  {
-    name: "HrmsDashboard",
-    path: "/",
-    comp: HrmsDash,
-  },
+
   {
     name: "Add Employee",
     path: "/addEmployee",
@@ -56,9 +52,9 @@ export const routes = [
   },
   {
     name: "AdminDash",
-    path: "/adminDash",
+    path: "/",
     comp: AdminDash,
-    adminonly: true,
+  
   },
   {
     name: "Generatesalary",
