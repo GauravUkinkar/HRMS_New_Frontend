@@ -28,7 +28,7 @@ const Forgot = () => {
         localStorage.setItem("token", token);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error.response);
     }
   };
 
