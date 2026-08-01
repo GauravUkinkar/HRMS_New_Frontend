@@ -6,6 +6,50 @@ import OTPInput from "react-otp-input";
 import { Link } from "react-router-dom";
 
 const OtpVerification = () => {
+const VerifyOTP = () => {
+  const formObj = {
+    otp: "",
+  };
+
+  const { getEmpDetails, setLoader } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const verifyOtp = async () => {
+    try {
+      setLoader(true);
+
+      const response = await api.post(
+        "AuthController/VerifyOtp", 
+        values
+      );
+
+      if (response.status === 200) {
+        toast.success("OTP Verified Successfully");
+
+        localStorage.setItem("LoggedIn", true);
+
+        getEmpDetails();
+
+     
+      }
+    } catch (error) {
+      console.log(error);
+
+      toast.error(
+        error.response?.data?.message || "OTP Verification Failed"
+      );
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  const {
+    handleChange,
+    handleSubmit,
+    handleBlur,
+    values,
+    error,
+  } = UseForm(formObj, otpValidate, verifyOtp);
   return (
     <>
       <div className="verification-parent parent">
