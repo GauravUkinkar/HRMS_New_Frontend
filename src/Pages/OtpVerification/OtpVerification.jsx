@@ -42,7 +42,7 @@ const [otp,setOtp] =useState("")
       console.log(response)
     } catch(error) {
       const message = error.response.data
-      if(message?.responseMessage === "Invalid OTP"){
+      if(message?.responseMessage){
         toast.error(message?.responseMessage)
       }
     }finally{
