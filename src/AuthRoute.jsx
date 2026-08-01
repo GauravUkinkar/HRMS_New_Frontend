@@ -1,16 +1,23 @@
 import { useContext } from "react";
 import { UserContext } from "../Context";
 import { Navigate } from "react-router-dom";
+import Loader from "./comp/Loader/Loader";
 
 const AuthRoute = ({ children, adminonly }) => {
-  const { user } = useContext(UserContext);
+  const { user,loader  } = useContext(UserContext);
 
-  if (user === undefined) return <div>Loading...</div>;
 
-  // Not logged in
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
+
+  if (loader) {
+  return <Loader />;
+}
+
+
+    // Not logged in
+if (user === undefined) {
+  return <Navigate to="/login" replace />;
+}
+
 
   // Only check role for admin routes
   if (adminonly) {

@@ -3,24 +3,25 @@ import Logo from "../../assets/logo.png";
 import Input from "../../comp/input/Input";
 import UseForm from "../../UseForm";
 import { loginValidate } from "../../validators/LoginValidtate";
-import axios from "axios";
+
 import LoginImg from "../../assets/login.png"
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { api } from "../../api";
 import { toast } from "react-toastify";
 import { UserContext } from "../../../Context";
-import { useNavigate } from "react-router-dom";
+import { replace, useNavigate } from "react-router-dom";
 const Login = () => {
   const formObj = {
     email: "",
     password: "",
   };
-const {getEmpDetails} =useContext(UserContext)
+const {getEmpDetails,setLoader} =useContext(UserContext)
 const navigate = useNavigate()
 
 
   const login = async () => {
     try {
+      setLoader(true)
       const response = await api.post(
         `AuthController/Login`,
         values,
@@ -30,11 +31,13 @@ const navigate = useNavigate()
         toast.success("Login Successfully");
         localStorage.setItem("LoggedIn",true)
         getEmpDetails();
-        navigate("/")
+        navigate("/", { replace: true });
       }
       
     } catch (error) {
       console.log(error)
+    }finally{
+      setLoader(false)
     }
   };
 
