@@ -76,7 +76,7 @@ const Sidebar = ({ active }) => {
               navs.map((item, index) => (
                 <Link
                   onClick={() => item?.children && setChildIndex(index)}
-                  className="link"
+                  className={childindex === index ? "link active" : "link"}
                   to={item.link}
                 >
                   <span>{item.icon}</span>

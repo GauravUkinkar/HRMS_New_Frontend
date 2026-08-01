@@ -30,7 +30,7 @@ const navigate = useNavigate()
       if(response.status === 200){
         toast.success("Login Successfully");
         localStorage.setItem("LoggedIn",true)
-        getEmpDetails();
+       await getEmpDetails();
         navigate("/", { replace: true });
       }
       

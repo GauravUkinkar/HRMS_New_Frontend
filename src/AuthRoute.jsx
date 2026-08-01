@@ -4,17 +4,13 @@ import { Navigate } from "react-router-dom";
 import Loader from "./comp/Loader/Loader";
 
 const AuthRoute = ({ children, adminonly }) => {
-  const { user,loader  } = useContext(UserContext);
+  const { user, loader } = useContext(UserContext);
 
-
-
-  if (loader) {
+if (loader) {
   return <Loader />;
 }
 
-
-    // Not logged in
-if (user === undefined) {
+if (user === null) {
   return <Navigate to="/login" replace />;
 }
 

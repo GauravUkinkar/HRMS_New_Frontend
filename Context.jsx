@@ -6,14 +6,14 @@ export const UserContext = createContext();
 
 const ContextProvider = ({ children }) => {
   const [user, setUser] = useState(undefined);
-  const [loader, setLoader] = useState(false);
+  const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
 
   console.log(user, "setUser")
 
   const getEmpDetails = async () => {
     try {
-      
+       setLoader(true);
       const response = await api.get("AuthController/getUserById");
 
       if (response?.status === 200) {
@@ -27,17 +27,23 @@ const ContextProvider = ({ children }) => {
       }
 
       console.error(error);
-    } 
+    } finally {
+    setLoader(false);
+  }
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (localStorage.getItem("LoggedIn")) {
-        await getEmpDetails();
-      }
-    };
-    fetchUser();
-  }, []);
+useEffect(() => {
+  const fetchUser = async () => {
+    if (localStorage.getItem("LoggedIn")) {
+      await getEmpDetails();
+    } else {
+      setUser(null);
+    }
+    setLoader(false);
+  };
+
+  fetchUser();
+}, []);
 
   return (
     <UserContext.Provider
