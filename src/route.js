@@ -2,6 +2,8 @@ import { lazy } from "react";
 
 
 
+const Allemployee = lazy(() => import("../src/Pages/Allemployee/Allemployee"),
+);
 
 const AddEmployee = lazy(() => import("../src/Pages/AddEmployee/AddEmployee"));
 const SalaryDetails = lazy(
@@ -62,4 +64,15 @@ export const routes = [
     comp: Generatesalary,
     adminonly: true,
   },
+  {
+    name: "Allemployee",
+    path: "/allemployee",
+    comp: Allemployee,
+    adminonly: true,
+  },
+ 
+ 
+  
+
+  
 ];

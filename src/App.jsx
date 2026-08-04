@@ -11,6 +11,7 @@ import Forgot from "./Pages/Forgot/Forgot";
 import Loader from "./comp/Loader/Loader";
 import { useContext } from "react";
 import { UserContext } from "../Context";
+// import Allemployee from "./Pages/Allemployee/Allemployee";
 
 function App() {
   const {loader} = useContext(UserContext)
@@ -20,7 +21,7 @@ function App() {
    { loader && <Loader/>}
       <Routes>
        
-
+{/* <Route path="/allemployee" element={<Allemployee/>} /> */}
          <Route path="/login" element={<Login />} />
          <Route path="/otpverification" element={<OtpVerification />} />
          <Route path="/changepass" element={<ChangePass />} />
