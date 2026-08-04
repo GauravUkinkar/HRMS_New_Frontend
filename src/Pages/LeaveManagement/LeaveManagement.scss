@@ -1,48 +1,47 @@
 .leave-container {
   background: var(--white);
-
   padding: 20px;
   display: flex;
-    flex-direction: column;
-    gap: 100px;
+  flex-direction: column;
+  gap: 10px;
+  
 
   h2 {
     font-size: 38px;
     font-weight: 700;
   }
-}
+  .tab-header {
+    display: flex;
+    align-items: center;
+    background: #9dd4d7;
+    border-radius: 6px;
 
-.tab-header {
-  display: flex;
-  align-items: center;
-  background: #9dd4d7;
-  border-radius: 6px;
+    overflow: hidden;
 
-  overflow: hidden;
+    .tab {
+      padding: 15px 35px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: 0.3s;
 
-  .tab {
-    padding: 15px 35px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: 0.3s;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
     }
-  }
 
-  .active {
-    font-weight: 700;
-  }
+    .active {
+      font-weight: 700;
+    }
 
-  .close-btn {
-    background: #285d63;
-    color: white;
-    border: none;
+    .close-btn {
+      background: #285d63;
+      color: white;
+      border: none;
 
-    &:hover {
-      background: #204b50 !important;
-      color: white !important;
+      &:hover {
+        background: #204b50 !important;
+        color: white !important;
+      }
     }
   }
 }
