@@ -99,6 +99,20 @@
             color: #104855;
           }
         }
+
+        .resend-btn{
+          background: none;
+          border: none;
+          color: rgba(255, 255, 255, 0.658);
+          font-size: 16px;
+          cursor: pointer;
+          transition: color 0.3s ease;
+
+          &:hover {
+            color: var(--white);
+          }
+
+        }
       }
     }
     .right {

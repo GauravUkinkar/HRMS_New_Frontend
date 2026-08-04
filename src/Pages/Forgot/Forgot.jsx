@@ -10,7 +10,7 @@ import forgot from "../../assets/forgot.png";
 import { useEffect,useContext } from "react";
 import { UserContext } from "../../../Context";
 import { toast } from "react-toastify";
-import {  useNavigate } from "react-router-dom";
+import {  Link, useNavigate } from "react-router-dom";
 const Forgot = () => {
   const formObj = {
     email: "",
@@ -92,9 +92,9 @@ const navigate = useNavigate()
               Send OTP
             </button>
 
-            <a href="/" className="forgot-password">
+            <Link to="/login" className="forgot-password">
               Back to Login
-            </a>
+            </Link>
           </form>
 
           <div className="right">

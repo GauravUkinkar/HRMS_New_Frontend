@@ -6,50 +6,77 @@ import OTPInput from "react-otp-input";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import UseForm from "../../UseForm";
-import { useEffect,useContext } from "react";
+import { useEffect, useContext } from "react";
 import { UserContext } from "../../../Context";
 import { toast } from "react-toastify";
-import {  useNavigate } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 
 const OtpVerification = () => {
-
-
-const [otp,setOtp] =useState("")
+  const [otp, setOtp] = useState("");
 
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
-  console.log(email)
+  console.log(email);
 
-  const {setLoader} = useContext(UserContext);
-  const navigate = useNavigate()
+  const { setLoader } = useContext(UserContext);
+  const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
-  const verifyOtp = async (e) =>{
-     e.preventDefault();
-    try{
-      console.log("otp")
-      
-      setLoader(true)
+  const verifyOtp = async (e) => {
+    e.preventDefault();
+    try {
+      console.log("otp");
+
+      setLoader(true);
       const response = await axios.post(
-         `${BASE_URL}AuthController/VerifyOtp?Email=${email}&Otp=${otp}`,
-         {},
+        `${BASE_URL}AuthController/VerifyOtp?Email=${email}&Otp=${otp}`,
+        {},
       );
-      if(response?.status === 200){
+      if (response?.status === 200) {
         toast.success("Otp Verified Successfully");
-        navigate(`/changepass?email=${email}`)
+        navigate(`/changepass?email=${email}`);
       }
-      console.log(response)
-    } catch(error) {
-      const message = error.response.data
-      if(message?.responseMessage){
-        toast.error(message?.responseMessage)
+      console.log(response);
+    } catch (error) {
+      const message = error.response.data;
+      if (message?.responseMessage) {
+        toast.error(message?.responseMessage);
       }
-    }finally{
-      setLoader(false)
+    } finally {
+      setLoader(false);
     }
   };
 
+  useEffect(() => {
+    if (!email){
+      navigate("/login")
+    }
+
+  },[searchParams])
+
+    
+
+  const Forgot = async (e) => {
+    try {
+      e.preventDefault();
+      setLoader(true);
+      const response = await axios.post(
+        `${BASE_URL}AuthController/SendOtp?Email=${email}`,
+        {},
+      );
+      if (response?.status === 200) {
+        toast.success("Resend Otp Success");
+      }
+      console.log(response);
+    } catch (error) {
+      const message = error.response.data;
+      if (message?.responseMessage === "Invalid credentials") {
+        toast.error(message?.responseMessage);
+      }
+    } finally {
+      setLoader(false);
+    }
+  };
 
   return (
     <>
@@ -70,7 +97,7 @@ const [otp,setOtp] =useState("")
 
             <div className="otp-container">
               <OTPInput
-               value={otp}
+                value={otp}
                 onChange={setOtp}
                 numInputs={6}
                 renderInput={(props) => (
@@ -82,8 +109,13 @@ const [otp,setOtp] =useState("")
               Verify OTP
             </button>
             <div className="links">
-              <Link>Resend OTP</Link>
-              <Link to="/login">Back to Login</Link>
+              <button onClick={Forgot} className="resend-btn">
+                {" "}
+                Resend OTP
+              </button>
+              <Link className="resend-btn" to="/login">
+                Back to Login
+              </Link>
             </div>
           </form>
           <div className="right">
@@ -94,6 +126,5 @@ const [otp,setOtp] =useState("")
     </>
   );
 };
-
 
 export default OtpVerification;

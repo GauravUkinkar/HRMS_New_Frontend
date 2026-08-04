@@ -4,40 +4,48 @@ import Input from "../../comp/input/Input";
 import UseForm from "../../UseForm";
 import { loginValidate } from "../../validators/LoginValidtate";
 
-import LoginImg from "../../assets/login.png"
+import LoginImg from "../../assets/login.png";
 import { useContext } from "react";
 import { api } from "../../api";
 import { toast } from "react-toastify";
 import { UserContext } from "../../../Context";
-import { replace, useNavigate } from "react-router-dom";
+import { Link, replace, useNavigate } from "react-router-dom";
 const Login = () => {
   const formObj = {
     email: "",
     password: "",
   };
-const {getEmpDetails,setLoader} =useContext(UserContext)
-const navigate = useNavigate()
-
+  const { getEmpDetails, setLoader } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const login = async () => {
     try {
-      setLoader(true)
-      const response = await api.post(
-        `AuthController/Login`,
-        values,
-      );
+      setLoader(true);
+      const response = await api.post(`AuthController/Login`, values);
 
-      if(response.status === 200){
+      if (response.status === 200) {
         toast.success("Login Successfully");
-        localStorage.setItem("LoggedIn",true)
-       await getEmpDetails();
+        localStorage.setItem("LoggedIn", true);
+        await getEmpDetails();
         navigate("/", { replace: true });
       }
-      
     } catch (error) {
-      console.log(error)
-    }finally{
-      setLoader(false)
+      console.log(error.response);
+      const errormessage = error.response?.data;
+      if (errormessage?.password) {
+        setError((prev) => ({
+          ...prev,
+          password: errormessage.password,
+        }));
+        toast.error(errormessage.password);
+      }
+      if (errormessage?.responseMessage) {
+        toast.error(errormessage.responseMessage);
+      }
+      
+
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -51,10 +59,6 @@ const navigate = useNavigate()
     setError,
     isSubmitting,
   } = UseForm(formObj, loginValidate, login);
-
-
-
-
 
   return (
     <>
@@ -70,9 +74,9 @@ const navigate = useNavigate()
 
             <div className="form-row">
               <Input
-              name="email"
-              required
-              error={error.email}
+                name="email"
+                required
+                error={error.email}
                 onChange={handleChange}
                 value={values.email}
                 onblur={handleBlur}
@@ -82,13 +86,11 @@ const navigate = useNavigate()
                 lb_color="white"
                 label="Email"
               />
-
-              
             </div>
 
             <div className="form-row">
               <Input
-              name="password"
+                name="password"
                 text_color="white"
                 error={error.password}
                 onChange={handleChange}
@@ -108,11 +110,11 @@ const navigate = useNavigate()
                 <label className="remember">Remember me</label>
               </div>
 
-              <a href="/" className="forgot-password">
+              <Link to="/forgot" className="forgot-password">
                 Forgot password
-              </a>
+              </Link>
             </div>
-            <button type="submit" className="btn login_btn" >
+            <button type="submit" className="btn login_btn">
               Log in
             </button>
           </form>

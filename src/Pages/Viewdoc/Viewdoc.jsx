@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Viewdoc.scss";
 import { GrDocumentPdf } from "react-icons/gr";
 import { IoMdDownload } from "react-icons/io";
@@ -6,6 +6,9 @@ import { IoCloudUploadOutline } from "react-icons/io5";
 import { MdOutlinePreview } from "react-icons/md";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 const Viewdoc = () => {
+  const [documents, setDocuments] = useState([]);
+  const {}
+
   return (
     <>
 <MainPanel>

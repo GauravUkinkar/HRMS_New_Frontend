@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import "./ChangePass.scss";
 import Logo from "../../assets/logo.png";
 import otpimage from "../../assets/rightimg.webp";
@@ -18,40 +18,52 @@ const ChangePass = () => {
     confirmPassword: "",
   };
 
-  const {setLoader} = useContext(UserContext)
+  const { setLoader } = useContext(UserContext);
 
-  const [searchParams] =useSearchParams();
-  const navigate = useNavigate()
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  const email = searchParams.get("email")
+  const email = searchParams.get("email");
 
   const updatePassword = async () => {
     try {
-      setLoader(true)
-      const response = await axios.put(`${BASE_URL}AuthController/updatePassword`,{
-        email:email,
-        newPassword:values.newPassword,
-        confirmPassword:values.confirmPassword
-      });
+      setLoader(true);
+      const response = await axios.put(
+        `${BASE_URL}AuthController/updatePassword`,
+        {
+          email: email,
+          newPassword: values.newPassword,
+          confirmPassword: values.confirmPassword,
+        },
+      );
 
       console.log(response);
-      if(response?.status === 200){
+      if (response?.status === 200) {
         toast.success("Password Changed Successfully");
         setValues({
-           newPassword: "",
-    confirmPassword: "",
+          newPassword: "",
+          confirmPassword: "",
         });
-        navigate("/login")
+        navigate("/login");
       }
     } catch (error) {
       console.log(error.response);
-      if(error?.response?.data?.responseMessage){
-        toast.error(error?.response?.data?.responseMessage)
+      if (error?.response?.data?.responseMessage) {
+        toast.error(error?.response?.data?.responseMessage);
       }
-    }finally{
-      setLoader(false)
+      if(error?.response?.data?.newPassword === "{invalid.password}"){
+        toast.error("Password must contain at least 8 characters, including uppercase, lowercase, number and special character.");
+      }
+    } finally {
+      setLoader(false);
     }
   };
+   useEffect(() => {
+      if (!email){
+        navigate("/login")
+      }
+  
+    },[searchParams])
 
   const {
     handleChange,
@@ -64,8 +76,6 @@ const ChangePass = () => {
     isSubmitting,
   } = UseForm(formObj, validatePassword, updatePassword);
 
-  
-
   return (
     <>
       <div className="password-parent parent">
@@ -76,11 +86,6 @@ const ChangePass = () => {
             </div>
             <div className="pass-des">
               <h1>Change Password</h1>
-              <p>
-                Please enter the 6-digit One Time <br /> Password sent to your
-                email <br />
-                <p className="mail">{email}</p>
-              </p>
             </div>
 
             <div className="inputs">
@@ -120,10 +125,10 @@ const ChangePass = () => {
             <button className="btn" type="submit">
               Submit
             </button>
-            <div className="links">
-              <Link to="/otpverification">Back To Previous Screen</Link>
-              <Link>Cancel</Link>
-            </div>
+
+            <Link to="/login" className="login-link">
+              Back to Login
+            </Link>
           </form>
           <div className="right">
             <img src={otpimage} alt="otpimage" />
