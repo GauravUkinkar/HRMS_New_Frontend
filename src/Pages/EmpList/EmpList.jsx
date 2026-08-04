@@ -9,6 +9,8 @@ import {
 import { FaPlus } from "react-icons/fa";
 import "./EmpList.scss";
 import { Link } from "react-router-dom";
+import { SlCalender } from "react-icons/sl";
+import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const dataSource = [
   {
@@ -17,8 +19,10 @@ const dataSource = [
     empId: "#FG2354",
     department: "Development",
     designation: "Frontend Developer",
-    email: "john.smith@example.com",
     phone: "+91 9876543210",
+    dob: "15 Mar 1990",
+    address: "123, ABC Street, Mumbai",
+    email: "john.smith@example.com",
     location: "Mumbai",
     joining: "12 Jan 2023",
     salary: "$4500",
@@ -30,8 +34,10 @@ const dataSource = [
     empId: "#FG2355",
     department: "Human Resources",
     designation: "HR Manager",
-    email: "sarah@example.com",
     phone: "+91 9123456780",
+    dob: "22 Jul 1985",
+    address: "456, XYZ Avenue, Delhi",
+    email: "sarah@example.com",
     location: "Delhi",
     joining: "20 Feb 2022",
     salary: "$5200",
@@ -43,8 +49,10 @@ const dataSource = [
     empId: "#FG2356",
     department: "Finance",
     designation: "Accountant",
-    email: "michael@example.com",
     phone: "+91 9988776655",
+    dob: "05 Nov 1988",
+    address: "789, PQR Lane, Pune",
+    email: "michael@example.com",
     location: "Pune",
     joining: "10 Mar 2021",
     salary: "$4000",
@@ -56,8 +64,10 @@ const dataSource = [
     empId: "#FG2357",
     department: "Marketing",
     designation: "Marketing Lead",
-    email: "emily@example.com",
     phone: "+91 9000011111",
+    dob: "30 Jan 1992",
+    address: "321, LMN Road, Bangalore",
+    email: "emily@example.com",
     location: "Bangalore",
     joining: "15 Jun 2022",
     salary: "$4800",
@@ -69,8 +79,10 @@ const dataSource = [
     empId: "#FG2358",
     department: "Sales",
     designation: "Sales Executive",
-    email: "david@example.com",
     phone: "+91 9555566666",
+    dob: "18 Sep 1987",
+    address: "654, STU Street, Hyderabad",
+    email: "david@example.com",
     location: "Hyderabad",
     joining: "05 Sep 2023",
     salary: "$3800",
@@ -136,21 +148,18 @@ const columns = [
     dataIndex: "phone",
     width: 180,
   },
+
   {
-    title: "Location",
-    dataIndex: "location",
-    width: 180,
-  },
-  {
-    title: "Joining Date",
-    dataIndex: "joining",
-    width: 180,
-  },
-  {
-    title: "Salary",
-    dataIndex: "salary",
+    title: "DOB",
+    dataIndex: "dob",
     width: 150,
   },
+  {
+    title: "Address",
+    dataIndex: "address",
+    width: 150,
+  },
+
   {
     title: "Status",
     dataIndex: "status",
@@ -168,6 +177,7 @@ const columns = [
         <EyeOutlined className="view" />
         <EditOutlined className="edit" />
         <DeleteOutlined className="delete" />
+        <SlCalender className="date" />
       </Space>
     ),
   },
@@ -175,24 +185,32 @@ const columns = [
 
 const EmpList = () => {
   return (
-    <div className="emp-list">
-      <div className="page-header">
-        <h2>Employees</h2>
+    <MainPanel>
+      <div className="emp-list">
+        <div className="page-header">
+          <h2>Employees</h2>
 
-     <Link to="/addEmployee"><span> <FaPlus /></span> Add Employee</Link>
+          <Link to="/addEmployee">
+            <span>
+              {" "}
+              <FaPlus />
+            </span>{" "}
+            Add Employee
+          </Link>
+        </div>
+
+        <Table
+          columns={columns}
+          dataSource={dataSource}
+          bordered
+          scroll={{ x: "max-content" }}
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: true,
+          }}
+        />
       </div>
-
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        bordered
-        scroll={{ x: "max-content" }}
-        pagination={{
-          pageSize: 5,
-          showSizeChanger: true,
-        }}
-      />
-    </div>
+    </MainPanel>
   );
 };
 
