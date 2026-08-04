@@ -1,0 +1,93 @@
+.emp-list {
+  padding: 24px;
+  background: #f6f8fb;
+  min-height: 100vh;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    a {
+      background: #0b8b95;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 5px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap:10px;
+
+      span {
+       
+        display: flex;
+        align-items: center;
+      }
+
+      &:hover {
+        background: #0a7a85;
+      }
+    }
+  }
+
+  .ant-table {
+    background: white;
+    border-radius: 10px;
+  }
+
+  .ant-table-thead > tr > th {
+    background: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+
+    .anticon {
+      margin-left: 5px;
+      color: #0b8b95;
+    }
+  }
+
+  .avatar {
+    background: #0b8b95;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .view,
+  .edit,
+  .delete {
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .view {
+    color: #6b7280;
+  }
+
+  .edit {
+    color: #0b8b95;
+  }
+
+  .delete {
+    color: #ff4d4f;
+  }
+
+  .ant-tag {
+    border-radius: 20px;
+    padding: 2px 12px;
+  }
+
+  .ant-pagination-item-active {
+    border-color: #0b8b95;
+
+    a {
+      color: #0b8b95;
+    }
+  }
+}
