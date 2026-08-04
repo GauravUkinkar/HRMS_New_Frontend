@@ -3,6 +3,7 @@ import { lazy } from "react";
 
 
 
+const LeaveManagement = lazy(() => import("./Pages/Leavemanagement/Leavemanagement"));
 const EmpList = lazy(() => import("./Pages/EmpList/EmpList"));
 const AddEmployee = lazy(() => import("../src/Pages/AddEmployee/AddEmployee"));
 const SalaryDetails = lazy(
@@ -69,7 +70,12 @@ export const routes = [
     comp: Generatesalary,
     adminonly: true,
   },
- 
+ {
+    name: "LeaveManagement",
+    path: "/LeaveManagement",
+    comp: LeaveManagement,
+    adminonly: false,
+  },
  
  
   
