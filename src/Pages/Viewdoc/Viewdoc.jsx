@@ -7,7 +7,7 @@ import { MdOutlinePreview } from "react-icons/md";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 const Viewdoc = () => {
   const [documents, setDocuments] = useState([]);
-  const {}
+
 
   return (
     <>
