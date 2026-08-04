@@ -1,6 +1,10 @@
 .leave-container {
   background: var(--white);
+
   padding: 20px;
+  display: flex;
+    flex-direction: column;
+    gap: 100px;
 
   h2 {
     font-size: 38px;

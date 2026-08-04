@@ -6,6 +6,14 @@ import "./LeaveManagement.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const leaveData = [
+    {
+    key: 1,
+    leaveType: "Sick Leave",
+    from: "Jan 14 2025",
+    to: "Jan 19 2025",
+    days: 5,
+    status: "Pending",
+  },
   {
     key: 2,
     leaveType: "Sick Leave",
