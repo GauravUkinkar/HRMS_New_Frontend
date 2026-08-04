@@ -208,6 +208,9 @@ const EmpList = () => {
             pageSize: 5,
             showSizeChanger: true,
           }}
+           rowClassName={(_, index) =>
+    index % 2 === 0 ? "table-row-light" : "table-row-dark"
+  }
         />
       </div>
     </MainPanel>
