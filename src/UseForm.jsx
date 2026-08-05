@@ -11,8 +11,10 @@ const handleChange = (e) => {
   setValues((prev) => ({
     ...prev,
     [name]: type === "file" ? files[0] : value, // Don't trim here
+  
   }));
 };
+
 
 const handleBlur = (e) => {
   const { name, value } = e.target;

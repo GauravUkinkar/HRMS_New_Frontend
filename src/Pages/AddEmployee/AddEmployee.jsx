@@ -45,6 +45,10 @@ const AddEmployee = () => {
     email: "",
     password: "",
     role: "",
+    bloodGroup: "",
+    crmRole: "",
+    managerName: "",
+    teamName: "",
   };
 
   const addEmployee = async () => {
@@ -244,6 +248,26 @@ const AddEmployee = () => {
                   label="Pan No"
                   required
                 />
+                <SelectInput
+                  error={error.bloodGroup}
+                  name="bloodGroup"
+                  value={values.bloodGroup}
+                  onChange={handleChange}
+                  label="Blood Group"
+                  required
+                >
+                  <MenuItem value="A+">A+</MenuItem>
+                  <MenuItem value="A-">A-</MenuItem>
+
+                  <MenuItem value="B+">B+</MenuItem>
+                  <MenuItem value="B-">B-</MenuItem>
+
+                  <MenuItem value="AB+">AB+</MenuItem>
+                  <MenuItem value="AB-">AB-</MenuItem>
+
+                  <MenuItem value="O+">O+</MenuItem>
+                  <MenuItem value="O-">O-</MenuItem>
+                </SelectInput>
                 <Input
                   error={error.address}
                   name="address"
@@ -275,6 +299,15 @@ const AddEmployee = () => {
                   label="Emergency Contact No"
                   required
                 />
+                <SelectInput
+                  label="Emergency Contact Person Relation"
+                  name="Emergency Contact Person Relation"
+                >
+                  <MenuItem value="Admin">Father </MenuItem>
+                  <MenuItem value="SuperAdmin">Mother </MenuItem>
+                  <MenuItem value="Employee">Friend </MenuItem>
+                  <MenuItem value="Employee">Other </MenuItem>
+                </SelectInput>
                 <Input label="Emergency Contact Person Relation" />
               </div>
               <div className="form-row">
@@ -361,19 +394,37 @@ const AddEmployee = () => {
             <h1>CRM Details</h1>
             <div className="inputs">
               <div className="form-row">
-                <SelectInput label="CRM Role" name="Role">
+                <SelectInput
+                  error={error.crmRole}
+                  name="crmRole"
+                  value={values.crmRole}
+                  onChange={handleChange}
+                  label="CRM Role"
+                  name="crmRole"
+                  required
+
+                >
                   <MenuItem value="Admin">Admin </MenuItem>
                   <MenuItem value="SuperAdmin">Manager </MenuItem>
                   <MenuItem value="Employee">Employee </MenuItem>
                 </SelectInput>
                 <SelectInput
+                  name="managerName"
+                  value={values.managerName}
+                  onChange={handleChange}
                   label="Manager Name"
-                  name="Manager Name"
+                  name="managerName"
+                  required
+
                 ></SelectInput>
                 <SelectInput
+                  name="teamName"
+                  value={values.teamName}
+                  onChange={handleChange}
                   label="Team Name"
-                  name="Team Name"
-                ></SelectInput>
+                  name="teamName"
+                  required
+                  ></SelectInput>
               </div>
             </div>
           </div>

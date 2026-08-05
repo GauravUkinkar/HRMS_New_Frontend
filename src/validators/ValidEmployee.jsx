@@ -68,7 +68,7 @@ if (values.panNumber === "") {
   error.panNumber = "Please enter a valid PAN Number";
 }
       if(values.address ===""){
-   error.address = "Email is Required"
+   error.address = "Address is Required"
  }
        if(values.emergencyContactName ===""){
    error.emergencyContactName = "Emergency Contact name is Required"
@@ -95,6 +95,18 @@ if (values.accountNumber === "") {
 }
              if(values.ifscCode ===""){
    error.ifscCode = "IFSC Code is Required"
+ }
+              if(values.bloodGroup ===""){
+   error.bloodGroup = "Blood Group is Required"
+ }
+               if(values.managerName ===""){
+   error.managerName = "Manager Name is Required"
+ }
+               if(values.crmRole ===""){
+   error.crmRole = "CRM Role is Required"
+ }
+               if(values.teamName ===""){
+   error.teamName = "Team Name is Required"
  }
  return error
 }
