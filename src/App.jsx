@@ -11,6 +11,7 @@ import Forgot from "./Pages/Forgot/Forgot";
 import Loader from "./comp/Loader/Loader";
 import { useContext } from "react";
 import { UserContext } from "../Context";
+import LeaveApplication from "./Pages/LeaveApplication/LeaveApplication";
 
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
    { loader && <Loader/>}
       <Routes>
        
-
+ <Route path="/LeaveApplication" element={<LeaveApplication />} />
          <Route path="/login" element={<Login />} />
          <Route path="/otpverification" element={<OtpVerification />} />
          <Route path="/changepass" element={<ChangePass />} />
