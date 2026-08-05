@@ -19,6 +19,8 @@ const AdminDash = lazy(() => import("../src/Pages/AdminDash/AdminDash"));
 const Generatesalary = lazy(
   () => import("../src/Pages/Generatesalary/Generatesalary"),
 );
+const Attendance = lazy(() => import("./Pages/Attendence/Attendance"));
+
 
 export const routes = [
   {
@@ -76,7 +78,13 @@ export const routes = [
     comp: LeaveManagement,
     adminonly: false,
   },
- 
+   {
+    name: "Attendance",
+    path: "/attendance",
+    comp: Attendance,
+    adminonly: true,
+  },
+ ``
  
   
 

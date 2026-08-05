@@ -112,6 +112,44 @@
       box-shadow: var(--shadow);
       border-radius: 5px;
       padding: 10px 20px;
+      overflow-y: scroll;
+      .card-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        padding: 10px 0px;
+        align-items: center;
+        justify-content: center;
+        
+        .card {
+          background-color: #d4f2f0;
+          padding: 10px 20px;
+          border-radius: 5px;
+          flex-direction: column;
+          gap: 5px;
+        
+          .title {
+            display: flex;
+            gap: 10px;
+            svg {
+              color: var(--accent);
+            }
+            h5 {
+              color: var(--accent);
+            }
+          }
+          .des {
+            p {
+              font-size: 14px;
+            }
+          }
+          .task {
+            p {
+              font-size: 12px;
+            }
+          }
+        }
+      }
     }
   }
   .right {
@@ -134,8 +172,7 @@
       h1 {
         color: var(--accent);
       }
- 
-      
+
       .bottom {
         width: 100%;
         display: flex;
@@ -188,11 +225,10 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        
-       
+
         .name {
           display: flex;
-           gap: var(--unit);
+          gap: var(--unit);
           .user-avatar {
             display: flex;
             align-items: center;
@@ -217,11 +253,9 @@
           }
         }
         .date {
-          p{
+          p {
             font-weight: 500;
-
           }
-          
         }
       }
     }

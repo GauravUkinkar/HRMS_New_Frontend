@@ -329,11 +329,11 @@ const AddEmployee = () => {
                   required
                 />
                 <Input
-                
                   name="uanNo"
                   value={values.uanNo}
                   onChange={handleChange}
-                label="UAN Number" />
+                  label="UAN Number"
+                />
               </div>
               <div className="form-row">
                 <Input
@@ -354,6 +354,26 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   label="Policy Number"
                 />
+              </div>
+            </div>
+          </div>
+          <div className="crmdetails">
+            <h1>CRM Details</h1>
+            <div className="inputs">
+              <div className="form-row">
+                <SelectInput label="CRM Role" name="Role">
+                  <MenuItem value="Admin">Admin </MenuItem>
+                  <MenuItem value="SuperAdmin">Manager </MenuItem>
+                  <MenuItem value="Employee">Employee </MenuItem>
+                </SelectInput>
+                <SelectInput
+                  label="Manager Name"
+                  name="Manager Name"
+                ></SelectInput>
+                <SelectInput
+                  label="Team Name"
+                  name="Team Name"
+                ></SelectInput>
               </div>
             </div>
           </div>

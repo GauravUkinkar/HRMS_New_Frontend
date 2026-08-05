@@ -2,9 +2,10 @@ import React from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./AdminDash.scss";
 import { IoDocumentTextSharp } from "react-icons/io5";
-import { CiMenuKebab } from "react-icons/ci";
+import { FaPlus } from "react-icons/fa";
 import Calender from "../../comp/Calender/Calender";
 import { FaBirthdayCake } from "react-icons/fa";
+import { FaCode } from "react-icons/fa";
 
 const AdminDash = () => {
   return (
@@ -43,7 +44,7 @@ const AdminDash = () => {
             <div className="left3">
               <div className="top">
                 <h3>Notification</h3>
-                <CiMenuKebab />
+                <FaPlus />
               </div>
               <div className="card">
                 <div className="heading">Pramotion Review</div>
@@ -66,7 +67,80 @@ const AdminDash = () => {
             <div className="middle2"></div>
             <div className="middle3">
               <h3>Team Status Overview</h3>
-
+              <div className="card-wrapper">
+                <div className="card">
+                  <div className="title">
+                    <FaCode />
+                    <h5>Website team</h5>
+                  </div>
+                  <div className="des">
+                    <p>Total Members: 8</p>
+                  </div>
+                  <div className="task">
+                    <p>New HRMS developement</p>
+                  </div>
+                </div>
+                <div className="card">
+                  <div className="title">
+                    <FaCode />
+                    <h5>Website team</h5>
+                  </div>
+                  <div className="des">
+                    <p>Total Members: 8</p>
+                  </div>
+                  <div className="task">
+                    <p>New HRMS developement</p>
+                  </div>
+                </div>
+                                <div className="card">
+                  <div className="title">
+                    <FaCode />
+                    <h5>Website team</h5>
+                  </div>
+                  <div className="des">
+                    <p>Total Members: 8</p>
+                  </div>
+                  <div className="task">
+                    <p>New HRMS developement</p>
+                  </div>
+                </div>
+                                <div className="card">
+                  <div className="title">
+                    <FaCode />
+                    <h5>Website team</h5>
+                  </div>
+                  <div className="des">
+                    <p>Total Members: 8</p>
+                  </div>
+                  <div className="task">
+                    <p>New HRMS developement</p>
+                  </div>
+                </div>
+                                <div className="card">
+                  <div className="title">
+                    <FaCode />
+                    <h5>Website team</h5>
+                  </div>
+                  <div className="des">
+                    <p>Total Members: 8</p>
+                  </div>
+                  <div className="task">
+                    <p>New HRMS developement</p>
+                  </div>
+                </div>
+                                <div className="card">
+                  <div className="title">
+                    <FaCode />
+                    <h5>Website team</h5>
+                  </div>
+                  <div className="des">
+                    <p>Total Members: 8</p>
+                  </div>
+                  <div className="task">
+                    <p>New HRMS developement</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div className="right">
