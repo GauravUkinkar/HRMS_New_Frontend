@@ -207,7 +207,13 @@ const AddEmployee = () => {
                   error={error.contactNumber}
                   name="contactNumber"
                   value={values.contactNumber}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    e.target.value = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10);
+
+                    handleChange(e);
+                  }}
                   label="Contact Number"
                   required
                 />
@@ -244,7 +250,14 @@ const AddEmployee = () => {
                   error={error.panNumber}
                   name="panNumber"
                   value={values.panNumber}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    e.target.value = e.target.value
+                      .toUpperCase()
+                      .replace(/[^A-Z0-9]/g, "")
+                      .slice(0, 10); 
+
+                    handleChange(e);
+                  }}
                   label="Pan No"
                   required
                 />
@@ -295,7 +308,13 @@ const AddEmployee = () => {
                   error={error.emergencyContactNumber}
                   name="emergencyContactNumber"
                   value={values.emergencyContactNumber}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    e.target.value = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10);
+
+                    handleChange(e);
+                  }}
                   label="Emergency Contact No"
                   required
                 />
@@ -364,7 +383,13 @@ const AddEmployee = () => {
                 <Input
                   name="uanNo"
                   value={values.uanNo}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    e.target.value = e.target.value
+                      .replace(/\D/g, "") 
+                      .slice(0, 12);     
+
+                    handleChange(e);
+                  }}
                   label="UAN Number"
                 />
               </div>
@@ -424,7 +449,7 @@ const AddEmployee = () => {
                   label="Team Name"
                   name="teamName"
                   required
-                  ></SelectInput>
+                ></SelectInput>
               </div>
             </div>
           </div>
