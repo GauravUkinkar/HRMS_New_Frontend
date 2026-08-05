@@ -240,7 +240,13 @@ const AddEmployee = () => {
                   error={error.aadharNumber}
                   name="aadharNumber"
                   value={values.aadharNumber}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    e.target.value = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 12);
+
+                    handleChange(e);
+                  }}
                   label="Aadhar No"
                   required
                 />
@@ -254,7 +260,7 @@ const AddEmployee = () => {
                     e.target.value = e.target.value
                       .toUpperCase()
                       .replace(/[^A-Z0-9]/g, "")
-                      .slice(0, 10); 
+                      .slice(0, 10);
 
                     handleChange(e);
                   }}
@@ -320,14 +326,14 @@ const AddEmployee = () => {
                 />
                 <SelectInput
                   label="Emergency Contact Person Relation"
-                  name="Emergency Contact Person Relation"
+                  name="emergencyContactRelation"
                 >
                   <MenuItem value="Admin">Father </MenuItem>
                   <MenuItem value="SuperAdmin">Mother </MenuItem>
                   <MenuItem value="Employee">Friend </MenuItem>
                   <MenuItem value="Employee">Other </MenuItem>
                 </SelectInput>
-                <Input label="Emergency Contact Person Relation" />
+               
               </div>
               <div className="form-row">
                 <Input label="Emergency Contact Person Address" />
@@ -385,8 +391,8 @@ const AddEmployee = () => {
                   value={values.uanNo}
                   onChange={(e) => {
                     e.target.value = e.target.value
-                      .replace(/\D/g, "") 
-                      .slice(0, 12);     
+                      .replace(/\D/g, "")
+                      .slice(0, 12);
 
                     handleChange(e);
                   }}
