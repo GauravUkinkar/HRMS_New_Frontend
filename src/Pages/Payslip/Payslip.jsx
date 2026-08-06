@@ -20,31 +20,31 @@ const Payslip = () => {
         </div>
 
         <div className="summary">
-          <div className="left">
-            <h4>EMPLOYEE SUMMARY</h4>
-
-            <p>
-              <strong>Employee Name :</strong> Rohan Prakash Deshmukh
-            </p>
-            <p>
-              <strong>Employee ID :</strong> PSPI4321
-            </p>
-            <p>
-              <strong>Pay Date :</strong> 7 JUNE 2025
-            </p>
-            <p>
-              <strong>Bank Name :</strong> HDFC Bank
-            </p>
-            <p>
-              <strong>Account No. :</strong> 233232332333233
-            </p>
-            <p>
-              <strong>PAN No. :</strong> EQPY3213F
-            </p>
-            <p>
-              <strong>UAN No. :</strong> 12343545665434
-            </p>
+         <div className="left">
+          <h4>EMPLOYEE SUMMARY</h4>
+          <div className="personal-info">
+            <div className="left-info">
+              <p>Employee Name</p>
+               <p>Employee ID</p>
+                <p>Pay Date</p>
+                 <p>Bank Name</p>
+                  <p>Account No.</p>
+                  <p>PAN No.</p>
+                  <p>UAN No.</p>
+              
+            </div>
+            <div className="right-info">
+              <p>: Rohan Prakash Deshmukh</p>
+              <p>: PSPL3322</p>
+              <p>: 7 JULY 2026</p>
+              <p>: IDBI Bank</p>
+              <p>: 34343434343433</p>
+              <p>: DXSP344344C</p>
+              <p>: Not Added</p>
+             
+            </div>
           </div>
+         </div>
 
           <div className="right">
             <div className="netpay">
@@ -59,23 +59,23 @@ const Payslip = () => {
               </div>
               <div className="day">
                 <SlCalender className="calender" />
-                <p> Paid Days : 26</p>
+                <p> LOP Days : 2</p>
               </div>
             </div>
           </div>
         </div>
 
-        
         <div className="tables">
           <div className="table-card">
             <h4>EARNINGS</h4>
-
             <div className="table-header">
               <span>Particulars</span>
               <span>Amount (Rs)</span>
             </div>
 
-            <div className="row">
+          <div className="middle">
+             <div className="basic-earning">
+             <div className="row">
               <span>Basic</span>
               <span>70,000.00</span>
             </div>
@@ -88,24 +88,18 @@ const Payslip = () => {
               <span>2,000.00</span>
             </div>
             <div className="row">
-              <span>Conveyance Allowance</span>
-              <span>1,000.00</span>
-            </div>
-            <div className="row">
-              <span>Medical Allowance</span>
-              <span>1,000.00</span>
-            </div>
-            <div className="row">
-              <span>Special Allowance</span>
+              <span>Other Allowance</span>
               <span>2,000.00</span>
             </div>
+           </div>
 
             <div className="total">
               <span>GROSS EARNINGS</span> <span>Rs 85,505.00</span>
             </div>
           </div>
+          </div>
 
-          {/* DEDUCTION */}
+         
           <div className="table-card">
             <h4>DEDUCTION</h4>
 
@@ -114,7 +108,9 @@ const Payslip = () => {
               <span>Amount (Rs)</span>
             </div>
 
-            <div className="row">
+     <div className="middle">
+        <div className="basic-earning">
+             <div className="row">
               <span>Professional Tax</span>
               <span>70,000.00</span>
             </div>
@@ -142,26 +138,30 @@ const Payslip = () => {
               <span>Insurance</span>
               <span>0.00</span>
             </div>
+       </div>
 
-            <div className="total"><span>GROSS DEDUCTIONS</span> <span>Rs 5,505.00</span></div>
+            <div className="total">
+              <span>TOTAL DEDUCTIONS</span> <span>Rs 5,505.00</span>
+            </div>
+     </div>
           </div>
         </div>
 
-        {/* TOTAL */}
         <div className="net-total">
           <div className="total-final">
             <h4>TOTAL NETPAYABLE</h4>
             <p>Gross Earnings - Total Deduction</p>
           </div>
-         <div className="total-amount">
-           <h2>Rs 82,000.00</h2>
-         </div>
+          <div className="total-amount">
+            <h2>Rs 80,000.00</h2>
+          </div>
         </div>
 
-       <button className="Download-btn">
-                 <IoMdDownload /> Download PDF
-               </button>
-        
+        <div className="download">
+          <button>
+          <IoMdDownload /> Download PDF
+        </button>
+        </div>
       </div>
     </div>
   );
