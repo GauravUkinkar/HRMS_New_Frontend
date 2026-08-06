@@ -17,6 +17,7 @@ const UploadDoc = () => {
               <Input label="UID" required={true} />
             </div>
             <div className="form-row">
+  
               <FileUpload
                 label="Aadhar Card"
                 required
