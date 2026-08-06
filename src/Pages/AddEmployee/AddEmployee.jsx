@@ -8,6 +8,7 @@ import UseForm from "../../UseForm";
 import axios from "axios";
 import { ValidateEmployee } from "../../validators/ValidEmployee";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
@@ -67,6 +68,13 @@ const AddEmployee = () => {
           withCredentials: true,
         }
       );
+
+      toast.success("Employee added successfully!");
+
+      // Clear form
+      setValues(formObj);
+      setError({});
+
       console.log(response.data);
     } catch (error) {
       console.log(error);
@@ -139,9 +147,9 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   label="Role"
                 >
-                  <MenuItem value="Admin">Admin </MenuItem>
-                  <MenuItem value="SuperAdmin">SuperAdmin </MenuItem>
-                  <MenuItem value="Employee">Employee </MenuItem>
+                  <MenuItem value="ADMIN">Admin </MenuItem>
+                  <MenuItem value="SUPERADMIN">SuperAdmin </MenuItem>
+                  <MenuItem value="EMPLOYEE">Employee </MenuItem>
                 </SelectInput>
               </div>
               <div className="form-row">
@@ -470,9 +478,9 @@ const AddEmployee = () => {
                   required
 
                 >
-                  <MenuItem value="Admin">Admin </MenuItem>
-                  <MenuItem value="Manager">Manager </MenuItem>
-                  <MenuItem value="Employee">Employee </MenuItem>
+                  <MenuItem value="ADMIN">Admin </MenuItem>
+                  <MenuItem value="MANAGER">Manager </MenuItem>
+                  <MenuItem value="EMPLOYEE">Employee </MenuItem>
                 </SelectInput>
                 <SelectInput
                   error={error.managerName}
@@ -497,7 +505,6 @@ const AddEmployee = () => {
                   value={values.teamName}
                   onChange={handleChange}
                   label="Team Name"
-                  name="teamName"
                   required
                 >
                   {teams.map((team) => (
