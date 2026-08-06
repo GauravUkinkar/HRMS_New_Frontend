@@ -19,16 +19,15 @@ const Input = ({
   icon,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const types = ["date","file"]
+  const types = ["date", "file"];
 
   return (
     <div className="input">
       {mq_label && <div className="mq_label">{mq_label} </div>}
       {icon && <span className="left-icon">{icon}</span>}
-      { types.includes(type) && (
+      {types.includes(type) && (
         <label className="date-label">{required ? `${label} *` : label}</label>
       )}
-
 
       <TextField
         error={!!error}
@@ -49,43 +48,68 @@ const Input = ({
         sx={{
           "& input": {
             color: text_color || "#000",
-            paddingLeft:
-              types.includes(type)
-                ? "14px"
-                : icon
-                  ? "52px"
-                  : mq_label
-                    ? "10%"
-                    : "10px",
+            paddingLeft: types.includes(type)
+              ? "14px"
+              : icon
+                ? "52px"
+                : mq_label
+                  ? "10%"
+                  : "10px",
           },
 
           "& .MuiInputLabel-root": {
             color: lb_color || "black",
             // padding:"0px 20px",
-            marginLeft:
-              types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10%" : "10px",
+            marginLeft: types.includes(type)
+              ? 0
+              : icon
+                ? "28px"
+                : mq_label
+                  ? "10%"
+                  : "10px",
           },
 
           "& .MuiInputLabel-root.Mui-focused": {
             color: fc_color || "var(--accent)",
-            
-            left:
-              types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10px" : "10px",
+
+            left: types.includes(type)
+              ? 0
+              : icon
+                ? "28px"
+                : mq_label
+                  ? "10px"
+                  : "10px",
           },
 
           "& .MuiOutlinedInput-notchedOutline legend": {
             marginLeft: types.includes(type) ? 0 : mq_label ? "10%" : "10px",
           },
 
+          "& .MuiInputLabel-root": {
+            color: lb_color || "rgba(0,0,0,0.6)",
+            marginLeft: types.includes(type)
+              ? 0
+              : icon
+                ? "28px"
+                : mq_label
+                  ? "10%"
+                  : "10px",
+          },
+
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: fc_color || "rgba(0,0,0,0.6)",
+          },
+
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
-              borderColor: bd_color || "black",
+              borderColor: bd_color || "rgba(0,0,0,0.23)",
             },
             "&:hover fieldset": {
-              borderColor: fc_color || "var(--accent)",
+              borderColor: bd_color || "rgba(0,0,0,0.4)",
             },
             "&.Mui-focused fieldset": {
-              borderColor: fc_color || "var(--accent)",
+              borderColor: fc_color || "#1976d2",
+              borderWidth: "2px",
             },
           },
         }}
