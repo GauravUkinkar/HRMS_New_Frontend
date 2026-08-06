@@ -1,6 +1,7 @@
 import { lazy } from "react";
 
 
+const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
 
 
 const LeaveManagement = lazy(() => import("./Pages/Leavemanagement/Leavemanagement"));
@@ -84,7 +85,13 @@ export const routes = [
     comp: Attendance,
     adminonly: true,
   },
- ``
+  {
+    name: "Payslip",
+    path: "/Payslip",
+    comp: Payslip,
+    adminonly: false,
+  },
+ 
  
   
 
