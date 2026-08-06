@@ -8,126 +8,178 @@
   .payslip-container {
     background: var(--white);
     padding: 10px;
-    border: 1px solid green;
-    gap: 40px;
-  
-
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    background: var(--white);
-    padding: 15px;
-    border-radius: 10px;
     border: 1px solid #d8d5d5;
-
-     .month {
-    text-align: right;
-
-    h3 {
-    color: #0f7c7c;
-  }
-  }
-  }
-
-  /* SUMMARY */
-  .summary {
     display: flex;
-    justify-content: space-between;
-
-     .left {
-    width: 60%;
-    display: flex;
-  flex-direction: column;
-  gap: 5px;
-  border: 1px solid red;
-  }
-
-  .right {
-    width: 35%;
-    border: 1px solid red;
-    display: flex;
-  flex-direction: column;
-  gap: 5px;
-
-
-  .netpay {
-    background: var(--accent2);
-    color: var(--white);
-    padding: 10px;
-    border-radius: 10px;
-    text-align: center;
-  }
-
-  .days {
-    background: var(--white);
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid green;
-  }
-  }
-  }
-
- 
-
-  
-
-  /* TABLES */
-  .tables {
-    display: flex;
+    flex-direction: column;
+    justify-content: center;
     gap: 20px;
-  }
 
-  .table-card {
-    background: var(--white);
-    padding: 15px;
-    border-radius: 10px;
-    width: 50%;
-  }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      background: var(--white);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #d8d5d5;
 
-  .table-header {
-    display: flex;
-    justify-content: space-between;
-    background: var(--white);
-    padding: 8px;
-    border-radius: 5px;
-  }
+      .month {
+        text-align: right;
 
-  .row {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 0;
-  }
+        h3 {
+          color: #0f7c7c;
+        }
+      }
+    }
 
-  .total {
-    padding: 8px;
-    background: var(--white);
-    border-radius: 5px;
-    font-weight: bold;
-  }
+    .summary {
+      display: flex;
+      justify-content: space-between;
 
-  /* TOTAL NET */
-  .net-total {
-    display: flex;
-    justify-content: space-between;
+      .left {
+        width: 60%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .right {
+        width: 35%;
+        border-radius: 10px;
+        border: 1px solid #d8d5d5;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .netpay {
+          background: var(--accent2);
+          color: var(--white);
+          padding: 10px;
+          border-radius: 10px 10px 0px 0px;
+          text-align: center;
+        }
+
+        .days {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          // gap: 10px;
+          border-radius: 10px;
+
+          .day {
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding-bottom: 10px;
+
+            .one {
+              border-bottom: 1px solid rgb(55, 0, 255);
+            }
+          }
+        }
+      }
+    }
+
+    .tables {
+      display: flex;
+      gap: 20px;
+      border: 1px solid #d8d5d5;
+      border-radius: 10px;
+
+      .table-card {
+        background: var(--white);
+        padding: 10px;
+        width: 50%;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .table-header {
+          display: flex;
+          border: 1px solid var(--accent2);
+          justify-content: space-between;
+          padding: 10px;
+          border-radius: 10px;
+          background: #d3e4e6;
+
+          span {
+            color: var(--accent2);
+            font-size: 14px;
+          }
+        }
+
+        .row {
+          display: flex;
+          justify-content: space-between;
+        }
+        .total {
+          display: flex;
+          border: 1px solid var(--accent2);
+          justify-content: space-between;
+          padding: 10px;
+          border-radius: 10px;
+          background: #d3e4e6;
+
+          span {
+            color: var(--accent2);
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    /* TOTAL NET */
+    .net-total {
+      display: flex;
+      justify-content: space-between;
+      border-radius: 10px;
+      border: 1px solid var(--accent2);
+      .total-final {
+        width: 60%;
+        padding: 14px;
+        border-radius: 10px;
+
+        h4 {
+          color: var(--accent2);
+        }
+        p {
+          color: var(--black);
+          font-size: 12px;
+        }
+      }
+      .total-amount {
+        background: var(--accent2);
+        width: 40%;
+        padding: 14px;
+        border-radius: 0px 10px 10px 0px;
+        border: 1px solid var(--accent2);
+
+        h2 {
+          color: var(--white);
+        }
+      }
+    }
+.Download-btn {
     background: var(--accent2);
     color: var(--white);
-    padding: 15px;
-    border-radius: 10px;
-  }
-
-  /* BUTTON */
-  .download {
-    text-align: center;
-  }
-
-  .download button {
-    background: var(--accent2);
-    color: var(--white);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+    border: 1px solid var(--accent2);
+    padding: 8px 20px;
+    border-radius: 5px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
     cursor: pointer;
+    transition: var(--trans);
+
+    &:hover {
+      background: var(--accent);
+    }
   }
-}
+   
+  }
 }
