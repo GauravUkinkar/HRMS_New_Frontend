@@ -1,30 +1,28 @@
 .employee-parent {
   display: flex;
   flex-direction: column;
-  gap: 50px;
-      background: #00f1ff0a;
-    box-shadow: var(--shadow);
-    border-radius: 10px;
-    padding: 20px;
-
-  // padding-top:50px ;
+  gap:40px;
+  background: #e9f0f0;
+  box-shadow: var(--shadow);
+  border-radius: 10px;
+padding:20px;
+  
   .empdetails,
-  .personaldetails,.crmdetails {
+  .personaldetails,
+  .crmdetails {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 30px;
 
     h1 {
       width: 100%;
       text-align: left;
       background-color: var(--accent2);
       padding: 8px;
-      font-size: 18px;
+      font-size: 16px;
       color: white;
       border-radius: 5px;
-      box-shadow: var(--shadow);
     }
 
     .inputs {
@@ -32,11 +30,10 @@
       display: flex;
       flex-direction: column;
       gap: 40px;
-      padding: 20px 0px;
+      padding: 20px 2px;
       align-items: center;
     }
   }
-  
 
   .btn {
     width: fit-content;
@@ -44,4 +41,3 @@
     align-self: center;
   }
 }
-
