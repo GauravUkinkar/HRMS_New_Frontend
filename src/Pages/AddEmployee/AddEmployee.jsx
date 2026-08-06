@@ -7,10 +7,13 @@ import Input from "../../comp/input/Input";
 import UseForm from "../../UseForm";
 import axios from "axios";
 import { ValidateEmployee } from "../../validators/ValidEmployee";
+import { useEffect, useState } from "react";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const AddEmployee = () => {
+  const [teams, setTeams] = useState([]);
+
   const formObj = {
     employeeName: "",
     employeeId: "",
@@ -51,15 +54,39 @@ const AddEmployee = () => {
     teamName: "",
   };
 
+
+
   const addEmployee = async () => {
     try {
-      const response = await axios.post(`${BASE_URL}Admin/AddEmployee`, values);
-      console.log(response);
+
+      const response = await axios.post(
+        `${BASE_URL}Admin/AddEmployee`,
+        values,
+        {
+
+          withCredentials: true,
+        }
+      );
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
   };
+  const getTeams = async () => {
+    try {
+      // const res = await axios.get(`${BASE_URL}Admin/Team/getAllTeams`);
+      const res = await axios.get("https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams");
+      console.log(res.data, "sklfjskdlfklfsdjksdflkklsdfkjljksfd");
+      setTeams(res.data);
 
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getTeams();
+  }, []);
   const {
     handleChange,
     handleSubmit,
@@ -327,16 +354,24 @@ const AddEmployee = () => {
                 <SelectInput
                   label="Emergency Contact Person Relation"
                   name="emergencyContactRelation"
+                  value={values.emergencyContactRelation}
+                  onChange={handleChange}
+                  required
                 >
-                  <MenuItem value="Admin">Father </MenuItem>
-                  <MenuItem value="SuperAdmin">Mother </MenuItem>
-                  <MenuItem value="Employee">Friend </MenuItem>
-                  <MenuItem value="Employee">Other </MenuItem>
+                  <MenuItem value="Father">Father</MenuItem>
+                  <MenuItem value="Mother">Mother</MenuItem>
+                  <MenuItem value="Friend">Friend</MenuItem>
+                  <MenuItem value="Other">Other</MenuItem>
                 </SelectInput>
-               
+
               </div>
               <div className="form-row">
-                <Input label="Emergency Contact Person Address" />
+                <Input label="Emergency Contact Person Address"
+                  name="emergencyContactAddress"
+                  value={values.emergencyContactAddress}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             </div>
           </div>
@@ -436,18 +471,27 @@ const AddEmployee = () => {
 
                 >
                   <MenuItem value="Admin">Admin </MenuItem>
-                  <MenuItem value="SuperAdmin">Manager </MenuItem>
+                  <MenuItem value="Manager">Manager </MenuItem>
                   <MenuItem value="Employee">Employee </MenuItem>
                 </SelectInput>
                 <SelectInput
+                  error={error.managerName}
                   name="managerName"
                   value={values.managerName}
                   onChange={handleChange}
                   label="Manager Name"
-                  name="managerName"
                   required
 
-                ></SelectInput>
+                >
+                  {teams.map((team) => (
+                    <MenuItem
+                      key={team.data.id}
+                      value={team.data.manegerName} // GET API field
+                    >
+                      {team.data.manegerName}
+                    </MenuItem>
+                  ))}
+                </SelectInput>
                 <SelectInput
                   name="teamName"
                   value={values.teamName}
@@ -455,7 +499,13 @@ const AddEmployee = () => {
                   label="Team Name"
                   name="teamName"
                   required
-                ></SelectInput>
+                >
+                  {teams.map((team) => (
+                    <MenuItem key={team.data.id} value={team.data.name}>
+                      {team.data.name}
+                    </MenuItem>
+                  ))}
+                </SelectInput>
               </div>
             </div>
           </div>
