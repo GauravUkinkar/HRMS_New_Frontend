@@ -95,7 +95,7 @@ const Input = ({
     borderColor: bd_color || "rgba(0,0,0,0.4)",
   },
   "&.Mui-focused fieldset": {
-    borderColor: fc_color || "#1976d2",
+    borderColor: fc_color || "#00615a",
     borderWidth: "2px",
   },
 },
