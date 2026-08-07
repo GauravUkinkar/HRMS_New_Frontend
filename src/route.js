@@ -22,6 +22,8 @@ const Generatesalary = lazy(
 );
 const Attendance = lazy(() => import("./Pages/Attendence/Attendance"));
 const AddSalary = lazy(() => import("./Pages/AddSalary/AddSalary"));
+const SalaryManagement = lazy(() => import("./Pages/SalaryManagement/SalaryManagement"));
+
 
 
 
@@ -99,7 +101,12 @@ export const routes = [
     comp: AddSalary,
     adminonly: true,
   },
- 
+  {
+     name: "SalaryManagement",
+    path: "/salaryManagement",
+    comp: SalaryManagement,
+    adminonly: true,
+  },
  
   
 
