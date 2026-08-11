@@ -4,7 +4,8 @@ import "./Profile.scss";
 import img1 from "../../assets/manuser.webp";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { Link } from "react-router-dom";
-
+import { SlDocs } from "react-icons/sl";
+import { MdOutlineEditNote } from "react-icons/md";
 const Profile = () => {
     const [loader, setLoader] = useState(false);
 
@@ -201,8 +202,8 @@ const Profile = () => {
                         </div>
 
                         <div className="btn-groups">
-                            <Link to="#">View Document</Link>
-                            <Link to="#">Generate Salary Slip</Link>
+                            <Link to="#"><SlDocs /><span>View Document</span></Link>
+                            <Link to="#"><MdOutlineEditNote /> <span>Generate Salary Slip</span></Link>
                         </div>
 
                     </div>

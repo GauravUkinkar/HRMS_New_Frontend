@@ -100,25 +100,33 @@
       }
     }
 
-    .btn-groups{
+    .btn-groups {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+      a {
         display: flex;
-        gap:20px;align-items: center;justify-content: center;
-        a{
-            background:var(--accent2);
-            border:1px solid var(--accent2);
-            color:white;
-            text-decoration: none;
-            border-radius:50px;
-            padding:8px 20px;
-            font-size:14px;
-            text-align: center;
-            transition:var(--trans);
-            &:hover{
-                background:white;
-                color:var(--accent2);
-            }
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: var(--accent2);
+        border: 1px solid var(--accent2);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        padding: 8px 20px;
+        font-size: 14px;
+        text-align: center;
+        transition: var(--trans);
+        span {
+          font-size: 12px;
         }
-
+        &:hover {
+          background: white;
+          color: var(--accent2);
+        }
+      }
     }
   }
   .right-side {
