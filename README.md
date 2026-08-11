@@ -9,7 +9,7 @@
 7. Before stopping work, update the final status.
 8. Mark the task as **Completed** once finished.
 
-Sheet URL- [https://docs.google.com/spreadsheets/d/1XUPHB7GntX6PVW_B6IfQASONaONbJVZob_z1sm9Wa7A/edit?usp=sharing](https://docs.google.com/spreadsheets/d/1XUPHB7GntX6PVW_B6IfQASONaONbJVZob_z1sm9Wa7A/edit?usp=sharing)
+Sheet URL- [https://docs.google.com/spreadsheets/d/1XUPHB7GntX6PVW_B6IfQASONaONbJVZob_z1sm9Wa7A/edit?usp=sharing]
 
 # HRMS Project Work Guidelines
 

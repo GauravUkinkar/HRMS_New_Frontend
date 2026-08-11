@@ -1,4 +1,5 @@
 import { lazy } from "react";
+import Profile from "./Pages/EmployeeProfile/Profile";
 
 
 const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
@@ -16,7 +17,6 @@ const EmployeeList = lazy(
   () => import("../src/Pages/EmployeeList/EmployeeList"),
 );
 const AdminDash = lazy(() => import("../src/Pages/AdminDash/AdminDash"));
-
 const Generatesalary = lazy(
   () => import("../src/Pages/Generatesalary/Generatesalary"),
 );
@@ -29,10 +29,10 @@ const SalaryManagement = lazy(() => import("./Pages/SalaryManagement/SalaryManag
 
 export const routes = [
   {
-    name:"All Employees", 
-    path:"/empList",
-    comp:EmpList, 
-    adminonly:false
+    name: "All Employees",
+    path: "/empList",
+    comp: EmpList,
+    adminonly: false
   },
 
   {
@@ -69,7 +69,7 @@ export const routes = [
     name: "AdminDash",
     path: "/",
     comp: AdminDash,
-  
+
   },
   {
     name: "Generatesalary",
@@ -77,13 +77,13 @@ export const routes = [
     comp: Generatesalary,
     adminonly: true,
   },
- {
+  {
     name: "LeaveManagement",
     path: "/LeaveManagement",
     comp: LeaveManagement,
     adminonly: false,
   },
-   {
+  {
     name: "Attendance",
     path: "/attendance",
     comp: Attendance,
@@ -95,20 +95,28 @@ export const routes = [
     comp: Payslip,
     adminonly: false,
   },
-    {
+  {
     name: "AddSalary",
     path: "/addSalary",
     comp: AddSalary,
     adminonly: true,
   },
   {
-     name: "SalaryManagement",
+    name: "SalaryManagement",
     path: "/salaryManagement",
     comp: SalaryManagement,
     adminonly: true,
   },
- 
-  
 
-  
+  // sunil Shelke
+  {
+    name:"EmployeeProfile",
+    path:"/EmployeeProfile",
+    comp:Profile, 
+    adminonly: true,
+  }
+
+
+
+
 ];

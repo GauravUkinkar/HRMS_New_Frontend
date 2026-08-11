@@ -1,0 +1,226 @@
+.top-parent {
+}
+.bottom-side {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  .left-side {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    background: white;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border-radius: 10px;
+    justify-content: center;
+    .img-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      img {
+        width: 120px;
+        background: rgba(128, 128, 128, 0.256);
+        padding: 10px;
+        border-radius: 10px;
+      }
+      .emp-name {
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .job-desc {
+        font-size: 14px;
+        margin-top: -5px;
+      }
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        .eid {
+          padding: 5px 20px;
+          background: rgba(128, 128, 128, 0.256);
+          border-radius: 50px;
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .status {
+          background: var(--accent2);
+          color: white;
+          padding: 5px 20px;
+          border-radius: 50px;
+          font-size: 14px;
+          font-weight: 600;
+        }
+      }
+    }
+    .status-content {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .row-one {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 15px 10px;
+
+        p {
+          font-size: 14px;
+          line-height: 1.4;
+        }
+
+        .label {
+          color: #555;
+          color: #333;
+          width: 35%;
+        }
+
+        span {
+          text-align: center;
+          color: #333;
+        }
+
+        .value {
+          width: 65%;
+
+          font-weight: 500;
+          a {
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--trans);
+            &:hover {
+              color: var(--accent2);
+            }
+          }
+        }
+      }
+    }
+
+    .btn-groups{
+        display: flex;
+        gap:20px;align-items: center;justify-content: center;
+        a{
+            background:var(--accent2);
+            border:1px solid var(--accent2);
+            color:white;
+            text-decoration: none;
+            border-radius:50px;
+            padding:8px 20px;
+            font-size:14px;
+            text-align: center;
+            transition:var(--trans);
+            &:hover{
+                background:white;
+                color:var(--accent2);
+            }
+        }
+
+    }
+  }
+  .right-side {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    width: 75%;
+    gap: 20px;
+    .personal-details,
+    .emergency-details,
+    .salary-details {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(0, 0, 0, 0.123);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      .heading {
+        font-size: 26px;
+        font-weight: 600;
+        padding-bottom: 10px;
+      }
+      .row-one {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        padding: 8px 10px;
+
+        p {
+          font-size: 14px;
+          line-height: 1.4;
+        }
+
+        .label {
+          color: #555;
+          color: #333;
+          width: 15%;
+        }
+
+        span {
+          text-align: center;
+          color: #333;
+        }
+
+        .value {
+          width: 85%;
+          font-weight: 500;
+          a {
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--trans);
+            &:hover {
+              color: var(--accent2);
+            }
+          }
+          .sensitive-value {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            .sensitive-text {
+              letter-spacing: 0.5px;
+            }
+
+            .eye-btn {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+              color: white;
+              border: 1px solid var(--accent2);
+              border-radius: 3px;
+              padding: 3px;
+              font-size: 17px;
+              line-height: 1;
+              background: var(--accent2);
+
+              &:hover {
+                color: black;
+              }
+
+              &:focus {
+                outline: none;
+              }
+            }
+          }
+
+          a {
+            color: inherit;
+            text-decoration: none;
+
+            &:hover {
+              color: #007bff;
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+}

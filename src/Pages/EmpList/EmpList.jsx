@@ -88,25 +88,25 @@ const columns = [
     dataIndex: "dob",
     width: 150,
   },
-{
-  title: "Address",
-  dataIndex: "address",
-  width: 250,
-  render: (address) => (
-    <span
-      style={{
-        display: "inline-block",
-        maxWidth: "20ch",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-      }}
-      title={address}
-    >
-      {address}
-    </span>
-  ),
-},
+  {
+    title: "Address",
+    dataIndex: "address",
+    width: 250,
+    render: (address) => (
+      <span
+        style={{
+          display: "inline-block",
+          maxWidth: "20ch",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+        title={address}
+      >
+        {address}
+      </span>
+    ),
+  },
 
   {
     title: "Status",
