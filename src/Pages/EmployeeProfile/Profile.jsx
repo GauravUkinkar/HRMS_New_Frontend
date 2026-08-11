@@ -176,6 +176,18 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
+                                    Gender
+                                </p>
+
+                                <span>:</span>
+
+                                <p className="value">
+                                    Male
+                                </p>
+                            </div>
+
+                            <div className="row-one">
+                                <p className="label">
                                     Blood Group
                                 </p>
 
