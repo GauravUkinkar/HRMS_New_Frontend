@@ -1,5 +1,3 @@
-.top-parent {
-}
 .bottom-side {
   width: 100%;
   display: flex;
@@ -52,6 +50,10 @@
           border-radius: 50px;
           font-size: 14px;
           font-weight: 600;
+          &.inactive {
+            background: red;
+            color: #fff;
+          }
         }
       }
     }
@@ -183,7 +185,8 @@
             cursor: pointer;
             transition: var(--trans);
             &:hover {
-              color: var(--accent2);
+              color: var(--accent2) !important;
+              text-decoration: none !important;
             }
           }
           .sensitive-value {
@@ -226,6 +229,90 @@
               color: #007bff;
               text-decoration: underline;
             }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 1400px) {
+  .bottom-side {
+    .left-side {
+      .img-group{
+        .emp-name{
+          text-align: center;
+        }
+      }
+      .status-content {
+        .row-one {
+          flex-direction: column;
+          span {
+            display: none;
+          }
+          .label,
+          .value {
+            width: 100%;
+          }
+        }
+      }
+      .btn-groups {
+        flex-direction: column;
+      }
+    }
+    .right-side {
+      .personal-details,
+      .emergency-details,
+      .salary-details {
+        .row-one {
+          .label {
+            width: 30%;
+          }
+          .value{
+            width:70%;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width:1000px){
+  .bottom-side{
+    flex-direction: column;
+    .left-side{
+      width: 100%;
+        .status-content {
+        .row-one {
+          flex-direction: row;
+          span {
+            display: block;
+          }
+          .label{
+            max-width: 110px;
+          }
+          .value {
+            width: 100%;
+          }
+        }
+      }
+      .btn-groups {
+        flex-direction: row;
+      }
+    }
+      .right-side {
+        width: 100%;
+      .personal-details,
+      .emergency-details,
+      .salary-details {
+        width: 100%;
+        .row-one {
+         
+          .label {
+            max-width: 120px;
+          }
+          .value{
+            width:100%;
           }
         }
       }
