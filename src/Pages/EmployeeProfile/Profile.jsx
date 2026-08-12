@@ -3,7 +3,7 @@ import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Profile.scss";
 import img1 from "../../assets/manuser.webp";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { SlDocs } from "react-icons/sl";
 import { MdOutlineEditNote } from "react-icons/md";
 import axios from "axios";
@@ -20,7 +20,8 @@ const Profile = () => {
     const [showPackage, setShowPackage] = useState(false);
 
     // For Employee
-    const [employeeprofile, setEmployeeProfile] = useState([]);
+    const { employeeId } = useParams();
+    const [employeeprofile, setEmployeeProfile] = useState();
     // Mask function
     const maskValue = (value, visibleCount = 4) => {
         if (!value) return "";
@@ -53,20 +54,26 @@ const Profile = () => {
     };
     const getEmployee = async () => {
         try {
-            const res = await axios.get(`${BASE_URL}Admin/GetEmployee//${employeeId}`,
+            const res = await axios.get(
+                `${BASE_URL}Admin/GetEmployee/${employeeId}`,
                 {
                     withCredentials: true,
                 }
             );
-            console.log(res.data,"lkjsdfjsdfjkjkdfskjdfsljdkfs");
-        } catch (error) {
-            console.log(error);
 
+            console.log("Employee Details:", res.data);
+            setEmployeeProfile(res.data?.data);
+        } catch (error) {
+            console.log(
+                error.response?.data || error
+            );
         }
-    }
-useEffect(()=>{
-    getEmployee();
-},[]);
+    };
+    useEffect(() => {
+        if (employeeId) {
+            getEmployee();
+        }
+    }, [employeeId]);
 
     return (
         <>
@@ -87,20 +94,20 @@ useEffect(()=>{
                             />
 
                             <div className="emp-name">
-                                Sunil Shelke
+                                {employeeprofile?.employeeName || "N/A"}
                             </div>
 
                             <div className="job-desc">
-                                WEBSITE DEVELOPER
+                                {employeeprofile?.designation || "N/A"}
                             </div>
 
                             <div className="btn-group">
                                 <div className="eid">
-                                    PSPL112233
+                                    {employeeprofile?.employeeId || "N/A"}
                                 </div>
 
                                 <div className="status">
-                                    ACTIVE
+                                    {employeeprofile?.employeeStatus || "N/A"}
                                 </div>
                             </div>
 
@@ -128,7 +135,7 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    Pandoza Solutions Pvt Ltd.
+                                    {employeeprofile?.companyName || "N/A"}
                                 </p>
                             </div>
 
@@ -140,7 +147,7 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    Technical
+                                    {employeeprofile?.department || "N/A"}
                                 </p>
                             </div>
 
@@ -152,7 +159,7 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    1 Apr 2022
+                                    {employeeprofile?.dateOfJoining || "N/A"}
                                 </p>
                             </div>
 
@@ -164,22 +171,23 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    <a href="tel:+917083445507">
-                                        7083445507
+                                    <a href={`tel:${employeeprofile?.contactNumber}`}>
+                                        {employeeprofile?.contactNumber || "N/A"}
                                     </a>
                                 </p>
                             </div>
 
                             <div className="row-one">
                                 <p className="label">
-                                    Email Id
+
+                                    Mail Id
                                 </p>
 
                                 <span>:</span>
 
                                 <p className="value">
-                                    <a href="mailto:shelkesunil072@gmail.com">
-                                        shelkesunil072@gmail.com
+                                    <a href={`mailto:${employeeprofile?.email}`}>
+                                        {employeeprofile?.email || "N/A"}
                                     </a>
                                 </p>
                             </div>
@@ -192,7 +200,7 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    1 Jan 1998
+                                    {employeeprofile?.dateOfBirth || "N/A"}
                                 </p>
                             </div>
 
@@ -204,7 +212,7 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    Male
+                                    {employeeprofile?.gender || "N/A"}
                                 </p>
                             </div>
 
@@ -216,7 +224,7 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    B+ve
+                                    {employeeprofile?.bloodGroup || "N/A"}
                                 </p>
                             </div>
 
@@ -250,7 +258,7 @@ useEffect(()=>{
 
                                 <p className="value">
                                     <SensitiveValue
-                                        value="543694185005"
+                                        value={employeeprofile?.aadharNumber || "N/A"}
                                         show={showAadhar}
                                         setShow={setShowAadhar}
                                     />
@@ -269,7 +277,7 @@ useEffect(()=>{
 
                                 <p className="value">
                                     <SensitiveValue
-                                        value="KEDPS6754F"
+                                        value={employeeprofile?.panNumber}
                                         show={showPan}
                                         setShow={setShowPan}
                                     />
@@ -350,9 +358,10 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    <a href="tel:+917878745896">
-                                        +91 7878745896
+                                    <a href={`tel:${employeeprofile?.emergencyContactNumber}`}>
+                                        {employeeprofile?.emergencyContactNumber || "N/A"}
                                     </a>
+
                                 </p>
                             </div>
 
@@ -364,7 +373,7 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    Friend
+                                    {employeeprofile?.emergencyContactRelation || "N/A"}
                                 </p>
                             </div>
 
@@ -377,12 +386,13 @@ useEffect(()=>{
 
                                 <p className="value">
                                     <a
-                                        href="https://www.google.com/maps/search/?api=1&query=Ahilyanagar%2C%20Maharashtra%2C%20India"
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                            employeeprofile?.currentAddress || ""
+                                        )}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        Lorem ipsum dolor sit amet
-                                        consectetur adipisicing elit.
+                                        {employeeprofile?.currentAddress || "N/A"}
                                     </a>
                                 </p>
                             </div>
@@ -423,7 +433,7 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    State Bank Of India
+                                    {employeeprofile?.bankName || "N/A"}
                                 </p>
                             </div>
 
@@ -435,7 +445,7 @@ useEffect(()=>{
                                 <span>:</span>
 
                                 <p className="value">
-                                    SBI0029
+                                    {employeeprofile?.ifscCode || "N/A"}
                                 </p>
                             </div>
 
@@ -451,7 +461,7 @@ useEffect(()=>{
                                 <p className="value">
 
                                     <SensitiveValue
-                                        value="123456789012"
+                                        value={employeeprofile?.accountNumber || "N/A"}
                                         show={showAccount}
                                         setShow={setShowAccount}
                                     />
@@ -469,7 +479,7 @@ useEffect(()=>{
 
                                 <p className="value">
                                     <SensitiveValue
-                                        value="₹40,000.00"
+                                        value={`₹${Number(employeeprofile?.employeeSalary || 0).toLocaleString("en-IN")} .00`}
                                         show={showSalary}
                                         setShow={setShowSalary}
                                     />
@@ -485,7 +495,7 @@ useEffect(()=>{
 
                                 <p className="value">
                                     <SensitiveValue
-                                        value="4.8 LPA"
+                                        value={`${employeeprofile?.costtoCompany || 0} LPA`}
                                         show={showPackage}
                                         setShow={setShowPackage}
                                     />
