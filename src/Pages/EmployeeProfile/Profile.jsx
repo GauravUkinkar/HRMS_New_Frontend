@@ -557,17 +557,11 @@ const Profile = () => {
                                         show={showEsic}
                                         setShow={setShowEsic}
                                     />
-
                                 </p>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </MainPanel>
         </>
     );
