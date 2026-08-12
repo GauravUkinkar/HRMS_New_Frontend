@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Profile.scss";
-import img1 from "../../assets/manuser.webp";
+import maleUser from "../../assets/manuser.webp";
+import femaleUser from "../../assets/women_user.png"
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { Link, useParams } from "react-router-dom";
 import { SlDocs } from "react-icons/sl";
@@ -15,13 +16,17 @@ const Profile = () => {
     // Sensitive information visibility
     const [showAadhar, setShowAadhar] = useState(false);
     const [showPan, setShowPan] = useState(false);
+    const [showUan, setShowUan] = useState(false);
     const [showAccount, setShowAccount] = useState(false);
     const [showSalary, setShowSalary] = useState(false);
     const [showPackage, setShowPackage] = useState(false);
+    const [showPolicy, setShowPolicy] = useState(false);
+    const [showEsic, setShowEsic] = useState(false);
 
     // For Employee
     const { employeeId } = useParams();
     const [employeeprofile, setEmployeeProfile] = useState();
+    const [imageError, setImageError] = useState(false);
     // Mask function
     const maskValue = (value, visibleCount = 4) => {
         if (!value) return "";
@@ -56,13 +61,11 @@ const Profile = () => {
         try {
             const res = await axios.get(
                 `${BASE_URL}Admin/GetEmployee/${employeeId}`,
-                {
-                    withCredentials: true,
-                }
-            );
+                { withCredentials: true });
 
             console.log("Employee Details:", res.data);
             setEmployeeProfile(res.data?.data);
+            setImageError(false);
         } catch (error) {
             console.log(
                 error.response?.data || error
@@ -89,8 +92,15 @@ const Profile = () => {
                         <div className="img-group">
 
                             <img
-                                src={img1}
-                                alt="Employee Image"
+                                src={
+                                    !imageError && employeeprofile?.image
+                                        ? employeeprofile.image
+                                        : employeeprofile?.gender?.toLowerCase() === "female"
+                                            ? femaleUser
+                                            : maleUser
+                                }
+                                alt={employeeprofile?.employeeName || "Employee"}
+                                onError={() => setImageError(true)}
                             />
 
                             <div className="emp-name">
@@ -106,8 +116,15 @@ const Profile = () => {
                                     {employeeprofile?.employeeId || "N/A"}
                                 </div>
 
-                                <div className="status">
+
+                                <div
+                                    className={`status ${employeeprofile?.employeeStatus?.toLowerCase() !== "active"
+                                        ? "inactive"
+                                        : ""
+                                        }`}
+                                >
                                     {employeeprofile?.employeeStatus || "N/A"}
+
                                 </div>
                             </div>
 
@@ -285,6 +302,25 @@ const Profile = () => {
 
                             </div>
 
+                             {/* UAN Number */}
+                            <div className="row-one">
+
+                                <p className="label">
+                                    UAN Number
+                                </p>
+
+                                <span>:</span>
+
+                                <p className="value">
+                                    <SensitiveValue
+                                        value={employeeprofile?.uanNo}
+                                        show={showUan}
+                                        setShow={setShowUan}
+                                    />
+                                </p>
+
+                            </div>
+
                             {/* CURRENT ADDRESS */}
                             <div className="row-one">
 
@@ -296,12 +332,13 @@ const Profile = () => {
 
                                 <p className="value">
                                     <a
-                                        href="https://www.google.com/maps/search/?api=1&query=Ahilyanagar%2C%20Maharashtra%2C%20India"
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                            employeeprofile?.currentAddress || ""
+                                        )}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        Lorem ipsum dolor sit amet
-                                        consectetur adipisicing elit.
+                                        {employeeprofile?.currentAddress || "N/A"}
                                     </a>
                                 </p>
 
@@ -318,12 +355,13 @@ const Profile = () => {
 
                                 <p className="value">
                                     <a
-                                        href="https://www.google.com/maps/search/?api=1&query=Ahilyanagar%2C%20Maharashtra%2C%20India"
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                            employeeprofile?.permanentAddress || ""
+                                        )}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        Lorem ipsum dolor sit amet
-                                        consectetur adipisicing elit.
+                                        {employeeprofile?.permanentAddress || "N/A"}
                                     </a>
                                 </p>
 
@@ -346,7 +384,7 @@ const Profile = () => {
                                 <span>:</span>
 
                                 <p className="value">
-                                    Lorem, ipsum.
+                                    {employeeprofile?.emergencyContactName || "N/A"}
                                 </p>
                             </div>
 
@@ -387,12 +425,12 @@ const Profile = () => {
                                 <p className="value">
                                     <a
                                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                            employeeprofile?.currentAddress || ""
+                                            employeeprofile?.emergencyContactCurrentAddress || ""
                                         )}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        {employeeprofile?.currentAddress || "N/A"}
+                                        {employeeprofile?.emergencyContactCurrentAddress || "N/A"}
                                     </a>
                                 </p>
                             </div>
@@ -406,12 +444,13 @@ const Profile = () => {
 
                                 <p className="value">
                                     <a
-                                        href="https://www.google.com/maps/search/?api=1&query=Ahilyanagar%2C%20Maharashtra%2C%20India"
+                                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                            employeeprofile?.emergencyContactPermanentAddress || ""
+                                        )}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
-                                        Lorem ipsum dolor sit amet
-                                        consectetur adipisicing elit.
+                                        {employeeprofile?.emergencyContactPermanentAddress || "N/A"}
                                     </a>
                                 </p>
                             </div>
@@ -422,7 +461,7 @@ const Profile = () => {
                         <div className="salary-details">
 
                             <div className="heading">
-                                Bank or Salary Details
+                                Bank, Salary & Policy Details
                             </div>
 
                             <div className="row-one">
@@ -500,6 +539,48 @@ const Profile = () => {
                                         setShow={setShowPackage}
                                     />
                                 </p>
+                            </div>
+
+                            {/* Policy Number NUMBER */}
+                            <div className="row-one">
+
+                                <p className="label">
+                                    Policy Number
+                                </p>
+
+                                <span>:</span>
+
+                                <p className="value">
+
+                                    <SensitiveValue
+                                        value={employeeprofile?.policyNumber || "N/A"}
+                                        show={showPolicy}
+                                        setShow={setShowPolicy}
+                                    />
+
+                                </p>
+
+                            </div>
+
+                            {/* ESIC NUMBER */}
+                            <div className="row-one">
+
+                                <p className="label">
+                                    ESIC Number
+                                </p>
+
+                                <span>:</span>
+
+                                <p className="value">
+
+                                    <SensitiveValue
+                                        value={employeeprofile?.esicNumber || "N/A"}
+                                        show={showEsic}
+                                        setShow={setShowEsic}
+                                    />
+
+                                </p>
+
                             </div>
 
                         </div>

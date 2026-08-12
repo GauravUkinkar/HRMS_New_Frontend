@@ -52,6 +52,10 @@
           border-radius: 50px;
           font-size: 14px;
           font-weight: 600;
+          &.inactive {
+            background: redp;
+            color: #fff;
+          }
         }
       }
     }
@@ -183,7 +187,8 @@
             cursor: pointer;
             transition: var(--trans);
             &:hover {
-              color: var(--accent2);
+              color: var(--accent2) !important;
+              text-decoration: none !important;
             }
           }
           .sensitive-value {
