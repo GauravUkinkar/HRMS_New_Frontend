@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Profile.scss";
 import img1 from "../../assets/manuser.webp";
@@ -6,6 +6,9 @@ import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { SlDocs } from "react-icons/sl";
 import { MdOutlineEditNote } from "react-icons/md";
+import axios from "axios";
+
+const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 const Profile = () => {
     const [loader, setLoader] = useState(false);
 
@@ -16,6 +19,8 @@ const Profile = () => {
     const [showSalary, setShowSalary] = useState(false);
     const [showPackage, setShowPackage] = useState(false);
 
+    // For Employee
+    const [employeeprofile, setEmployeeProfile] = useState([]);
     // Mask function
     const maskValue = (value, visibleCount = 4) => {
         if (!value) return "";
@@ -46,6 +51,22 @@ const Profile = () => {
             </span>
         );
     };
+    const getEmployee = async () => {
+        try {
+            const res = await axios.get(`${BASE_URL}Admin/GetEmployee//${employeeId}`,
+                {
+                    withCredentials: true,
+                }
+            );
+            console.log(res.data,"lkjsdfjsdfjkjkdfskjdfsljdkfs");
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+useEffect(()=>{
+    getEmployee();
+},[]);
 
     return (
         <>

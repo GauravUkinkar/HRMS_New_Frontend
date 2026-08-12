@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Avatar, Tag, Button, Space } from "antd";
+import { Table, Avatar, Tag, Space } from "antd";
 import {
   SearchOutlined,
   EyeOutlined,
@@ -8,136 +8,19 @@ import {
 } from "@ant-design/icons";
 import { FaPlus } from "react-icons/fa";
 import "./EmpList.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SlCalender } from "react-icons/sl";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import axios from "axios";
 
-
-
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
-
-const columns = [
-  {
-    title: (
-      <>
-        Name <SearchOutlined />
-      </>
-    ),
-    dataIndex: "name",
-    key: "name",
-    width: 220,
-    fixed: "left",
-    render: (_, record) => {
-      const nameParts = record.name.trim().split(" ");
-
-      const initials =
-        nameParts.length > 1
-          ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`
-          : nameParts[0][0];
-
-      return (
-        <Space>
-          <Avatar className="avatar">
-            {initials.toUpperCase()}
-          </Avatar>
-          {record.name}
-        </Space>
-      );
-    },
-  },
-  {
-    title: (
-      <>
-        Employee ID <SearchOutlined />
-      </>
-    ),
-    dataIndex: "empId",
-    key: "empId",
-    width: 150,
-    fixed: "left",
-  },
-  {
-    title: "Department",
-    dataIndex: "department",
-    width: 180,
-  },
-  {
-    title: "Designation",
-    dataIndex: "designation",
-    width: 220,
-  },
-  {
-    title: (
-      <>
-        Email <SearchOutlined />
-      </>
-    ),
-    dataIndex: "email",
-    width: 260,
-  },
-  {
-    title: "Phone",
-    dataIndex: "phone",
-    width: 180,
-  },
-
-  {
-    title: "DOB",
-    dataIndex: "dob",
-    width: 150,
-  },
-  {
-    title: "Address",
-    dataIndex: "address",
-    width: 250,
-    render: (address) => (
-      <span
-        style={{
-          display: "inline-block",
-          maxWidth: "20ch",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-        title={address}
-      >
-        {address}
-      </span>
-    ),
-  },
-
-  {
-    title: "Status",
-    dataIndex: "status",
-    width: 120,
-    fixed: "right",
-    render: (status) => (
-      <Tag color={status ? "success" : "default"}>
-        {status || "N/A"}
-      </Tag>
-    ),
-  },
-  {
-    title: "Actions",
-    key: "actions",
-    width: 140,
-    fixed: "right",
-    render: () => (
-      <Space size="middle">
-        <EyeOutlined className="view" />
-        <EditOutlined className="edit" />
-        <DeleteOutlined className="delete" />
-        <SlCalender className="date" />
-      </Space>
-    ),
-  },
-];
-
 const EmpList = () => {
+  const navigate = useNavigate();
 
   const [allemployee, setAllEmployee] = useState([]);
+
+  // GET ALL EMPLOYEES
   const getAllEmployee = async () => {
     try {
       const res = await axios.get(
@@ -162,9 +45,11 @@ const EmpList = () => {
 
       setAllEmployee(employees);
 
-      console.log(employees);
+      console.log("Employees:", employees);
     } catch (error) {
-      console.log(error.response?.data || error);
+      console.log(
+        error.response?.data || error
+      );
     }
   };
 
@@ -172,15 +57,195 @@ const EmpList = () => {
     getAllEmployee();
   }, []);
 
+  // ==============================
+  // TABLE COLUMNS
+  // ==============================
+  const columns = [
+    {
+      title: (
+        <>
+          Name <SearchOutlined />
+        </>
+      ),
+      dataIndex: "name",
+      key: "name",
+      width: 220,
+      fixed: "left",
+
+      render: (_, record) => {
+        const name = record.name || "N/A";
+
+        const nameParts = name.trim().split(" ");
+
+        const initials =
+          nameParts.length > 1
+            ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]
+            }`
+            : nameParts[0][0];
+
+        return (
+          <Space>
+            <Avatar className="avatar">
+              {initials.toUpperCase()}
+            </Avatar>
+
+            {name}
+          </Space>
+        );
+      },
+    },
+
+    {
+      title: (
+        <>
+          Employee ID <SearchOutlined />
+        </>
+      ),
+      dataIndex: "empId",
+      key: "empId",
+      width: 150,
+      fixed: "left",
+    },
+
+    {
+      title: "Department",
+      dataIndex: "department",
+      width: 180,
+    },
+
+    {
+      title: "Designation",
+      dataIndex: "designation",
+      width: 220,
+    },
+
+    {
+      title: (
+        <>
+          Email <SearchOutlined />
+        </>
+      ),
+      dataIndex: "email",
+      width: 260,
+    },
+
+    {
+      title: "Phone",
+      dataIndex: "phone",
+      width: 180,
+    },
+
+    {
+      title: "DOB",
+      dataIndex: "dob",
+      width: 150,
+    },
+
+    {
+      title: "Address",
+      dataIndex: "address",
+      width: 250,
+
+      render: (address) => (
+        <span
+          style={{
+            display: "inline-block",
+            maxWidth: "20ch",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+          title={address}
+        >
+          {address || "N/A"}
+        </span>
+      ),
+    },
+
+    {
+      title: "Status",
+      dataIndex: "status",
+      width: 120,
+      fixed: "right",
+
+      render: (status) => (
+        <Tag color={status ? "success" : "default"}>
+          {status || "N/A"}
+        </Tag>
+      ),
+    },
+    // ACTIONS
+    {
+      title: "Actions",
+      key: "actions",
+      width: 140,
+      fixed: "right",
+
+      render: (_, record) => (
+        <Space size="middle">
+
+          {/* VIEW */}
+          <EyeOutlined
+            className="view"
+            onClick={() => {
+              console.log(
+                "Selected Employee ID:",
+                record.empId
+              );
+
+              navigate(
+                `/EmployeeProfile/${record.empId}`
+              );
+            }}
+          />
+
+          {/* EDIT */}
+          <EditOutlined
+            className="edit"
+            onClick={() => {
+              console.log(
+                "Edit Employee:",
+                record.empId
+              );
+            }}
+          />
+
+          {/* DELETE */}
+          <DeleteOutlined
+            className="delete"
+            onClick={() => {
+              console.log(
+                "Delete Employee:",
+                record.empId
+              );
+            }}
+          />
+
+          {/* CALENDAR */}
+          <SlCalender
+            className="date"
+            onClick={() => {
+              console.log(
+                "Calendar Employee:",
+                record.empId
+              );
+            }}
+          />
+
+        </Space>
+      ),
+    },
+  ];
+  // JSX
   return (
     <MainPanel>
       <div className="emp-list">
+
         <div className="page-header">
           <h2>Employees</h2>
 
           <Link to="/addEmployee">
             <span>
-              {" "}
               <FaPlus />
             </span>{" "}
             Add Employee
@@ -197,9 +262,12 @@ const EmpList = () => {
             showSizeChanger: true,
           }}
           rowClassName={(_, index) =>
-            index % 2 === 0 ? "table-row-light" : "table-row-dark"
+            index % 2 === 0
+              ? "table-row-light"
+              : "table-row-dark"
           }
         />
+
       </div>
     </MainPanel>
   );
