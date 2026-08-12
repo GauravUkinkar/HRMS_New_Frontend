@@ -169,7 +169,9 @@
       .eight-twelve-page,
       .new-page,
       .acceptance-page,
-      .third-last-page {
+      .third-last-page,
+      .secondlast-page,
+      .last-page {
         background: var(--white);
         padding: 10px 40px;
         width: 700px;
@@ -222,6 +224,12 @@
         p {
           line-height: 22px;
           font-size: 16px;
+        }
+        a{
+            text-decoration: none;
+        }
+        ul{
+            padding: 10px ;
         }
         .listing {
           list-style-type: upper-roman;

@@ -566,7 +566,174 @@ const OfferLetter = () => {
                 </div>
                 <div class="gap"></div>
                 <div class="gap"></div>
+                <strong>11. Rules and regulations:</strong>
+                <div class="small-gap"></div>
+                <p>
+                  You will be subject to all rules and regulations ofPandoza
+                  Solutions Pvt. Ltd. that are in force and shall abide by them
+                  until in employment with the organization. Pandoza Solutions
+                  Pvt. Ltd. policies are updated from time to time. You are
+                  expected to be aware of the company’s policies and abide by
+                  them. Pandoza Solutions Pvt. Ltd. reserves the right to modify
+                  any or all of the above terms and conditions that shall be
+                  binding on you, from time to time. You will be governed by the
+                  code of conduct, discipline, rules, and regulations as laid
+                  down by the Company. These can be modified and updated from
+                  time to time, and these will be deemed to form an integral
+                  part of this offer of employment.
+                </p>
+                <div class="gap"></div>
+                <strong>12. Acceptance:</strong>
+                <p>
+                  If the terms and conditions of this offer are acceptable to
+                  you, kindly return a duplicate of this letter of offer duly
+                  signed with your acceptance. Originals and photocopies of the
+                  following documents need to be submitted on the day of
+                  joining. Non- submission of any of the documents will lead to
+                  deferment of joining formalities. Original documents will be
+                  returned after verification.
+                </p>
+                <div class="small-gap"></div>
+                <div class="small-gap"></div>
+                <p>
+                  Before the date of joining, kindly forward a copy of your
+                  resignation letter and the acceptance of the same from your HR
+                  <a href="mailto:info@pandozasolutions.com" target="_blank">
+                    info@pandozasolutions.com
+                  </a>
+                  You can also mail us at
+                  <a href="mailto:info@pandozasolutions.com" target="_blank">
+                    info@pandozasolutions.com
+                  </a>
+                  if you have any queries.
+                </p>
+                <p class="footer">
+                  214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
+                  76666 01972
+                </p>
               </div>
+              <div class="secondlast-page">
+                <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
+                <div class="gap"></div>
+                <div class="gap"></div>
+                <div class="logo">
+                  <img src={logo_pan} alt="OfferLogoPan" />
+                </div>
+                <div class="gap"></div>
+                <div class="gap"></div>
+                <div class="top">
+                  <h3>ANNEXURE-3</h3>
+                </div>
+                <div class="gap"></div>
+                <div class="small-gap"></div>
+                <ul className="edu-doc">
+                  <h3> Educational documents:</h3>
+                  <div class="small-gap"></div>
+                  <li> 10th and 12th/Diploma mark sheets</li>
+                  <div class="small-gap"></div>
+                  <li>
+                    Degree certificate and mark sheet (all semesters/years)
+                  </li>
+                  <div class="small-gap"></div>
+                  <li>
+                    PG certificate and mark sheet (if applicable – for all
+                    semesters/years)
+                  </li>
+                  <div class="small-gap"></div>
+                  <li>Any Certification mark sheet/certificate</li>
+                </ul>
+                <ul className="emp-doc">
+                  <h3> Employment documents:</h3>
+                  <div class="small-gap"></div>
+                  <li> Relieving and Experience letters from past employers</li>
+                  <div class="small-gap"></div>
+                  <li>Last 3 salary slips</li>
+                  <div class="small-gap"></div>
+                  <li>
+                    Salary proof of fixed and variable components
+                    (appointment/increment letter)
+                  </li>
+                  <div class="small-gap"></div>
+                  <li>
+                    Bank statement for last 3 months (if working on contract)
+                  </li>
+                </ul>
+                <ul className="emp-doc">
+                  <h3> Personal documents:</h3>
+                  <div class="small-gap"></div>
+                  <li> Marriage certificate (if applicable)</li>
+                  <div class="small-gap"></div>
+                  <li>3 passport-size photographs</li>
+                  <div class="small-gap"></div>
+                  <li>Passport Copy (If Applicable)</li>
+                  <div class="small-gap"></div>
+                  <li> PAN (Permanent Account Number) Card</li>
+                  <div class="small-gap"></div>
+                  <li> Aadhar Card</li>
+                </ul>
+                <div class="gap"></div>
+                <p>
+                  Before the date of joining, kindly forward a copy of your
+                  resignation letter and the acceptance of the same from your HR
+                  to
+                </p>
+                <a href="mailto:info@pandozasolutions.com" target="_blank">
+                  info@pandozasolutions.com
+                </a>
+                You can also mail us at
+                <a href="mailto:info@pandozasolutions.com" target="_blank">
+                  info@pandozasolutions.com
+                </a>
+                if you have any queries.
+                <p class="footer">
+                  214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
+                  76666 01972
+                </p>
+              </div>
+              <div class="last-page">
+              <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
+              <div class="gap"></div>
+              <div class="gap"></div>
+              <div class="logo">
+                <img src={logo_pan} alt="OfferLogoPan" />
+              </div>
+              <div class="gap"></div>
+              <div class="gap"></div>
+              <div class="top">
+                <h3>ACCEPTANCE OF OFFER</h3>
+              </div>
+              <div class="gap"></div>
+              <div class="small-gap"></div>
+              <p>
+                I have read the offer letter and the annexed policies. I hereby
+                accept the offer on the aforesaid terms.
+              </p>
+              <div class="small-gap"></div>
+              <p>
+                I solemnly affirm that I am not under any medication on account
+                of any medical condition, which may adversely affect the
+                performance of my duties in the event of my appointment pursuant
+                to me acceptance of this offer.
+              </p>
+              <div class="small-gap"></div>
+              <p>
+                I shall join duties with effect from the date mentioned
+                hereinabove. In case of delays in joining, I shall inform the
+                concerned authority one week in advance in writing.
+              </p>
+              <div class="small-gap"></div>
+              <p>Name:</p>
+              <div class="small-gap"></div>
+              <p>Date:</p>
+              <div class="small-gap"></div>
+              <p>Signature:</p>
+              <div class="small-gap"></div>
+              <p>Place:</p>
+              <p class="footer">
+                214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91 76666
+                01972
+              </p>
+            </div>
             </div>
           </div>
         </div>
