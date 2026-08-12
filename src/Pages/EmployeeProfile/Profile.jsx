@@ -81,24 +81,16 @@ const Profile = () => {
     return (
         <>
             <MainPanel title="Admin Dashboard">
-
                 {loader && <p>loading.....</p>}
-
                 <div className="bottom-side">
 
                     {/* LEFT SIDE */}
                     <div className="left-side">
-
                         <div className="img-group">
-
                             <img
                                 src={
-                                    !imageError && employeeprofile?.image
-                                        ? employeeprofile.image
-                                        : employeeprofile?.gender?.toLowerCase() === "female"
-                                            ? femaleUser
-                                            : maleUser
-                                }
+                                    !imageError && employeeprofile?.image ? employeeprofile.image
+                                        : employeeprofile?.gender?.toLowerCase() === "female" ? femaleUser : maleUser}
                                 alt={employeeprofile?.employeeName || "Employee"}
                                 onError={() => setImageError(true)}
                             />
@@ -172,7 +164,6 @@ const Profile = () => {
                                 <p className="label">
                                     Date Of Joining
                                 </p>
-
                                 <span>:</span>
 
                                 <p className="value">
@@ -184,9 +175,7 @@ const Profile = () => {
                                 <p className="label">
                                     Contact Number
                                 </p>
-
                                 <span>:</span>
-
                                 <p className="value">
                                     <a href={`tel:${employeeprofile?.contactNumber}`}>
                                         {employeeprofile?.contactNumber || "N/A"}
@@ -196,12 +185,9 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-
                                     Mail Id
                                 </p>
-
                                 <span>:</span>
-
                                 <p className="value">
                                     <a href={`mailto:${employeeprofile?.email}`}>
                                         {employeeprofile?.email || "N/A"}
@@ -225,28 +211,21 @@ const Profile = () => {
                                 <p className="label">
                                     Gender
                                 </p>
-
                                 <span>:</span>
-
                                 <p className="value">
                                     {employeeprofile?.gender || "N/A"}
                                 </p>
                             </div>
-
                             <div className="row-one">
                                 <p className="label">
                                     Blood Group
                                 </p>
-
                                 <span>:</span>
-
                                 <p className="value">
                                     {employeeprofile?.bloodGroup || "N/A"}
                                 </p>
                             </div>
-
                         </div>
-
                         <div className="btn-groups">
                             <Link to="#"><SlDocs /><span>View Document</span></Link>
                             <Link to="#"><MdOutlineEditNote /> <span>Edit Details</span></Link>
@@ -302,7 +281,7 @@ const Profile = () => {
 
                             </div>
 
-                             {/* UAN Number */}
+                            {/* UAN Number */}
                             <div className="row-one">
 
                                 <p className="label">
