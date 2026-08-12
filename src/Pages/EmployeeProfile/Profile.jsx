@@ -357,7 +357,7 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                    Contact Name
+                                     Name
                                 </p>
 
                                 <span className="coma">:</span>
@@ -369,7 +369,7 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                    Contact Person Number
+                                      Number
                                 </p>
 
                                 <span className="coma">:</span>
@@ -384,7 +384,7 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                    Contact Person Relation
+                                      Relation
                                 </p>
 
                                 <span className="coma">:</span>
