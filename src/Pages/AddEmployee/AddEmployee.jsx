@@ -18,6 +18,7 @@ const AddEmployee = () => {
   const formObj = {
     employeeName: "",
     employeeId: "",
+     employee_status: "active",
     gender: "",
     employeeStatus: "",
     designation: "",
@@ -108,6 +109,13 @@ const AddEmployee = () => {
 
   console.log(error, "error");
   console.log(values, "values");
+
+
+
+
+
+
+  
   return (
     <>
       <MainPanel
@@ -140,6 +148,28 @@ const AddEmployee = () => {
                   label="Password"
                   required
                 />
+
+{/* //active//Employee status */}
+
+ <SelectInput
+      error={error.employee_status}
+      name="employee_status"
+      value={values.employee_status}
+      onChange={handleChange}
+      label="Employee Status"
+    >
+      <MenuItem value="active">Active</MenuItem>
+      <MenuItem value="inactive">Inactive</MenuItem>
+    </SelectInput>
+
+
+
+
+
+
+
+
+
                 <SelectInput
                   error={error.role}
                   name="role"
@@ -153,15 +183,17 @@ const AddEmployee = () => {
                 </SelectInput>
               </div>
               <div className="form-row">
+                
                 <SelectInput
                   error={error.status}
                   name="status"
                   value={values.status}
                   onChange={handleChange}
-                  label="Employee Status"
+                  label="Employee Type"
                 >
-                  <MenuItem value="On Board">On Board </MenuItem>
-                  <MenuItem value="Provision">Provision </MenuItem>
+                  <MenuItem value="On Board">Full-time</MenuItem>
+                  <MenuItem value="Provision">Part-time </MenuItem>
+                  <MenuItem value="Intern">Freelance </MenuItem>
                   <MenuItem value="Intern">Intern </MenuItem>
                 </SelectInput>
                 <SelectInput
@@ -330,6 +362,14 @@ const AddEmployee = () => {
                   label="Current Address"
                   required
                 />
+                <Input
+                  error={error.address}
+                  name="address"
+                  value={values.address}
+                  onChange={handleChange}
+                  label="Permanent Address"
+                  required
+                />
               </div>
             </div>
           </div>
@@ -374,7 +414,14 @@ const AddEmployee = () => {
 
               </div>
               <div className="form-row">
-                <Input label="Emergency Contact Person Address"
+                <Input label="Emergency Contact Person Current Address"
+                  name="emergencyContactAddress"
+                  value={values.emergencyContactAddress}
+                  onChange={handleChange}
+                  required
+                />
+             
+                <Input label="Emergency Contact Person Permanent Address"
                   name="emergencyContactAddress"
                   value={values.emergencyContactAddress}
                   onChange={handleChange}

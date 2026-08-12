@@ -1,0 +1,60 @@
+.leave-container {
+  background: var(--white);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.leave-container h2 {
+  font-size: 38px;
+  font-weight: 700;
+}
+.leave-container .tab-header {
+  display: flex;
+  align-items: center;
+  background: #9dd4d7;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.leave-container .tab-header .tab {
+  padding: 15px 35px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: var(--trans);
+}
+.leave-container .tab-header .tab:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.leave-container .tab-header .tab .active {
+  font-weight: 700;
+}
+.leave-container .tab-header .tab .close-btn {
+  background: var(--accent2);
+  color: var(--white);
+  border: none;
+}
+.leave-container .tab-header .tab .close-btn:hover {
+  background: #204b50;
+  color: var(--white);
+}
+.leave-container .ant-table {
+  border: 1px solid #d9d9d9;
+}
+.leave-container .ant-table-thead > tr > th {
+  background: #d9d9d9 !important;
+  text-align: center;
+  font-weight: 600;
+}
+.leave-container .ant-table-tbody > tr > td {
+  text-align: center;
+}
+.leave-container .status-tag {
+  min-width: 90px;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.leave-container .pagination {
+  display: flex;
+  justify-content: flex-end;
+}/*# sourceMappingURL=LeaveManagement.css.map */

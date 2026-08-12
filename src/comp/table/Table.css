@@ -1,0 +1,8 @@
+.ant-table-wrapper .ant-spin .ant-spin-container .ant-table table .ant-table-thead tr .ant-table-cell {
+  background-color: var(--accent) !important;
+  color: var(--white);
+  text-align: center;
+}
+.ant-table-wrapper .ant-spin .ant-spin-container .ant-table table .ant-table-thead tr .ant-table-cell .ant-table-filter-column .ant-dropdown-trigger {
+  color: white;
+}/*# sourceMappingURL=Table.css.map */

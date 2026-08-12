@@ -1,0 +1,10 @@
+.top-parent {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 10px;
+}
+.top-parent .btn {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}/*# sourceMappingURL=EmployeeList.css.map */
