@@ -1,6 +1,7 @@
 import React from "react";
 import "./Payslip.scss";
-import logo from "../../../src/assets/ logo.png";
+// import logo from "../../../src/assets/ logo.png";
+import logo from "../../../src/assets/logo.png"
 import { SlCalender } from "react-icons/sl";
 import { IoMdDownload } from "react-icons/io";
 import MainPanel from "../../comp/MainPanel/MainPanel";
