@@ -118,7 +118,7 @@ export const routes = [
   // sunil Shelke
   {
     name:"EmployeeProfile",
-    path:"/EmployeeProfile",
+    path:"/EmployeeProfile/:employeeId",
     comp:Profile, 
     adminonly: true,
   }

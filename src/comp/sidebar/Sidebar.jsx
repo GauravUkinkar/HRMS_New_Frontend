@@ -24,43 +24,94 @@ const Sidebar = ({ active }) => {
           name: "Add Employee",
           link: "/addEmployee",
         },
+       
         {
-          name: "Register User",
-          link: "/addEmployee",
-        },
-        {
-          name: "List Views",
+          name: "List All Employee",
           link: "/empList",
         },
       ],
     },
     {
-      icon: <IoCloudUploadOutline />,
-      name: "Upload",
+      icon: <FiHome />,
+      name: "Document Management",
+      link: "/",
+    },
+
+     {
+      icon: <FiHome />,
+      name: "Leave Management",
+      link: "/LeaveManagement",
+    },
+    
+    {
+      icon:<IoCloudUploadOutline />,
+      name: "Salary Management",
+      link: "/salaryManagement",
+      
+    },
+    {
+      icon: <FiHome />,
+      name: "User Management",
+      link: "/",
+    },
+    {
+      icon: <BsPerson />,
+      name: "Official Documents",
       children: [
         {
-          name: "Upload Documents",
-          link: "/uploadDoc",
+          name: "Generate Offer Letter",
+          link: "/addEmployee",
         },
         {
-          name: "View Documents",
+          name: "Generate Joining Letter",
+          link: "/addEmployee",
         },
+        {
+          name: "Generate Employee ID Card",
+          link: "/addEmployee",
+        },
+        {
+          name: "Generate Incriment Letter",
+          link: "/addEmployee",
+        },
+        {
+          name: "Generate Promotion Letter",
+          link: "/addEmployee",
+        },
+        {
+          name: "Generate Experience Letter",
+          link: "/addEmployee",
+        },
+        {
+          name: "Generate Releaving Letter",
+          link: "/addEmployee",
+        },
+        {
+          name: "Generate Warning Letter",
+          link: "/addEmployee",
+        },
+        {
+          name: "Generate Termination Letter",
+          link: "/addEmployee",
+        },
+        {
+          name: "Generate Intership Letter",
+          link: "/addEmployee",
+        },
+        
+       
+        
       ],
     },
     {
-      icon:<IoCloudUploadOutline />,
-      name: "Upload",
-      children: [
-        {
-          name: "Upload Documents",
-          link: "/uploadDoc"
-        },
-        {
-          name: "View Documents",
-          
-        },
-      ],
-      
+      icon: <FiHome />,
+      name: "Attendence",
+      link: "/attendance",
+    },
+     {
+      icon: <FiHome />,
+      name: "Official Notes",
+      link: "/",
     },
   ];
   return (
