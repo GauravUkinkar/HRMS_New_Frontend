@@ -18,6 +18,7 @@ const AddEmployee = () => {
   const formObj = {
     employeeName: "",
     employeeId: "",
+     employee_status: "active",
     gender: "",
     employeeStatus: "",
     designation: "",
@@ -150,18 +151,16 @@ const AddEmployee = () => {
 
 {/* //active//Employee status */}
 
-
-                <SelectInput
-  error={error.employee_status}
-  name="employee_status"
-  value={values.employee_status}
-  onChange={handleChange}
-  label="Employee Status"
->
-  <MenuItem value="active">Active</MenuItem>
-  <MenuItem value="inactive">Inactive</MenuItem>
-</SelectInput> 
-
+ <SelectInput
+      error={error.employee_status}
+      name="employee_status"
+      value={values.employee_status}
+      onChange={handleChange}
+      label="Employee Status"
+    >
+      <MenuItem value="active">Active</MenuItem>
+      <MenuItem value="inactive">Inactive</MenuItem>
+    </SelectInput>
 
 
 
@@ -184,17 +183,7 @@ const AddEmployee = () => {
                 </SelectInput>
               </div>
               <div className="form-row">
-                <SelectInput
-                  error={error.stage}
-                  name="Stage"
-                  value={values.stage}
-                  onChange={handleChange}
-                  label="Employee Stage"
-                >
-                  <MenuItem value="On Board">On Board </MenuItem>
-                  <MenuItem value="Provision">Provision </MenuItem>
-                  <MenuItem value="Intern">Intern </MenuItem>
-                </SelectInput>
+                
                 <SelectInput
                   error={error.status}
                   name="status"
@@ -205,6 +194,7 @@ const AddEmployee = () => {
                   <MenuItem value="On Board">Full-time</MenuItem>
                   <MenuItem value="Provision">Part-time </MenuItem>
                   <MenuItem value="Intern">Freelance </MenuItem>
+                  <MenuItem value="Intern">Intern </MenuItem>
                 </SelectInput>
                 <SelectInput
                   error={error.companyName}
@@ -430,8 +420,7 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   required
                 />
-              </div>
-              <div className="form-row">
+             
                 <Input label="Emergency Contact Person Permanent Address"
                   name="emergencyContactAddress"
                   value={values.emergencyContactAddress}
