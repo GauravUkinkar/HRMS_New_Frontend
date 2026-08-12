@@ -1,0 +1,25 @@
+.css-1toxriw-MuiList-root-MuiMenu-list {
+  padding: 0 !important;
+}
+
+.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 0 !important;
+}
+
+.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  height: 40px !important;
+}
+
+#demo-simple-select-label {
+  left: 10px;
+}
+
+.css-ex8a5f-MuiNotchedOutlined-root {
+  margin-left: 10px;
+}
+
+.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  display: flex;
+  align-items: center;
+  padding-left: 10px !important;
+}/*# sourceMappingURL=SelectInput.css.map */

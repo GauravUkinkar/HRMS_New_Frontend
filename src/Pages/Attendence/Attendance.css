@@ -1,0 +1,77 @@
+.top-parent {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 10px;
+}
+.top-parent .buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.top-parent .btn {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.attendance-btns {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+.attendance-btns button {
+  border: none;
+  color: #fff;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.3s ease;
+}
+.attendance-btns .full-day {
+  background: #0b8c96;
+}
+.attendance-btns .full-day:hover {
+  background: #087780;
+}
+.attendance-btns .half-day {
+  background: #808080;
+}
+.attendance-btns .half-day:hover {
+  background: #696969;
+}
+.attendance-btns .absent {
+  background: #ff0000;
+}
+.attendance-btns .absent:hover {
+  background: #d60000;
+}
+
+.action-btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+.action-btns span {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.action-btns svg {
+  font-size: 22px;
+  transition: 0.3s ease;
+}
+.action-btns span:first-child svg {
+  color: #e53935;
+}
+.action-btns span:last-child svg {
+  color: #1976d2;
+}
+.action-btns svg:hover {
+  transform: scale(1.1);
+}/*# sourceMappingURL=Attendance.css.map */
