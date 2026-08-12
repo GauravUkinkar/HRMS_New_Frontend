@@ -1,0 +1,94 @@
+.view-doc {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 50px 20px;
+  border: 1px solid var(--bg-color);
+  border-radius: 10px;
+}
+.view-doc h2 {
+  font-size: 24px;
+  width: 100%;
+  text-align: left;
+  font-weight: 700;
+  color: var(--black);
+  line-height: 100%;
+}
+.view-doc .document-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+.view-doc .document-list .document-card {
+  border: 1px solid var(--bg-color);
+  border-radius: 8px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 10px;
+}
+.view-doc .document-list .document-card .pdf-icon {
+  font-size: 20px;
+  color: red;
+}
+.view-doc .document-list .document-card p {
+  font-size: 16px;
+  font-weight: 500;
+}
+.view-doc .document-list .document-card .btn-parent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.view-doc .document-list .document-card .btn-parent button {
+  border: 1px solid var(--accent2);
+  color: var(--accent2);
+  padding: 5px 15px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  cursor: pointer;
+}
+.view-doc .document-list .document-card .btn-parent button:hover {
+  background: var(--accent2);
+  color: var(--white);
+}
+.view-doc .upload-btn {
+  background: var(--accent2);
+  color: var(--white);
+  border: 1px solid var(--accent2);
+  padding: 8px 20px;
+  border-radius: 5px;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--trans);
+}
+.view-doc .upload-btn:hover {
+  background: var(--accent);
+}
+
+@media only screen and (max-width: 1020px) {
+  .view-doc .document-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media only screen and (max-width: 800px) {
+  .view-doc .document-list {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}/*# sourceMappingURL=Viewdoc.css.map */
