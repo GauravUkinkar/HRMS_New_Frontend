@@ -334,20 +334,238 @@ const OfferLetter = () => {
                 <div class="gap"></div>
                 <strong>2. Work location and transfer:</strong>
                 <div class="small-gap"></div>
-                <p>Your initial location after joining will be at Pandoza Solutions Pvt. Ltd.<strong>Pune</strong> office. This offer is subject to your preparedness to work in any of the locations of Pandoza Solutions Pvt. Ltd. or its affiliates. Your services are transferable and you may be assigned to any office of Pandoza Solutions Pvt. Ltd. or an associate company on such project as Pandoza Solutions Pvt. Ltd. may deem suitable </p>
+                <p>
+                  Your initial location after joining will be at Pandoza
+                  Solutions Pvt. Ltd.<strong>Pune</strong> office. This offer is
+                  subject to your preparedness to work in any of the locations
+                  of Pandoza Solutions Pvt. Ltd. or its affiliates. Your
+                  services are transferable and you may be assigned to any
+                  office of Pandoza Solutions Pvt. Ltd. or an associate company
+                  on such project as Pandoza Solutions Pvt. Ltd. may deem
+                  suitable{" "}
+                </p>
                 <div class="gap"></div>
                 <strong>3. Mandatory tenure of employment:</strong>
                 <div class="small-gap"></div>
-                <p>On joining Pandoza Solutions Pvt. Ltd., you will continue to be employed with Pandoza Solutions Pvt. Ltd. for a minimum period of one year. If you resign or are terminated by Pandoza Solutions Pvt. Ltd. for cause prior to completion of the said one year, you will be liable to pay Pandoza Solutions Pvt. Ltd. damages equivalent to three times your monthly gross salary. If failed to do so, Pandoza Solutions Pvt. Ltd. will file legal action against the employee. Further, if you resign or are terminated by Pandoza Solutions Pvt. Ltd. for cause prior to completion of the said one year, any special expenses incurred by Pandoza Solutions Pvt. Ltd. on your joining such as joining bonus, hiring allowance, notice buy-out, etc. will be recovered from you, in addition to the damages mentioned above.</p>
+                <p>
+                  On joining Pandoza Solutions Pvt. Ltd., you will continue to
+                  be employed with Pandoza Solutions Pvt. Ltd. for a minimum
+                  period of one year. If you resign or are terminated by Pandoza
+                  Solutions Pvt. Ltd. for cause prior to completion of the said
+                  one year, you will be liable to pay Pandoza Solutions Pvt.
+                  Ltd. damages equivalent to three times your monthly gross
+                  salary. If failed to do so, Pandoza Solutions Pvt. Ltd. will
+                  file legal action against the employee. Further, if you resign
+                  or are terminated by Pandoza Solutions Pvt. Ltd. for cause
+                  prior to completion of the said one year, any special expenses
+                  incurred by Pandoza Solutions Pvt. Ltd. on your joining such
+                  as joining bonus, hiring allowance, notice buy-out, etc. will
+                  be recovered from you, in addition to the damages mentioned
+                  above.
+                </p>
                 <div class="gap"></div>
                 <strong> Background verification:</strong>
                 <div class="small-gap"></div>
-                <p>This offer for employment is subject to the satisfactory completion of your background reference check, which includes verification of your past employment details based on the documents and information furnished by you at the time of joining Pandoza Solutions Pvt. Ltd. and verification of all other documents submitted by you as a reference for your educational qualifications or any other credentials. In case you are unable to furnish the necessary documents and information for completing your background reference check or in case you furnish any misleading information or false documents, Pandoza Solutions Pvt. Ltd. reserves the right to terminate your employment irrespective of anything to the contrary in the Company’s Policies.</p>
+                <p>
+                  This offer for employment is subject to the satisfactory
+                  completion of your background reference check, which includes
+                  verification of your past employment details based on the
+                  documents and information furnished by you at the time of
+                  joining Pandoza Solutions Pvt. Ltd. and verification of all
+                  other documents submitted by you as a reference for your
+                  educational qualifications or any other credentials. In case
+                  you are unable to furnish the necessary documents and
+                  information for completing your background reference check or
+                  in case you furnish any misleading information or false
+                  documents, Pandoza Solutions Pvt. Ltd. reserves the right to
+                  terminate your employment irrespective of anything to the
+                  contrary in the Company’s Policies.
+                </p>
                 <div class="gap"></div>
-                      <p class="footer">
+                <p class="footer">
                   214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
                   76666 01972
                 </p>
+              </div>
+              <div class="new-page">
+                <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
+                <div class="gap"></div>
+                <div class="gap"></div>
+                <div class="logo">
+                  <img src={logo_pan} alt="OfferLogoPan" />
+                </div>
+                <div class="gap"></div>
+                <div class="gap"></div>
+                <strong>5. Travel and passport:</strong>
+                <div class="small-gap"> </div>
+                <p>
+                  You should possess a valid passport during your employment
+                  with Pandoza Solutions Pvt. Ltd.. In case you do not have a
+                  valid passport at the time of joining, you should get one
+                  issued within three months from the date of joining.
+                </p>
+                <div class="gap"></div>
+                <strong>6. Confidentiality and return of materials:</strong>
+                <div class="small-gap"></div>
+                <p>
+                  You will be required to maintain organizational secrecy and
+                  confidentiality with respect to information and procedures
+                  followed in Pandoza Solutions Pvt. Ltd.. You should not
+                  disclose any information/materials that are the intellectual
+                  property of Pandoza Solutions Pvt. Ltd., its associate
+                  companies, or clients. Upon resignation or termination of your
+                  employment, you will return to Pandoza Solutions Pvt. Ltd. all
+                  papers and documents which may at that time be in your
+                  possession. This includes all types of material related to the
+                  business of Pandoza Solutions Pvt. Ltd. or any of its
+                  associates or branches and you will not retain any copies or
+                  extracts therefrom.
+                </p>
+                <div class="gap"></div>
+                <strong>7. Non-competition:</strong>
+                <div class="small-gap"></div>
+                <p>
+                  During the term of your employment with Pandoza Solutions Pvt.
+                  Ltd., you will not engage in any other employment, occupation,
+                  consulting, or other business activity related to the business
+                  in whichPandoza Solutions Pvt. Ltd. 214, 10 BIZ PARK,
+                  VIMANNAGAR, PUNE – 411014 | CONTACT: +91 76666 01972 Private
+                  Limited is now involved or becomes involved during the term of
+                  your employment. You will not engage in any other activity
+                  that conflicts with your obligations to Pandoza Solutions Pvt.
+                  Ltd. during the term of your employment and for one year
+                  thereafter without the prior written consent of Pandoza
+                  Solutions Pvt. Ltd..
+                </p>
+                <div class="gap"></div>
+                <strong>8. Leaves and holidays:</strong>
+                <div class="small-gap"></div>
+                <p>
+                  The company will announce the list of holidays at the
+                  beginning of each calendar year. Employees are entitled to{" "}
+                  <strong>two paid leaves per month</strong>, which must be
+                  accrued before they can be availed.
+                </p>
+                <div class="small-gap"></div>
+                <p>
+                  To request a leave, employees are required to
+                  <strong>
+                    submit their leave application at least four days in advance
+                  </strong>
+                  for it to be considered.
+                </p>
+                <div class="gap"></div>
+                <div class="gap"></div>
+                <strong>*It Will be applicable after probation period.</strong>
+                <p class="footer">
+                  214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
+                  76666 01972
+                </p>
+              </div>
+              <div class="acceptance-page">
+                <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
+                <div class="gap"></div>
+                <div class="gap"></div>
+                <div class="logo">
+                  <img src={logo_pan} alt="OfferLogoPan" />
+                </div>
+                <div class="gap"></div>
+                <div class="gap"></div>
+                <strong>9. Dress code:</strong>
+                <div class="small-gap"></div>
+                <p>
+                  The work dress code ranges from Formal to Business Casual to
+                  Casual. Pandoza Solutions Pvt. Ltd.’s objective in
+                  establishing a dress code is to allow our employees to work
+                  comfortably in the workplace while projecting a professional
+                  image not only to our customers, potential employees,
+                  community, and visitors but also within the organization.
+                  Since all casual clothing is not suitable for the office, the
+                  dress code is specified in the employee manual to help you
+                  determine what is appropriate to wear to work. You should
+                  adhere to the dress code published in the employee manual on
+                  the intranet.
+                </p>
+                <div class="gap"></div>
+                You are required to wear formal on your date of joining, which
+                is:
+                <br />
+                <strong>* For Gentlemen</strong>: Formal full-sleeve shirts and
+                trousers with a tie and polished formal shoes.
+                <strong>* For Ladies</strong>: Western formals, salwar-kameez or
+                formal saris with sandals.
+                <div class="gap"></div>
+                <strong>10. Termination and resignation:</strong>
+                <div class="small-gap"></div>
+                <div class="a-point">
+                  A.
+                  <strong>Termination :</strong>
+                  Pandoza Solutions Pvt. Ltd.reserves the right to terminate the
+                  services of an employee :
+                </div>
+                <div class="small-gap"></div>
+                <div class="subpoints">
+                  <p>
+                    a. With or without cause by providing immediate termination.
+                  </p>
+                  <div class="small-gap"></div>
+                  <p>b. Without notice in the following cases:</p>
+                  <div class="small-gap"></div>
+                </div>
+                <ul className="listing">
+                  <li>
+                    If the employee is absent or on unauthorized leave without
+                    notice in writing or without sufficient reasons for 5 days
+                    or more.
+                  </li>
+
+                  <div className="small-gap"></div>
+
+                  <li>
+                    If the employee goes on a strike or supports a strike in
+                    contravention of any law for the time being in force <br />
+                    or
+                  </li>
+
+                  <div className="small-gap"></div>
+
+                  <li>
+                    The employee causes damage to the physical or intellectual
+                    property of Pandoza Solutions Pvt. Ltd. or any of its
+                    clients/associates.
+                  </li>
+
+                  <div className="small-gap"></div>
+                </ul>
+                <div class="a-point">
+                  <div class="gap"></div>
+                  <div class="gap"></div>
+                  B.
+                  <strong>Resignation :</strong>
+                  For resigning fromPandoza Solutions Pvt. Ltd., you are
+                  required to serve a 1 months’ notice period as per the policy
+                  of resignation after the completion of 1 year with the
+                  employment and as applicable at the time of departure. In case
+                  of a shortfall in the notice period, the relieving date shall
+                  be the prerogative of the company and shall be within the
+                  notice period. Further, the company reserves the right to
+                  recover an amount equivalent to the consolidated salary for
+                  the number of days of the shortfall.
+                </div>
+                <p class="footer">
+                  214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
+                  76666 01972
+                </p>
+              </div>
+              <div class="third-last-page">
+                <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
+                <div class="gap"></div>
+                <div class="gap"></div>
+                <div class="logo">
+                  <img src={logo_pan} alt="OfferLogoPan" />
+                </div>
+                <div class="gap"></div>
+                <div class="gap"></div>
               </div>
             </div>
           </div>
