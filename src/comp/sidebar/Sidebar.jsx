@@ -1,21 +1,27 @@
 import "./Sidebar.scss";
+
 import logo from "../../assets/logo.png";
 import logo2 from "../../assets/logopan.webp";
+
 import { FiHome } from "react-icons/fi";
-import { Link } from "react-router-dom";
-import { useState } from "react";
 import { BsPerson } from "react-icons/bs";
 import { LuLogOut } from "react-icons/lu";
 import { IoCloudUploadOutline } from "react-icons/io5";
 
-const Sidebar = ({ active }) => {
-  const [childindex, setChildIndex] = useState();
+import { Link } from "react-router-dom";
+import { useState } from "react";
+
+const Sidebar = ({ active, setActive, closeSidebar }) => {
+
+  const [childIndex, setChildIndex] = useState(null);
+
   const navs = [
     {
       icon: <FiHome />,
       name: "Dashboard",
       link: "/",
     },
+
     {
       icon: <BsPerson />,
       name: "Employee",
@@ -24,36 +30,37 @@ const Sidebar = ({ active }) => {
           name: "Add Employee",
           link: "/addEmployee",
         },
-       
         {
           name: "List All Employee",
           link: "/empList",
         },
       ],
     },
+
     {
       icon: <FiHome />,
       name: "Document Management",
       link: "/",
     },
 
-     {
+    {
       icon: <FiHome />,
       name: "Leave Management",
       link: "/LeaveManagement",
     },
-    
+
     {
-      icon:<IoCloudUploadOutline />,
+      icon: <IoCloudUploadOutline />,
       name: "Salary Management",
       link: "/salaryManagement",
-      
     },
+
     {
       icon: <FiHome />,
       name: "User Management",
       link: "/",
     },
+
     {
       icon: <BsPerson />,
       name: "Official Documents",
@@ -71,7 +78,7 @@ const Sidebar = ({ active }) => {
           link: "/addEmployee",
         },
         {
-          name: "Generate Incriment Letter",
+          name: "Generate Increment Letter",
           link: "/addEmployee",
         },
         {
@@ -95,68 +102,216 @@ const Sidebar = ({ active }) => {
           link: "/addEmployee",
         },
         {
-          name: "Generate Intership Letter",
+          name: "Generate Internship Letter",
           link: "/addEmployee",
         },
-        
-       
-        
       ],
     },
+
     {
       icon: <FiHome />,
-      name: "Attendence",
+      name: "Attendance",
       link: "/attendance",
     },
-     {
+
+    {
       icon: <FiHome />,
       name: "Official Notes",
       link: "/",
     },
   ];
+
+  // ==========================================
+  // CLICK PARENT MENU
+  // ==========================================
+
+  const handleParentClick = (item, index) => {
+
+    // If sidebar is collapsed
+    // first click should open it
+    if (!active) {
+      setActive(true);
+    }
+
+    // If item has children
+    if (item.children) {
+
+      setChildIndex(
+        childIndex === index ? null : index
+      );
+
+      return;
+    }
+
+    // Normal link
+    setChildIndex(null);
+
+    // Close sidebar after navigation
+    closeSidebar();
+  };
+
+
+  // ==========================================
+  // CLICK CHILD
+  // ==========================================
+
+  const handleChildClick = () => {
+
+    setChildIndex(null);
+
+    closeSidebar();
+  };
+
+  // CLICK LOGOUT
+
+  const handleLogout = () => {
+
+    setChildIndex(null);
+
+    closeSidebar();
+  };
+
+
   return (
-    <>
-      <div class="sidebar_parent">
-        <div class="top">
-          <div class="logo">
-            {!active ? <img src={logo} alt="" /> : <img src={logo2} alt="" />}
-          </div>
 
-          <div class="navsection">
-            {navs &&
-              navs.map((item, index) => (
-                <Link
-                  onClick={() => item?.children && setChildIndex(index)}
-                  className={childindex === index ? "link active" : "link"}
-                  to={item.link}
-                >
-                  <span>{item.icon}</span>
-                  {item.name}
+    <div
+      className="sidebar_parent"
+      onClick={(e) => {
+        e.stopPropagation();
+        setActive(true);
+      }}
+    >
 
-                  {index === childindex && (
-                    <div
-                      class="child_list"
-                      onMouseLeave={() => setChildIndex()}
-                     
-                    >
-                      {item.children?.map((child, index) => (
-                        <Link  to={child.link} key={index}>{child.name}</Link>
-                      ))}
-                    </div>
-                  )}
-                </Link>
-              ))}
-          </div>
+      {/* ================= TOP ================= */}
+
+      <div className="top">
+
+        {/* ================= LOGO ================= */}
+
+        <div className="logo">
+
+          {!active ? (
+            <img src={logo2} alt="Logo" />
+          ) : (
+            <img src={logo} alt="Logo" />
+          )}
+
         </div>
 
-        <Link className="logout">
-          <span>
-            <LuLogOut />
-          </span>
-          Logout
-        </Link>
+
+        {/* ================= NAVIGATION ================= */}
+
+        <div className="navsection">
+
+          {navs.map((item, index) => (
+
+            <div className="nav_item" key={index}>
+
+              {/* ================= PARENT ================= */}
+
+              {item.children ? (
+                <div
+                  className={
+                    childIndex === index
+                      ? "link active"
+                      : "link"
+                  }
+                  onClick={() =>
+                    handleParentClick(item, index)
+                  }
+                >
+
+                  <span className="nav_icon">
+                    {item.icon}
+                  </span>
+
+                  <span className="nav_text">
+                    {item.name}
+                  </span>
+
+                </div>
+
+              ) : (
+
+                <Link
+                  className="link"
+                  to={item.link}
+                  onClick={() =>
+                    handleParentClick(item, index)
+                  }
+                >
+
+                  <span className="nav_icon">
+                    {item.icon}
+                  </span>
+
+                  <span className="nav_text">
+                    {item.name}
+                  </span>
+
+                </Link>
+
+              )}
+
+
+              {/* ================= CHILDREN ================= */}
+
+              {item.children &&
+                childIndex === index && (
+
+                  <div
+                    className="child_list"
+                    onMouseLeave={() =>
+                      setChildIndex(null)
+                    }
+                  >
+
+                    {item.children.map(
+                      (child, childIndex) => (
+
+                        <Link
+                          to={child.link}
+                          key={childIndex}
+                          onClick={handleChildClick}
+                        >
+                          {child.name}
+                        </Link>
+
+                      )
+                    )}
+
+                  </div>
+
+                )}
+
+            </div>
+
+          ))}
+
+        </div>
+
       </div>
-    </>
+
+
+      {/* ================= LOGOUT ================= */}
+
+      <Link
+        className="logout"
+        to="/login"
+        onClick={handleLogout}
+      >
+
+        <span>
+          <LuLogOut />
+        </span>
+
+        <span className="nav_text">
+          Logout
+        </span>
+
+      </Link>
+
+    </div>
   );
 };
 

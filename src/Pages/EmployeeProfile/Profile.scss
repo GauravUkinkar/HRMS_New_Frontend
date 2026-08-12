@@ -239,8 +239,8 @@
 @media only screen and (max-width: 1400px) {
   .bottom-side {
     .left-side {
-      .img-group{
-        .emp-name{
+      .img-group {
+        .emp-name {
           text-align: center;
         }
       }
@@ -268,8 +268,8 @@
           .label {
             width: 30%;
           }
-          .value{
-            width:70%;
+          .value {
+            width: 70%;
           }
         }
       }
@@ -277,19 +277,19 @@
   }
 }
 
-@media only screen and (max-width:1000px){
-  .bottom-side{
+@media only screen and (max-width: 1200px) {
+  .bottom-side {
     flex-direction: column;
-    .left-side{
+    .left-side {
       width: 100%;
-        .status-content {
+      .status-content {
         .row-one {
           flex-direction: row;
           span {
             display: block;
           }
-          .label{
-            max-width: 110px;
+          .label {
+            width: 110px;
           }
           .value {
             width: 100%;
@@ -300,19 +300,47 @@
         flex-direction: row;
       }
     }
-      .right-side {
-        width: 100%;
+    .right-side {
+      width: 100%;
       .personal-details,
       .emergency-details,
       .salary-details {
         width: 100%;
         .row-one {
-         
           .label {
-            max-width: 120px;
+            // max-width: 120px;
           }
-          .value{
-            width:100%;
+          .value {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+@media only screen and (max-width: 600px) {
+  .bottom-side {
+    .right-side {
+      .personal-details,
+      .emergency-details,
+      .salary-details {
+        gap: 5px;
+        .heading {
+          font-size: 22px;
+        }
+        .row-one {
+          flex-direction: column;
+          background: rgba(228, 232, 233, 0.397);
+          border-radius: 5px;
+
+          .label {
+            width: 100% !important;
+          }
+          .coma {
+            display: none;
+          }
+          .value {
+            width: 100% !important;
           }
         }
       }

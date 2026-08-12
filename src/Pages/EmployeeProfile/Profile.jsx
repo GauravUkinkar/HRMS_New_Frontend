@@ -185,18 +185,6 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                    Mail Id
-                                </p>
-                                <span>:</span>
-                                <p className="value">
-                                    <a href={`mailto:${employeeprofile?.email}`}>
-                                        {employeeprofile?.email || "N/A"}
-                                    </a>
-                                </p>
-                            </div>
-
-                            <div className="row-one">
-                                <p className="label">
                                     Date Of Birth
                                 </p>
 
@@ -243,6 +231,18 @@ const Profile = () => {
                                 Personal Details
                             </div>
 
+                            {/* Email ID */}
+                            <div className="row-one">
+
+                                <p className="label">Email Id</p>
+                                <span className="coma">:</span>
+                                <p className="value">
+                                    <a href={`mailto:${employeeprofile?.email}`}>
+                                        {employeeprofile?.email || "N/A"}
+                                    </a>
+                                </p>
+                            </div>
+
                             {/* AADHAAR */}
                             <div className="row-one">
 
@@ -250,7 +250,7 @@ const Profile = () => {
                                     Aadhaar Card Number
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <SensitiveValue
@@ -269,7 +269,7 @@ const Profile = () => {
                                     PAN Card Number
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <SensitiveValue
@@ -288,7 +288,7 @@ const Profile = () => {
                                     UAN Number
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <SensitiveValue
@@ -307,7 +307,7 @@ const Profile = () => {
                                     Current Address
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <a
@@ -330,7 +330,7 @@ const Profile = () => {
                                     Permanent Address
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <a
@@ -357,10 +357,10 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                    Contact Name
+                                     Name
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     {employeeprofile?.emergencyContactName || "N/A"}
@@ -369,10 +369,10 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                    Contact Person Number
+                                      Number
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <a href={`tel:${employeeprofile?.emergencyContactNumber}`}>
@@ -384,10 +384,10 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                    Contact Person Relation
+                                      Relation
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     {employeeprofile?.emergencyContactRelation || "N/A"}
@@ -399,7 +399,7 @@ const Profile = () => {
                                     Current Address
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <a
@@ -419,7 +419,7 @@ const Profile = () => {
                                     Permanent Address
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <a
@@ -448,7 +448,7 @@ const Profile = () => {
                                     Bank Name
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     {employeeprofile?.bankName || "N/A"}
@@ -460,7 +460,7 @@ const Profile = () => {
                                     Bank IFSC Code
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     {employeeprofile?.ifscCode || "N/A"}
@@ -474,7 +474,7 @@ const Profile = () => {
                                     Account Number
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
 
@@ -493,7 +493,7 @@ const Profile = () => {
                                     Monthly Salary
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <SensitiveValue
@@ -509,7 +509,7 @@ const Profile = () => {
                                     Yearly Package
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
                                     <SensitiveValue
@@ -527,7 +527,7 @@ const Profile = () => {
                                     Policy Number
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
 
@@ -548,7 +548,7 @@ const Profile = () => {
                                     ESIC Number
                                 </p>
 
-                                <span>:</span>
+                                <span className="coma">:</span>
 
                                 <p className="value">
 
@@ -557,17 +557,11 @@ const Profile = () => {
                                         show={showEsic}
                                         setShow={setShowEsic}
                                     />
-
                                 </p>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </MainPanel>
         </>
     );
