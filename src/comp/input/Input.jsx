@@ -17,18 +17,23 @@ const Input = ({
   name,
   mq_label,
   icon,
+  disabled = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const types = ["date","file"]
+
+  const types = ["date", "file"];
 
   return (
     <div className="input">
-      {mq_label && <div className="mq_label">{mq_label} </div>}
-      {icon && <span className="left-icon">{icon}</span>}
-      { types.includes(type) && (
-        <label className="date-label">{required ? `${label} *` : label}</label>
-      )}
+      {mq_label && <div className="mq_label">{mq_label}</div>}
 
+      {icon && <span className="left-icon">{icon}</span>}
+
+      {types.includes(type) && (
+        <label className="date-label">
+          {required ? `${label} *` : label}
+        </label>
+      )}
 
       <TextField
         error={!!error}
@@ -42,70 +47,91 @@ const Input = ({
         }
         onChange={onChange}
         value={value}
-        type={type === "password" ? (showPassword ? "text" : "password") : type}
+        disabled={disabled} // ✅ IMPORTANT
+        type={
+          type === "password"
+            ? showPassword
+              ? "text"
+              : "password"
+            : type
+        }
         variant="outlined"
-        // Required for date field
-        InputLabelProps={types.includes(type) ? { shrink: true } : {}}
+        InputLabelProps={
+          types.includes(type)
+            ? { shrink: true }
+            : {}
+        }
         sx={{
           "& input": {
             color: text_color || "#000",
-            paddingLeft:
+            paddingLeft: types.includes(type)
+              ? "14px"
+              : icon
+                ? "52px"
+                : mq_label
+                  ? "10%"
+                  : "10px",
+          },
+
+          "& .MuiInputLabel-root": {
+            color: lb_color || "rgba(0,0,0,0.6)",
+            marginLeft:
               types.includes(type)
-                ? "14px"
+                ? 0
                 : icon
-                  ? "52px"
+                  ? "28px"
                   : mq_label
                     ? "10%"
                     : "10px",
           },
 
-          "& .MuiInputLabel-root": {
-            color: lb_color || "black",
-            // padding:"0px 20px",
-            marginLeft:
-              types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10%" : "10px",
-          },
-
           "& .MuiInputLabel-root.Mui-focused": {
-            color: fc_color || "var(--accent)",
-            
+            color: fc_color || "rgba(0,0,0,0.6)",
             left:
-              types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10px" : "10px",
+              types.includes(type)
+                ? 0
+                : icon
+                  ? "28px"
+                  : mq_label
+                    ? "10px"
+                    : "10px",
           },
 
           "& .MuiOutlinedInput-notchedOutline legend": {
-            marginLeft: types.includes(type) ? 0 : mq_label ? "10%" : "10px",
+            marginLeft:
+              types.includes(type)
+                ? 0
+                : mq_label
+                  ? "10%"
+                  : "10px",
           },
 
-"& .MuiInputLabel-root": {
-  color: lb_color || "rgba(0,0,0,0.6)",
-  marginLeft:
-    types.includes(type) ? 0 : icon ? "28px" : mq_label ? "10%" : "10px",
-},
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor:
+                bd_color || "rgba(0,0,0,0.23)",
+            },
 
-"& .MuiInputLabel-root.Mui-focused": {
-  color: fc_color || "rgba(0,0,0,0.6)",
-},
+            "&:hover fieldset": {
+              borderColor:
+                bd_color || "rgba(0,0,0,0.4)",
+            },
 
-"& .MuiOutlinedInput-root": {
-  "& fieldset": {
-    borderColor: bd_color || "rgba(0,0,0,0.23)",
-  },
-  "&:hover fieldset": {
-    borderColor: bd_color || "rgba(0,0,0,0.4)",
-  },
-  "&.Mui-focused fieldset": {
-    borderColor: fc_color || "#00615a",
-    borderWidth: "2px",
-  },
-},
+            "&.Mui-focused fieldset": {
+              borderColor:
+                fc_color || "#00615a",
+              borderWidth: "2px",
+            },
+          },
         }}
       />
 
-      {type === "password" && (
+      {type === "password" && !disabled && (
         <span
           className="password"
-          style={{ color: bd_color || "black" }}
+          style={{
+            color: bd_color || "black",
+          }}
           onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? <IoIosEye /> : <IoIosEyeOff />}
