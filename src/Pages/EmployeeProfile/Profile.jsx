@@ -203,7 +203,7 @@ const Profile = () => {
 
                         <div className="btn-groups">
                             <Link to="#"><SlDocs /><span>View Document</span></Link>
-                            <Link to="#"><MdOutlineEditNote /> <span>Generate Salary Slip</span></Link>
+                            <Link to="#"><MdOutlineEditNote /> <span>Edit Details</span></Link>
                         </div>
 
                     </div>
