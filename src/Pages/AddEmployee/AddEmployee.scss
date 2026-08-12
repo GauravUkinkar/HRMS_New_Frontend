@@ -1,12 +1,12 @@
 .employee-parent {
   display: flex;
   flex-direction: column;
-  gap:40px;
+  gap: 40px;
   background: #e9f0f0;
   box-shadow: var(--shadow);
   border-radius: 10px;
-padding:20px;
-  
+  padding: 20px;
+
   .empdetails,
   .personaldetails,
   .crmdetails {
@@ -35,6 +35,66 @@ padding:20px;
     }
   }
 
+  .empdetails {
+    width: 100%;
+
+    .top-section {
+      display: flex;
+      gap: 20px;
+
+      width: 100%;
+      .employee-details-inputs {
+        width: 80%;
+      }
+
+      .employee-photo-upload {
+        width: 20%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+
+        .employee-photo-preview {
+          width: 150px;
+          height: 150px;
+          border: 2px dashed #4b929c;
+          border-radius: 50%;
+          background:var(--white);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          color: #777;
+          font-size: 16px;
+
+
+           .employee-photo-preview img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+         
+        }
+        }
+       
+        .photo-upload-btn {
+        
+          padding: 6px 12px;
+          background: #4b929c;
+          color: var(--white);
+          border-radius: 4px;
+          font-size: 14px;
+          cursor: pointer;
+          text-align: center;
+        
+        &:hover {
+          background: #539ea8;
+        }
+      }
+      }
+    }
+  }
   .btn {
     width: fit-content;
     padding: 10px 30px;

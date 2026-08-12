@@ -18,7 +18,7 @@ const AddEmployee = () => {
   const formObj = {
     employeeName: "",
     employeeId: "",
-     employee_status: "active",
+    employee_status: "active",
     gender: "",
     employeeStatus: "",
     designation: "",
@@ -56,18 +56,14 @@ const AddEmployee = () => {
     teamName: "",
   };
 
-
-
   const addEmployee = async () => {
     try {
-
       const response = await axios.post(
         `${BASE_URL}Admin/AddEmployee`,
         values,
         {
-
           withCredentials: true,
-        }
+        },
       );
 
       toast.success("Employee added successfully!");
@@ -84,14 +80,15 @@ const AddEmployee = () => {
   const getTeams = async () => {
     try {
       // const res = await axios.get(`${BASE_URL}Admin/Team/getAllTeams`);
-      const res = await axios.get("https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams");
+      const res = await axios.get(
+        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams",
+      );
       console.log(res.data, "sklfjskdlfklfsdjksdflkklsdfkjljksfd");
       setTeams(res.data);
-
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     getTeams();
@@ -110,12 +107,6 @@ const AddEmployee = () => {
   console.log(error, "error");
   console.log(values, "values");
 
-
-
-
-
-
-  
   return (
     <>
       <MainPanel
@@ -127,40 +118,188 @@ const AddEmployee = () => {
       >
         <form onSubmit={handleSubmit} className="employee-parent  ">
           <div className="empdetails">
-            <h1>Employee Details</h1>
+  <h1>Employee Details</h1>
 
-            <div className="inputs">
-              <div className="form-row">
-                <Input
-                  error={error.employeeId}
-                  name="employeeId"
-                  value={values.employeeId}
-                  onChange={handleChange}
-                  label="Employee ID"
-                  mq_label="PSPL"
-                  required
-                />
-                <Input
-                  error={error.password}
-                  name="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  label="Password"
-                  required
-                />
+  {/* Employee Photo */}
+ <div className="top-section">
+<div className="inputs employee-details-inputs">
 
-{/* //active//Employee status */}
+    {/* Row 1 */}
+    <div className="form-row">
+      <Input
+        error={error.employeeId}
+        name="employeeId"
+        value={values.employeeId}
+        onChange={handleChange}
+        label="Employee ID"
+        mq_label="PSPL"
+        required
+      />
 
- <SelectInput
-      error={error.employee_status}
-      name="employee_status"
-      value={values.employee_status}
-      onChange={handleChange}
-      label="Employee Status"
-    >
-      <MenuItem value="active">Active</MenuItem>
-      <MenuItem value="inactive">Inactive</MenuItem>
-    </SelectInput>
+      <Input
+        error={error.password}
+        name="password"
+        value={values.password}
+        onChange={handleChange}
+        label="Password"
+        required
+      />
+
+      <SelectInput
+        error={error.employee_status}
+        name="employee_status"
+        value={values.employee_status || "active"}
+        onChange={handleChange}
+        label="Employee Status"
+      >
+        <MenuItem value="active">Active</MenuItem>
+
+        <MenuItem
+          value="inactive"
+          disabled={!values.dateOfLiving}
+        >
+          Inactive
+        </MenuItem>
+      </SelectInput>
+
+      <SelectInput
+        error={error.role}
+        name="role"
+        value={values.role}
+        onChange={handleChange}
+        label="Role"
+      >
+        <MenuItem value="ADMIN">Admin</MenuItem>
+        <MenuItem value="SUPERADMIN">SuperAdmin</MenuItem>
+        <MenuItem value="EMPLOYEE">Employee</MenuItem>
+      </SelectInput>
+    </div>
+
+    {/* Row 2 */}
+    <div className="form-row">
+      <SelectInput
+        error={error.stage}
+        name="Stage"
+        value={values.stage}
+        onChange={handleChange}
+        label="Employee Stage"
+      >
+        <MenuItem value="On Board">On Board</MenuItem>
+        <MenuItem value="Provision">Provision</MenuItem>
+        <MenuItem value="Intern">Intern</MenuItem>
+      </SelectInput>
+
+      <SelectInput
+        error={error.status}
+        name="status"
+        value={values.status}
+        onChange={handleChange}
+        label="Employee Type"
+      >
+        <MenuItem value="Full-time">Full-time</MenuItem>
+        <MenuItem value="Part-time">Part-time</MenuItem>
+        <MenuItem value="Freelance">Freelance</MenuItem>
+      </SelectInput>
+
+      <SelectInput
+        error={error.companyName}
+        name="companyName"
+        value={values.companyName}
+        onChange={handleChange}
+        label="Company Name"
+      >
+        <MenuItem value="Pandoza Solutions Pvt.Ltd">
+          Pandoza Solutions Pvt.Ltd
+        </MenuItem>
+
+        <MenuItem value="Akka Foundation">
+          Akka Foundation
+        </MenuItem>
+
+        <MenuItem value="NVM Infratech">
+          NVM Infratech
+        </MenuItem>
+
+        <MenuItem value="The Indian Journey">
+          The Indian Journey
+        </MenuItem>
+      </SelectInput>
+
+      <Input
+        error={error.dateOfJoining}
+        name="dateOfJoining"
+        value={values.dateOfJoining}
+        onChange={handleChange}
+        label="Date of Joining"
+        required
+        type="date"
+      />
+    </div>
+
+    {/* Row 3 */}
+    <div className="form-row">
+      <Input
+        name="dateOfLiving"
+        value={values.dateOfLiving}
+        onChange={handleChange}
+        label="Last Working Day"
+        type="date"
+      />
+
+      <Input
+        error={error.department}
+        name="department"
+        value={values.department}
+        onChange={handleChange}
+        label="Department"
+      />
+
+      <Input
+        error={error.designation}
+        name="designation"
+        value={values.designation}
+        onChange={handleChange}
+        label="Designation"
+      />
+    </div>
+
+  </div>
+
+ <div className="employee-photo-upload">
+    <div className="employee-photo-preview">
+      {values.employee_image ? (
+        <img
+          src={URL.createObjectURL(values.employee_image)}
+          alt="Employee"
+        />
+      ) : (
+        <span>Photo</span>
+      )}
+    </div>
+
+    <label htmlFor="employee-image" className="photo-upload-btn">
+      Upload Photo
+    </label>
+
+    <input
+      id="employee-image"
+      type="file"
+      accept="image/*"
+      hidden
+      onChange={(e) =>
+        handleChange({
+          target: {
+            name: "employee_image",
+            value: e.target.files[0],
+          },
+        })
+      }
+    />
+  </div>
+  
+
+  
+ </div>
 
 
 
@@ -170,83 +309,44 @@ const AddEmployee = () => {
 
 
 
-                <SelectInput
-                  error={error.role}
-                  name="role"
-                  value={values.role}
-                  onChange={handleChange}
-                  label="Role"
-                >
-                  <MenuItem value="ADMIN">Admin </MenuItem>
-                  <MenuItem value="SUPERADMIN">SuperAdmin </MenuItem>
-                  <MenuItem value="EMPLOYEE">Employee </MenuItem>
-                </SelectInput>
-              </div>
-              <div className="form-row">
-                
-                <SelectInput
-                  error={error.status}
-                  name="status"
-                  value={values.status}
-                  onChange={handleChange}
-                  label="Employee Type"
-                >
-                  <MenuItem value="On Board">Full-time</MenuItem>
-                  <MenuItem value="Provision">Part-time </MenuItem>
-                  <MenuItem value="Intern">Freelance </MenuItem>
-                  <MenuItem value="Intern">Intern </MenuItem>
-                </SelectInput>
-                <SelectInput
-                  error={error.companyName}
-                  name="companyName"
-                  value={values.companyName}
-                  onChange={handleChange}
-                  label="Company Name"
-                >
-                  <MenuItem value="Pandoza Solutions Pvt.Ltd ">
-                    Pandoza Solutions Pvt.Ltd{" "}
-                  </MenuItem>
-                  <MenuItem value="Akka Foundation ">Akka Foundation </MenuItem>
-                  <MenuItem value="NVM Infratech ">NVM Infratech </MenuItem>
-                  <MenuItem value="The Indian Journey">
-                    The Indian Journey{" "}
-                  </MenuItem>
-                </SelectInput>
-                <Input
-                  error={error.dateOfJoining}
-                  name="dateOfJoining"
-                  value={values.dateOfJoining}
-                  onChange={handleChange}
-                  label="Date of Joining"
-                  required
-                  type="date"
-                />
-              </div>
-              <div className="form-row">
-                <Input
-                  name="dateOfLiving"
-                  value={values.dateOfLiving}
-                  onChange={handleChange}
-                  label="Last Working Day"
-                  type="date"
-                />
-                <Input
-                  error={error.department}
-                  name="department"
-                  value={values.department}
-                  onChange={handleChange}
-                  label="Department"
-                />
-                <Input
-                  error={error.designation}
-                  name="designation"
-                  value={values.designation}
-                  onChange={handleChange}
-                  label="Designation"
-                />
-              </div>
-            </div>
-          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+</div>
           <div className="personaldetails">
             <h1>Personal Details</h1>
             <div className="inputs">
@@ -411,17 +511,19 @@ const AddEmployee = () => {
                   <MenuItem value="Friend">Friend</MenuItem>
                   <MenuItem value="Other">Other</MenuItem>
                 </SelectInput>
-
               </div>
               <div className="form-row">
-                <Input label="Emergency Contact Person Current Address"
+                <Input
+                  label="Emergency Contact Person Current Address"
                   name="emergencyContactAddress"
                   value={values.emergencyContactAddress}
                   onChange={handleChange}
                   required
                 />
-             
-                <Input label="Emergency Contact Person Permanent Address"
+              </div>
+              <div className="form-row">
+                <Input
+                  label="Emergency Contact Person Permanent Address"
                   name="emergencyContactAddress"
                   value={values.emergencyContactAddress}
                   onChange={handleChange}
@@ -523,7 +625,6 @@ const AddEmployee = () => {
                   label="CRM Role"
                   name="crmRole"
                   required
-
                 >
                   <MenuItem value="ADMIN">Admin </MenuItem>
                   <MenuItem value="MANAGER">Manager </MenuItem>
@@ -536,7 +637,6 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   label="Manager Name"
                   required
-
                 >
                   {teams.map((team) => (
                     <MenuItem
