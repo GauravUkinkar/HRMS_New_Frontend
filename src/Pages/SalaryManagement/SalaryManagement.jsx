@@ -10,8 +10,8 @@ import axios from "axios";
 
 const SalaryManagement = () => {
   const [salarydata, setSalaryData] = useState([]);
-    const[loader,setLoader] = useState(false)
-    const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
+  const [loader, setLoader] = useState(false);
+  const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
   const columns = [
     {
       key: "employeeName",
@@ -76,37 +76,37 @@ const SalaryManagement = () => {
       dataIndex: "Employer PF",
       title: "Employer PF",
     },
-        {
+    {
       key: "Employee ESIC",
       dataIndex: "Employee ESIC",
       title: "Employee ESIC",
     },
-            {
+    {
       key: "Advance Salary",
       dataIndex: "Advance Salary",
       title: "Advance Salary",
     },
-            {
+    {
       key: "Other Deduction",
       dataIndex: "Other Deduction",
       title: "Other Deduction",
     },
-                {
+    {
       key: "Other Allowance",
       dataIndex: "Other Allowance",
       title: "Other Allowance",
     },
-                {
+    {
       key: "Professional Tax",
       dataIndex: "Professional Tax",
       title: "Professional Tax",
     },
-                    {
+    {
       key: "Insurance Corporation",
       dataIndex: "Insurance Corporation",
       title: "Insurance Corporation",
     },
-                        {
+    {
       key: "Net Salary",
       dataIndex: "Net Salary",
       title: "Net Salary",
@@ -116,7 +116,7 @@ const SalaryManagement = () => {
       key: "Action",
       dataIndex: "Action",
       title: "Action",
-      fixed:"right",
+      fixed: "right",
       render: () => (
         <div>
           <span>
@@ -129,48 +129,21 @@ const SalaryManagement = () => {
       ),
     },
   ];
-//   const getAllSalary= async ()=>{
-//     try{
-//         setLoader(true)
-//         const response = await axios.get(`${BASE_URL}admin/getAllNewSalaries`
-            
-//         );
-//         setData(response?.data?.data)
-//         console.log(response)
-//     }catch (error) {
-//         console.log(error)
-//     }finally{
-//         setLoader(false)
-//     }
-// }
-// useEffect(()=>{
-//     const fetchSalary = ()=>{
-//         getAllSalary()
-//     }
-//     fetchSalary ()
-// },[]);
 
-
-const getSalary = async()=>{
+  const getSalary = async () => {
     try {
-        const res = await axios.get(`${BASE_URL}admin/getAllNewSalaries`,
-            {
-
-          withCredentials: true,
-        }
-        );
-        console.log(res, "sdklfjklsdfkldfskljkfdsl");
-        setSalaryData(res.salarydata)
-        
-        
+      const res = await axios.get(`${BASE_URL}admin/getAllNewSalaries`, {
+        withCredentials: true,
+      });
+      console.log(res.data, "sdklfjklsdfkldfskljkfdsl");
+      setSalaryData(res.data.map(item => item.data));
     } catch (error) {
-        console.log(error);
-        
+      console.log(error);
     }
-}
-useEffect(()=>{
+  };
+  useEffect(() => {
     getSalary();
-},[])
+  }, []);
   return (
     <>
       <MainPanel>
