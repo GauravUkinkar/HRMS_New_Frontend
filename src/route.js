@@ -8,6 +8,7 @@ const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
 const LeaveManagement = lazy(() => import("./Pages/Leavemanagement/Leavemanagement"));
 const EmpList = lazy(() => import("./Pages/EmpList/EmpList"));
 const AddEmployee = lazy(() => import("../src/Pages/AddEmployee/AddEmployee"));
+const OfficialNotes = lazy(() => import("../src/Pages/OfficialNotes/OfficialNotes"));
 const SalaryDetails = lazy(
   () => import("../src/Pages/AddEmployee/SalaryDetails"),
 );
@@ -40,6 +41,12 @@ export const routes = [
     name: "Add Employee",
     path: "/addEmployee",
     comp: AddEmployee,
+    adminonly: true,
+  },
+  {
+    name: "OfficialNotes",
+    path: "/OfficialNotes",
+    comp: OfficialNotes,
     adminonly: true,
   },
   {

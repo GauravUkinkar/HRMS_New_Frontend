@@ -1,6 +1,7 @@
-import React from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { FaPlus } from "react-icons/fa";
 import "./OfficialNotes.scss";
+import { MdEdit, MdDelete } from "react-icons/md";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const OfficialNotes = () => {
@@ -42,8 +43,21 @@ const OfficialNotes = () => {
     },
   ];
 
+  // Popup state
+  const [showAddNote, setShowAddNote] = useState(false);
+
+  // Send To state
+  const [sendTo, setSendTo] = useState("");
+
+  // Open popup
   const handleAddNote = () => {
-    console.log("Add Note clicked");
+    setShowAddNote(true);
+  };
+
+  // Close popup
+  const handleCloseNote = () => {
+    setShowAddNote(false);
+    setSendTo("");
   };
 
   const handleEdit = (note) => {
@@ -54,89 +68,302 @@ const OfficialNotes = () => {
     console.log("Delete note:", note);
   };
 
+  const handleSubmitNote = () => {
+    console.log("Note submitted");
+    handleCloseNote();
+  };
+
   return (
-      <MainPanel>
-    <div className="official-notes-page">
-      {/* Header */}
-      <div className="official-notes-header">
-        <div className="header-content">
-          <h1>Official Notes</h1>
-          <p>Create and manage official notes sent by admin to all employees.</p>
+    <MainPanel>
+      <div className="official-notes-page">
+
+        {/* =========================
+            HEADER
+        ========================= */}
+
+        <div className="official-notes-header">
+
+          <div className="header-content">
+            <h1>Official Notes</h1>
+          </div>
+
+          <button
+            className="add-note-btn"
+            onClick={handleAddNote}
+          >
+            <FaPlus />
+            <span>Add Note</span>
+          </button>
+
         </div>
 
-        <button className="add-note-btn" onClick={handleAddNote}>
-          <Plus size={18} strokeWidth={2} />
-          <span>Add Note</span>
-        </button>
-      </div>
 
-      {/* Notes Table */}
-      <div className="notes-table-wrapper">
-        <table className="notes-table">
-          <thead>
-            <tr>
-              <th className="sr-column">Sr. No.</th>
-              <th className="date-column">Date &amp; Time</th>
-              <th className="note-column">Note</th>
-              <th className="action-column">Action</th>
-            </tr>
-          </thead>
+        {/* =========================
+            ADD NOTE POPUP
+        ========================= */}
 
-          <tbody>
-            {notes.map((note) => (
-              <tr key={note.id}>
-                {/* Sr No */}
-                <td className="sr-column">
-                  <span className="sr-number">{note.id}</span>
-                </td>
+        {showAddNote && (
+          <div className="note-modal-overlay">
+
+            <div className="note-modal">
+
+              {/* Popup Header */}
+              <div className="note-modal-header">
+
+                <h2>Add Official Note</h2>
+
+                <button
+                  type="button"
+                  className="close-btn"
+                  onClick={handleCloseNote}
+                >
+                  ×
+                </button>
+
+              </div>
+
+
+              {/* Popup Body */}
+              <div className="note-modal-body">
 
                 {/* Date */}
-                <td className="date-column">
-                  <span className="note-date">{note.date}</span>
-                </td>
+                <div className="note-form-group">
+
+                  <label htmlFor="note-date">
+                    Date
+                  </label>
+
+                  <input
+                    id="note-date"
+                    type="date"
+                  />
+
+                </div>
+
+
+                {/* Send To */}
+                <div className="note-form-group">
+
+                  <label htmlFor="send-to">
+                    Send To
+                  </label>
+
+                  <select
+                    id="send-to"
+                    value={sendTo}
+                    onChange={(e) => setSendTo(e.target.value)}
+                  >
+                    <option value="">
+                      Select Option
+                    </option>
+
+                    <option value="all">
+                      All Employees
+                    </option>
+
+                    <option value="specific">
+                      Specific Employee
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                {/* Employee List
+                    Only appears when Specific Employee is selected
+                */}
+                {sendTo === "specific" && (
+                  <div className="note-form-group">
+
+                    <label htmlFor="employee">
+                      Select Employee
+                    </label>
+
+                    <select id="employee">
+
+                      <option value="">
+                        Select Employee
+                      </option>
+
+                      <option value="EMP001">
+                        EMP001 - Rahul Patil
+                      </option>
+
+                      <option value="EMP002">
+                        EMP002 - Priya Sharma
+                      </option>
+
+                      <option value="EMP003">
+                        EMP003 - Amit Joshi
+                      </option>
+
+                      <option value="EMP004">
+                        EMP004 - Sneha More
+                      </option>
+
+                    </select>
+
+                  </div>
+                )}
+
 
                 {/* Note */}
-                <td className="note-column">
-                  <div className="note-content">
-                    <h3>{note.title}</h3>
-                    <p>{note.description}</p>
-                  </div>
-                </td>
+                <div className="note-form-group">
 
-                {/* Actions */}
-                <td className="action-column">
-                  <div className="note-actions">
-                    <button
-                      type="button"
-                      className="action-btn edit-btn"
-                      onClick={() => handleEdit(note)}
-                      title="Edit Note"
-                    >
-                      <Pencil size={17} strokeWidth={2} />
-                    </button>
+                  <label htmlFor="official-note">
+                    Note
+                  </label>
 
-                    <button
-                      type="button"
-                      className="action-btn delete-btn"
-                      onClick={() => handleDelete(note)}
-                      title="Delete Note"
-                    >
-                      <Trash2 size={17} strokeWidth={2} />
-                    </button>
-                  </div>
-                </td>
+                  <textarea
+                    id="official-note"
+                    rows="5"
+                    placeholder="Enter official note..."
+                  ></textarea>
+
+                </div>
+
+              </div>
+
+
+              {/* Popup Footer */}
+              <div className="note-modal-footer">
+
+                <button
+                  type="button"
+                  className="cancel-note-btn"
+                  onClick={handleCloseNote}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  className="submit-note-btn"
+                  onClick={handleSubmitNote}
+                >
+                  Submit Note
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+
+        {/* =========================
+            NOTES TABLE
+        ========================= */}
+
+        <div className="notes-table-wrapper">
+
+          <table className="notes-table">
+
+            <thead>
+              <tr>
+                <th className="sr-column">
+                  Sr. No.
+                </th>
+
+                <th className="date-column">
+                  Date &amp; Time
+                </th>
+
+                <th className="note-column">
+                  Note
+                </th>
+
+                <th className="action-column">
+                  Action
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
 
-      {/* Footer */}
-      <div className="notes-footer">
-        Showing 1 to {notes.length} of {notes.length} notes
+            <tbody>
+
+              {notes.map((note) => (
+                <tr key={note.id}>
+
+                  {/* Sr No */}
+                  <td className="sr-column">
+                    <span className="sr-number">
+                      {note.id}
+                    </span>
+                  </td>
+
+
+                  {/* Date */}
+                  <td className="date-column">
+                    <span className="note-date">
+                      {note.date}
+                    </span>
+                  </td>
+
+
+                  {/* Note */}
+                  <td className="note-column">
+
+                    <div className="note-content">
+
+                      <h3>
+                        {note.title}
+                      </h3>
+
+                      <p>
+                        {note.description}
+                      </p>
+
+                    </div>
+
+                  </td>
+
+
+                  {/* Actions */}
+                  <td className="action-column">
+
+                    <div className="note-actions">
+
+                      <button
+                        type="button"
+                        className="action-btn edit-btn"
+                        onClick={() => handleEdit(note)}
+                        title="Edit Note"
+                      >
+                        <MdEdit className="icon" />
+                      </button>
+
+                      <button
+                        type="button"
+                        className="action-btn delete-btn"
+                        onClick={() => handleDelete(note)}
+                        title="Delete Note"
+                      >
+                        <MdDelete className="icon" />
+                      </button>
+
+                    </div>
+
+                  </td>
+
+                </tr>
+              ))}
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+
+        {/* Footer */}
+        <div className="notes-footer">
+          Showing 1 to {notes.length} of {notes.length} notes
+        </div>
+
       </div>
-    </div>
-      </MainPanel>
+    </MainPanel>
   );
 };
 
