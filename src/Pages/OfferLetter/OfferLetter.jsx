@@ -14,12 +14,12 @@ const OfferLetter = () => {
     <>
       <MainPanel>
         <div class="offerletter-parent parent">
-          <div class="sub-header">
+          {/* <div class="sub-header">
             <h2>View Offer</h2>
             <button className="btn">
               Download <LuDownload />
             </button>
-          </div>
+          </div> */}
           <div class="offerletter-cont cont">
             <div class="left-offer">
               <Input
