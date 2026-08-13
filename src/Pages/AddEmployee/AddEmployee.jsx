@@ -120,10 +120,8 @@ const AddEmployee = () => {
           <div className="empdetails">
             <h1>Employee Details</h1>
 
-
             <div className="top-section">
               <div className="inputs employee-details-inputs">
-
                 {/* Row 1 */}
                 <div className="form-row">
                   <Input
@@ -169,8 +167,6 @@ const AddEmployee = () => {
 
                 {/* Row 2 */}
                 <div className="form-row">
-
-
                   <SelectInput
                     error={error.status}
                     name="status"
@@ -195,13 +191,9 @@ const AddEmployee = () => {
                       Pandoza Solutions Pvt.Ltd
                     </MenuItem>
 
-                    <MenuItem value="Akka Foundation">
-                      Akka Foundation
-                    </MenuItem>
+                    <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
 
-                    <MenuItem value="NVM Infratech">
-                      NVM Infratech
-                    </MenuItem>
+                    <MenuItem value="NVM Infratech">NVM Infratech</MenuItem>
 
                     <MenuItem value="The Indian Journey">
                       The Indian Journey
@@ -245,7 +237,6 @@ const AddEmployee = () => {
                     label="Designation"
                   />
                 </div>
-
               </div>
 
               <div className="employee-photo-upload">
@@ -279,56 +270,7 @@ const AddEmployee = () => {
                   }
                 />
               </div>
-
-
-
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           </div>
           <div className="personaldetails">
             <h1>Personal Details</h1>
@@ -367,8 +309,6 @@ const AddEmployee = () => {
                   label="Contact Number"
                   required
                 />
-              </div>
-              <div className="form-row">
                 <Input
                   error={error.email}
                   name="email"
@@ -377,6 +317,8 @@ const AddEmployee = () => {
                   label="Email"
                   required
                 />
+              </div>
+              <div className="form-row">
                 <Input
                   error={error.dateOfBirth}
                   name="dateOfBirth"
@@ -400,8 +342,6 @@ const AddEmployee = () => {
                   label="Aadhar No"
                   required
                 />
-              </div>
-              <div className="form-row">
                 <Input
                   error={error.panNumber}
                   name="panNumber"
@@ -437,18 +377,20 @@ const AddEmployee = () => {
                   <MenuItem value="O+">O+</MenuItem>
                   <MenuItem value="O-">O-</MenuItem>
                 </SelectInput>
+              </div>
+              <div className="form-row">
                 <Input
-                  error={error.address}
-                  name="address"
-                  value={values.address}
+                  error={error.Currentaddress}
+                  name="Currentaddress"
+                  value={values.Currentaddress}
                   onChange={handleChange}
                   label="Current Address"
                   required
                 />
                 <Input
-                  error={error.address}
-                  name="address"
-                  value={values.address}
+                  error={error.Permanentaddress}
+                  name="Permanentaddress"
+                  value={values.Permanentaddress}
                   onChange={handleChange}
                   label="Permanent Address"
                   required
@@ -498,17 +440,15 @@ const AddEmployee = () => {
               <div className="form-row">
                 <Input
                   label="Emergency Contact Person Current Address"
-                  name="emergencyContactAddress"
-                  value={values.emergencyContactAddress}
+                  name="emergencyContactCurrentAddress"
+                  value={values.emergencyContactCurrentAddress}
                   onChange={handleChange}
                   required
                 />
-              </div>
-              <div className="form-row">
                 <Input
                   label="Emergency Contact Person Permanent Address"
-                  name="emergencyContactAddress"
-                  value={values.emergencyContactAddress}
+                  name="emergencyContactPermanentAddress"
+                  value={values.emergencyContactPermanentAddress}
                   onChange={handleChange}
                   required
                 />
