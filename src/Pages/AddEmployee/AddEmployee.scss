@@ -47,16 +47,17 @@
 
       .employee-photo-upload {
         width: 20%;
+        padding: 20px;
         display: flex;
         flex-direction: column;
         gap: 12px;
         align-items: center;
         justify-content: center;
-        z-index: 5;
+   
 
         .employee-photo-preview {
-          width: 150px;
-          height: 150px;
+          width: 200px;
+          height: 200px;
           border: 2px dashed #4b929c;
           border-radius: 50%;
           background: var(--white);
@@ -64,7 +65,7 @@
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          color: #777;
+          color: #4b929c;
           font-size: 16px;
 
           .employee-photo-preview img {
@@ -79,7 +80,7 @@
           background: #4b929c;
           color: var(--white);
           border-radius: 4px;
-          font-size: 14px;
+          font-size: 16px;
           cursor: pointer;
           text-align: center;
 
@@ -97,20 +98,20 @@
   }
 }
 
-
-
 @media only screen and (max-width: 900px) {
-  .employee-parent{
-    .empdetails{
-      .top-section{
-
+  .employee-parent {
+    .empdetails {
+      .top-section {
         flex-direction: column-reverse;
 
+        .employee-details-inputs {
+          width: 100%;
+        }
         .employee-photo-upload {
-          padding: 20px 0px 0px 20px;
+          width: 100%;
+          padding: 20px 0px 0px 0px;
         }
       }
     }
   }
-
 }
