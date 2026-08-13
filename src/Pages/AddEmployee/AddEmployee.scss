@@ -97,13 +97,10 @@
   }
 }
 
-
-
 @media only screen and (max-width: 900px) {
-  .employee-parent{
-    .empdetails{
-      .top-section{
-
+  .employee-parent {
+    .empdetails {
+      .top-section {
         flex-direction: column-reverse;
 
         .employee-photo-upload {
@@ -112,5 +109,4 @@
       }
     }
   }
-
 }
