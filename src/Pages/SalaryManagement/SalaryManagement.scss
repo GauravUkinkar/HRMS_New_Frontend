@@ -1,10 +1,218 @@
-.salarymanagement-parent{
+.salary-management {
+  padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  // ==========================================
+  // HEADER
+  // ==========================================
+
+  .page-header {
     display: flex;
     justify-content: space-between;
-    padding: 20px 10px;
-    .btn{
-        display: flex;
-        gap: 5px;
-        align-items: center;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+
+      font-size: 28px;
+      font-weight: 700;
     }
+
+    .add-salary-btn {
+      border: none;
+      outline: none;
+
+      background: #0b8b95;
+      color: #fff;
+
+      padding: 9px 16px;
+
+      border-radius: 5px;
+
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      font-size: 14px;
+      font-weight: 500;
+
+      cursor: pointer;
+
+      transition: 0.2s ease;
+
+      &:hover {
+        background: #0a7a85;
+      }
+
+      svg {
+        font-size: 13px;
+      }
+    }
+  }
+
+  // ==========================================
+  // TABLE
+  // ==========================================
+
+  .ant-table {
+    background: var(--white);
+
+    border-radius: 10px;
+
+    overflow: hidden;
+  }
+
+  // ==========================================
+  // TABLE HEADER
+  // ==========================================
+
+  .ant-table-thead > tr > th {
+    background: #fff !important;
+
+    color: #222;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    height: 55px;
+
+    padding: 12px 16px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    .anticon {
+      color: #0b8b95;
+
+      margin-left: 5px;
+    }
+  }
+
+  // ==========================================
+  // TABLE BODY
+  // ==========================================
+
+  .ant-table-tbody > tr > td {
+    height: 55px;
+
+    padding: 12px 16px;
+
+    white-space: nowrap;
+
+    font-size: 14px;
+
+    color: #222;
+  }
+
+  // ==========================================
+  // ALTERNATE ROW
+  // ==========================================
+
+  .table-row-light {
+    td {
+      background: #eafafa !important;
+    }
+  }
+
+  .table-row-dark {
+    td {
+      background: var(--white) !important;
+    }
+  }
+
+  // ==========================================
+  // ROW HOVER
+  // ==========================================
+
+  .ant-table-tbody > tr:hover > td {
+    background: #dff6f6 !important;
+  }
+
+  // ==========================================
+  // AVATAR
+  // ==========================================
+
+  .avatar {
+    background: #0b8b95;
+
+    color: #fff;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    flex-shrink: 0;
+  }
+
+  // ==========================================
+  // ACTIONS
+  // ==========================================
+
+  .edit,
+  .delete {
+    cursor: pointer;
+
+    font-size: 16px;
+
+    transition: 0.2s ease;
+  }
+
+  .edit {
+    color: #0b8b95;
+
+    &:hover {
+      color: #066b73;
+    }
+  }
+
+  .delete {
+    color: #ff4d4f;
+
+    &:hover {
+      color: #d9363e;
+    }
+  }
+
+  // ==========================================
+  // PAGINATION
+  // ==========================================
+
+  .ant-pagination-item-active {
+    border-color: #0b8b95;
+
+    a {
+      color: #0b8b95;
+    }
+  }
+
+  .ant-pagination-item:hover {
+    border-color: #0b8b95;
+
+    a {
+      color: #0b8b95;
+    }
+  }
+
+  // ==========================================
+  // SCROLLBAR
+  // ==========================================
+
+  .ant-table-body {
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #b8b8b8;
+
+      border-radius: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+  }
 }
