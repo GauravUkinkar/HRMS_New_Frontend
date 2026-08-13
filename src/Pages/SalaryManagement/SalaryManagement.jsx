@@ -11,7 +11,11 @@ import axios from "axios";
 const SalaryManagement = () => {
   const [salarydata, setSalaryData] = useState([]);
   const [loader, setLoader] = useState(false);
+
+
   const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
+
+
   const columns = [
     {
       key: "employeeName",
@@ -20,108 +24,128 @@ const SalaryManagement = () => {
       search: true,
       fixed: "left",
     },
+
     {
-      key: "Employee Id",
-      dataIndex: "Employee Id",
+      key: "employeeId",
+      dataIndex: "employeeId",
       title: "Employee Id",
       search: true,
     },
+
     {
-      key: "Month",
-      dataIndex: "Month",
+      key: "month",
+      dataIndex: "month",
       title: "Month",
     },
+
     {
-      key: "Year",
-      dataIndex: "Year",
+      key: "year",
+      dataIndex: "year",
       title: "Year",
     },
+
     {
-      key: "Gross Salary",
-      dataIndex: "Gross Salary",
+      key: "grossSalary",
+      dataIndex: "grossSalary",
       title: "Gross Salary",
     },
+
     {
-      key: "Total Working Days",
-      dataIndex: "Total Working Days",
+      key: "totalWorkingDays",
+      dataIndex: "totalWorkingDays",
       title: "Total Working Days",
     },
+
     {
-      key: "Present Days",
-      dataIndex: "Present Days",
+      key: "presentDay",
+      dataIndex: "presentDay",
       title: "Present Days",
     },
+
     {
-      key: "Absent Days",
-      dataIndex: "Absent Days",
+      key: "absentDays",
+      dataIndex: "absentDays",
       title: "Absent Days",
     },
+
     {
-      key: "Loss of Pay",
-      dataIndex: "Loss of Pay",
+      key: "lop",
+      dataIndex: "lop",
       title: "Loss of Pay",
     },
+
     {
-      key: "Dearness Allowance",
-      dataIndex: "Dearness Allowance",
+      key: "da",
+      dataIndex: "da",
       title: "Dearness Allowance",
     },
+
     {
-      key: "Employee PF",
-      dataIndex: "Employee PF",
+      key: "employeePf",
+      dataIndex: "employeePf",
       title: "Employee PF",
     },
+
     {
-      key: "Employer PF",
-      dataIndex: "Employer PF",
+      key: "employerPf",
+      dataIndex: "employerPf",
       title: "Employer PF",
     },
+
     {
-      key: "Employee ESIC",
-      dataIndex: "Employee ESIC",
+      key: "employeeEsic",
+      dataIndex: "employeeEsic",
       title: "Employee ESIC",
     },
+
     {
-      key: "Advance Salary",
-      dataIndex: "Advance Salary",
+      key: "salaryAdvance",
+      dataIndex: "salaryAdvance",
       title: "Advance Salary",
     },
+
     {
-      key: "Other Deduction",
-      dataIndex: "Other Deduction",
+      key: "otherDeduction",
+      dataIndex: "otherDeduction",
       title: "Other Deduction",
     },
+
     {
-      key: "Other Allowance",
-      dataIndex: "Other Allowance",
+      key: "otherAllowance",
+      dataIndex: "otherAllowance",
       title: "Other Allowance",
     },
+
     {
-      key: "Professional Tax",
-      dataIndex: "Professional Tax",
+      key: "professionalTax",
+      dataIndex: "professionalTax",
       title: "Professional Tax",
     },
+
     {
-      key: "Insurance Corporation",
-      dataIndex: "Insurance Corporation",
+      key: "insuranceCorporation",
+      dataIndex: "insuranceCorporation",
       title: "Insurance Corporation",
     },
+
     {
-      key: "Net Salary",
-      dataIndex: "Net Salary",
+      key: "netSalary",
+      dataIndex: "netSalary",
       title: "Net Salary",
     },
 
     {
-      key: "Action",
-      dataIndex: "Action",
+      key: "action",
+      dataIndex: "action",
       title: "Action",
       fixed: "right",
-      render: () => (
-        <div>
+
+      render: (_, record) => (
+        <div className="table-actions">
           <span>
             <RiDeleteBin6Line />
           </span>
+
           <span>
             <CiEdit />
           </span>
@@ -129,16 +153,28 @@ const SalaryManagement = () => {
       ),
     },
   ];
-
   const getSalary = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}admin/getAllNewSalaries`, {
-        withCredentials: true,
-      });
-      console.log(res.data, "sdklfjklsdfkldfskljkfdsl");
-      setSalaryData(res.data.map(item => item.data));
+      setLoader(true);
+      const res = await axios.get(
+        `${BASE_URL}admin/getAllNewSalaries`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log(res.data, "lkdfjkldfjskjdfs");
+
+      const salaryRecords = res.data
+        .map((item) => item.data)
+        .filter(Boolean);
+      console.log("Table Data:", salaryRecords)
+      setSalaryData(salaryRecords);
     } catch (error) {
-      console.log(error);
+      console.log("STATUS:", error.response?.status);
+      console.log("ERROR:", error.response?.data);
+    } finally {
+      setLoader(false);
     }
   };
   useEffect(() => {
