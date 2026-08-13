@@ -120,10 +120,8 @@ const AddEmployee = () => {
           <div className="empdetails">
             <h1>Employee Details</h1>
 
-
             <div className="top-section">
               <div className="inputs employee-details-inputs">
-
                 {/* Row 1 */}
                 <div className="form-row">
                   <Input
@@ -169,8 +167,6 @@ const AddEmployee = () => {
 
                 {/* Row 2 */}
                 <div className="form-row">
-
-
                   <SelectInput
                     error={error.status}
                     name="status"
@@ -195,13 +191,9 @@ const AddEmployee = () => {
                       Pandoza Solutions Pvt.Ltd
                     </MenuItem>
 
-                    <MenuItem value="Akka Foundation">
-                      Akka Foundation
-                    </MenuItem>
+                    <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
 
-                    <MenuItem value="NVM Infratech">
-                      NVM Infratech
-                    </MenuItem>
+                    <MenuItem value="NVM Infratech">NVM Infratech</MenuItem>
 
                     <MenuItem value="The Indian Journey">
                       The Indian Journey
@@ -245,7 +237,6 @@ const AddEmployee = () => {
                     label="Designation"
                   />
                 </div>
-
               </div>
 
               <div className="employee-photo-upload">
@@ -279,56 +270,7 @@ const AddEmployee = () => {
                   }
                 />
               </div>
-
-
-
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           </div>
           <div className="personaldetails">
             <h1>Personal Details</h1>
@@ -377,7 +319,6 @@ const AddEmployee = () => {
                 />
               </div>
               <div className="form-row">
-                
                 <Input
                   error={error.dateOfBirth}
                   name="dateOfBirth"
@@ -416,7 +357,7 @@ const AddEmployee = () => {
                   label="Pan No"
                   required
                 />
-                  <SelectInput
+                <SelectInput
                   error={error.bloodGroup}
                   name="bloodGroup"
                   value={values.bloodGroup}
@@ -438,8 +379,6 @@ const AddEmployee = () => {
                 </SelectInput>
               </div>
               <div className="form-row">
-                
-              
                 <Input
                   error={error.address}
                   name="address"
@@ -514,7 +453,6 @@ const AddEmployee = () => {
                   required
                 />
               </div>
-             
             </div>
           </div>
           <div className="personaldetails">
