@@ -1,244 +1,273 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
 .offerletter-parent {
-  .offerletter-cont {
-    .sub-header {
-      display: flex;
-      justify-content: space-between;
-      background-color: var(--accent2);
-      padding: 10px;
-      border-radius: 5px;
-      h2 {
-        color: white;
-      }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Quicksand", sans-serif!important;
+    &,
+  * {
+    font-family: "Quicksand", sans-serif !important;
+  }
+
+  .sub-header {
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--accent2);
+    padding: 16px 8px;
+    border-radius: 5px;
+    width: 80%;
+    h2 {
+      color: white;
     }
-    .pages-wrapper {
+  }
+  .offerletter-cont {
+    width: 100%;
+    display: flex;
+    padding: 40px 0px;
+    gap: 50px;
+    .left-offer {
+      width: 40%;
+      padding: 20px;
+      background: #E9F0F0;
+      height: 860px;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 40px 0px;
-      gap: 20px;
-      .offer-pdf-page,
-      .salary-pdf-page {
-        background: var(--white);
-        padding: 10px 40px;
-        width: 700px;
-        height: 1120px;
-        position: relative;
-        .pan-water-mark {
-          width: 90%;
-          height: auto;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          opacity: 0.1;
-          object-fit: contain;
+      justify-content: start;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .right-offer {
+      width: 60%;
+      .pages-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        gap: 20px;
+        .offer-pdf-page,
+        .salary-pdf-page {
+          background: var(--white);
+          padding: 10px 40px;
+          width: 700px;
+          height: 1120px;
+          position: relative;
+          .pan-water-mark {
+            width: 90%;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+            object-fit: contain;
+          }
+          .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .logo {
+              img {
+                height: 60px;
+              }
+            }
+          }
+          .heading {
+            display: flex;
+            justify-content: center;
+            h3 {
+              text-decoration: underline;
+              
+            }
+          }
+          .name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          }
+          .gap {
+            padding: 10px 0px;
+          }
+          strong {
+            padding: 5px;
+          }
+          .footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid var(--accent);
+            padding: 10px 0;
+            color: #00000063;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%);
+            width: 100%;
+          }
         }
-        .top {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+        .salary-pdf-page,
+        .terms-condition-page {
+          background: var(--white);
+          padding: 10px 40px;
+          width: 700px;
+          height: 1120px;
+          position: relative;
+          .pan-water-mark {
+            width: 90%;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+            object-fit: contain;
+          }
           .logo {
+            align-items: end;
+            justify-content: end;
+            display: flex;
             img {
               height: 60px;
             }
           }
+          .top {
+            display: flex;
+            flex-direction: column;
+            text-decoration: underline;
+          }
+          .small-gap {
+            padding: 5px 0px;
+          }
+          .salary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+
+            th,
+            td {
+              border: 1px solid #222;
+              padding: 10px 8px;
+              text-align: left;
+            }
+
+            th {
+              font-weight: 600;
+            }
+
+            th:first-child,
+            td:first-child {
+              width: 50px;
+              text-align: center;
+            }
+
+            th:nth-child(2) {
+              width: 40%;
+            }
+
+            th:nth-child(3),
+            th:nth-child(4) {
+              width: 25%;
+            }
+
+            td strong {
+              font-weight: 700;
+            }
+          }
         }
-        .heading {
-          display: flex;
-          justify-content: center;
-          h3 {
+        .terms-condition-page {
+          .footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid var(--accent);
+            padding: 10px 0;
+            color: #00000063;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%);
+            width: 100%;
+          }
+          .gap {
+            padding: 10px 0px;
+          }
+          h4 {
             text-decoration: underline;
           }
         }
-        .name {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        .gap {
-          padding: 10px 0px;
-        }
-        strong {
-          padding: 5px;
-        }
-        .footer {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-top: 1px solid var(--accent);
-          padding: 10px 0;
-          color: #00000063;
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translate(-50%);
-          width: 100%;
-        }
-      }
-      .salary-pdf-page,
-      .terms-condition-page {
-        background: var(--white);
-        padding: 10px 40px;
-        width: 700px;
-        height: 1120px;
-        position: relative;
-        .pan-water-mark {
-          width: 90%;
-          height: auto;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          opacity: 0.1;
-          object-fit: contain;
-        }
-        .logo {
-          align-items: end;
-          justify-content: end;
-          display: flex;
-          img {
-            height: 60px;
-          }
-        }
-        .top {
-          display: flex;
-          flex-direction: column;
-          text-decoration: underline;
-        }
-        .small-gap {
-          padding: 5px 0px;
-        }
-        .salary-table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 16px;
-
-          th,
-          td {
-            border: 1px solid #222;
-            padding: 10px 8px;
-            text-align: left;
+        .eight-twelve-page,
+        .new-page,
+        .acceptance-page,
+        .third-last-page,
+        .secondlast-page,
+        .last-page {
+          background: var(--white);
+          padding: 10px 40px;
+          width: 700px;
+          height: 1120px;
+          position: relative;
+          .pan-water-mark {
+            width: 90%;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.1;
+            object-fit: contain;
           }
 
-          th {
-            font-weight: 600;
+          .logo {
+            display: flex;
+            justify-content: flex-end;
+            img {
+              height: 60px;
+            }
           }
-
-          th:first-child,
-          td:first-child {
-            width: 50px;
-            text-align: center;
+          .gap {
+            padding: 10px 0px;
           }
-
-          th:nth-child(2) {
-            width: 40%;
+          .top {
+            h3 {
+              text-decoration: underline;
+              text-align: center;
+            }
           }
-
-          th:nth-child(3),
-          th:nth-child(4) {
-            width: 25%;
+          .small-gap {
+            padding: 5px 0px;
           }
-
-          td strong {
-            font-weight: 700;
+          .footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 1px solid var(--accent);
+            padding: 10px 0;
+            color: #00000063;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%);
+            width: 100%;
           }
-        }
-      }
-      .terms-condition-page {
-        .footer {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-top: 1px solid var(--accent);
-          padding: 10px 0;
-          color: #00000063;
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translate(-50%);
-          width: 100%;
-        }
-        .gap {
-          padding: 10px 0px;
-        }
-        h4 {
-          text-decoration: underline;
-        }
-      }
-      .eight-twelve-page,
-      .new-page,
-      .acceptance-page,
-      .third-last-page,
-      .secondlast-page,
-      .last-page {
-        background: var(--white);
-        padding: 10px 40px;
-        width: 700px;
-        height: 1120px;
-        position: relative;
-        .pan-water-mark {
-          width: 90%;
-          height: auto;
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          opacity: 0.1;
-          object-fit: contain;
-        }
-
-        .logo {
-          display: flex;
-          justify-content: flex-end;
-          img {
-            height: 60px;
+          strong,
+          p {
+            line-height: 22px;
+            font-size: 16px;
           }
-        }
-        .gap {
-          padding: 10px 0px;
-        }
-        .top {
-          h3 {
-            text-decoration: underline;
-            text-align: center;
-          }
-        }
-        .small-gap {
-          padding: 5px 0px;
-        }
-        .footer {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-top: 1px solid var(--accent);
-          padding: 10px 0;
-          color: #00000063;
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translate(-50%);
-          width: 100%;
-        }
-        strong,
-        p {
-          line-height: 22px;
-          font-size: 16px;
-        }
-        a{
+          a {
             text-decoration: none;
-        }
-        ul{
-            padding: 10px ;
-        }
-        .listing {
-          list-style-type: upper-roman;
-          padding-left: 40px;
+          }
+          ul {
+            padding: 10px;
+          }
+          .listing {
+            list-style-type: upper-roman;
+            padding-left: 40px;
 
-
-          li {
-            padding-left: 8px;
-            line-height: 1.5;
+            li {
+              padding-left: 8px;
+              line-height: 1.5;
+            }
           }
         }
       }
