@@ -367,8 +367,6 @@ const AddEmployee = () => {
                   label="Contact Number"
                   required
                 />
-              </div>
-              <div className="form-row">
                 <Input
                   error={error.email}
                   name="email"
@@ -377,6 +375,9 @@ const AddEmployee = () => {
                   label="Email"
                   required
                 />
+              </div>
+              <div className="form-row">
+                
                 <Input
                   error={error.dateOfBirth}
                   name="dateOfBirth"
@@ -400,8 +401,6 @@ const AddEmployee = () => {
                   label="Aadhar No"
                   required
                 />
-              </div>
-              <div className="form-row">
                 <Input
                   error={error.panNumber}
                   name="panNumber"
@@ -417,7 +416,7 @@ const AddEmployee = () => {
                   label="Pan No"
                   required
                 />
-                <SelectInput
+                  <SelectInput
                   error={error.bloodGroup}
                   name="bloodGroup"
                   value={values.bloodGroup}
@@ -437,6 +436,10 @@ const AddEmployee = () => {
                   <MenuItem value="O+">O+</MenuItem>
                   <MenuItem value="O-">O-</MenuItem>
                 </SelectInput>
+              </div>
+              <div className="form-row">
+                
+              
                 <Input
                   error={error.address}
                   name="address"
@@ -503,8 +506,6 @@ const AddEmployee = () => {
                   onChange={handleChange}
                   required
                 />
-              </div>
-              <div className="form-row">
                 <Input
                   label="Emergency Contact Person Permanent Address"
                   name="emergencyContactAddress"
@@ -513,6 +514,7 @@ const AddEmployee = () => {
                   required
                 />
               </div>
+             
             </div>
           </div>
           <div className="personaldetails">
