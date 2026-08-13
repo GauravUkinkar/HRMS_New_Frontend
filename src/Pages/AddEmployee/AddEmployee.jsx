@@ -380,17 +380,17 @@ const AddEmployee = () => {
               </div>
               <div className="form-row">
                 <Input
-                  error={error.address}
-                  name="address"
-                  value={values.address}
+                  error={error.Currentaddress}
+                  name="Currentaddress"
+                  value={values.Currentaddress}
                   onChange={handleChange}
                   label="Current Address"
                   required
                 />
                 <Input
-                  error={error.address}
-                  name="address"
-                  value={values.address}
+                  error={error.Permanentaddress}
+                  name="Permanentaddress"
+                  value={values.Permanentaddress}
                   onChange={handleChange}
                   label="Permanent Address"
                   required
@@ -440,15 +440,15 @@ const AddEmployee = () => {
               <div className="form-row">
                 <Input
                   label="Emergency Contact Person Current Address"
-                  name="emergencyContactAddress"
-                  value={values.emergencyContactAddress}
+                  name="emergencyContactCurrentAddress"
+                  value={values.emergencyContactCurrentAddress}
                   onChange={handleChange}
                   required
                 />
                 <Input
                   label="Emergency Contact Person Permanent Address"
-                  name="emergencyContactAddress"
-                  value={values.emergencyContactAddress}
+                  name="emergencyContactPermanentAddress"
+                  value={values.emergencyContactPermanentAddress}
                   onChange={handleChange}
                   required
                 />
