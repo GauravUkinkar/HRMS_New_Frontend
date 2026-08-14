@@ -76,27 +76,20 @@ const OfficialNotes = () => {
   return (
     <MainPanel>
       <div className="official-notes-page">
-
         {/* =========================
             HEADER
         ========================= */}
 
         <div className="official-notes-header">
-
           <div className="header-content">
             <h1>Official Notes</h1>
           </div>
 
-          <button
-            className="add-note-btn"
-            onClick={handleAddNote}
-          >
+          <button className="add-note-btn" onClick={handleAddNote}>
             <FaPlus />
             <span>Add Note</span>
           </button>
-
         </div>
-
 
         {/* =========================
             ADD NOTE POPUP
@@ -104,12 +97,9 @@ const OfficialNotes = () => {
 
         {showAddNote && (
           <div className="note-modal-overlay">
-
             <div className="note-modal">
-
               {/* Popup Header */}
               <div className="note-modal-header">
-
                 <h2>Add Official Note</h2>
 
                 <button
@@ -119,116 +109,69 @@ const OfficialNotes = () => {
                 >
                   ×
                 </button>
-
               </div>
-
 
               {/* Popup Body */}
               <div className="note-modal-body">
-
                 {/* Date */}
                 <div className="note-form-group">
+                  <label htmlFor="note-date">Date</label>
 
-                  <label htmlFor="note-date">
-                    Date
-                  </label>
-
-                  <input
-                    id="note-date"
-                    type="date"
-                  />
-
+                  <input id="note-date" type="date" />
                 </div>
-
 
                 {/* Send To */}
                 <div className="note-form-group">
-
-                  <label htmlFor="send-to">
-                    Send To
-                  </label>
+                  <label htmlFor="send-to">Send To</label>
 
                   <select
                     id="send-to"
                     value={sendTo}
                     onChange={(e) => setSendTo(e.target.value)}
                   >
-                    <option value="">
-                      Select Option
-                    </option>
+                    <option value="">Select Option</option>
 
-                    <option value="all">
-                      All Employees
-                    </option>
+                    <option value="all">All Employees</option>
 
-                    <option value="specific">
-                      Specific Employee
-                    </option>
-
+                    <option value="specific">Specific Employee</option>
                   </select>
-
                 </div>
-
 
                 {/* Employee List
                     Only appears when Specific Employee is selected
                 */}
                 {sendTo === "specific" && (
                   <div className="note-form-group">
-
-                    <label htmlFor="employee">
-                      Select Employee
-                    </label>
+                    <label htmlFor="employee">Select Employee</label>
 
                     <select id="employee">
+                      <option value="">Select Employee</option>
 
-                      <option value="">
-                        Select Employee
-                      </option>
+                      <option value="EMP001">EMP001 - Rahul Patil</option>
 
-                      <option value="EMP001">
-                        EMP001 - Rahul Patil
-                      </option>
+                      <option value="EMP002">EMP002 - Priya Sharma</option>
 
-                      <option value="EMP002">
-                        EMP002 - Priya Sharma
-                      </option>
+                      <option value="EMP003">EMP003 - Amit Joshi</option>
 
-                      <option value="EMP003">
-                        EMP003 - Amit Joshi
-                      </option>
-
-                      <option value="EMP004">
-                        EMP004 - Sneha More
-                      </option>
-
+                      <option value="EMP004">EMP004 - Sneha More</option>
                     </select>
-
                   </div>
                 )}
 
-
                 {/* Note */}
                 <div className="note-form-group">
-
-                  <label htmlFor="official-note">
-                    Note
-                  </label>
+                  <label htmlFor="official-note">Note</label>
 
                   <textarea
                     id="official-note"
                     rows="5"
                     placeholder="Enter official note..."
                   ></textarea>
-
                 </div>
-
               </div>
-
 
               {/* Popup Footer */}
               <div className="note-modal-footer">
-
                 <button
                   type="button"
                   className="cancel-note-btn"
@@ -239,92 +182,63 @@ const OfficialNotes = () => {
 
                 <button
                   type="button"
-                  className="submit-note-btn"
+                   
+
+
+
+
                   onClick={handleSubmitNote}
                 >
                   Submit Note
                 </button>
-
               </div>
-
             </div>
-
           </div>
         )}
-
 
         {/* =========================
             NOTES TABLE
         ========================= */}
 
         <div className="notes-table-wrapper">
-
           <table className="notes-table">
-
             <thead>
               <tr>
-                <th className="sr-column">
-                  Sr. No.
-                </th>
+                <th className="sr-column">Sr. No.</th>
 
-                <th className="date-column">
-                  Date &amp; Time
-                </th>
+                <th className="date-column">Date &amp; Time</th>
 
-                <th className="note-column">
-                  Note
-                </th>
+                <th className="note-column">Note</th>
 
-                <th className="action-column">
-                  Action
-                </th>
+                <th className="action-column">Action</th>
               </tr>
             </thead>
 
             <tbody>
-
               {notes.map((note) => (
                 <tr key={note.id}>
-
                   {/* Sr No */}
                   <td className="sr-column">
-                    <span className="sr-number">
-                      {note.id}
-                    </span>
+                    <span className="sr-number">{note.id}</span>
                   </td>
-
 
                   {/* Date */}
                   <td className="date-column">
-                    <span className="note-date">
-                      {note.date}
-                    </span>
+                    <span className="note-date">{note.date}</span>
                   </td>
-
 
                   {/* Note */}
                   <td className="note-column">
-
                     <div className="note-content">
+                      <h3>{note.title}</h3>
 
-                      <h3>
-                        {note.title}
-                      </h3>
-
-                      <p>
-                        {note.description}
-                      </p>
-
+                      <p>{note.description}</p>
                     </div>
-
                   </td>
-
 
                   {/* Actions */}
                   <td className="action-column">
-
                     <div className="note-actions">
-
                       <button
                         type="button"
                         className="action-btn edit-btn"
@@ -342,29 +256,24 @@ const OfficialNotes = () => {
                       >
                         <MdDelete className="icon" />
                       </button>
-
                     </div>
-
                   </td>
-
                 </tr>
               ))}
-
             </tbody>
-
           </table>
-
         </div>
-
 
         {/* Footer */}
         <div className="notes-footer">
           Showing 1 to {notes.length} of {notes.length} notes
         </div>
-
       </div>
     </MainPanel>
   );
 };
 
 export default OfficialNotes;
+
+
+
