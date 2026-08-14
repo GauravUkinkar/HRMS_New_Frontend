@@ -557,21 +557,23 @@ const OfferLetter = () => {
                     manual on the intranet.
                   </p>
                   <div class="gap"></div>
-                  You are required to wear formal on your date of joining, which
+                  <p> You are required to wear formal on your date of joining, which
                   is:
                   <br />
                   <strong>* For Gentlemen</strong>: Formal full-sleeve shirts
                   and trousers with a tie and polished formal shoes.
                   <strong>* For Ladies</strong>: Western formals, salwar-kameez
-                  or formal saris with sandals.
+                  or formal saris with sandals.</p>
+                 
                   <div class="gap"></div>
                   <strong>10. Termination and resignation:</strong>
                   <div class="small-gap"></div>
                   <div class="a-point">
-                    A.
+                    <p> A.
                     <strong>Termination :</strong>
                     Pandoza Solutions Pvt. Ltd.reserves the right to terminate
-                    the services of an employee :
+                    the services of an employee :</p>
+                   
                   </div>
                   <div class="small-gap"></div>
                   <div class="subpoints">
@@ -612,7 +614,7 @@ const OfferLetter = () => {
                   <div class="a-point">
                     <div class="gap"></div>
                     <div class="gap"></div>
-                    B.
+                    <p>B.
                     <strong>Resignation :</strong>
                     For resigning fromPandoza Solutions Pvt. Ltd., you are
                     required to serve a 1 months’ notice period as per the
@@ -622,7 +624,7 @@ const OfferLetter = () => {
                     date shall be the prerogative of the company and shall be
                     within the notice period. Further, the company reserves the
                     right to recover an amount equivalent to the consolidated
-                    salary for the number of days of the shortfall.
+                    salary for the number of days of the shortfall.</p>
                   </div>
                   <p class="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
