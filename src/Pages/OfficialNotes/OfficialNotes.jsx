@@ -59,63 +59,56 @@ const OfficialNotes = () => {
   // GET ALL OFFICIAL NOTES
   // =========================================
 
-  const getOfficialNotes = async () => {
-    try {
-      setLoading(true);
-      setError("");
+ const getOfficialNotes = async () => {
+  try {
+    setLoading(true);
+    setError("");
 
-      const response = await fetch(
-        "https://userservicetest.pandozasolutions.com/AuthController/GetAllOfficialNotes",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+    const response = await fetch(
+      "https://userservicetest.pandozasolutions.com/AuthController/GetAllOfficialNotes",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
+    );
 
-      const result = await response.json();
-
-      console.log("Official Notes API Response:", result);
-
-      if (result.status === "OK") {
-        /*
-          API should ideally return:
-
-          data: [
-            {
-              notesId: 1,
-              description: "...",
-              createdAt: "..."
-            }
-          ]
-        */
-
-        if (Array.isArray(result.data)) {
-          setNotes(result.data);
-        } else if (result.data) {
-          setNotes([result.data]);
-        } else {
-          setNotes([]);
-        }
-      } else {
-        setNotes([]);
-        setError(
-          result.responseMessage || "Unable to fetch official notes"
-        );
-      }
-    } catch (error) {
-      console.error("Get Official Notes Error:", error);
-      setError("Failed to load official notes.");
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
     }
-  };
 
+    const result = await response.json();
+
+    console.log("Official Notes API Response:", result);
+    console.log("Is Array:", Array.isArray(result));
+
+    // API is returning an array directly
+    if (Array.isArray(result)) {
+      setNotes(result);
+      setError("");
+    } else if (result?.data && Array.isArray(result.data)) {
+      // Handles { data: [...] } response also
+      setNotes(result.data);
+      setError("");
+    } else if (result?.data) {
+      // Handles { data: {...} } response
+      setNotes([result.data]);
+      setError("");
+    } else {
+      setNotes([]);
+      setError(
+        result?.responseMessage || "Unable to fetch official notes"
+      );
+    }
+  } catch (error) {
+    console.error("Get Official Notes Error:", error);
+    setNotes([]);
+    setError("Failed to load official notes.");
+  } finally {
+    setLoading(false);
+  }
+};
   // =========================================
   // LOAD NOTES WHEN PAGE OPENS
   // =========================================
