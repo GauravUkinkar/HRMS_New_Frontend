@@ -194,26 +194,79 @@ const OfficialNotes = () => {
                     onChange={(e) => setNoteDate(e.target.value)}
                   />
                 </div>
-                <div className="note-form-group">
-                  <label htmlFor="sendTo">Send To</label>
 
-                  <select
-                    id="sendTo"
-                    value={sendTo}
-                    onChange={(e) => setSendTo(e.target.value)}
-                  >
-                    <option value="all">All Employees</option>
+                <div className="form-group">
+  <label>Send To</label>
 
-                    {employees.map((employee) => (
-                      <option
-                        key={employee.id}
-                        value={`employee-${employee.id}`}
-                      >
-                        {employee.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+  <div className="employee-dropdown">
+
+    <div
+      className="employee-dropdown-header"
+      onClick={() =>
+        setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)
+      }
+    >
+      <span>
+        {selectedEmployees.length === 0
+          ? "All Employees"
+          : `${selectedEmployees.length} Employees Selected`}
+      </span>
+
+      <span className="dropdown-arrow">⌄</span>
+    </div>
+
+    {isEmployeeDropdownOpen && (
+      <div className="employee-dropdown-menu">
+
+        <label className="employee-option">
+          <input
+            type="checkbox"
+            checked={selectedEmployees.length === employees.length}
+            onChange={(e) => {
+              if (e.target.checked) {
+                setSelectedEmployees(
+                  employees.map((employee) => employee.id)
+                );
+              } else {
+                setSelectedEmployees([]);
+              }
+            }}
+          />
+
+          <span>All Employees</span>
+        </label>
+
+        {employees.map((employee) => (
+          <label
+            key={employee.id}
+            className="employee-option"
+          >
+            <input
+              type="checkbox"
+              checked={selectedEmployees.includes(employee.id)}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setSelectedEmployees((prev) => [
+                    ...prev,
+                    employee.id,
+                  ]);
+                } else {
+                  setSelectedEmployees((prev) =>
+                    prev.filter((id) => id !== employee.id)
+                  );
+                }
+              }}
+            />
+
+            <span>{employee.name}</span>
+          </label>
+        ))}
+
+      </div>
+    )}
+  </div>
+</div>
+                {/*  */}
 
                 {/* Specific Employee */}
 
