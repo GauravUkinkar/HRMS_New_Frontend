@@ -4,16 +4,15 @@ import { MdEdit, MdDelete } from "react-icons/md";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
-const [sendTo, setSendTo] = useState("all");
-
-const [employees, setEmployees] = useState([]);
-const [selectedEmployee, setSelectedEmployee] = useState("");
-const [loadingEmployees, setLoadingEmployees] = useState(false);
-
 import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const OfficialNotes = () => {
+  const [sendTo, setSendTo] = useState("all");
+
+  const [employees, setEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [loadingEmployees, setLoadingEmployees] = useState(false);
   const notes = [
     {
       id: 1,
@@ -55,8 +54,6 @@ const OfficialNotes = () => {
   // Popup state
   const [showAddNote, setShowAddNote] = useState(false);
 
-  // Send To state
-  const [sendTo, setSendTo] = useState("");
 
   // CKEditor value
   const [noteContent, setNoteContent] = useState("");
