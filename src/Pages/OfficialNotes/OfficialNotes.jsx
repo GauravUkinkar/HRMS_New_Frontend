@@ -33,101 +33,99 @@ const OfficialNotes = () => {
       name: "Shweta Shinde",
     },
   ];
-const notes = [
-  {
-    id: 1,
-    date: "2026-08-13",
-    displayDate: "13 Aug 2026, 10:30 AM",
-    sendTo: "all",
-    title: "Annual Day Celebration",
-    description:
-      "We are excited to announce that our Annual Day Celebration will be held on 20th August 2026. All employees are requested to mark their presence and join the celebration.",
-  },
+  const notes = [
+    {
+      id: 1,
+      date: "2026-08-13",
 
-  {
-    id: 2,
-    date: "2026-08-08",
-    displayDate: "08 Aug 2026, 09:15 AM",
-    sendTo: "all",
-    title: "New Leave Policy Update",
-    description:
-      "Please be informed that a new leave policy has been updated and is effective from 15th August 2026. Kindly review the policy details in the HR portal.",
-  },
+      displayDate: "13 Aug 2026, 10:30 AM",
+      sendTo: "all",
+      title: "Annual Day Celebration",
+      description:
+        "We are excited to announce that our Annual Day Celebration will be held on 20th August 2026. All employees are requested to mark their presence and join the celebration.",
+    },
 
-  {
-    id: 3,
-    date: "2026-08-05",
-    displayDate: "05 Aug 2026, 11:00 AM",
-    sendTo: "employee-2",
-    title: "Warning Regarding Attendance",
-    description:
-      "Please ensure that you maintain regular attendance and follow the company's attendance policy.",
-  },
-];
+    {
+      id: 2,
+      date: "2026-08-08",
+      displayDate: "08 Aug 2026, 09:15 AM",
+      sendTo: "all",
+      title: "New Leave Policy Update",
+      description:
+        "Please be informed that a new leave policy has been updated and is effective from 15th August 2026. Kindly review the policy details in the HR portal.",
+    },
+
+    {
+      id: 3,
+      date: "2026-08-05",
+      displayDate: "05 Aug 2026, 11:00 AM",
+      sendTo: "employee-2",
+      title: "Warning Regarding Attendance",
+      description:
+        "Please ensure that you maintain regular attendance and follow the company's attendance policy.",
+    },
+  ];
   const [showAddNote, setShowAddNote] = useState(false);
-const [isEditing, setIsEditing] = useState(false);
-const [editingNoteId, setEditingNoteId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState(null);
 
-const [noteDate, setNoteDate] = useState("");
-const [noteContent, setNoteContent] = useState("");
- 
+  const [noteDate, setNoteDate] = useState("");
+  const [noteContent, setNoteContent] = useState("");
 
   const handleAddNote = () => {
-  setIsEditing(false);
-  setEditingNoteId(null);
+    setIsEditing(false);
+    setEditingNoteId(null);
 
-  setNoteDate("");
-  setSendTo("all");
-  setNoteContent("");
+    setNoteDate("");
+    setSendTo("all");
+    setNoteContent("");
 
-  setShowAddNote(true);
-};
-const handleCloseNote = () => {
-  setShowAddNote(false);
+    setShowAddNote(true);
+  };
+  const handleCloseNote = () => {
+    setShowAddNote(false);
 
-  setIsEditing(false);
-  setEditingNoteId(null);
+    setIsEditing(false);
+    setEditingNoteId(null);
 
-  setNoteDate("");
-  setSendTo("all");
-  setNoteContent("");
-};
-  
+    setNoteDate("");
+    setSendTo("all");
+    setNoteContent("");
+  };
 
   const handleEdit = (note) => {
-  setIsEditing(true);
-  setEditingNoteId(note.id);
+    setIsEditing(true);
+    setEditingNoteId(note.id);
 
-  setNoteDate(note.date);
-  setSendTo(note.sendTo);
-  setNoteContent(`
+    setNoteDate(note.date);
+    setSendTo(note.sendTo);
+    setNoteContent(`
     <h3>${note.title}</h3>
     <p>${note.description}</p>
   `);
 
-  setShowAddNote(true);
-};
+    setShowAddNote(true);
+  };
 
   const handleDelete = (note) => {
     console.log("Delete note:", note);
   };
-const handleSubmitNote = () => {
-  const noteData = {
-    id: editingNoteId,
-    date: noteDate,
-    sendTo: sendTo,
-    note: noteContent,
+  const handleSubmitNote = () => {
+    const noteData = {
+      id: editingNoteId,
+      date: noteDate,
+      sendTo: sendTo,
+      note: noteContent,
+    };
+
+    if (isEditing) {
+      console.log("Note updated:", noteData);
+    } else {
+      console.log("New note submitted:", noteData);
+    }
+
+    handleCloseNote();
   };
-
-  if (isEditing) {
-    console.log("Note updated:", noteData);
-  } else {
-    console.log("New note submitted:", noteData);
-  }
-
-  handleCloseNote();
-};
-
 
   return (
     <MainPanel>
@@ -164,8 +162,8 @@ const handleSubmitNote = () => {
 
               <div className="note-modal-header">
                 <h2>
-  {isEditing ? "Edit Official Note" : "Add Official Note"}
-</h2>
+                  {isEditing ? "Edit Official Note" : "Add Official Note"}
+                </h2>
 
                 {/* Close button INSIDE modal */}
                 <button
@@ -190,36 +188,33 @@ const handleSubmitNote = () => {
                   <label htmlFor="note-date">Date</label>
 
                   <input
-  id="note-date"
-  type="date"
-  value={noteDate}
-  onChange={(e) => setNoteDate(e.target.value)}
-/>
+                    id="note-date"
+                    type="date"
+                    value={noteDate}
+                    onChange={(e) => setNoteDate(e.target.value)}
+                  />
                 </div>
                 <div className="note-form-group">
-  <label htmlFor="sendTo">Send To</label>
+                  <label htmlFor="sendTo">Send To</label>
 
-  <select
-    id="sendTo"
-    value={sendTo}
-    onChange={(e) => setSendTo(e.target.value)}
-  >
-    <option value="all">
-      All Employees
-    </option>
+                  <select
+                    id="sendTo"
+                    value={sendTo}
+                    onChange={(e) => setSendTo(e.target.value)}
+                  >
+                    <option value="all">All Employees</option>
 
-    {employees.map((employee) => (
-      <option
-        key={employee.id}
-        value={`employee-${employee.id}`}
-      >
-        {employee.name}
-      </option>
-    ))}
-  </select>
-</div>
+                    {employees.map((employee) => (
+                      <option
+                        key={employee.id}
+                        value={`employee-${employee.id}`}
+                      >
+                        {employee.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-    
                 {/* Specific Employee */}
 
                 {/* =========================
@@ -274,14 +269,13 @@ const handleSubmitNote = () => {
                 >
                   Cancel
                 </button>
-<button
-  type="button"
-  className="submit-note-btn"
-  onClick={handleSubmitNote}
->
-  {isEditing ? "Update Note" : "Submit Note"}
-</button>
-                
+                <button
+                  type="button"
+                  className="submit-note-btn"
+                  onClick={handleSubmitNote}
+                >
+                  {isEditing ? "Update Note" : "Submit Note"}
+                </button>
               </div>
             </div>
           </div>
