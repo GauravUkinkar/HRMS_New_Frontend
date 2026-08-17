@@ -172,14 +172,10 @@
       }
     }
 
-    .edit-btn {
-      color: #498e97;
-
-      &:hover {
-        background: #eff6ff;
-        border-color: #bfdbfe;
-      }
-    }
+    .action-btn.edit-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
     .delete-btn {
       color: #dc2626;

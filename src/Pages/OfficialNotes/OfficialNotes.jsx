@@ -9,6 +9,16 @@ import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const OfficialNotes = () => {
+  const isEditAllowed = (note) => {
+  const createdDate = new Date(note.createdAt);
+  const today = new Date();
+
+  return (
+    createdDate.getFullYear() === today.getFullYear() &&
+    createdDate.getMonth() === today.getMonth() &&
+    createdDate.getDate() === today.getDate()
+  );
+};
   const [sendTo, setSendTo] = useState("all");
 const [selectedEmployees, setSelectedEmployees] = useState([]);
 const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
@@ -35,16 +45,15 @@ const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
     },
   ];
   const notes = [
-    {
-      id: 1,
-      date: "2026-08-13",
-
-      displayDate: "13 Aug 2026, 10:30 AM",
-      sendTo: "all",
-      title: "Annual Day Celebration",
-      description:
-        "We are excited to announce that our Annual Day Celebration will be held on 20th August 2026. All employees are requested to mark their presence and join the celebration.",
-    },
+     {
+    id: 1,
+    createdAt: "2026-08-17T11:00:00",
+    displayDate: "17 Aug 2026, 11:00 AM",
+    sendTo: "all",
+    title: "Annual Day Celebration",
+    description:
+      "We are excited to announce that our Annual Day Celebration will be held on 20th August 2026.",
+  },
 
     {
       id: 2,
@@ -99,20 +108,25 @@ const handleAddNote = () => {
   setSelectedEmployees([]);
   setIsEmployeeDropdownOpen(false);
 };
-  const handleEdit = (note) => {
-    setIsEditing(true);
-    setEditingNoteId(note.id);
+  
+const handleEdit = (note) => {
+  if (!isEditAllowed(note)) {
+    alert("This note can only be edited on the day it was created.");
+    return;
+  }
 
-    setNoteDate(note.date);
-    setSendTo(note.sendTo);
-    setNoteContent(`
+  setIsEditing(true);
+  setEditingNoteId(note.id);
+
+  setNoteDate(note.date);
+  setSendTo(note.sendTo);
+  setNoteContent(`
     <h3>${note.title}</h3>
     <p>${note.description}</p>
   `);
 
-    setShowAddNote(true);
-  };
-
+  setShowAddNote(true);
+};
   const handleDelete = (note) => {
     console.log("Delete note:", note);
   };
@@ -387,15 +401,22 @@ const handleAddNote = () => {
 
                   <td className="action-column">
                     <div className="note-actions">
-                      <button
-                        type="button"
-                        className="action-btn edit-btn"
-                        onClick={() => handleEdit(note)}
-                        title="Edit Note"
-                      >
-                        <MdEdit className="icon" />
-                      </button>
-
+                      
+<button
+  type="button"
+  className={`action-btn edit-btn ${
+    !isEditAllowed(note) ? "disabled" : ""
+  }`}
+  onClick={() => handleEdit(note)}
+  disabled={!isEditAllowed(note)}
+  title={
+    isEditAllowed(note)
+      ? "Edit Note"
+      : "Editing is allowed only on the day the note was created"
+  }
+>
+  <MdEdit className="icon" />
+</button>
                       <button
                         type="button"
                         className="action-btn delete-btn"
