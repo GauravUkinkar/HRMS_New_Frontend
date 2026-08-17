@@ -81,6 +81,12 @@ if (values.panNumber === "") {
  } else if (!/^[6-9]\d{9}$/.test(values.emergencyContactNumber)){
   error.emergencyContactNumber="Emergency Contact Number must be a valid 10-digit mobile number";
  }
+       if(values.emergencyContactCurrentAddress ===""){
+   error.emergencyContactCurrentAddress = "Current Address is Required"
+ }
+       if(values.emergencyContactPermanentAddress ===""){
+   error.emergencyContactPermanentAddress = "Permanent Address is Required"
+ }
          if(values.employeeSalary ===""){
    error.employeeSalary = "Employee Salary is Required"
  }
