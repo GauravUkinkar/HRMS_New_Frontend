@@ -58,8 +58,7 @@ const OfficialNotes = () => {
   // =========================================
   // GET ALL OFFICIAL NOTES
   // =========================================
-
- const getOfficialNotes = async () => {
+const getOfficialNotes = async () => {
   try {
     setLoading(true);
     setError("");
@@ -80,30 +79,36 @@ const OfficialNotes = () => {
 
     const result = await response.json();
 
-    console.log("Official Notes API Response:", result);
+    console.log("1. Raw API Response:", result);
+    console.log("2. Is Array:", Array.isArray(result));
 
-    if (Array.isArray(result)) {
-      // Extract the data object from each API response
-      const formattedNotes = result
-        .filter((item) => item.status === "OK" && item.data)
-        .map((item) => item.data);
+    // Make sure response is always treated as an array
+    const apiResponses = Array.isArray(result)
+      ? result
+      : [result];
 
-      console.log("Formatted Notes:", formattedNotes);
+    console.log("3. API Responses:", apiResponses);
 
-      setNotes(formattedNotes);
-      setError("");
-    } else {
-      setNotes([]);
-      setError("Unable to fetch official notes");
-    }
+    // Extract the data object from every response
+    const formattedNotes = apiResponses
+      .map((item) => item?.data)
+      .filter((item) => item);
+
+    console.log("4. Formatted Notes:", formattedNotes);
+    console.log("5. Number of Notes:", formattedNotes.length);
+
+    setNotes(formattedNotes);
+    console.log("FINAL notes state data:", formattedNotes);
   } catch (error) {
     console.error("Get Official Notes Error:", error);
+
     setNotes([]);
     setError("Failed to load official notes.");
   } finally {
     setLoading(false);
   }
 };
+ 
   // =========================================
   // LOAD NOTES WHEN PAGE OPENS
   // =========================================
