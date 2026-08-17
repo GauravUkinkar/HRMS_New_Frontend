@@ -15,12 +15,12 @@ const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 const AddEmployee = () => {
   const [teams, setTeams] = useState([]);
   const [value, setValue] = useState([]);
+
   const formObj = {
     employeeName: "",
     employeeId: "",
-    employee_status: "Active",
     gender: "",
-    employeeStatus: "",
+    employeeStatus: "Active",
     designation: "",
     department: "",
     dateOfJoining: "",
@@ -28,6 +28,9 @@ const AddEmployee = () => {
     contactNumber: "",
     ifscCode: "",
     dateOfBirth: "",
+    bloodGroup: "",
+    teamName: "",
+    employementType:"",
     aadharNumber: "",
     panNumber: "",
     accountNumber: "",
@@ -37,210 +40,217 @@ const AddEmployee = () => {
     companyName: "",
     diduction: 0,
     currentAddress: "",
-    permanentAddress:"",
+    permanentAddress: "",
     uanNo: "",
     policyNumber: "",
     insuranceCompany: "",
     emergencyContactNumber: "",
     emergencyContactName: "",
     emergencyContactRelation: "",
-    emergencyContactAddress: "",
-    status: "",
+    emergencyContactCurrentAddress: "",
+    emergencyContactPermanentAddress: "",
+    status: "ACTIVE",
     esicNumber: "",
-    editableAccess: true,
     email: "",
     password: "",
     role: "",
-    bloodGroup: "",
     crmRole: "",
     managerName: "",
-    teamName: "",
-  };
+};
 
-  const addEmployee = async () => {
-    try {
-      const response = await axios.post(
-        `${BASE_URL}Admin/AddEmployee`,
-        values,
-        {
-          withCredentials: true,
-        },
-      );
+const addEmployee = async () => {
+  try {
+    const formData = new FormData();
+    formData.append("employeeDto", JSON.stringify(values));
+    const response = await axios.post(
+      `${BASE_URL}Admin/AddEmployee`,
+      formData,
+      {
+        withCredentials: true,
+      }
+    );
+    toast.success("Employee added successfully!");
+    setValues(formObj);
+    setError({});
+    console.log("Add Employee Response:", response.data);
+  } catch (error) {
+    console.error("Add Employee Error:", error);
+    console.error("Status:", error.response?.status);
+    console.error("Response:", error.response?.data);
+  }
+};
 
-      toast.success("Employee added successfully!");
+const getTeams = async () => {
+  try {
+    // const res = await axios.get(`${BASE_URL}Admin/Team/getAllTeams`);
+    const res = await axios.get(
+      "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams"
+    );
 
-      // Clear form
-      setValues(formObj);
-      setError({});
+    console.log(res.data, "sklfjskdlfklfsdjksdflkklsdfkjljksfd");
+    setTeams(res.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-      console.log(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const getTeams = async () => {
-    try {
-      // const res = await axios.get(`${BASE_URL}Admin/Team/getAllTeams`);
-      const res = await axios.get(
-        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams",
-      );
-      console.log(res.data, "sklfjskdlfklfsdjksdflkklsdfkjljksfd");
-      setTeams(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+useEffect(() => {
+  getTeams();
+}, []);
 
-  useEffect(() => {
-    getTeams();
-  }, []);
-  const {
-    handleChange,
-    handleSubmit,
-    handleBlur,
-    values,
-    setValues,
-    error,
-    setError,
-    isSubmitting,
-  } = UseForm(formObj, ValidateEmployee, addEmployee);
+const {
+  handleChange,
+  handleSubmit,
+  handleBlur,
+  values,
+  setValues,
+  error,
+  setError,
+  isSubmitting,
+} = UseForm(formObj, ValidateEmployee, addEmployee);
 
-  console.log(error, "error");
-  console.log(values, "values");
+console.log(error, "error");
+console.log(values, "values");
 
-  return (
-    <>
-      <MainPanel
-        title="Add Employee"
-        breadcrumbs={[
-          { label: "Dashboard", link: "/dashboard" },
-          { label: "Add Employee" },
-        ]}
-      >
-        <form onSubmit={handleSubmit} className="employee-parent  ">
-          <div className="empdetails">
-            <h1>Employee Details</h1>
+return (
+  <>
+    <MainPanel
+      title="Add Employee"
+      breadcrumbs={[
+        { label: "Dashboard", link: "/dashboard" },
+        { label: "Add Employee" },
+      ]}
+    >
+      <form onSubmit={handleSubmit} className="employee-parent">
+        <div className="empdetails">
+          <h1>Employee Details</h1>
 
-            <div className="top-section">
-              <div className="inputs employee-details-inputs">
-                {/* Row 1 */}
-                <div className="form-row">
-                  <Input
-                    error={error.employeeId}
-                    name="employeeId"
-                    value={values.employeeId}
-                    onChange={handleChange}
-                    label="Employee ID"
-                    mq_label="PSPL"
-                    required
-                  />
+          <div className="top-section">
+            <div className="inputs employee-details-inputs">
 
-                  <Input
-                    error={error.password}
-                    name="password"
-                    value={values.password}
-                    onChange={handleChange}
-                    label="Password"
-                    required
-                  />
+              {/* Row 1 */}
+              <div className="form-row">
+                <Input
+                  error={error.employeeId}
+                  name="employeeId"
+                  value={values.employeeId}
+                  onChange={handleChange}
+                  label="Employee ID"
+                  mq_label="PSPL"
+                  required
+                />
 
-                  <SelectInput
-                    name="employee_status"
-                    label="Employee Status"
-                    value={values.employee_status}
-                    disabled={true}
-                  >
-                    <MenuItem value="Active">Active</MenuItem>
-                  </SelectInput>
+                <Input
+                  error={error.password}
+                  name="password"
+                  value={values.password}
+                  onChange={handleChange}
+                  label="Password"
+                  required
+                />
 
-                  <SelectInput
-                    error={error.role}
-                    name="role"
-                    value={values.role}
-                    onChange={handleChange}
-                    label="Role"
-                  >
-                    <MenuItem value="ADMIN">Admin</MenuItem>
-                    <MenuItem value="SUPERADMIN">SuperAdmin</MenuItem>
-                    <MenuItem value="EMPLOYEE">Employee</MenuItem>
-                  </SelectInput>
-                </div>
+                <SelectInput
+                  name="employeeStatus"
+                  label="Employee Status"
+                  value={values.employeeStatus}
+                  onChange={handleChange}
+                  disabled={true}
+                >
+                  <MenuItem value="Active">Active</MenuItem>
+                </SelectInput>
 
-                {/* Row 2 */}
-                <div className="form-row">
-                  <SelectInput
-                    error={error.status}
-                    name="status"
-                    value={values.status}
-                    onChange={handleChange}
-                    label="Employee Type"
-                  >
-                    <MenuItem value="Full-time">Full-time</MenuItem>
-                    <MenuItem value="Part-time">Part-time</MenuItem>
-                    <MenuItem value="Freelance">Freelance</MenuItem>
-                    <MenuItem value="Freelance">Intern</MenuItem>
-                  </SelectInput>
-
-                  <SelectInput
-                    error={error.companyName}
-                    name="companyName"
-                    value={values.companyName}
-                    onChange={handleChange}
-                    label="Company Name"
-                  >
-                    <MenuItem value="Pandoza Solutions Pvt.Ltd">
-                      Pandoza Solutions Pvt.Ltd
-                    </MenuItem>
-
-                    <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
-
-                    <MenuItem value="NVM Infratech">NVM Infratech</MenuItem>
-
-                    <MenuItem value="The Indian Journey">
-                      The Indian Journey
-                    </MenuItem>
-                  </SelectInput>
-
-                  <Input
-                    error={error.dateOfJoining}
-                    name="dateOfJoining"
-                    value={values.dateOfJoining}
-                    onChange={handleChange}
-                    label="Date of Joining"
-                    required
-                    type="date"
-                  />
-                </div>
-
-                {/* Row 3 */}
-                <div className="form-row">
-                  <Input
-                    name="dateOfLiving"
-                    value={values.dateOfLiving}
-                    onChange={handleChange}
-                    label="Last Working Day"
-                    type="date"
-                  />
-
-                  <Input
-                    error={error.department}
-                    name="department"
-                    value={values.department}
-                    onChange={handleChange}
-                    label="Department"
-                  />
-
-                  <Input
-                    error={error.designation}
-                    name="designation"
-                    value={values.designation}
-                    onChange={handleChange}
-                    label="Designation"
-                  />
-                </div>
+                <SelectInput
+                  error={error.role}
+                  name="role"
+                  value={values.role}
+                  onChange={handleChange}
+                  label="Role"
+                >
+                  <MenuItem value="ADMIN">Admin</MenuItem>
+                  <MenuItem value="SUPERADMIN">SuperAdmin</MenuItem>
+                  <MenuItem value="EMPLOYEE">Employee</MenuItem>
+                </SelectInput>
               </div>
 
-              {/* <div className="employee-photo-upload">
+              {/* Row 2 */}
+              <div className="form-row">
+                <SelectInput
+                  error={error.employementType}
+                  name="employementType"
+                  value={values.employementType}
+                  onChange={handleChange}
+                  label="Employee Type"
+                >
+                  <MenuItem value="Full-time">Full-time</MenuItem>
+                  <MenuItem value="Part-time">Part-time</MenuItem>
+                  <MenuItem value="Freelance">Freelance</MenuItem>
+                  <MenuItem value="Intern">Intern</MenuItem>
+                </SelectInput>
+
+                <SelectInput
+                  error={error.companyName}
+                  name="companyName"
+                  value={values.companyName}
+                  onChange={handleChange}
+                  label="Company Name"
+                >
+                  <MenuItem value="Pandoza Solutions Pvt.Ltd">
+                    Pandoza Solutions Pvt.Ltd
+                  </MenuItem>
+
+                  <MenuItem value="Akka Foundation">
+                    Akka Foundation
+                  </MenuItem>
+
+                  <MenuItem value="NVM Infratech">
+                    NVM Infratech
+                  </MenuItem>
+
+                  <MenuItem value="The Indian Journey">
+                    The Indian Journey
+                  </MenuItem>
+                </SelectInput>
+
+                <Input
+                  error={error.dateOfJoining}
+                  name="dateOfJoining"
+                  value={values.dateOfJoining}
+                  onChange={handleChange}
+                  label="Date of Joining"
+                  required
+                  type="date"
+                />
+              </div>
+
+              {/* Row 3 */}
+              <div className="form-row">
+                <Input
+                  name="dateOfLiving"
+                  value={values.dateOfLiving}
+                  onChange={handleChange}
+                  label="Last Working Day"
+                  type="date"
+                />
+
+                <Input
+                  error={error.department}
+                  name="department"
+                  value={values.department}
+                  onChange={handleChange}
+                  label="Department"
+                />
+
+                <Input
+                  error={error.designation}
+                  name="designation"
+                  value={values.designation}
+                  onChange={handleChange}
+                  label="Designation"
+                />
+              </div>
+            </div>
+
+            {/* <div className="employee-photo-upload">
                 <div className="employee-photo-preview">
                   {values.employee_image ? (
                     <img
@@ -252,11 +262,11 @@ const AddEmployee = () => {
                   )}
                 </div> */}
 
-                {/* <label htmlFor="employee-image" className="photo-upload-btn">
+            {/* <label htmlFor="employee-image" className="photo-upload-btn">
                   Upload Photo
                 </label> */}
 
-                {/* <input
+            {/* <input
                   id="employee-image"
                   type="file"
                   accept="image/*"
@@ -271,330 +281,360 @@ const AddEmployee = () => {
                   }
                 />
               </div> */}
+          </div>
+        </div>
+
+        <div className="personaldetails">
+          <h1>Personal Details</h1>
+
+          <div className="inputs">
+            <div className="form-row">
+              <Input
+                error={error.employeeName}
+                name="employeeName"
+                value={values.employeeName}
+                onChange={handleChange}
+                label="Employee Name"
+                required
+              />
+
+              <SelectInput
+                label="Gender"
+                value={values.gender}
+                onChange={handleChange}
+                error={error.gender}
+                name="gender"
+              >
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </SelectInput>
+
+              <Input
+                error={error.contactNumber}
+                name="contactNumber"
+                value={values.contactNumber}
+                onChange={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 10);
+
+                  handleChange(e);
+                }}
+                label="Contact Number"
+                required
+              />
+
+              <Input
+                error={error.email}
+                name="email"
+                value={values.email}
+                onChange={handleChange}
+                label="Email"
+                required
+              />
+            </div>
+
+            <div className="form-row">
+              <Input
+                error={error.dateOfBirth}
+                name="dateOfBirth"
+                value={values.dateOfBirth}
+                onChange={handleChange}
+                label="Date of Birth"
+                required
+                type="date"
+              />
+
+              <Input
+                error={error.aadharNumber}
+                name="aadharNumber"
+                value={values.aadharNumber}
+                onChange={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 12);
+
+                  handleChange(e);
+                }}
+                label="Aadhar No"
+                required
+              />
+
+              <Input
+                error={error.panNumber}
+                name="panNumber"
+                value={values.panNumber}
+                onChange={(e) => {
+                  e.target.value = e.target.value
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, "")
+                    .slice(0, 10);
+
+                  handleChange(e);
+                }}
+                label="Pan No"
+                required
+              />
+
+              <SelectInput
+                error={error.bloodGroup}
+                name="bloodGroup"
+                value={values.bloodGroup}
+                onChange={handleChange}
+                label="Blood Group"
+                required
+              >
+                <MenuItem value="A+">A+</MenuItem>
+                <MenuItem value="A-">A-</MenuItem>
+
+                <MenuItem value="B+">B+</MenuItem>
+                <MenuItem value="B-">B-</MenuItem>
+
+                <MenuItem value="AB+">AB+</MenuItem>
+                <MenuItem value="AB-">AB-</MenuItem>
+
+                <MenuItem value="O+">O+</MenuItem>
+                <MenuItem value="O-">O-</MenuItem>
+              </SelectInput>
+            </div>
+
+            <div className="form-row">
+              <Input
+                error={error.currentAddress}
+                name="currentAddress"
+                value={values.currentAddress}
+                onChange={handleChange}
+                label="Current Address"
+                required
+              />
+
+              <Input
+                error={error.permanentAddress}
+                name="permanentAddress"
+                value={values.permanentAddress}
+                onChange={handleChange}
+                label="Permanent Address"
+                required
+              />
             </div>
           </div>
-          <div className="personaldetails">
-            <h1>Personal Details</h1>
-            <div className="inputs">
-              <div className="form-row">
-                <Input
-                  error={error.employeeName}
-                  name="employeeName"
-                  value={values.employeeName}
-                  onChange={handleChange}
-                  label="Employee Name"
-                  required
-                />
-                <SelectInput
-                  label="Gender"
-                  value={values.gender}
-                  onChange={handleChange}
-                  error={error.gender}
-                  name="gender"
-                >
-                  <MenuItem value="Male">Male</MenuItem>
-                  <MenuItem value="Female">Female</MenuItem>
-                  <MenuItem value="Other">Other</MenuItem>
-                </SelectInput>
-                <Input
-                  error={error.contactNumber}
-                  name="contactNumber"
-                  value={values.contactNumber}
-                  onChange={(e) => {
-                    e.target.value = e.target.value
-                      .replace(/\D/g, "")
-                      .slice(0, 10);
+        </div>
 
-                    handleChange(e);
-                  }}
-                  label="Contact Number"
-                  required
-                />
-                <Input
-                  error={error.email}
-                  name="email"
-                  value={values.email}
-                  onChange={handleChange}
-                  label="Email"
-                  required
-                />
-              </div>
-              <div className="form-row">
-                <Input
-                  error={error.dateOfBirth}
-                  name="dateOfBirth"
-                  value={values.dateOfBirth}
-                  onChange={handleChange}
-                  label="Date of Birth"
-                  required
-                  type="date"
-                />
-                <Input
-                  error={error.aadharNumber}
-                  name="aadharNumber"
-                  value={values.aadharNumber}
-                  onChange={(e) => {
-                    e.target.value = e.target.value
-                      .replace(/\D/g, "")
-                      .slice(0, 12);
+        <div className="personaldetails">
+          <h1>Emergency Details</h1>
 
-                    handleChange(e);
-                  }}
-                  label="Aadhar No"
-                  required
-                />
-                <Input
-                  error={error.panNumber}
-                  name="panNumber"
-                  value={values.panNumber}
-                  onChange={(e) => {
-                    e.target.value = e.target.value
-                      .toUpperCase()
-                      .replace(/[^A-Z0-9]/g, "")
-                      .slice(0, 10);
+          <div className="inputs">
+            <div className="form-row">
+              <Input
+                error={error.emergencyContactName}
+                name="emergencyContactName"
+                value={values.emergencyContactName}
+                onChange={handleChange}
+                label="Emergency Contact Name"
+                required
+              />
 
-                    handleChange(e);
-                  }}
-                  label="Pan No"
-                  required
-                />
-                <SelectInput
-                  error={error.bloodGroup}
-                  name="bloodGroup"
-                  value={values.bloodGroup}
-                  onChange={handleChange}
-                  label="Blood Group"
-                  required
-                >
-                  <MenuItem value="A+">A+</MenuItem>
-                  <MenuItem value="A-">A-</MenuItem>
+              <Input
+                error={error.emergencyContactNumber}
+                name="emergencyContactNumber"
+                value={values.emergencyContactNumber}
+                onChange={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 10);
 
-                  <MenuItem value="B+">B+</MenuItem>
-                  <MenuItem value="B-">B-</MenuItem>
+                  handleChange(e);
+                }}
+                label="Emergency Contact No"
+                required
+              />
 
-                  <MenuItem value="AB+">AB+</MenuItem>
-                  <MenuItem value="AB-">AB-</MenuItem>
+              <SelectInput
+                label="Emergency Contact Person Relation"
+                name="emergencyContactRelation"
+                value={values.emergencyContactRelation}
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value="Father">Father</MenuItem>
+                <MenuItem value="Mother">Mother</MenuItem>
+                <MenuItem value="Friend">Friend</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </SelectInput>
+            </div>
 
-                  <MenuItem value="O+">O+</MenuItem>
-                  <MenuItem value="O-">O-</MenuItem>
-                </SelectInput>
-              </div>
-              <div className="form-row">
-                <Input
-                  error={error.currentAddress}
-                  name="currentAddress"
-                  value={values.currentAddress}
-                  onChange={handleChange}
-                  label="Current Address"
-                  required
-                />
-                <Input
-                  error={error.permanentAddress}
-                  name="permanentAddress"
-                  value={values.permanentAddress}
-                  onChange={handleChange}
-                  label="Permanent Address"
-                  required
-                />
-              </div>
+            <div className="form-row">
+              <Input
+                label="Emergency Contact Person Current Address"
+                name="emergencyContactCurrentAddress"
+                value={values.emergencyContactCurrentAddress}
+                onChange={handleChange}
+                required
+              />
+
+              <Input
+                label="Emergency Contact Person Permanent Address"
+                name="emergencyContactPermanentAddress"
+                value={values.emergencyContactPermanentAddress}
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
-          <div className="personaldetails">
-            <h1>Emergency Details</h1>
-            <div className="inputs">
-              <div className="form-row">
-                <Input
-                  error={error.emergencyContactName}
-                  name="emergencyContactName"
-                  value={values.emergencyContactName}
-                  onChange={handleChange}
-                  label="Emergency Contact Name"
-                  required
-                />
-                <Input
-                  error={error.emergencyContactNumber}
-                  name="emergencyContactNumber"
-                  value={values.emergencyContactNumber}
-                  onChange={(e) => {
-                    e.target.value = e.target.value
-                      .replace(/\D/g, "")
-                      .slice(0, 10);
+        </div>
 
-                    handleChange(e);
-                  }}
-                  label="Emergency Contact No"
-                  required
-                />
-                <SelectInput
-                  label="Emergency Contact Person Relation"
-                  name="emergencyContactRelation"
-                  value={values.emergencyContactRelation}
-                  onChange={handleChange}
-                  required
-                >
-                  <MenuItem value="Father">Father</MenuItem>
-                  <MenuItem value="Mother">Mother</MenuItem>
-                  <MenuItem value="Friend">Friend</MenuItem>
-                  <MenuItem value="Other">Other</MenuItem>
-                </SelectInput>
-              </div>
-              <div className="form-row">
-                <Input
-                  label="Emergency Contact Person Current Address"
-                  name="emergencyContactCurrentAddress"
-                  value={values.emergencyContactCurrentAddress}
-                  onChange={handleChange}
-                  required
-                />
-                <Input
-                  label="Emergency Contact Person Permanent Address"
-                  name="emergencyContactPermanentAddress"
-                  value={values.emergencyContactPermanentAddress}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+        <div className="personaldetails">
+          <h1>Salary Details</h1>
+
+          <div className="inputs">
+            <div className="form-row">
+              <Input
+                error={error.employeeSalary}
+                name="employeeSalary"
+                value={values.employeeSalary}
+                onChange={handleChange}
+                label="Employee Salary"
+                required
+              />
+
+              <Input
+                error={error.costtoCompany}
+                name="costtoCompany"
+                value={values.costtoCompany}
+                onChange={handleChange}
+                label="Cost to Comapany"
+                required
+              />
+
+              <Input
+                error={error.bankName}
+                name="bankName"
+                value={values.bankName}
+                onChange={handleChange}
+                label="Bank Name"
+                required
+              />
+            </div>
+
+            <div className="form-row">
+              <Input
+                error={error.accountNumber}
+                name="accountNumber"
+                value={values.accountNumber}
+                onChange={handleChange}
+                label="Account Number"
+                required
+              />
+
+              <Input
+                error={error.ifscCode}
+                name="ifscCode"
+                value={values.ifscCode}
+                onChange={handleChange}
+                label="IFSC Code"
+                required
+              />
+
+              <Input
+                name="uanNo"
+                value={values.uanNo}
+                onChange={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 12);
+
+                  handleChange(e);
+                }}
+                label="UAN Number"
+              />
+            </div>
+
+            <div className="form-row">
+              <Input
+                name="insuranceCompany"
+                value={values.insuranceCompany}
+                onChange={handleChange}
+                label="Insurance Comapany Name"
+              />
+
+              <Input
+                name="esicNumber"
+                value={values.esicNumber}
+                onChange={handleChange}
+                label="ESIC Number"
+              />
+
+              <Input
+                name="policyNumber"
+                value={values.policyNumber}
+                onChange={handleChange}
+                label="Policy Number"
+              />
             </div>
           </div>
-          <div className="personaldetails">
-            <h1>Salary Details</h1>
-            <div className="inputs">
-              <div className="form-row">
-                <Input
-                  error={error.employeeSalary}
-                  name="employeeSalary"
-                  value={values.employeeSalary}
-                  onChange={handleChange}
-                  label="Employee Salary"
-                  required
-                />
-                <Input
-                  error={error.costtoCompany}
-                  name="costtoCompany"
-                  value={values.costtoCompany}
-                  onChange={handleChange}
-                  label="Cost to Comapany"
-                  required
-                />
-                <Input
-                  error={error.bankName}
-                  name="bankName"
-                  value={values.bankName}
-                  onChange={handleChange}
-                  label="Bank Name"
-                  required
-                />
-              </div>
-              <div className="form-row">
-                <Input
-                  error={error.accountNumber}
-                  name="accountNumber"
-                  value={values.accountNumber}
-                  onChange={handleChange}
-                  label="Account Number"
-                  required
-                />
-                <Input
-                  error={error.ifscCode}
-                  name="ifscCode"
-                  value={values.ifscCode}
-                  onChange={handleChange}
-                  label="IFSC Code"
-                  required
-                />
-                <Input
-                  name="uanNo"
-                  value={values.uanNo}
-                  onChange={(e) => {
-                    e.target.value = e.target.value
-                      .replace(/\D/g, "")
-                      .slice(0, 12);
+        </div>
 
-                    handleChange(e);
-                  }}
-                  label="UAN Number"
-                />
-              </div>
-              <div className="form-row">
-                <Input
-                  name="insuranceCompany"
-                  value={values.insuranceCompany}
-                  onChange={handleChange}
-                  label="Insurance Comapany Name"
-                />
-                <Input
-                  name="esicNumber"
-                  value={values.esicNumber}
-                  onChange={handleChange}
-                  label="ESIC Number"
-                />
-                <Input
-                  name="policyNumber"
-                  value={values.policyNumber}
-                  onChange={handleChange}
-                  label="Policy Number"
-                />
-              </div>
+        <div className="crmdetails">
+          <h1>CRM Details</h1>
+
+          <div className="inputs">
+            <div className="form-row">
+              <SelectInput
+                error={error.crmRole}
+                name="crmRole"
+                value={values.crmRole}
+                onChange={handleChange}
+                label="CRM Role"
+                required
+              >
+                <MenuItem value="ADMIN">Admin </MenuItem>
+                <MenuItem value="MANAGER">Manager </MenuItem>
+                <MenuItem value="EMPLOYEE">Employee </MenuItem>
+              </SelectInput>
+
+              <SelectInput
+                error={error.managerName}
+                name="managerName"
+                value={values.managerName}
+                onChange={handleChange}
+                label="Manager Name"
+                required
+              >
+                {teams.map((team) => (
+                  <MenuItem
+                    key={team.data.id}
+                    value={team.data.manegerName} // GET API field
+                  >
+                    {team.data.manegerName}
+                  </MenuItem>
+                ))}
+              </SelectInput>
+
+              <SelectInput
+                name="teamName"
+                value={values.teamName}
+                onChange={handleChange}
+                label="Team Name"
+                required
+              >
+                {teams.map((team) => (
+                  <MenuItem key={team.data.id} value={team.data.name}>
+                    {team.data.name}
+                  </MenuItem>
+                ))}
+              </SelectInput>
             </div>
           </div>
-          <div className="crmdetails">
-            <h1>CRM Details</h1>
-            <div className="inputs">
-              <div className="form-row">
-                <SelectInput
-                  error={error.crmRole}
-                  name="crmRole"
-                  value={values.crmRole}
-                  onChange={handleChange}
-                  label="CRM Role"
-                  name="crmRole"
-                  required
-                >
-                  <MenuItem value="ADMIN">Admin </MenuItem>
-                  <MenuItem value="MANAGER">Manager </MenuItem>
-                  <MenuItem value="EMPLOYEE">Employee </MenuItem>
-                </SelectInput>
-                <SelectInput
-                  error={error.managerName}
-                  name="managerName"
-                  value={values.managerName}
-                  onChange={handleChange}
-                  label="Manager Name"
-                  required
-                >
-                  {teams.map((team) => (
-                    <MenuItem
-                      key={team.data.id}
-                      value={team.data.manegerName} // GET API field
-                    >
-                      {team.data.manegerName}
-                    </MenuItem>
-                  ))}
-                </SelectInput>
-                <SelectInput
-                  name="teamName"
-                  value={values.teamName}
-                  onChange={handleChange}
-                  label="Team Name"
-                  required
-                >
-                  {teams.map((team) => (
-                    <MenuItem key={team.data.id} value={team.data.name}>
-                      {team.data.name}
-                    </MenuItem>
-                  ))}
-                </SelectInput>
-              </div>
-            </div>
-          </div>
+        </div>
 
-          <button className="btn" type="submit">
-            Submit
-          </button>
-        </form>
-      </MainPanel>
-    </>
-  );
+        <button className="btn" type="submit">
+          Submit
+        </button>
+      </form>
+    </MainPanel>
+  </>
+);
 };
 
 export default AddEmployee;
