@@ -4,6 +4,12 @@ import { MdEdit, MdDelete } from "react-icons/md";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
+const [sendTo, setSendTo] = useState("all");
+
+const [employees, setEmployees] = useState([]);
+const [selectedEmployee, setSelectedEmployee] = useState("");
+const [loadingEmployees, setLoadingEmployees] = useState(false);
+
 import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
@@ -89,7 +95,6 @@ const OfficialNotes = () => {
   return (
     <MainPanel>
       <div className="official-notes-page">
-
         {/* =========================
             HEADER
         ========================= */}
@@ -115,15 +120,12 @@ const OfficialNotes = () => {
 
         {showAddNote && (
           <div className="note-modal-overlay">
-
             <div className="note-modal">
-
               {/* =========================
                   POPUP HEADER
               ========================= */}
 
               <div className="note-modal-header">
-
                 <h2>Add Official Note</h2>
 
                 {/* Close button INSIDE modal */}
@@ -136,7 +138,6 @@ const OfficialNotes = () => {
                 >
                   ×
                 </button>
-
               </div>
 
               {/* =========================
@@ -144,43 +145,29 @@ const OfficialNotes = () => {
               ========================= */}
 
               <div className="note-modal-body">
-
                 {/* Date */}
 
                 <div className="note-form-group">
-                  <label htmlFor="note-date">
-                    Date
-                  </label>
+                  <label htmlFor="note-date">Date</label>
 
-                  <input
-                    id="note-date"
-                    type="date"
-                  />
+                  <input id="note-date" type="date" />
                 </div>
 
                 {/* Send To */}
 
                 <div className="note-form-group">
-                  <label htmlFor="send-to">
-                    Send To
-                  </label>
+                  <label htmlFor="send-to">Send To</label>
 
                   <select
                     id="send-to"
                     value={sendTo}
                     onChange={(e) => setSendTo(e.target.value)}
                   >
-                    <option value="">
-                      Select Option
-                    </option>
+                    <option value="">Select Option</option>
 
-                    <option value="all">
-                      All Employees
-                    </option>
+                    <option value="all">All Employees</option>
 
-                    <option value="specific">
-                      Specific Employee
-                    </option>
+                    <option value="specific">Specific Employee</option>
                   </select>
                 </div>
 
@@ -188,33 +175,31 @@ const OfficialNotes = () => {
 
                 {sendTo === "specific" && (
                   <div className="note-form-group">
+                    <label htmlFor="employee">Select Employee</label>
 
-                    <label htmlFor="employee">
-                      Select Employee
-                    </label>
+                    {sendTo === "specific" && (
+                      <div className="note-form-group">
+                        <label>Select Employee</label>
 
-                    <select id="employee">
-                      <option value="">
-                        Select Employee
-                      </option>
+                        <select
+                          value={selectedEmployee}
+                          onChange={(e) => setSelectedEmployee(e.target.value)}
+                        >
+                          <option value="">
+                            {loadingEmployees
+                              ? "Loading employees..."
+                              : "Select Employee"}
+                          </option>
 
-                      <option value="EMP001">
-                        EMP001 - Rahul Patil
-                      </option>
-
-                      <option value="EMP002">
-                        EMP002 - Priya Sharma
-                      </option>
-
-                      <option value="EMP003">
-                        EMP003 - Amit Joshi
-                      </option>
-
-                      <option value="EMP004">
-                        EMP004 - Sneha More
-                      </option>
-                    </select>
-
+                          {!loadingEmployees &&
+                            employees.map((employee) => (
+                              <option key={employee.id} value={employee.id}>
+                                {employee.first_name} {employee.last_name}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -223,13 +208,9 @@ const OfficialNotes = () => {
                 ========================= */}
 
                 <div className="note-form-group">
-
-                  <label>
-                    Note
-                  </label>
+                  <label>Note</label>
 
                   <div className="ckeditor-wrapper">
-
                     <CKEditor
                       editor={ClassicEditor}
                       data={noteContent}
@@ -258,11 +239,8 @@ const OfficialNotes = () => {
                         ],
                       }}
                     />
-
                   </div>
-
                 </div>
-
               </div>
 
               {/* =========================
@@ -270,7 +248,6 @@ const OfficialNotes = () => {
               ========================= */}
 
               <div className="note-modal-footer">
-
                 <button
                   type="button"
                   className="cancel-note-btn"
@@ -286,9 +263,7 @@ const OfficialNotes = () => {
                 >
                   Submit Note
                 </button>
-
               </div>
-
             </div>
           </div>
         )}
@@ -298,76 +273,48 @@ const OfficialNotes = () => {
         ========================= */}
 
         <div className="notes-table-wrapper">
-
           <table className="notes-table">
-
             <thead>
               <tr>
+                <th className="sr-column">Sr. No.</th>
 
-                <th className="sr-column">
-                  Sr. No.
-                </th>
+                <th className="date-column">Date &amp; Time</th>
 
-                <th className="date-column">
-                  Date &amp; Time
-                </th>
+                <th className="note-column">Note</th>
 
-                <th className="note-column">
-                  Note
-                </th>
-
-                <th className="action-column">
-                  Action
-                </th>
-
+                <th className="action-column">Action</th>
               </tr>
             </thead>
 
             <tbody>
-
               {notes.map((note) => (
                 <tr key={note.id}>
-
                   {/* Sr No */}
 
                   <td className="sr-column">
-                    <span className="sr-number">
-                      {note.id}
-                    </span>
+                    <span className="sr-number">{note.id}</span>
                   </td>
 
                   {/* Date */}
 
                   <td className="date-column">
-                    <span className="note-date">
-                      {note.date}
-                    </span>
+                    <span className="note-date">{note.date}</span>
                   </td>
 
                   {/* Note */}
 
                   <td className="note-column">
-
                     <div className="note-content">
+                      <h3>{note.title}</h3>
 
-                      <h3>
-                        {note.title}
-                      </h3>
-
-                      <p>
-                        {note.description}
-                      </p>
-
+                      <p>{note.description}</p>
                     </div>
-
                   </td>
 
                   {/* Actions */}
 
                   <td className="action-column">
-
                     <div className="note-actions">
-
                       <button
                         type="button"
                         className="action-btn edit-btn"
@@ -385,18 +332,12 @@ const OfficialNotes = () => {
                       >
                         <MdDelete className="icon" />
                       </button>
-
                     </div>
-
                   </td>
-
                 </tr>
               ))}
-
             </tbody>
-
           </table>
-
         </div>
 
         {/* Footer */}
@@ -404,7 +345,6 @@ const OfficialNotes = () => {
         <div className="notes-footer">
           Showing 1 to {notes.length} of {notes.length} notes
         </div>
-
       </div>
     </MainPanel>
   );
