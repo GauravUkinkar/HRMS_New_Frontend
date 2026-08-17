@@ -9,19 +9,21 @@ import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const OfficialNotes = () => {
-  const isEditAllowed = (note) => {
-  const createdDate = new Date(note.createdAt);
-  const today = new Date();
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  return (
-    createdDate.getFullYear() === today.getFullYear() &&
-    createdDate.getMonth() === today.getMonth() &&
-    createdDate.getDate() === today.getDate()
-  );
-};
   const [sendTo, setSendTo] = useState("all");
-const [selectedEmployees, setSelectedEmployees] = useState([]);
-const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
+
+  const [showAddNote, setShowAddNote] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState(null);
+
+  const [noteDate, setNoteDate] = useState("");
+  const [noteContent, setNoteContent] = useState("");
+
   const employees = [
     {
       id: 1,
@@ -44,6 +46,10 @@ const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
       name: "Shweta Shinde",
     },
   ];
+
+  useEffect(() => {
+    getOfficialNotes();
+  }, []);
   const [notes, setNotes] = useState([]);
 const [loading, setLoading] = useState(false);
 const [error, setError] = useState("");
