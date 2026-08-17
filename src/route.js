@@ -1,5 +1,6 @@
 import { lazy } from "react";
 import Profile from "./Pages/EmployeeProfile/Profile";
+import EditEmployee from "./Pages/AddEmployee/EditEmployee";
 
 
 const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
@@ -45,6 +46,12 @@ export const routes = [
     comp: AddEmployee,
     adminonly: true,
   },
+  {
+    name: "Edit Employee",
+    path: "/editEmployee/:employeeId",
+    comp: EditEmployee,
+    adminonly: true,
+},
   {
     name: "OfficialNotes",
     path: "/OfficialNotes",

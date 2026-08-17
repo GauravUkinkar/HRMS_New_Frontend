@@ -1,160 +1,291 @@
-import "./AddEmployee.scss";
-import MainPanel from "../../comp/MainPanel/MainPanel";
-import SelectInput from "../../comp/selectInput/SelectInput";
-import { MenuItem } from "@mui/material";
-import Input from "../../comp/input/Input";
-
-import UseForm from "../../UseForm";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { ValidateEmployee } from "../../validators/ValidEmployee";
-import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+
+import MainPanel from "../../comp/MainPanel/MainPanel";
+import "./AddEmployee.scss";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
-const AddEmployee = () => {
-  const [teams, setTeams] = useState([]);
-  const [value, setValue] = useState([]);
+const EditEmployee = () => {
+    const { employeeId } = useParams();
+    const navigate = useNavigate();
 
-  const formObj = {
-    employeeName: "",
-    employeeId: "",
-    gender: "",
-    employeeStatus: "Active",
-    designation: "",
-    department: "",
-    dateOfJoining: "",
-    dateOfLiving: "",
-    contactNumber: "",
-    ifscCode: "",
-    dateOfBirth: "",
-    bloodGroup: "",
-    teamName: "",
-    employementType: "",
-    aadharNumber: "",
-    panNumber: "",
-    accountNumber: "",
-    costtoCompany: 0,
-    employeeSalary: 0,
-    bankName: "",
-    companyName: "",
-    diduction: 0,
-    currentAddress: "",
-    permanentAddress: "",
-    uanNo: "",
-    policyNumber: "",
-    insuranceCompany: "",
-    emergencyContactNumber: "",
-    emergencyContactName: "",
-    emergencyContactRelation: "",
-    emergencyContactCurrentAddress: "",
-    emergencyContactPermanentAddress: "",
-    status: "ACTIVE",
-    esicNumber: "",
-    email: "",
-    password: "",
-    role: "",
-    crmRole: "",
-    managerName: "",
+    const [loading, setLoading] = useState(false);
 
-    employee_image: null,
-  };
+    const [existingImage, setExistingImage] = useState("");
 
-  const addEmployee = async () => {
-    try {
-      const formData = new FormData();
+  
 
-      // Remove image from employee JSON
-      const employeeData = {
-        ...values,
-      };
+    // ==========================================
+    // GET TEAMS
+    // ==========================================
+    const getTeams = async () => {
+        try {
+            const res = await axios.get(
+                `${BASE_URL}Admin/GetAllTeam`,
+                {
+                    withCredentials: true,
+                }
+            );
 
-      delete employeeData.employee_image;
+            const teamData =
+                res.data?.data || res.data || [];
 
-      // Add employee JSON
-      formData.append(
+            setTeams(teamData);
+        } catch (error) {
+            console.error(
+                "Get Teams Error:",
+                error.response?.data || error
+            );
+        }
+    };
+
+    // ==========================================
+    // GET EMPLOYEE
+    // ==========================================
+    const getEmployee = async () => {
+        try {
+            setLoading(true);
+
+            const res = await axios.get(
+                `${BASE_URL}Admin/GetEmployee/${employeeId}`,
+                {
+                    withCredentials: true,
+                }
+            );
+
+            console.log(
+                "Employee API Response:",
+                res.data
+            );
+
+            const employee =
+                res.data?.data || res.data;
+
+            // --------------------------------------
+            // PREFILL FORM
+            // --------------------------------------
+
+            setFormData({
+                employeeName:
+                    employee.employeeName || "",
+
+                employeeId:
+                    employee.employeeId || "",
+
+                gender:
+                    employee.gender || "",
+
+                employeeStatus:
+                    employee.employeeStatus || "Active",
+
+                designation:
+                    employee.designation || "",
+
+                department:
+                    employee.department || "",
+
+                dateOfJoining:
+                    formatDate(employee.dateOfJoining),
+
+                dateOfLiving:
+                    formatDate(employee.dateOfLiving),
+
+                contactNumber:
+                    employee.contactNumber || "",
+
+                ifscCode:
+                    employee.ifscCode || "",
+
+                dateOfBirth:
+                    formatDate(employee.dateOfBirth),
+
+                bloodGroup:
+                    employee.bloodGroup || "",
+
+                teamName:
+                    employee.teamName || "",
+
+                employementType:
+                    employee.employementType || "",
+
+                aadharNumber:
+                    employee.aadharNumber || "",
+
+                panNumber:
+                    employee.panNumber || "",
+
+                accountNumber:
+                    employee.accountNumber || "",
+
+                costtoCompany:
+                    employee.costtoCompany || "",
+
+                employeeSalary:
+                    employee.employeeSalary || "",
+
+                bankName:
+                    employee.bankName || "",
+
+                companyName:
+                    employee.companyName || "",
+
+                diduction:
+                    employee.diduction || "",
+
+                currentAddress:
+                    employee.currentAddress || "",
+
+                permanentAddress:
+                    employee.permanentAddress || "",
+
+                uanNo:
+                    employee.uanNo || "",
+
+                policyNumber:
+                    employee.policyNumber || "",
+
+                insuranceCompany:
+                    employee.insuranceCompany || "",
+
+                emergencyContactNumber:
+                    employee.emergencyContactNumber || "",
+
+                emergencyContactName:
+                    employee.emergencyContactName || "",
+
+                emergencyContactRelation:
+                    employee.emergencyContactRelation || "",
+
+                emergencyContactCurrentAddress:
+                    employee.emergencyContactCurrentAddress || "",
+
+                emergencyContactPermanentAddress:
+                    employee.emergencyContactPermanentAddress || "",
+
+                status:
+                    employee.status || "ACTIVE",
+
+                esicNumber:
+                    employee.esicNumber || "",
+
+                email:
+                    employee.email || "",
+
+                password:
+                    employee.password || "",
+
+                role:
+                    employee.role || "",
+
+                crmRole:
+                    employee.crmRole || "",
+
+                managerName:
+                    employee.managerName || "",
+            });
+
+            // Existing image
+            setExistingImage(
+                employee.image || ""
+            );
+
+        } catch (error) {
+            console.error(
+                "Get Employee Error:",
+                error.response?.data || error
+            );
+
+            toast.error(
+                "Unable to load employee details"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ==========================================
+    // DATE FORMAT
+    // ==========================================
+    const formatDate = (date) => {
+        if (!date) return "";
+
+        return String(date).substring(0, 10);
+    };
+
+    // ==========================================
+    // INITIAL LOAD
+    // ==========================================
+    useEffect(() => {
+        if (employeeId) {
+            getEmployee();
+        }
+
+        getTeams();
+    }, [employeeId]);
+
+    // ==========================================
+    // INPUT CHANGE
+    // ==========================================
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+
+    // ==========================================
+    // UPDATE EMPLOYEE
+    // ==========================================
+   const handleUpdate = async () => {
+    const formData = new FormData();
+
+    formData.append(
         "employeeDto",
-        JSON.stringify(employeeData)
-      );
+        JSON.stringify(values)
+    );
 
-      // Add image using BACKEND field name: "image"
-      if (values.employee_image) {
+    if (values.employee_image instanceof File) {
         formData.append(
-          "image",
-          values.employee_image
+            "image",
+            values.employee_image
         );
-      }
+    }
 
-      console.log("Employee DTO:", employeeData);
-      console.log("Image:", values.employee_image);
-
-      const response = await axios.post(
-        `${BASE_URL}Admin/AddEmployee`,
+    await axios.post(
+        `${BASE_URL}Admin/updateEmployee`,
         formData,
         {
-          withCredentials: true,
+            withCredentials: true,
         }
-      );
+    );
+};
 
-      toast.success("Employee added successfully!");
+    return (
+        <MainPanel
+            title="Edit Employee"
+            breadcrumbs={[
+                {
+                    label: "Dashboard",
+                    link: "/dashboard",
+                },
+                {
+                    label: "Employees",
+                    link: "/employees",
+                },
+                {
+                    label: "Edit Employee",
+                },
+            ]}
+        >
 
-      setValues(formObj);
-      setError({});
 
-      console.log(
-        "Add Employee Response:",
-        response.data
-      );
-
-    } catch (error) {
-      console.error("Add Employee Error:", error);
-      console.error("Status:", error.response?.status);
-      console.error("Response:", error.response?.data);
-    }
-  };
-
-  const getTeams = async () => {
-    try {
-      // const res = await axios.get(`${BASE_URL}Admin/Team/getAllTeams`);
-      const res = await axios.get(
-        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams"
-      );
-
-      console.log(res.data, "sklfjskdlfklfsdjksdflkklsdfkjljksfd");
-      setTeams(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getTeams();
-  }, []);
-
-  const {
-    handleChange,
-    handleSubmit,
-    handleBlur,
-    values,
-    setValues,
-    error,
-    setError,
-    isSubmitting,
-  } = UseForm(formObj, ValidateEmployee, addEmployee);
-
-  console.log(error, "error");
-  console.log(values, "values");
-
-  return (
-    <>
-      <MainPanel
-        title="Add Employee"
-        breadcrumbs={[
-          { label: "Dashboard", link: "/dashboard" },
-          { label: "Add Employee" },
-        ]}
-      >
-        <form onSubmit={handleSubmit} className="employee-parent">
+             <form onSubmit={handleUpdate} className="employee-parent">
           <div className="empdetails">
             <h1>Employee Details</h1>
 
@@ -669,12 +800,11 @@ const AddEmployee = () => {
           </div>
 
           <button className="btn" type="submit">
-            Submit
+            Update Employee
           </button>
         </form>
-      </MainPanel>
-    </>
-  );
+        </MainPanel >
+    );
 };
 
-export default AddEmployee;
+export default EditEmployee;

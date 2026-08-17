@@ -60,7 +60,7 @@ const Profile = () => {
     const getEmployee = async () => {
         try {
             const res = await axios.get(
-                `${BASE_URL}Admin/GetEmployee/${employeeId}`,
+                `${BASE_URL}Admin/GetEmployeeById/${employeeId}`,
                 { withCredentials: true });
 
             console.log("Employee Details:", res.data);
@@ -89,8 +89,12 @@ const Profile = () => {
                         <div className="img-group">
                             <img
                                 src={
-                                    !imageError && employeeprofile?.image ? employeeprofile.image
-                                        : employeeprofile?.gender?.toLowerCase() === "female" ? femaleUser : maleUser}
+                                    !imageError && employeeprofile?.image
+                                        ? employeeprofile.image
+                                        : employeeprofile?.gender?.toLowerCase() === "female"
+                                            ? femaleUser
+                                            : maleUser
+                                }
                                 alt={employeeprofile?.employeeName || "Employee"}
                                 onError={() => setImageError(true)}
                             />
@@ -357,7 +361,7 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                     Name
+                                    Name
                                 </p>
 
                                 <span className="coma">:</span>
@@ -369,7 +373,7 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                      Number
+                                    Number
                                 </p>
 
                                 <span className="coma">:</span>
@@ -384,7 +388,7 @@ const Profile = () => {
 
                             <div className="row-one">
                                 <p className="label">
-                                      Relation
+                                    Relation
                                 </p>
 
                                 <span className="coma">:</span>

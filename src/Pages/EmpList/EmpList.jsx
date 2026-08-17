@@ -39,7 +39,7 @@ const EmpList = () => {
         email: item.data.email,
         phone: item.data.contactNumber,
         dob: item.data.dateOfBirth,
-        address: item.data.address,
+        address: item.data.currentAddress,
         status: item.data.employeeStatus,
       }));
 
@@ -203,10 +203,7 @@ const EmpList = () => {
           <EditOutlined
             className="edit"
             onClick={() => {
-              console.log(
-                "Edit Employee:",
-                record.empId
-              );
+              navigate(`/editEmployee/${record.empId}`);
             }}
           />
 
