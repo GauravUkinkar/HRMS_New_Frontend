@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { MdEdit, MdDelete } from "react-icons/md";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -44,37 +44,9 @@ const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
       name: "Shweta Shinde",
     },
   ];
-  const notes = [
-     {
-    id: 1,
-    createdAt: "2026-08-17T11:00:00",
-    displayDate: "17 Aug 2026, 11:00 AM",
-    sendTo: "all",
-    title: "Annual Day Celebration",
-    description:
-      "We are excited to announce that our Annual Day Celebration will be held on 20th August 2026.",
-  },
-
-    {
-      id: 2,
-      date: "2026-08-08",
-      displayDate: "08 Aug 2026, 09:15 AM",
-      sendTo: "all",
-      title: "New Leave Policy Update",
-      description:
-        "Please be informed that a new leave policy has been updated and is effective from 15th August 2026. Kindly review the policy details in the HR portal.",
-    },
-
-    {
-      id: 3,
-      date: "2026-08-05",
-      displayDate: "05 Aug 2026, 11:00 AM",
-      sendTo: "employee-2",
-      title: "Warning Regarding Attendance",
-      description:
-        "Please ensure that you maintain regular attendance and follow the company's attendance policy.",
-    },
-  ];
+  const [notes, setNotes] = useState([]);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
   const [showAddNote, setShowAddNote] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState(null);
