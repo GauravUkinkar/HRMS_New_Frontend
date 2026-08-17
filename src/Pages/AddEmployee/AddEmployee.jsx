@@ -44,7 +44,8 @@ const AddEmployee = () => {
     emergencyContactNumber: "",
     emergencyContactName: "",
     emergencyContactRelation: "",
-    emergencyContactAddress: "",
+    emergencyContactCurrentAddress:"",
+    emergencyContactPermanentAddress: "",
     status: "",
     esicNumber: "",
     editableAccess: true,
@@ -439,6 +440,8 @@ const AddEmployee = () => {
                 </SelectInput>
               </div>
               <div className="form-row">
+                    
+    
                 <Input
                   label="Emergency Contact Person Current Address"
                   name="emergencyContactCurrentAddress"
