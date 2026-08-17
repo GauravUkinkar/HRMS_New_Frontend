@@ -81,25 +81,20 @@ const OfficialNotes = () => {
     const result = await response.json();
 
     console.log("Official Notes API Response:", result);
-    console.log("Is Array:", Array.isArray(result));
 
-    // API is returning an array directly
     if (Array.isArray(result)) {
-      setNotes(result);
-      setError("");
-    } else if (result?.data && Array.isArray(result.data)) {
-      // Handles { data: [...] } response also
-      setNotes(result.data);
-      setError("");
-    } else if (result?.data) {
-      // Handles { data: {...} } response
-      setNotes([result.data]);
+      // Extract the data object from each API response
+      const formattedNotes = result
+        .filter((item) => item.status === "OK" && item.data)
+        .map((item) => item.data);
+
+      console.log("Formatted Notes:", formattedNotes);
+
+      setNotes(formattedNotes);
       setError("");
     } else {
       setNotes([]);
-      setError(
-        result?.responseMessage || "Unable to fetch official notes"
-      );
+      setError("Unable to fetch official notes");
     }
   } catch (error) {
     console.error("Get Official Notes Error:", error);
@@ -203,9 +198,7 @@ const isEditAllowed = (note) => {
     setNoteDate(`${year}-${month}-${day}`);
 
     // Existing API description
-    setNoteContent(`
-      <p>${note.description || ""}</p>
-    `);
+   setNoteContent(note.description || "");
 
     setShowAddNote(true);
   };
@@ -604,12 +597,13 @@ const isEditAllowed = (note) => {
                     {/* NOTE */}
 
                     <td className="note-column">
-                      <div className="note-content">
-                        <p>
-                          {note.description}
-                        </p>
-                      </div>
-                    </td>
+  <div
+    className="note-content"
+    dangerouslySetInnerHTML={{
+      __html: note.description || "",
+    }}
+  />
+</td>
 
                     {/* ACTION */}
 
