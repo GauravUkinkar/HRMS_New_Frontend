@@ -9,13 +9,17 @@ import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const OfficialNotes = () => {
+  // =========================================
+  // STATES
+  // =========================================
+
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [sendTo, setSendTo] = useState("all");
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-  const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
+  const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] =
+    useState(false);
 
   const [showAddNote, setShowAddNote] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -23,6 +27,10 @@ const OfficialNotes = () => {
 
   const [noteDate, setNoteDate] = useState("");
   const [noteContent, setNoteContent] = useState("");
+
+  // =========================================
+  // EMPLOYEES
+  // =========================================
 
   const employees = [
     {
@@ -47,73 +55,182 @@ const OfficialNotes = () => {
     },
   ];
 
+  // =========================================
+  // GET ALL OFFICIAL NOTES
+  // =========================================
+
+  const getOfficialNotes = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch(
+        "https://userservicetest.pandozasolutions.com/AuthController/GetAllOfficialNotes",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      console.log("Official Notes API Response:", result);
+
+      if (result.status === "OK") {
+        /*
+          API should ideally return:
+
+          data: [
+            {
+              notesId: 1,
+              description: "...",
+              createdAt: "..."
+            }
+          ]
+        */
+
+        if (Array.isArray(result.data)) {
+          setNotes(result.data);
+        } else if (result.data) {
+          setNotes([result.data]);
+        } else {
+          setNotes([]);
+        }
+      } else {
+        setNotes([]);
+        setError(
+          result.responseMessage || "Unable to fetch official notes"
+        );
+      }
+    } catch (error) {
+      console.error("Get Official Notes Error:", error);
+      setError("Failed to load official notes.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // =========================================
+  // LOAD NOTES WHEN PAGE OPENS
+  // =========================================
+
   useEffect(() => {
     getOfficialNotes();
   }, []);
-  const [notes, setNotes] = useState([]);
-const [loading, setLoading] = useState(false);
-const [error, setError] = useState("");
-  const [showAddNote, setShowAddNote] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingNoteId, setEditingNoteId] = useState(null);
 
-  const [noteDate, setNoteDate] = useState("");
-  const [noteContent, setNoteContent] = useState("");
-const handleAddNote = () => {
-  setIsEditing(false);
-  setEditingNoteId(null);
+  // =========================================
+  // CHECK SAME-DAY EDIT
+  // =========================================
 
-  setNoteDate("");
-  setSendTo("all");
-  setNoteContent("");
+  const isEditAllowed = (note) => {
+    if (!note?.createdAt) {
+      return false;
+    }
 
-  setSelectedEmployees([]);
-  setIsEmployeeDropdownOpen(false);
+    const createdDate = new Date(note.createdAt);
+    const today = new Date();
 
-  setShowAddNote(true);
-};
-  
+    return (
+      createdDate.getFullYear() === today.getFullYear() &&
+      createdDate.getMonth() === today.getMonth() &&
+      createdDate.getDate() === today.getDate()
+    );
+  };
+
+  // =========================================
+  // ADD NOTE
+  // =========================================
+
+  const handleAddNote = () => {
+    setIsEditing(false);
+    setEditingNoteId(null);
+
+    setNoteDate("");
+    setNoteContent("");
+
+    setSelectedEmployees([]);
+    setIsEmployeeDropdownOpen(false);
+
+    setShowAddNote(true);
+  };
+
+  // =========================================
+  // CLOSE POPUP
+  // =========================================
+
   const handleCloseNote = () => {
-  setShowAddNote(false);
+    setShowAddNote(false);
 
-  setIsEditing(false);
-  setEditingNoteId(null);
+    setIsEditing(false);
+    setEditingNoteId(null);
 
-  setNoteDate("");
-  setSendTo("all");
-  setNoteContent("");
+    setNoteDate("");
+    setNoteContent("");
 
-  setSelectedEmployees([]);
-  setIsEmployeeDropdownOpen(false);
-};
-  
-const handleEdit = (note) => {
-  if (!isEditAllowed(note)) {
-    alert("This note can only be edited on the day it was created.");
-    return;
-  }
+    setSelectedEmployees([]);
+    setIsEmployeeDropdownOpen(false);
+  };
 
-  setIsEditing(true);
-  setEditingNoteId(note.id);
+  // =========================================
+  // EDIT NOTE
+  // =========================================
 
-  setNoteDate(note.date);
-  setSendTo(note.sendTo);
-  setNoteContent(`
-    <h3>${note.title}</h3>
-    <p>${note.description}</p>
-  `);
+  const handleEdit = (note) => {
+    if (!isEditAllowed(note)) {
+      alert(
+        "This note can only be edited on the day it was created."
+      );
+      return;
+    }
 
-  setShowAddNote(true);
-};
+    setIsEditing(true);
+    setEditingNoteId(note.notesId);
+
+    // Convert createdAt to YYYY-MM-DD
+    const createdDate = new Date(note.createdAt);
+
+    const year = createdDate.getFullYear();
+    const month = String(
+      createdDate.getMonth() + 1
+    ).padStart(2, "0");
+    const day = String(
+      createdDate.getDate()
+    ).padStart(2, "0");
+
+    setNoteDate(`${year}-${month}-${day}`);
+
+    // Existing API description
+    setNoteContent(`
+      <p>${note.description || ""}</p>
+    `);
+
+    setShowAddNote(true);
+  };
+
+  // =========================================
+  // DELETE NOTE
+  // =========================================
+
   const handleDelete = (note) => {
     console.log("Delete note:", note);
   };
+
+  // =========================================
+  // SUBMIT / UPDATE NOTE
+  // =========================================
+
   const handleSubmitNote = () => {
     const noteData = {
-      id: editingNoteId,
+      notesId: editingNoteId,
       date: noteDate,
-      sendTo: sendTo,
-      note: noteContent,
+      employeeIds: selectedEmployees,
+      description: noteContent,
     };
 
     if (isEditing) {
@@ -125,12 +242,35 @@ const handleEdit = (note) => {
     handleCloseNote();
   };
 
+  // =========================================
+  // FORMAT DATE
+  // =========================================
+
+  const formatDate = (createdAt) => {
+    if (!createdAt) {
+      return "-";
+    }
+
+    return new Date(createdAt).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // =========================================
+  // JSX
+  // =========================================
+
   return (
     <MainPanel>
       <div className="official-notes-page">
-        {/* =========================
+
+        {/* =================================
             HEADER
-        ========================= */}
+        ================================= */}
 
         <div className="official-notes-header">
           <div className="header-content">
@@ -147,23 +287,23 @@ const handleEdit = (note) => {
           </button>
         </div>
 
-        {/* =========================
-            ADD NOTE POPUP
-        ========================= */}
+        {/* =================================
+            ADD / EDIT NOTE POPUP
+        ================================= */}
 
         {showAddNote && (
           <div className="note-modal-overlay">
             <div className="note-modal">
-              {/* =========================
-                  POPUP HEADER
-              ========================= */}
+
+              {/* POPUP HEADER */}
 
               <div className="note-modal-header">
                 <h2>
-                  {isEditing ? "Edit Official Note" : "Add Official Note"}
+                  {isEditing
+                    ? "Edit Official Note"
+                    : "Add Official Note"}
                 </h2>
 
-                {/* Close button INSIDE modal */}
                 <button
                   type="button"
                   className="close-btn"
@@ -175,102 +315,132 @@ const handleEdit = (note) => {
                 </button>
               </div>
 
-              {/* =========================
-                  POPUP BODY
-              ========================= */}
+              {/* POPUP BODY */}
 
               <div className="note-modal-body">
-                {/* Date */}
+
+                {/* DATE */}
 
                 <div className="note-form-group">
-                  <label htmlFor="note-date">Date</label>
+                  <label htmlFor="note-date">
+                    Date
+                  </label>
 
                   <input
                     id="note-date"
                     type="date"
                     value={noteDate}
-                    onChange={(e) => setNoteDate(e.target.value)}
+                    onChange={(e) =>
+                      setNoteDate(e.target.value)
+                    }
                   />
                 </div>
 
-                <div className="form-group">
-  <label>Send To</label>
+                {/* SEND TO */}
 
-  <div className="employee-dropdown">
+                <div className="note-form-group">
+                  <label>Send To</label>
 
-    <div
-      className="employee-dropdown-header"
-      onClick={() =>
-        setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)
-      }
-    >
-      <span>
-        {selectedEmployees.length === 0
-          ? "All Employees"
-          : `${selectedEmployees.length} Employees Selected`}
-      </span>
+                  <div className="employee-dropdown">
 
-      <span className="dropdown-arrow">⌄</span>
-    </div>
+                    {/* DROPDOWN HEADER */}
 
-    {isEmployeeDropdownOpen && (
-      <div className="employee-dropdown-menu">
+                    <div
+                      className="employee-dropdown-header"
+                      onClick={() =>
+                        setIsEmployeeDropdownOpen(
+                          !isEmployeeDropdownOpen
+                        )
+                      }
+                    >
+                      <span>
+                        {selectedEmployees.length === 0
+                          ? "All Employees"
+                          : `${selectedEmployees.length} Employees Selected`}
+                      </span>
 
-        <label className="employee-option">
-          <input
-            type="checkbox"
-            checked={selectedEmployees.length === employees.length}
-            onChange={(e) => {
-              if (e.target.checked) {
-                setSelectedEmployees(
-                  employees.map((employee) => employee.id)
-                );
-              } else {
-                setSelectedEmployees([]);
-              }
-            }}
-          />
+                      <span className="dropdown-arrow">
+                        ⌄
+                      </span>
+                    </div>
 
-          <span>All Employees</span>
-        </label>
+                    {/* EMPLOYEE LIST */}
 
-        {employees.map((employee) => (
-          <label
-            key={employee.id}
-            className="employee-option"
-          >
-            <input
-              type="checkbox"
-              checked={selectedEmployees.includes(employee.id)}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setSelectedEmployees((prev) => [
-                    ...prev,
-                    employee.id,
-                  ]);
-                } else {
-                  setSelectedEmployees((prev) =>
-                    prev.filter((id) => id !== employee.id)
-                  );
-                }
-              }}
-            />
+                    {isEmployeeDropdownOpen && (
+                      <div className="employee-dropdown-menu">
 
-            <span>{employee.name}</span>
-          </label>
-        ))}
+                        {/* ALL EMPLOYEES */}
 
-      </div>
-    )}
-  </div>
-</div>
-                {/*  */}
+                        <label className="employee-option">
+                          <input
+                            type="checkbox"
+                            checked={
+                              selectedEmployees.length ===
+                              employees.length
+                            }
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedEmployees(
+                                  employees.map(
+                                    (employee) =>
+                                      employee.id
+                                  )
+                                );
+                              } else {
+                                setSelectedEmployees([]);
+                              }
+                            }}
+                          />
 
-                {/* Specific Employee */}
+                          <span>
+                            All Employees
+                          </span>
+                        </label>
 
-                {/* =========================
-                    CKEDITOR NOTE
-                ========================= */}
+                        {/* INDIVIDUAL EMPLOYEES */}
+
+                        {employees.map((employee) => (
+                          <label
+                            key={employee.id}
+                            className="employee-option"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedEmployees.includes(
+                                employee.id
+                              )}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedEmployees(
+                                    (prev) => [
+                                      ...prev,
+                                      employee.id,
+                                    ]
+                                  );
+                                } else {
+                                  setSelectedEmployees(
+                                    (prev) =>
+                                      prev.filter(
+                                        (id) =>
+                                          id !==
+                                          employee.id
+                                      )
+                                  );
+                                }
+                              }}
+                            />
+
+                            <span>
+                              {employee.name}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* CKEDITOR */}
 
                 <div className="note-form-group">
                   <label>Note</label>
@@ -280,11 +450,14 @@ const handleEdit = (note) => {
                       editor={ClassicEditor}
                       data={noteContent}
                       onChange={(event, editor) => {
-                        const data = editor.getData();
+                        const data =
+                          editor.getData();
+
                         setNoteContent(data);
                       }}
                       config={{
-                        placeholder: "Enter official note...",
+                        placeholder:
+                          "Enter official note...",
 
                         toolbar: [
                           "heading",
@@ -308,11 +481,10 @@ const handleEdit = (note) => {
                 </div>
               </div>
 
-              {/* =========================
-                  POPUP FOOTER
-              ========================= */}
+              {/* POPUP FOOTER */}
 
               <div className="note-modal-footer">
+
                 <button
                   type="button"
                   className="cancel-note-btn"
@@ -320,102 +492,189 @@ const handleEdit = (note) => {
                 >
                   Cancel
                 </button>
+
                 <button
                   type="button"
                   className="submit-note-btn"
                   onClick={handleSubmitNote}
                 >
-                  {isEditing ? "Update Note" : "Submit Note"}
+                  {isEditing
+                    ? "Update Note"
+                    : "Submit Note"}
                 </button>
+
               </div>
             </div>
           </div>
         )}
 
-        {/* =========================
+        {/* =================================
             NOTES TABLE
-        ========================= */}
+        ================================= */}
 
         <div className="notes-table-wrapper">
+
           <table className="notes-table">
+
             <thead>
               <tr>
-                <th className="sr-column">Sr. No.</th>
+                <th className="sr-column">
+                  Sr. No.
+                </th>
 
-                <th className="date-column">Date &amp; Time</th>
+                <th className="date-column">
+                  Date &amp; Time
+                </th>
 
-                <th className="note-column">Note</th>
+                <th className="note-column">
+                  Note
+                </th>
 
-                <th className="action-column">Action</th>
+                <th className="action-column">
+                  Action
+                </th>
               </tr>
             </thead>
 
             <tbody>
-              {notes.map((note) => (
-                <tr key={note.id}>
-                  {/* Sr No */}
 
-                  <td className="sr-column">
-                    <span className="sr-number">{note.id}</span>
-                  </td>
+              {/* LOADING */}
 
-                  {/* Date */}
-
-                  <td className="date-column">
-                    <span className="note-date">{note.date}</span>
-                  </td>
-
-                  {/* Note */}
-
-                  <td className="note-column">
-                    <div className="note-content">
-                      <h3>{note.title}</h3>
-
-                      <p>{note.description}</p>
-                    </div>
-                  </td>
-
-                  {/* Actions */}
-
-                  <td className="action-column">
-                    <div className="note-actions">
-                      
-<button
-  type="button"
-  className={`action-btn edit-btn ${
-    !isEditAllowed(note) ? "disabled" : ""
-  }`}
-  onClick={() => handleEdit(note)}
-  disabled={!isEditAllowed(note)}
-  title={
-    isEditAllowed(note)
-      ? "Edit Note"
-      : "Editing is allowed only on the day the note was created"
-  }
->
-  <MdEdit className="icon" />
-</button>
-                      <button
-                        type="button"
-                        className="action-btn delete-btn"
-                        onClick={() => handleDelete(note)}
-                        title="Delete Note"
-                      >
-                        <MdDelete className="icon" />
-                      </button>
-                    </div>
+              {loading && (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="table-message"
+                  >
+                    Loading official notes...
                   </td>
                 </tr>
-              ))}
+              )}
+
+              {/* ERROR */}
+
+              {!loading && error && (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="table-message error"
+                  >
+                    {error}
+                  </td>
+                </tr>
+              )}
+
+              {/* EMPTY */}
+
+              {!loading &&
+                !error &&
+                notes.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan="4"
+                      className="table-message"
+                    >
+                      No official notes found.
+                    </td>
+                  </tr>
+                )}
+
+              {/* NOTES */}
+
+              {!loading &&
+                !error &&
+                notes.map((note, index) => (
+                  <tr key={note.notesId}>
+
+                    {/* SR NO */}
+
+                    <td className="sr-column">
+                      <span className="sr-number">
+                        {index + 1}
+                      </span>
+                    </td>
+
+                    {/* DATE */}
+
+                    <td className="date-column">
+                      <span className="note-date">
+                        {formatDate(
+                          note.createdAt
+                        )}
+                      </span>
+                    </td>
+
+                    {/* NOTE */}
+
+                    <td className="note-column">
+                      <div className="note-content">
+                        <p>
+                          {note.description}
+                        </p>
+                      </div>
+                    </td>
+
+                    {/* ACTION */}
+
+                    <td className="action-column">
+                      <div className="note-actions">
+
+                        {/* EDIT */}
+
+                        <button
+                          type="button"
+                          className={`action-btn edit-btn ${
+                            !isEditAllowed(note)
+                              ? "disabled"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            handleEdit(note)
+                          }
+                          disabled={
+                            !isEditAllowed(note)
+                          }
+                          title={
+                            isEditAllowed(note)
+                              ? "Edit Note"
+                              : "Editing is allowed only on the day the note was created"
+                          }
+                        >
+                          <MdEdit className="icon" />
+                        </button>
+
+                        {/* DELETE */}
+
+                        <button
+                          type="button"
+                          className="action-btn delete-btn"
+                          onClick={() =>
+                            handleDelete(note)
+                          }
+                          title="Delete Note"
+                        >
+                          <MdDelete className="icon" />
+                        </button>
+
+                      </div>
+                    </td>
+
+                  </tr>
+                ))}
+
             </tbody>
           </table>
         </div>
 
-        {/* Footer */}
+        {/* =================================
+            FOOTER
+        ================================= */}
 
         <div className="notes-footer">
-          Showing 1 to {notes.length} of {notes.length} notes
+          Showing 1 to {notes.length} of{" "}
+          {notes.length} notes
         </div>
+
       </div>
     </MainPanel>
   );
