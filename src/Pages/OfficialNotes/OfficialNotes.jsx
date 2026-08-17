@@ -3,20 +3,44 @@ import { FaPlus } from "react-icons/fa";
 import { MdEdit, MdDelete } from "react-icons/md";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { ImCross } from "react-icons/im";
 
 import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const OfficialNotes = () => {
-  const [sendTo, setSendTo] = useState("all");
+const [sendTo, setSendTo] = useState("all");
 
-  const [employees, setEmployees] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState("");
-  const [loadingEmployees, setLoadingEmployees] = useState(false);
+ 
+  const employees = [
+  {
+    id: 1,
+    name: "Aditya Mohe",
+  },
+  {
+    id: 2,
+    name: "Rahul Patil",
+  },
+  {
+    id: 3,
+    name: "Sachin Jadhav",
+  },
+  {
+    id: 4,
+    name: "Revti More",
+  },
+  {
+    id: 5,
+    name: "Shweta Shinde",
+  },
+];
+ 
   const notes = [
     {
       id: 1,
       date: "13 Aug 2026, 10:30 AM",
+
+
       title: "Annual Day Celebration",
       description:
         "We are excited to announce that our Annual Day Celebration will be held on 20th August 2026. All employees are requested to mark their presence and join the celebration.",
@@ -133,7 +157,7 @@ const OfficialNotes = () => {
                   aria-label="Close"
                   title="Close"
                 >
-                  ×
+                  <ImCross />
                 </button>
               </div>
 
@@ -150,55 +174,36 @@ const OfficialNotes = () => {
                   <input id="note-date" type="date" />
                 </div>
 
-                {/* Send To */}
+                {/* =================================
+    SEND TO
+================================= */}
+<div className="note-form-group">
+  <label htmlFor="sendTo">Send To</label>
 
-                <div className="note-form-group">
-                  <label htmlFor="send-to">Send To</label>
+  <select
+    id="sendTo"
+    value={sendTo}
+    onChange={(e) => setSendTo(e.target.value)}
+  >
+    {/* All Employees */}
+    <option value="all">
+      All Employees
+    </option>
 
-                  <select
-                    id="send-to"
-                    value={sendTo}
-                    onChange={(e) => setSendTo(e.target.value)}
-                  >
-                    <option value="">Select Option</option>
-
-                    <option value="all">All Employees</option>
-
-                    <option value="specific">Specific Employee</option>
-                  </select>
-                </div>
-
+    {/* Individual Employees */}
+    {employees.map((employee) => (
+      <option
+        key={employee.id}
+        value={`employee-${employee.id}`}
+      >
+        {employee.name}
+      </option>
+    ))}
+  </select>
+</div>
                 {/* Specific Employee */}
 
-                {sendTo === "specific" && (
-                  <div className="note-form-group">
-                    <label htmlFor="employee">Select Employee</label>
-
-                    {sendTo === "specific" && (
-                      <div className="note-form-group">
-                        <label>Select Employee</label>
-
-                        <select
-                          value={selectedEmployee}
-                          onChange={(e) => setSelectedEmployee(e.target.value)}
-                        >
-                          <option value="">
-                            {loadingEmployees
-                              ? "Loading employees..."
-                              : "Select Employee"}
-                          </option>
-
-                          {!loadingEmployees &&
-                            employees.map((employee) => (
-                              <option key={employee.id} value={employee.id}>
-                                {employee.first_name} {employee.last_name}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                    )}
-                  </div>
-                )}
+                
 
                 {/* =========================
                     CKEDITOR NOTE
