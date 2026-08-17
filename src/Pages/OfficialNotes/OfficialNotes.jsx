@@ -9,37 +9,35 @@ import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const OfficialNotes = () => {
-const [sendTo, setSendTo] = useState("all");
+  const [sendTo, setSendTo] = useState("all");
 
- 
   const employees = [
-  {
-    id: 1,
-    name: "Aditya Mohe",
-  },
-  {
-    id: 2,
-    name: "Rahul Patil",
-  },
-  {
-    id: 3,
-    name: "Sachin Jadhav",
-  },
-  {
-    id: 4,
-    name: "Revti More",
-  },
-  {
-    id: 5,
-    name: "Shweta Shinde",
-  },
-];
- 
+    {
+      id: 1,
+      name: "Aditya More",
+    },
+    {
+      id: 2,
+      name: "Rahul Patil",
+    },
+    {
+      id: 3,
+      name: "Sachin Jadhav",
+    },
+    {
+      id: 4,
+      name: "Revti More",
+    },
+    {
+      id: 5,
+      name: "Shweta Shinde",
+    },
+  ];
+
   const notes = [
     {
       id: 1,
       date: "13 Aug 2026, 10:30 AM",
-
 
       title: "Annual Day Celebration",
       description:
@@ -77,7 +75,6 @@ const [sendTo, setSendTo] = useState("all");
 
   // Popup state
   const [showAddNote, setShowAddNote] = useState(false);
-
 
   // CKEditor value
   const [noteContent, setNoteContent] = useState("");
@@ -177,33 +174,29 @@ const [sendTo, setSendTo] = useState("all");
                 {/* =================================
     SEND TO
 ================================= */}
-<div className="note-form-group">
-  <label htmlFor="sendTo">Send To</label>
+                <div className="note-form-group">
+                  <label htmlFor="sendTo">Send To</label>
 
-  <select
-    id="sendTo"
-    value={sendTo}
-    onChange={(e) => setSendTo(e.target.value)}
-  >
-    {/* All Employees */}
-    <option value="all">
-      All Employees
-    </option>
+                  <select
+                    id="sendTo"
+                    value={sendTo}
+                    onChange={(e) => setSendTo(e.target.value)}
+                  >
+                    {/* All Employees */}
+                    <option value="all">All Employees</option>
 
-    {/* Individual Employees */}
-    {employees.map((employee) => (
-      <option
-        key={employee.id}
-        value={`employee-${employee.id}`}
-      >
-        {employee.name}
-      </option>
-    ))}
-  </select>
-</div>
+                    {/* Individual Employees */}
+                    {employees.map((employee) => (
+                      <option
+                        key={employee.id}
+                        value={`employee-${employee.id}`}
+                      >
+                        {employee.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 {/* Specific Employee */}
-
-                
 
                 {/* =========================
                     CKEDITOR NOTE
