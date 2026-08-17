@@ -9,7 +9,6 @@ import axios from "axios";
 import { ValidateEmployee } from "../../validators/ValidEmployee";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const AddEmployee = () => {
