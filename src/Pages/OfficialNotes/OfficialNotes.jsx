@@ -18,8 +18,7 @@ const OfficialNotes = () => {
   const [error, setError] = useState("");
 
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-  const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] =
-    useState(false);
+  const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
 
   const [showAddNote, setShowAddNote] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -58,57 +57,55 @@ const OfficialNotes = () => {
   // =========================================
   // GET ALL OFFICIAL NOTES
   // =========================================
-const getOfficialNotes = async () => {
-  try {
-    setLoading(true);
-    setError("");
+  const getOfficialNotes = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-    const response = await fetch(
-      "https://userservicetest.pandozasolutions.com/AuthController/GetAllOfficialNotes",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://userservicetest.pandozasolutions.com/AuthController/GetAllOfficialNotes",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
+      );
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
       }
-    );
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+      const result = await response.json();
+
+      console.log("1. Raw API Response:", result);
+      console.log("2. Is Array:", Array.isArray(result));
+
+      // Make sure response is always treated as an array
+      const apiResponses = Array.isArray(result) ? result : [result];
+
+      console.log("3. API Responses:", apiResponses);
+
+      // Extract the data object from every response
+      const formattedNotes = apiResponses
+        .map((item) => item?.data)
+        .filter((item) => item);
+
+      console.log("4. Formatted Notes:", formattedNotes);
+      console.log("5. Number of Notes:", formattedNotes.length);
+
+      setNotes(formattedNotes);
+      console.log("FINAL notes state data:", formattedNotes);
+    } catch (error) {
+      console.error("Get Official Notes Error:", error);
+
+      setNotes([]);
+      setError("Failed to load official notes.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const result = await response.json();
-
-    console.log("1. Raw API Response:", result);
-    console.log("2. Is Array:", Array.isArray(result));
-
-    // Make sure response is always treated as an array
-    const apiResponses = Array.isArray(result)
-      ? result
-      : [result];
-
-    console.log("3. API Responses:", apiResponses);
-
-    // Extract the data object from every response
-    const formattedNotes = apiResponses
-      .map((item) => item?.data)
-      .filter((item) => item);
-
-    console.log("4. Formatted Notes:", formattedNotes);
-    console.log("5. Number of Notes:", formattedNotes.length);
-
-    setNotes(formattedNotes);
-    console.log("FINAL notes state data:", formattedNotes);
-  } catch (error) {
-    console.error("Get Official Notes Error:", error);
-
-    setNotes([]);
-    setError("Failed to load official notes.");
-  } finally {
-    setLoading(false);
-  }
-};
- 
   // =========================================
   // LOAD NOTES WHEN PAGE OPENS
   // =========================================
@@ -120,25 +117,24 @@ const getOfficialNotes = async () => {
   // =========================================
   // CHECK SAME-DAY EDIT
   // =========================================
-const isEditAllowed = (note) => {
-  if (!note?.createdAt) {
-    return false;
-  }
+  const isEditAllowed = (note) => {
+    if (!note?.createdAt) {
+      return false;
+    }
 
-  const createdDate = new Date(note.createdAt);
-  const today = new Date();
+    const createdDate = new Date(note.createdAt);
+    const today = new Date();
 
-  const createdIndiaDate = createdDate.toLocaleDateString("en-IN", {
-    timeZone: "Asia/Kolkata",
-  });
+    const createdIndiaDate = createdDate.toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
 
-  const todayIndiaDate = today.toLocaleDateString("en-IN", {
-    timeZone: "Asia/Kolkata",
-  });
+    const todayIndiaDate = today.toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+    });
 
-  return createdIndiaDate === todayIndiaDate;
-};
- 
+    return createdIndiaDate === todayIndiaDate;
+  };
 
   // =========================================
   // ADD NOTE
@@ -180,9 +176,7 @@ const isEditAllowed = (note) => {
 
   const handleEdit = (note) => {
     if (!isEditAllowed(note)) {
-      alert(
-        "This note can only be edited on the day it was created."
-      );
+      alert("This note can only be edited on the day it was created.");
       return;
     }
 
@@ -193,17 +187,13 @@ const isEditAllowed = (note) => {
     const createdDate = new Date(note.createdAt);
 
     const year = createdDate.getFullYear();
-    const month = String(
-      createdDate.getMonth() + 1
-    ).padStart(2, "0");
-    const day = String(
-      createdDate.getDate()
-    ).padStart(2, "0");
+    const month = String(createdDate.getMonth() + 1).padStart(2, "0");
+    const day = String(createdDate.getDate()).padStart(2, "0");
 
     setNoteDate(`${year}-${month}-${day}`);
 
     // Existing API description
-   setNoteContent(note.description || "");
+    setNoteContent(note.description || "");
 
     setShowAddNote(true);
   };
@@ -262,7 +252,6 @@ const isEditAllowed = (note) => {
   return (
     <MainPanel>
       <div className="official-notes-page">
-
         {/* =================================
             HEADER
         ================================= */}
@@ -289,14 +278,11 @@ const isEditAllowed = (note) => {
         {showAddNote && (
           <div className="note-modal-overlay">
             <div className="note-modal">
-
               {/* POPUP HEADER */}
 
               <div className="note-modal-header">
                 <h2>
-                  {isEditing
-                    ? "Edit Official Note"
-                    : "Add Official Note"}
+                  {isEditing ? "Edit Official Note" : "Add Official Note"}
                 </h2>
 
                 <button
@@ -313,21 +299,16 @@ const isEditAllowed = (note) => {
               {/* POPUP BODY */}
 
               <div className="note-modal-body">
-
                 {/* DATE */}
 
                 <div className="note-form-group">
-                  <label htmlFor="note-date">
-                    Date
-                  </label>
+                  <label htmlFor="note-date">Date</label>
 
                   <input
                     id="note-date"
                     type="date"
                     value={noteDate}
-                    onChange={(e) =>
-                      setNoteDate(e.target.value)
-                    }
+                    onChange={(e) => setNoteDate(e.target.value)}
                   />
                 </div>
 
@@ -337,15 +318,12 @@ const isEditAllowed = (note) => {
                   <label>Send To</label>
 
                   <div className="employee-dropdown">
-
                     {/* DROPDOWN HEADER */}
 
                     <div
                       className="employee-dropdown-header"
                       onClick={() =>
-                        setIsEmployeeDropdownOpen(
-                          !isEmployeeDropdownOpen
-                        )
+                        setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)
                       }
                     >
                       <span>
@@ -354,32 +332,25 @@ const isEditAllowed = (note) => {
                           : `${selectedEmployees.length} Employees Selected`}
                       </span>
 
-                      <span className="dropdown-arrow">
-                        ⌄
-                      </span>
+                      <span className="dropdown-arrow">⌄</span>
                     </div>
 
                     {/* EMPLOYEE LIST */}
 
                     {isEmployeeDropdownOpen && (
                       <div className="employee-dropdown-menu">
-
                         {/* ALL EMPLOYEES */}
 
                         <label className="employee-option">
                           <input
                             type="checkbox"
                             checked={
-                              selectedEmployees.length ===
-                              employees.length
+                              selectedEmployees.length === employees.length
                             }
                             onChange={(e) => {
                               if (e.target.checked) {
                                 setSelectedEmployees(
-                                  employees.map(
-                                    (employee) =>
-                                      employee.id
-                                  )
+                                  employees.map((employee) => employee.id),
                                 );
                               } else {
                                 setSelectedEmployees([]);
@@ -387,47 +358,31 @@ const isEditAllowed = (note) => {
                             }}
                           />
 
-                          <span>
-                            All Employees
-                          </span>
+                          <span>All Employees</span>
                         </label>
 
                         {/* INDIVIDUAL EMPLOYEES */}
 
                         {employees.map((employee) => (
-                          <label
-                            key={employee.id}
-                            className="employee-option"
-                          >
+                          <label key={employee.id} className="employee-option">
                             <input
                               type="checkbox"
-                              checked={selectedEmployees.includes(
-                                employee.id
-                              )}
+                              checked={selectedEmployees.includes(employee.id)}
                               onChange={(e) => {
                                 if (e.target.checked) {
-                                  setSelectedEmployees(
-                                    (prev) => [
-                                      ...prev,
-                                      employee.id,
-                                    ]
-                                  );
+                                  setSelectedEmployees((prev) => [
+                                    ...prev,
+                                    employee.id,
+                                  ]);
                                 } else {
-                                  setSelectedEmployees(
-                                    (prev) =>
-                                      prev.filter(
-                                        (id) =>
-                                          id !==
-                                          employee.id
-                                      )
+                                  setSelectedEmployees((prev) =>
+                                    prev.filter((id) => id !== employee.id),
                                   );
                                 }
                               }}
                             />
 
-                            <span>
-                              {employee.name}
-                            </span>
+                            <span>{employee.name}</span>
                           </label>
                         ))}
                       </div>
@@ -445,14 +400,12 @@ const isEditAllowed = (note) => {
                       editor={ClassicEditor}
                       data={noteContent}
                       onChange={(event, editor) => {
-                        const data =
-                          editor.getData();
+                        const data = editor.getData();
 
                         setNoteContent(data);
                       }}
                       config={{
-                        placeholder:
-                          "Enter official note...",
+                        placeholder: "Enter official note...",
 
                         toolbar: [
                           "heading",
@@ -479,7 +432,6 @@ const isEditAllowed = (note) => {
               {/* POPUP FOOTER */}
 
               <div className="note-modal-footer">
-
                 <button
                   type="button"
                   className="cancel-note-btn"
@@ -493,11 +445,8 @@ const isEditAllowed = (note) => {
                   className="submit-note-btn"
                   onClick={handleSubmitNote}
                 >
-                  {isEditing
-                    ? "Update Note"
-                    : "Submit Note"}
+                  {isEditing ? "Update Note" : "Submit Note"}
                 </button>
-
               </div>
             </div>
           </div>
@@ -508,39 +457,25 @@ const isEditAllowed = (note) => {
         ================================= */}
 
         <div className="notes-table-wrapper">
-
           <table className="notes-table">
-
             <thead>
               <tr>
-                <th className="sr-column">
-                  Sr. No.
-                </th>
+                <th className="sr-column">Sr. No.</th>
 
-                <th className="date-column">
-                  Date &amp; Time
-                </th>
+                <th className="date-column">Date &amp; Time</th>
 
-                <th className="note-column">
-                  Note
-                </th>
+                <th className="note-column">Note</th>
 
-                <th className="action-column">
-                  Action
-                </th>
+                <th className="action-column">Action</th>
               </tr>
             </thead>
 
             <tbody>
-
               {/* LOADING */}
 
               {loading && (
                 <tr>
-                  <td
-                    colSpan="4"
-                    className="table-message"
-                  >
+                  <td colSpan="4" className="table-message">
                     Loading official notes...
                   </td>
                 </tr>
@@ -550,10 +485,7 @@ const isEditAllowed = (note) => {
 
               {!loading && error && (
                 <tr>
-                  <td
-                    colSpan="4"
-                    className="table-message error"
-                  >
+                  <td colSpan="4" className="table-message error">
                     {error}
                   </td>
                 </tr>
@@ -561,18 +493,13 @@ const isEditAllowed = (note) => {
 
               {/* EMPTY */}
 
-              {!loading &&
-                !error &&
-                notes.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan="4"
-                      className="table-message"
-                    >
-                      No official notes found.
-                    </td>
-                  </tr>
-                )}
+              {!loading && !error && notes.length === 0 && (
+                <tr>
+                  <td colSpan="4" className="table-message">
+                    No official notes found.
+                  </td>
+                </tr>
+              )}
 
               {/* NOTES */}
 
@@ -580,56 +507,44 @@ const isEditAllowed = (note) => {
                 !error &&
                 notes.map((note, index) => (
                   <tr key={note.notesId}>
-
                     {/* SR NO */}
 
                     <td className="sr-column">
-                      <span className="sr-number">
-                        {index + 1}
-                      </span>
+                      <span className="sr-number">{index + 1}</span>
                     </td>
 
                     {/* DATE */}
 
                     <td className="date-column">
                       <span className="note-date">
-                        {formatDate(
-                          note.createdAt
-                        )}
+                        {formatDate(note.createdAt)}
                       </span>
                     </td>
 
                     {/* NOTE */}
 
                     <td className="note-column">
-  <div
-    className="note-content"
-    dangerouslySetInnerHTML={{
-      __html: note.description || "",
-    }}
-  />
-</td>
+                      <div
+                        className="note-content"
+                        dangerouslySetInnerHTML={{
+                          __html: note.description || "",
+                        }}
+                      />
+                    </td>
 
                     {/* ACTION */}
 
                     <td className="action-column">
                       <div className="note-actions">
-
                         {/* EDIT */}
 
                         <button
                           type="button"
                           className={`action-btn edit-btn ${
-                            !isEditAllowed(note)
-                              ? "disabled"
-                              : ""
+                            !isEditAllowed(note) ? "disabled" : ""
                           }`}
-                          onClick={() =>
-                            handleEdit(note)
-                          }
-                          disabled={
-                            !isEditAllowed(note)
-                          }
+                          onClick={() => handleEdit(note)}
+                          disabled={!isEditAllowed(note)}
                           title={
                             isEditAllowed(note)
                               ? "Edit Note"
@@ -644,20 +559,15 @@ const isEditAllowed = (note) => {
                         <button
                           type="button"
                           className="action-btn delete-btn"
-                          onClick={() =>
-                            handleDelete(note)
-                          }
+                          onClick={() => handleDelete(note)}
                           title="Delete Note"
                         >
                           <MdDelete className="icon" />
                         </button>
-
                       </div>
                     </td>
-
                   </tr>
                 ))}
-
             </tbody>
           </table>
         </div>
@@ -667,10 +577,8 @@ const isEditAllowed = (note) => {
         ================================= */}
 
         <div className="notes-footer">
-          Showing 1 to {notes.length} of{" "}
-          {notes.length} notes
+          Showing 1 to {notes.length} of {notes.length} notes
         </div>
-
       </div>
     </MainPanel>
   );
