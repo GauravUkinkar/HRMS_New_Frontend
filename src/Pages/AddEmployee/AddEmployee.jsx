@@ -36,7 +36,8 @@ const AddEmployee = () => {
     bankName: "",
     companyName: "",
     diduction: 0,
-    address: "",
+    currentAddress: "",
+    permanentAddress:"",
     uanNo: "",
     policyNumber: "",
     insuranceCompany: "",
@@ -239,7 +240,7 @@ const AddEmployee = () => {
                 </div>
               </div>
 
-              <div className="employee-photo-upload">
+              {/* <div className="employee-photo-upload">
                 <div className="employee-photo-preview">
                   {values.employee_image ? (
                     <img
@@ -249,13 +250,13 @@ const AddEmployee = () => {
                   ) : (
                     <span>Photo</span>
                   )}
-                </div>
+                </div> */}
 
-                <label htmlFor="employee-image" className="photo-upload-btn">
+                {/* <label htmlFor="employee-image" className="photo-upload-btn">
                   Upload Photo
-                </label>
+                </label> */}
 
-                <input
+                {/* <input
                   id="employee-image"
                   type="file"
                   accept="image/*"
@@ -269,7 +270,7 @@ const AddEmployee = () => {
                     })
                   }
                 />
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="personaldetails">
@@ -380,17 +381,17 @@ const AddEmployee = () => {
               </div>
               <div className="form-row">
                 <Input
-                  error={error.Currentaddress}
-                  name="Currentaddress"
-                  value={values.Currentaddress}
+                  error={error.currentAddress}
+                  name="currentAddress"
+                  value={values.currentAddress}
                   onChange={handleChange}
                   label="Current Address"
                   required
                 />
                 <Input
-                  error={error.Permanentaddress}
-                  name="Permanentaddress"
-                  value={values.Permanentaddress}
+                  error={error.permanentAddress}
+                  name="permanentAddress"
+                  value={values.permanentAddress}
                   onChange={handleChange}
                   label="Permanent Address"
                   required

@@ -67,8 +67,11 @@ if (values.panNumber === "") {
 ) {
   error.panNumber = "Please enter a valid PAN Number";
 }
-      if(values.address ===""){
-   error.address = "Address is Required"
+      if(values.permanentAddress ===""){
+   error.permanentAddress = "Permanat Address is Required"
+ }
+       if(values.currentAddress ===""){
+   error.currentAddress = "Current Address is Required"
  }
        if(values.emergencyContactName ===""){
    error.emergencyContactName = "Emergency Contact name is Required"
