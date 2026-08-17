@@ -127,21 +127,25 @@ const OfficialNotes = () => {
   // =========================================
   // CHECK SAME-DAY EDIT
   // =========================================
+const isEditAllowed = (note) => {
+  if (!note?.createdAt) {
+    return false;
+  }
 
-  const isEditAllowed = (note) => {
-    if (!note?.createdAt) {
-      return false;
-    }
+  const createdDate = new Date(note.createdAt);
+  const today = new Date();
 
-    const createdDate = new Date(note.createdAt);
-    const today = new Date();
+  const createdIndiaDate = createdDate.toLocaleDateString("en-IN", {
+    timeZone: "Asia/Kolkata",
+  });
 
-    return (
-      createdDate.getFullYear() === today.getFullYear() &&
-      createdDate.getMonth() === today.getMonth() &&
-      createdDate.getDate() === today.getDate()
-    );
-  };
+  const todayIndiaDate = today.toLocaleDateString("en-IN", {
+    timeZone: "Asia/Kolkata",
+  });
+
+  return createdIndiaDate === todayIndiaDate;
+};
+ 
 
   // =========================================
   // ADD NOTE
