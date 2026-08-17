@@ -10,7 +10,8 @@ import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const OfficialNotes = () => {
   const [sendTo, setSendTo] = useState("all");
-
+const [selectedEmployees, setSelectedEmployees] = useState([]);
+const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
   const employees = [
     {
       id: 1,
@@ -71,28 +72,33 @@ const OfficialNotes = () => {
 
   const [noteDate, setNoteDate] = useState("");
   const [noteContent, setNoteContent] = useState("");
+const handleAddNote = () => {
+  setIsEditing(false);
+  setEditingNoteId(null);
 
-  const handleAddNote = () => {
-    setIsEditing(false);
-    setEditingNoteId(null);
+  setNoteDate("");
+  setSendTo("all");
+  setNoteContent("");
 
-    setNoteDate("");
-    setSendTo("all");
-    setNoteContent("");
+  setSelectedEmployees([]);
+  setIsEmployeeDropdownOpen(false);
 
-    setShowAddNote(true);
-  };
+  setShowAddNote(true);
+};
+  
   const handleCloseNote = () => {
-    setShowAddNote(false);
+  setShowAddNote(false);
 
-    setIsEditing(false);
-    setEditingNoteId(null);
+  setIsEditing(false);
+  setEditingNoteId(null);
 
-    setNoteDate("");
-    setSendTo("all");
-    setNoteContent("");
-  };
+  setNoteDate("");
+  setSendTo("all");
+  setNoteContent("");
 
+  setSelectedEmployees([]);
+  setIsEmployeeDropdownOpen(false);
+};
   const handleEdit = (note) => {
     setIsEditing(true);
     setEditingNoteId(note.id);
