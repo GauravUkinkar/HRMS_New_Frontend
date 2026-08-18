@@ -159,7 +159,6 @@ const AddEmployee = () => {
 
             <div className="top-section">
               <div className="inputs employee-details-inputs">
-
                 {/* Row 1 */}
                 <div className="form-row">
                   <Input
