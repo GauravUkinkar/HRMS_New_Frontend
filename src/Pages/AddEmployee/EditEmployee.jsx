@@ -663,75 +663,36 @@ const EditEmployee = () => {
                   label="Role"
                 >
                   <MenuItem value="ADMIN">Admin</MenuItem>
-                  <MenuItem value="SUPERADMIN">
-                    SuperAdmin
-                  </MenuItem>
-
-                  <MenuItem value="EMPLOYEE">
-                    Employee
-                  </MenuItem>
+                  <MenuItem value="SUPERADMIN">SuperAdmin</MenuItem>
+                  <MenuItem value="EMPLOYEE">Employee</MenuItem>
                 </SelectInput>
-
               </div>
-
               {/* ================= ROW 2 ================= */}
 
               <div className="form-row">
-
                 <SelectInput
-                  error={
-                    error.employementType
-                  }
+                  error={error.employementType}
                   name="employementType"
-                  value={
-                    employeeData.employementType
-                  }
-                  onChange={
-                    handleChange
-                  }
+                  value={employeeData.employementType}
+                  onChange={handleChange}
                   label="Employee Type"
                 >
-                  <MenuItem value="Full-time">
-                    Full-time
-                  </MenuItem>
-
-                  <MenuItem value="Part-time">
-                    Part-time
-                  </MenuItem>
-
-                  <MenuItem value="Freelance">
-                    Freelance
-                  </MenuItem>
-
-                  <MenuItem value="Intern">
-                    Intern
-                  </MenuItem>
+                  <MenuItem value="Full-time">Full-time</MenuItem>
+                  <MenuItem value="Part-time">Part-time</MenuItem>
+                  <MenuItem value="Freelance">Freelance</MenuItem>
+                  <MenuItem value="Intern">Intern</MenuItem>
                 </SelectInput>
 
                 <SelectInput
-                  error={
-                    error.companyName
-                  }
+                  error={error.companyName}
                   name="companyName"
-                  value={
-                    employeeData.companyName
-                  }
-                  onChange={
-                    handleChange
-                  }
+                  value={employeeData.companyName}
+                  onChange={handleChange}
                   label="Company Name"
                 >
-                  <MenuItem value="Pandoza Solutions Pvt.Ltd">
-                    Pandoza Solutions Pvt.Ltd
-                  </MenuItem>
-
-                  <MenuItem value="Akka Foundation">
-                    Akka Foundation
-                  </MenuItem>
-
-                  <MenuItem value="NVM Infratech">
-                    NVM Infratech
-                  </MenuItem>
+                  <MenuItem value="Pandoza Solutions Pvt.Ltd">Pandoza Solutions Pvt.Ltd</MenuItem>
+                  <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
+                  <MenuItem value="NVM Infratech">NVM Infratech</MenuItem>
 
                   <MenuItem value="The Indian Journey">
                     The Indian Journey
