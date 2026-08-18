@@ -26,7 +26,7 @@ const OfficialNotes = () => {
 
   const [noteDate, setNoteDate] = useState("");
   const [noteContent, setNoteContent] = useState("");
-
+  const [noteCreatedAt, setNoteCreatedAt] = useState("");
   // =========================================
   // EMPLOYEES
   // =========================================
@@ -174,57 +174,172 @@ const OfficialNotes = () => {
   // EDIT NOTE
   // =========================================
 
-  const handleEdit = (note) => {
+  const handleEdit = async (note) => {
     if (!isEditAllowed(note)) {
       alert("This note can only be edited on the day it was created.");
       return;
     }
 
-    setIsEditing(true);
-    setEditingNoteId(note.notesId);
+    try {
+      const response = await fetch(
+        `https://userservicetest.pandozasolutions.com/AuthController/getOfficialNotesByNotesId?noteId=${note.notesId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
-    // Convert createdAt to YYYY-MM-DD
-    const createdDate = new Date(note.createdAt);
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
 
-    const year = createdDate.getFullYear();
-    const month = String(createdDate.getMonth() + 1).padStart(2, "0");
-    const day = String(createdDate.getDate()).padStart(2, "0");
+      const result = await response.json();
 
-    setNoteDate(`${year}-${month}-${day}`);
+      console.log("Single Note API Response:", result);
 
-    // Existing API description
-    setNoteContent(note.description || "");
+      const selectedNote = result?.data;
 
-    setShowAddNote(true);
+      if (!selectedNote) {
+        alert("Note not found.");
+        return;
+      }
+
+      // EDIT MODE
+      setIsEditing(true);
+      setEditingNoteId(selectedNote.notesId);
+      setNoteCreatedAt(selectedNote.createdAt);
+      setNoteContent(selectedNote.discription || "");
+
+      // DATE
+      const createdDate = new Date(selectedNote.createdAt);
+
+      const year = createdDate.getFullYear();
+      const month = String(createdDate.getMonth() + 1).padStart(2, "0");
+      const day = String(createdDate.getDate()).padStart(2, "0");
+
+      setNoteDate(`${year}-${month}-${day}`);
+
+      // NOTE CONTENT
+      setNoteContent(selectedNote.discription || "");
+
+      // OPEN POPUP
+      setShowAddNote(true);
+    } catch (error) {
+      console.error("Get Single Official Note Error:", error);
+      alert("Failed to load note.");
+    }
   };
 
   // =========================================
   // DELETE NOTE
   // =========================================
 
-  const handleDelete = (note) => {
-    console.log("Delete note:", note);
+  const handleDelete = async (note) => {
+    const confirmDelete = window.confirm(
+      "Are you sure want to delete this official note?",
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://userservicetest.pandozasolutions.com/Admin/deleteOfficialNotes?OfficialNotesId=${note.notesId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Delete API Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      console.log("Delete Note Response:", result);
+
+      alert("Official note deleted successfully.");
+
+      // Refresh notes table
+      getOfficialNotes();
+    } catch (error) {
+      console.error("Delete Official Note Error:", error);
+      alert("Failed to delete official note.");
+    }
   };
 
   // =========================================
   // SUBMIT / UPDATE NOTE
   // =========================================
 
-  const handleSubmitNote = () => {
-    const noteData = {
-      notesId: editingNoteId,
-      date: noteDate,
-      employeeIds: selectedEmployees,
-      description: noteContent,
-    };
+  const handleSubmitNote = async () => {
+    try {
+      if (!isEditing) {
+        console.log("Add note API is not implemented yet.");
+        handleCloseNote();
+        return;
+      }
 
-    if (isEditing) {
-      console.log("Note updated:", noteData);
-    } else {
-      console.log("New note submitted:", noteData);
+      if (!editingNoteId) {
+        alert("Note ID is missing.");
+        return;
+      }
+
+      if (!noteContent || noteContent.trim() === "") {
+        alert("Please enter a note.");
+        return;
+      }
+
+      if (!noteCreatedAt) {
+        alert("Created date is missing.");
+        return;
+      }
+
+      // Prepare request body according to Swagger
+      const noteData = {
+        notesId: editingNoteId,
+        discription: noteContent,
+        createdAt: noteCreatedAt,
+      };
+
+      console.log("Update Note Request:", noteData);
+
+      const response = await fetch(
+        "https://userservicetest.pandozasolutions.com/Admin/updateOfficialNotes",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(noteData),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Update API Error: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      console.log("Update Note Response:", result);
+
+      alert("Official note updated successfully.");
+
+      // Close popup
+      handleCloseNote();
+
+      // Refresh table
+      await getOfficialNotes();
+    } catch (error) {
+      console.error("Update Official Note Error:", error);
+      alert("Failed to update official note.");
     }
-
-    handleCloseNote();
   };
 
   // =========================================
@@ -524,12 +639,7 @@ const OfficialNotes = () => {
                     {/* NOTE */}
 
                     <td className="note-column">
-                      <div
-                        className="note-content"
-                        dangerouslySetInnerHTML={{
-                          __html: note.description || "",
-                        }}
-                      />
+                      <div className="note-content">{note.discription}</div>
                     </td>
 
                     {/* ACTION */}

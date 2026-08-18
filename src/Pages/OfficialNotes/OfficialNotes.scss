@@ -134,19 +134,34 @@
       font-weight: 500;
     }
 
-    .note-content {
-      h3 {
-        font-size: 15px;
-        font-weight: 600;
-        color: #1f2937;
-      }
+  .note-content {
+  display: block !important;
+  width: 100%;
+  min-height: 20px;
 
-      p {
-        font-size: 13px;
-        line-height: 1.6;
-        color: #64748b;
-      }
-    }
+  color: #374151 !important;
+  background: transparent;
+
+  font-size: 14px;
+  line-height: 1.6;
+
+  white-space: normal;
+  word-break: break-word;
+
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  p {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #64748b;
+    margin: 0;
+  }
+}
 
     .note-actions {
       display: flex;
