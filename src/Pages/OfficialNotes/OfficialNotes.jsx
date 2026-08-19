@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+
 import { FaPlus } from "react-icons/fa";
 import {
   MdEdit,
@@ -6,23 +8,48 @@ import {
   MdVisibility,
   MdVisibilityOff,
 } from "react-icons/md";
+import { ImCross } from "react-icons/im";
+
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { ImCross } from "react-icons/im";
 
 import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
+// ============================================================
+// API CONFIGURATION
+// ============================================================
+
+const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+
+// ============================================================
+// OFFICIAL NOTES COMPONENT
+// ============================================================
+
 const OfficialNotes = () => {
+  // ==========================================================
+  // NOTES STATE
+  // ==========================================================
+
   const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [notesError, setNotesError] = useState("");
+
+  // ==========================================================
+  // EMPLOYEE STATE
+  // ==========================================================
 
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [employeeLoading, setEmployeeLoading] = useState(false);
+  const [employeeError, setEmployeeError] = useState("");
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
 
-  const [showAddNote, setShowAddNote] = useState(false);
+  // ==========================================================
+  // NOTE MODAL STATE
+  // ==========================================================
+
+  const [showNoteModal, setShowNoteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState(null);
 
@@ -30,108 +57,244 @@ const OfficialNotes = () => {
   const [noteContent, setNoteContent] = useState("");
   const [noteCreatedAt, setNoteCreatedAt] = useState("");
 
-  const getShortNote = (html, wordLimit = 5) => {
-    const plainText = stripHtml(html).trim();
+  // ==========================================================
+  // NOTE VIEW STATE
+  // ==========================================================
 
-    if (!plainText) {
-      return "";
-    }
-
-    const words = plainText.split(/\s+/);
-
-    if (words.length <= wordLimit) {
-      return plainText;
-    }
-
-    return `${words.slice(0, wordLimit).join(" ")}...`;
-  };
-
-  // =========================================
-  // EXPANDED NOTE ID
-  // =========================================
   const [expandedNoteId, setExpandedNoteId] = useState(null);
 
-  // =========================================
-  // GET ALL OFFICIAL NOTES
-  // =========================================
-  const getOfficialNotes = async () => {
-    try {
-      setLoading(true);
-      setError("");
+  // ==========================================================
+  // HELPER FUNCTION - REMOVE HTML
+  // ==========================================================
 
-      const response = await fetch(
-        "https://userservicetest.pandozasolutions.com/AuthController/GetAllOfficialNotes",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      console.log("1. Raw API Response:", result);
-      console.log("2. Is Array:", Array.isArray(result));
-
-      // Make sure response is always treated as an array
-      const apiResponses = Array.isArray(result) ? result : [result];
-
-      console.log("3. API Responses:", apiResponses);
-
-      // Extract the data object from every response
-      const formattedNotes = apiResponses
-        .map((item) => item?.data)
-        .filter((item) => item);
-
-      console.log("4. Formatted Notes:", formattedNotes);
-      console.log("5. Number of Notes:", formattedNotes.length);
-
-      setNotes(formattedNotes);
-
-      console.log("FINAL notes state data:", formattedNotes);
-    } catch (error) {
-      console.error("Get Official Notes Error:", error);
-
-      setNotes([]);
-      setError("Failed to load official notes.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getOfficialNotes();
-  }, []);
-
-  // =========================================
-  // TOGGLE FULL NOTE
-  // =========================================
-  const handleToggleNote = (noteId) => {
-    setExpandedNoteId((previousId) => (previousId === noteId ? null : noteId));
-  };
-
-  // =========================================
-  // REMOVE HTML FOR COLLAPSED NOTE
-  // =========================================
   const stripHtml = (html) => {
     if (!html) {
       return "";
     }
 
-    const temporaryElement = document.createElement("div");
-    temporaryElement.innerHTML = html;
+    const element = document.createElement("div");
 
-    return temporaryElement.textContent || temporaryElement.innerText || "";
+    element.innerHTML = html;
+
+    return element.textContent || element.innerText || "";
   };
 
-  // =========================================
-  // CHECK SAME-DAY EDIT
-  // =========================================
+  // ==========================================================
+  // HELPER FUNCTION - SHORT NOTE
+  // ==========================================================
+
+  const getShortNote = (html, wordLimit = 5) => {
+    const text = stripHtml(html).trim();
+
+    if (!text) {
+      return "";
+    }
+
+    const words = text.split(/\s+/);
+
+    if (words.length <= wordLimit) {
+      return text;
+    }
+
+    return `${words.slice(0, wordLimit).join(" ")}...`;
+  };
+
+  // ==========================================================
+  // GET ALL OFFICIAL NOTES
+  // ==========================================================
+
+  const getOfficialNotes = async () => {
+    try {
+      setNotesLoading(true);
+      setNotesError("");
+
+      const res = await axios.get(
+        `${BASE_URL}AuthController/GetAllOfficialNotes`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log("GET ALL OFFICIAL NOTES RESPONSE:", res.data);
+
+      const notes = res.data.map((item, index) => ({
+        key: index + 1,
+        notesId: item?.data?.notesId,
+        discription: item?.data?.discription,
+        createdAt: item?.data?.createdAt,
+      }));
+
+      console.log("FORMATTED OFFICIAL NOTES:", notes);
+
+      setNotes(notes);
+    } catch (error) {
+      console.error("Get All Official Notes API Error:", error);
+
+      setNotes([]);
+
+      if (error.response?.status === 401) {
+        setNotesError("Authentication required.");
+      } else if (error.response?.status === 403) {
+        setNotesError("You are not authorized to view official notes.");
+      } else {
+        setNotesError("Failed to load official notes.");
+      }
+    } finally {
+      setNotesLoading(false);
+    }
+  };
+
+  // ==========================================================
+  // GET ALL EMPLOYEES
+  // ==========================================================
+
+  const getAllEmployees = async () => {
+    try {
+      setEmployeeLoading(true);
+
+
+      
+      setEmployeeError("");
+
+      const res = await axios.get(`${BASE_URL}Admin/GetAllEmployee`, {
+        withCredentials: true,
+      });
+
+      console.log("GET ALL EMPLOYEES RESPONSE:", res.data);
+
+      const employees = res.data.map((item, index) => ({
+        key: index + 1,
+        employeeId: item?.data?.employeeId,
+        employeeName: item?.data?.employeeName,
+        department: item?.data?.department,
+        designation: item?.data?.designation,
+        email: item?.data?.email,
+        contactNumber: item?.data?.contactNumber,
+      }));
+
+      console.log("FORMATTED EMPLOYEES:", employees);
+
+      setEmployees(employees);
+
+      if (employees.length === 0) {
+        setEmployeeError("No employees found.");
+      }
+    } catch (error) {
+      console.error("Get All Employees API Error:", error);
+
+      setEmployees([]);
+
+      if (error.response?.status === 401) {
+        setEmployeeError("Authentication required.");
+      } else if (error.response?.status === 403) {
+        setEmployeeError("You are not authorized to view employees.");
+      } else {
+        setEmployeeError("Failed to load employees.");
+      }
+    } finally {
+      setEmployeeLoading(false);
+    }
+  };
+
+  // ==========================================================
+  // LOAD INITIAL DATA
+  // ==========================================================
+
+  useEffect(() => {
+    getAllEmployees();
+    getOfficialNotes();
+  }, []);
+
+  // ==========================================================
+  // OPEN ADD NOTE MODAL
+  // ==========================================================
+
+  const handleAddNote = () => {
+    setIsEditing(false);
+    setEditingNoteId(null);
+
+    setNoteDate("");
+    setNoteContent("");
+    setNoteCreatedAt("");
+
+    setSelectedEmployees([]);
+    setIsEmployeeDropdownOpen(false);
+
+    setShowNoteModal(true);
+  };
+
+  // ==========================================================
+  // CLOSE NOTE MODAL
+  // ==========================================================
+
+  const handleCloseNote = () => {
+    setShowNoteModal(false);
+
+    setIsEditing(false);
+    setEditingNoteId(null);
+
+    setNoteDate("");
+    setNoteContent("");
+    setNoteCreatedAt("");
+
+    setSelectedEmployees([]);
+    setIsEmployeeDropdownOpen(false);
+  };
+
+  // ==========================================================
+  // EMPLOYEE DROPDOWN
+  // ==========================================================
+
+  const handleEmployeeDropdown = () => {
+    setIsEmployeeDropdownOpen((previous) => !previous);
+  };
+
+  // ==========================================================
+  // SELECT / DESELECT ALL EMPLOYEES
+  // ==========================================================
+
+  const handleSelectAllEmployees = (checked) => {
+    if (checked) {
+      const allEmployeeIds = employees.map((employee) => employee.employeeId);
+
+      setSelectedEmployees(allEmployeeIds);
+    } else {
+      setSelectedEmployees([]);
+    }
+  };
+
+  // ==========================================================
+  // SELECT / DESELECT ONE EMPLOYEE
+  // ==========================================================
+
+  const handleEmployeeSelection = (employeeId, checked) => {
+    if (checked) {
+      setSelectedEmployees((previous) => {
+        if (previous.includes(employeeId)) {
+          return previous;
+        }
+
+        return [...previous, employeeId];
+      });
+    } else {
+      setSelectedEmployees((previous) =>
+        previous.filter((id) => id !== employeeId),
+      );
+    }
+  };
+
+  // ==========================================================
+  // VIEW / HIDE FULL NOTE
+  // ==========================================================
+
+  const handleToggleNote = (noteId) => {
+    setExpandedNoteId((previousId) => (previousId === noteId ? null : noteId));
+  };
+
+  // ==========================================================
+  // CHECK WHETHER NOTE CAN BE EDITED
+  // ==========================================================
+
   const isEditAllowed = (note) => {
     if (!note?.createdAt) {
       return false;
@@ -151,83 +314,42 @@ const OfficialNotes = () => {
     return createdIndiaDate === todayIndiaDate;
   };
 
-  // =========================================
-  // ADD NOTE
-  // =========================================
-  const handleAddNote = () => {
-    setIsEditing(false);
-    setEditingNoteId(null);
+  // ==========================================================
+  // GET NOTE BY ID AND OPEN EDIT MODAL
+  // ==========================================================
 
-    setNoteDate("");
-    setNoteContent("");
-    setNoteCreatedAt("");
-
-    setSelectedEmployees([]);
-    setIsEmployeeDropdownOpen(false);
-
-    setShowAddNote(true);
-  };
-
-  // =========================================
-  // CLOSE ADD / EDIT POPUP
-  // =========================================
-  const handleCloseNote = () => {
-    setShowAddNote(false);
-
-    setIsEditing(false);
-    setEditingNoteId(null);
-
-    setNoteDate("");
-    setNoteContent("");
-    setNoteCreatedAt("");
-
-    setSelectedEmployees([]);
-    setIsEmployeeDropdownOpen(false);
-  };
-
-  // =========================================
-  // EDIT NOTE
-  // =========================================
   const handleEdit = async (note) => {
     if (!isEditAllowed(note)) {
       alert("This note can only be edited on the day it was created.");
+
       return;
     }
 
     try {
-      const response = await fetch(
-        `https://userservicetest.pandozasolutions.com/AuthController/getOfficialNotesByNotesId?noteId=${note.notesId}`,
+      const res = await axios.get(
+        `${BASE_URL}AuthController/getOfficialNotesByNotesId?noteId=${note.notesId}`,
         {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          withCredentials: true,
         },
       );
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
-      }
+      console.log("GET NOTE BY ID RESPONSE:", res.data);
 
-      const result = await response.json();
-
-      console.log("Single Note API Response:", result);
-
-      const selectedNote = result?.data;
+      const selectedNote = res.data?.data;
 
       if (!selectedNote) {
         alert("Note not found.");
         return;
       }
 
-      // EDIT MODE
       setIsEditing(true);
+
       setEditingNoteId(selectedNote.notesId);
+
       setNoteCreatedAt(selectedNote.createdAt);
 
       setNoteContent(selectedNote.discription || "");
 
-      // DATE
       const indiaDate = new Date(selectedNote.createdAt).toLocaleDateString(
         "en-CA",
         {
@@ -237,68 +359,79 @@ const OfficialNotes = () => {
 
       setNoteDate(indiaDate);
 
-      // OPEN POPUP
-      setShowAddNote(true);
+      setSelectedEmployees([]);
+      setIsEmployeeDropdownOpen(false);
+
+      setShowNoteModal(true);
     } catch (error) {
-      console.error("Get Single Official Note Error:", error);
-      alert("Failed to load note.");
+      console.error("Get Official Note By ID API Error:", error);
+
+      if (error.response?.status === 401) {
+        alert("Authentication required.");
+      } else if (error.response?.status === 403) {
+        alert("You are not authorized to view this note.");
+      } else if (error.response?.status === 404) {
+        alert("Note not found.");
+      } else {
+        alert("Failed to load note.");
+      }
     }
   };
 
-  // =========================================
-  // DELETE NOTE
-  // =========================================
+  // ==========================================================
+  // DELETE OFFICIAL NOTE
+  // ==========================================================
+
   const handleDelete = async (note) => {
-    const confirmDelete = window.confirm(
-      "Are you sure want to delete this official note?",
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this official note?",
     );
 
-    if (!confirmDelete) {
+    if (!confirmed) {
       return;
     }
 
     try {
-      const response = await fetch(
-        `https://userservicetest.pandozasolutions.com/Admin/deleteOfficialNotes?OfficialNotesId=${note.notesId}`,
+      const res = await axios.delete(
+        `${BASE_URL}Admin/deleteOfficialNotes?OfficialNotesId=${note.notesId}`,
         {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          withCredentials: true,
         },
       );
 
-      if (!response.ok) {
-        throw new Error(`Delete API Error: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      console.log("Delete Note Response:", result);
+      console.log("DELETE OFFICIAL NOTE RESPONSE:", res.data);
 
       alert("Official note deleted successfully.");
 
-      // If deleted note was expanded, close it
       if (expandedNoteId === note.notesId) {
         setExpandedNoteId(null);
       }
 
-      // Refresh notes table
-      getOfficialNotes();
+      await getOfficialNotes();
     } catch (error) {
-      console.error("Delete Official Note Error:", error);
-      alert("Failed to delete official note.");
+      console.error("Delete Official Note API Error:", error);
+
+      if (error.response?.status === 401) {
+        alert("Authentication required.");
+      } else if (error.response?.status === 403) {
+        alert("You are not authorized to delete this note.");
+      } else if (error.response?.status === 404) {
+        alert("Note not found.");
+      } else {
+        alert("Failed to delete official note.");
+      }
     }
   };
 
-  // =========================================
-  // SUBMIT / ADD / UPDATE NOTE
-  // =========================================
+  // ==========================================================
+  // ADD / UPDATE OFFICIAL NOTE
+  // ==========================================================
+
   const handleSubmitNote = async () => {
     try {
-      // =========================================
+      // --------------------------------------------------------
       // VALIDATION
-      // =========================================
+      // --------------------------------------------------------
 
       if (!noteContent || noteContent.trim() === "") {
         alert("Please enter a note.");
@@ -310,9 +443,9 @@ const OfficialNotes = () => {
         return;
       }
 
-      // =========================================
-      // ADD NOTE
-      // =========================================
+      // --------------------------------------------------------
+      // ADD NEW NOTE
+      // --------------------------------------------------------
 
       if (!isEditing) {
         const selectedDate = new Date(
@@ -323,47 +456,22 @@ const OfficialNotes = () => {
           notesId: 0,
           discription: noteContent,
           createdAt: selectedDate.toISOString(),
+
+          // Add this when backend supports employee selection:
+          // employeeIds: selectedEmployees,
         };
 
-        console.log("ADD NOTE REQUEST:", noteData);
+        console.log("ADD OFFICIAL NOTE REQUEST:", noteData);
 
-        const response = await fetch(
-          "https://userservicetest.pandozasolutions.com/Admin/addOfficialNotes",
+        const res = await axios.post(
+          `${BASE_URL}Admin/addOfficialNotes`,
+          noteData,
           {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(noteData),
+            withCredentials: true,
           },
         );
 
-        console.log("ADD STATUS:", response.status);
-        console.log("ADD OK:", response.ok);
-
-        // Read response safely
-        const responseText = await response.text();
-
-        console.log("ADD RAW RESPONSE:", responseText);
-
-        if (!response.ok) {
-          throw new Error(
-            responseText || `Add Note API Error: ${response.status}`,
-          );
-        }
-
-        // Parse only if response contains JSON
-        let result = null;
-
-        if (responseText.trim() !== "") {
-          try {
-            result = JSON.parse(responseText);
-          } catch (error) {
-            console.warn("Add API returned non-JSON:", responseText);
-          }
-        }
-
-        console.log("ADD PARSED RESPONSE:", result);
+        console.log("ADD OFFICIAL NOTE RESPONSE:", res.data);
 
         alert("Official note added successfully.");
 
@@ -374,9 +482,9 @@ const OfficialNotes = () => {
         return;
       }
 
-      // =========================================
-      // UPDATE NOTE
-      // =========================================
+      // --------------------------------------------------------
+      // VALIDATE UPDATE DATA
+      // --------------------------------------------------------
 
       if (!editingNoteId) {
         alert("Note ID is missing.");
@@ -388,49 +496,27 @@ const OfficialNotes = () => {
         return;
       }
 
+      // --------------------------------------------------------
+      // UPDATE EXISTING NOTE
+      // --------------------------------------------------------
+
       const updateData = {
         notesId: editingNoteId,
         discription: noteContent,
         createdAt: noteCreatedAt,
       };
 
-      console.log("UPDATE NOTE REQUEST:", updateData);
+      console.log("UPDATE OFFICIAL NOTE REQUEST:", updateData);
 
-      const response = await fetch(
-        "https://userservicetest.pandozasolutions.com/Admin/updateOfficialNotes",
+      const res = await axios.put(
+        `${BASE_URL}Admin/updateOfficialNotes`,
+        updateData,
         {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updateData),
+          withCredentials: true,
         },
       );
 
-      console.log("UPDATE STATUS:", response.status);
-      console.log("UPDATE OK:", response.ok);
-
-      const responseText = await response.text();
-
-      console.log("UPDATE RAW RESPONSE:", responseText);
-
-      if (!response.ok) {
-        throw new Error(
-          responseText || `Update Note API Error: ${response.status}`,
-        );
-      }
-
-      let result = null;
-
-      if (responseText.trim() !== "") {
-        try {
-          result = JSON.parse(responseText);
-        } catch (error) {
-          console.warn("Update API returned non-JSON:", responseText);
-        }
-      }
-
-      console.log("UPDATE PARSED RESPONSE:", result);
+      console.log("UPDATE OFFICIAL NOTE RESPONSE:", res.data);
 
       alert("Official note updated successfully.");
 
@@ -438,15 +524,28 @@ const OfficialNotes = () => {
 
       await getOfficialNotes();
     } catch (error) {
-      console.error("Official Note Error:", error);
+      console.error("Official Note API Error:", error);
 
-      alert(error.message || "Failed to save official note.");
+      if (error.response?.status === 401) {
+        alert("Authentication required.");
+      } else if (error.response?.status === 403) {
+        alert("You are not authorized to perform this action.");
+      } else if (error.response?.status === 404) {
+        alert("Note not found.");
+      } else {
+        alert(
+          error.response?.data ||
+            error.message ||
+            "Failed to save official note.",
+        );
+      }
     }
   };
 
-  // =========================================
+  // ==========================================================
   // FORMAT DATE
-  // =========================================
+  // ==========================================================
+
   const formatDate = (createdAt) => {
     if (!createdAt) {
       return "-";
@@ -461,16 +560,16 @@ const OfficialNotes = () => {
     });
   };
 
-  // =========================================
+  // ==========================================================
   // JSX
-  // =========================================
+  // ==========================================================
 
   return (
     <MainPanel>
       <div className="official-notes-page">
-        {/* =================================
-            HEADER
-        ================================= */}
+        {/* ==================================================
+            PAGE HEADER
+        ================================================== */}
 
         <div className="official-notes-header">
           <div className="header-content">
@@ -487,14 +586,14 @@ const OfficialNotes = () => {
           </button>
         </div>
 
-        {/* =================================
-            ADD / EDIT NOTE POPUP
-        ================================= */}
+        {/* ==================================================
+            ADD / EDIT NOTE MODAL
+        ================================================== */}
 
-        {showAddNote && (
+        {showNoteModal && (
           <div className="note-modal-overlay">
             <div className="note-modal">
-              {/* POPUP HEADER */}
+              {/* MODAL HEADER */}
 
               <div className="note-modal-header">
                 <h2>
@@ -505,14 +604,13 @@ const OfficialNotes = () => {
                   type="button"
                   className="close-btn"
                   onClick={handleCloseNote}
-                  aria-label="Close"
                   title="Close"
                 >
                   <ImCross />
                 </button>
               </div>
 
-              {/* POPUP BODY */}
+              {/* MODAL BODY */}
 
               <div className="note-modal-body">
                 {/* DATE */}
@@ -524,7 +622,7 @@ const OfficialNotes = () => {
                     id="note-date"
                     type="date"
                     value={noteDate}
-                    onChange={(e) => setNoteDate(e.target.value)}
+                    onChange={(event) => setNoteDate(event.target.value)}
                   />
                 </div>
 
@@ -538,76 +636,95 @@ const OfficialNotes = () => {
 
                     <div
                       className="employee-dropdown-header"
-                      onClick={() =>
-                        setIsEmployeeDropdownOpen(!isEmployeeDropdownOpen)
-                      }
+                      onClick={handleEmployeeDropdown}
                     >
                       <span>
                         {selectedEmployees.length === 0
                           ? "All Employees"
-                          : `${selectedEmployees.length} Employees Selected`}
+                          : selectedEmployees.length === 1
+                            ? "1 Employee Selected"
+                            : `${selectedEmployees.length} Employees Selected`}
                       </span>
 
-                      <span className="dropdown-arrow">⌄</span>
+                      <span className="dropdown-arrow">
+                        {isEmployeeDropdownOpen ? "⌃" : "⌄"}
+                      </span>
                     </div>
 
-                    {/* EMPLOYEE LIST */}
+                    {/* DROPDOWN OPTIONS */}
 
                     {isEmployeeDropdownOpen && (
                       <div className="employee-dropdown-menu">
-                        {/* ALL EMPLOYEES */}
+                        {/* LOADING */}
 
-                        <label className="employee-option">
-                          <input
-                            type="checkbox"
-                            checked={
-                              employees.length > 0 &&
-                              selectedEmployees.length === employees.length
-                            }
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedEmployees(
-                                  employees.map((employee) => employee.id),
-                                );
-                              } else {
-                                setSelectedEmployees([]);
-                              }
-                            }}
-                          />
+                        {employeeLoading && (
+                          <div className="employee-loading">
+                            Loading employees...
+                          </div>
+                        )}
 
-                          <span>All Employees</span>
-                        </label>
+                        {/* ERROR */}
 
-                        {/* INDIVIDUAL EMPLOYEES */}
+                        {!employeeLoading && employeeError && (
+                          <div className="employee-error">{employeeError}</div>
+                        )}
 
-                        {employees.map((employee) => (
-                          <label key={employee.id} className="employee-option">
-                            <input
-                              type="checkbox"
-                              checked={selectedEmployees.includes(employee.id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedEmployees((previous) => [
-                                    ...previous,
-                                    employee.id,
-                                  ]);
-                                } else {
-                                  setSelectedEmployees((previous) =>
-                                    previous.filter((id) => id !== employee.id),
-                                  );
-                                }
-                              }}
-                            />
+                        {/* EMPLOYEE LIST */}
 
-                            <span>{employee.name}</span>
-                          </label>
-                        ))}
+                        {!employeeLoading &&
+                          !employeeError &&
+                          employees.length > 0 && (
+                            <>
+                              {/* ALL EMPLOYEES */}
+
+                              <label className="employee-option">
+                                <input
+                                  type="checkbox"
+                                  checked={
+                                    selectedEmployees.length ===
+                                    employees.length
+                                  }
+                                  onChange={(event) =>
+                                    handleSelectAllEmployees(
+                                      event.target.checked,
+                                    )
+                                  }
+                                />
+
+                                <span>All Employees</span>
+                              </label>
+
+                              {/* INDIVIDUAL EMPLOYEES */}
+
+                              {employees.map((employee) => (
+                                <label
+                                  key={employee.employeeId}
+                                  className="employee-option"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedEmployees.includes(
+                                      employee.employeeId,
+                                    )}
+                                    onChange={(event) =>
+                                      handleEmployeeSelection(
+                                        employee.employeeId,
+                                        event.target.checked,
+                                      )
+                                    }
+                                  />
+
+                                  <span>{employee.employeeName}</span>
+                                </label>
+                              ))}
+                            </>
+                          )}
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* CKEDITOR */}
+                {/* NOTE */}
 
                 <div className="note-form-group">
                   <label>Note</label>
@@ -617,9 +734,7 @@ const OfficialNotes = () => {
                       editor={ClassicEditor}
                       data={noteContent}
                       onChange={(event, editor) => {
-                        const data = editor.getData();
-
-                        setNoteContent(data);
+                        setNoteContent(editor.getData());
                       }}
                       config={{
                         placeholder: "Enter official note...",
@@ -646,7 +761,7 @@ const OfficialNotes = () => {
                 </div>
               </div>
 
-              {/* POPUP FOOTER */}
+              {/* MODAL FOOTER */}
 
               <div className="note-modal-footer">
                 <button
@@ -669,9 +784,9 @@ const OfficialNotes = () => {
           </div>
         )}
 
-        {/* =================================
+        {/* ==================================================
             NOTES TABLE
-        ================================= */}
+        ================================================== */}
 
         <div className="notes-table-wrapper">
           <table className="notes-table">
@@ -690,7 +805,7 @@ const OfficialNotes = () => {
             <tbody>
               {/* LOADING */}
 
-              {loading && (
+              {notesLoading && (
                 <tr>
                   <td colSpan="4" className="table-message">
                     Loading official notes...
@@ -700,17 +815,17 @@ const OfficialNotes = () => {
 
               {/* ERROR */}
 
-              {!loading && error && (
+              {!notesLoading && notesError && (
                 <tr>
                   <td colSpan="4" className="table-message error">
-                    {error}
+                    {notesError}
                   </td>
                 </tr>
               )}
 
               {/* EMPTY */}
 
-              {!loading && !error && notes.length === 0 && (
+              {!notesLoading && !notesError && notes.length === 0 && (
                 <tr>
                   <td colSpan="4" className="table-message">
                     No official notes found.
@@ -718,21 +833,19 @@ const OfficialNotes = () => {
                 </tr>
               )}
 
-              {/* NOTES */}
+              {/* NOTE LIST */}
 
-              {!loading &&
-                !error &&
+              {!notesLoading &&
+                !notesError &&
                 notes.map((note, index) => {
                   const isExpanded = expandedNoteId === note.notesId;
-
-                  const plainTextNote = stripHtml(note.discription);
 
                   return (
                     <tr
                       key={note.notesId}
                       className={isExpanded ? "note-row-expanded" : ""}
                     >
-                      {/* SR NO */}
+                      {/* SR. NO. */}
 
                       <td className="sr-column">
                         <span className="sr-number">{index + 1}</span>
@@ -749,41 +862,26 @@ const OfficialNotes = () => {
                       {/* NOTE */}
 
                       <td className="note-column">
+                        {isExpanded ? (
+                          <div className="note-content-expanded">
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: note.discription || "",
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div className="note-content">
+                            {getShortNote(note.discription, 5)}
+                          </div>
+                        )}
+                      </td>
 
-  {isExpanded ? (
-    // =========================================
-    // FULL NOTE AFTER CLICKING EYE
-    // =========================================
-    <div className="note-content-expanded">
-
-      <div
-        dangerouslySetInnerHTML={{
-          __html: note.discription || "",
-        }}
-      />
-
-    </div>
-
-  ) : (
-    // =========================================
-    // FIRST 5 WORDS BY DEFAULT
-    // =========================================
-    <div className="note-content">
-
-      {getShortNote(note.discription, 5)}
-
-    </div>
-  )}
-
-</td>
-
-                      {/* ACTION */}
+                      {/* ACTIONS */}
 
                       <td className="action-column">
                         <div className="note-actions">
-                          {/* =================================
-                              VIEW / CLOSE NOTE
-                          ================================= */}
+                          {/* VIEW */}
 
                           <button
                             type="button"
@@ -794,9 +892,6 @@ const OfficialNotes = () => {
                             title={
                               isExpanded ? "Close Full Note" : "View Full Note"
                             }
-                            aria-label={
-                              isExpanded ? "Close Full Note" : "View Full Note"
-                            }
                           >
                             {isExpanded ? (
                               <MdVisibilityOff className="icon" />
@@ -805,9 +900,7 @@ const OfficialNotes = () => {
                             )}
                           </button>
 
-                          {/* =================================
-                              EDIT
-                          ================================= */}
+                          {/* EDIT */}
 
                           <button
                             type="button"
@@ -825,9 +918,7 @@ const OfficialNotes = () => {
                             <MdEdit className="icon" />
                           </button>
 
-                          {/* =================================
-                              DELETE
-                          ================================= */}
+                          {/* DELETE */}
 
                           <button
                             type="button"
@@ -846,9 +937,9 @@ const OfficialNotes = () => {
           </table>
         </div>
 
-        {/* =================================
-            FOOTER
-        ================================= */}
+        {/* ==================================================
+            TABLE FOOTER
+        ================================================== */}
 
         <div className="notes-footer">
           Showing 1 to {notes.length} of {notes.length} notes

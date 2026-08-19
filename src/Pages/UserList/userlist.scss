@@ -1,0 +1,132 @@
+.user-list {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .btn-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      button {
+        background: #0b8b95;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        cursor: pointer;
+
+        span {
+          display: flex;
+          align-items: center;
+        }
+
+        &:hover {
+          background: #0a7a85;
+        }
+      }
+    }
+  }
+  .table-row-light {
+    td {
+      background: #eafafa !important;
+    }
+  }
+
+  .table-row-dark {
+    td {
+      background: var(--white) !important;
+    }
+  }
+
+  .ant-table {
+    background: var(--white);
+    border-radius: 10px;
+  }
+
+  .ant-table-thead > tr > th {
+    background: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+
+    .anticon {
+      color: #0b8b95;
+    }
+  }
+
+  .avatar {
+    background: #0b8b95;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .view,
+  .edit,
+  .delete,
+  .date {
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .view {
+    color: #6b7280;
+  }
+
+  .edit,
+  .date {
+    color: #0b8b95;
+  }
+
+  .delete {
+    color: #ff4d4f;
+  }
+
+  .ant-tag {
+    border-radius: 20px;
+    padding: 2px 12px;
+  }
+
+  .ant-pagination-item-active {
+    border-color: #0b8b95;
+
+    a {
+      color: #0b8b95;
+    }
+  }
+
+  .user-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 20px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+
+    text-transform: capitalize;
+  }
+
+  .user-status.active {
+    background: #d1fae5;
+    color: #047857;
+  }
+
+  .user-status.inactive {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+}

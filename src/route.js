@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import Profile from "./Pages/EmployeeProfile/Profile";
 import EditEmployee from "./Pages/AddEmployee/EditEmployee";
+import UserList from "./Pages/UserList/UserList";
 
 
 const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
@@ -42,6 +43,13 @@ export const routes = [
   },
 
   {
+    name: "All Users",
+    path: "/userlist",
+    comp: UserList,
+    adminonly: true,
+  },
+
+  {
     name: "Add Employee",
     path: "/addEmployee",
     comp: AddEmployee,
@@ -52,7 +60,7 @@ export const routes = [
     path: "/editEmployee/:employeeId",
     comp: EditEmployee,
     adminonly: true,
-},
+  },
   {
     name: "OfficialNotes",
     path: "/OfficialNotes",
@@ -77,12 +85,12 @@ export const routes = [
     comp: Viewdoc,
     adminonly: false,
   },
-  {
-    name: "EmployeeList",
-    path: "/empList",
-    comp: EmployeeList,
-    adminonly: false,
-  },
+  // {
+  //   name: "EmployeeList",
+  //   path: "/empList",
+  //   comp: EmployeeList,
+  //   adminonly: false,
+  // },
   {
     name: "AdminDash",
     path: "/",
@@ -125,19 +133,19 @@ export const routes = [
     comp: SalaryManagement,
     adminonly: true,
   },
-    {
+  {
     name: "OfferLetter",
     path: "/offerLetter",
     comp: OfferLetter,
     adminonly: true,
   },
-      {
+  {
     name: "OfferLetterManagement",
     path: "/offerLettermanagement",
     comp: OfferLetterManagement,
     adminonly: true,
   },
-        {
+  {
     name: "IncrementLetter",
     path: "/incrementLetter",
     comp: IncrementLetter,
@@ -146,13 +154,13 @@ export const routes = [
 
   // sunil Shelke
   {
-    name:"EmployeeProfile",
-    path:"/EmployeeProfile/:employeeId",
-    comp:Profile, 
+    name: "EmployeeProfile",
+    path: "/EmployeeProfile/:employeeId",
+    comp: Profile,
     adminonly: true,
   }
 
- 
+
 
 
 
