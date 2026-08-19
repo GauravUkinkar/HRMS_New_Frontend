@@ -22,6 +22,13 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
       link: "/",
     },
 
+
+    {
+      icon: <BsPerson />,
+      name: "All Users",
+      link: "/userlist"
+    },
+
     {
       icon: <BsPerson />,
       name: "Employee",
