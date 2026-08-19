@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import Input from "../../comp/input/Input";
 import SelectInput from "../../comp/selectInput/SelectInput";

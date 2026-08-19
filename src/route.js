@@ -27,6 +27,7 @@ const AddSalary = lazy(() => import("./Pages/AddSalary/AddSalary"));
 const SalaryManagement = lazy(() => import("./Pages/SalaryManagement/SalaryManagement"));
 const OfferLetter = lazy(() => import("./Pages/OfferLetter/OfferLetter"));
 const OfferLetterManagement = lazy(() => import("./Pages/OfferLetterManagement/OfferLetterManagement"));
+const IncrementLetter = lazy(() => import("./Pages/IncrementLetter/IncrementLetter"));
 
 
 
@@ -134,6 +135,12 @@ export const routes = [
     name: "OfferLetterManagement",
     path: "/offerLettermanagement",
     comp: OfferLetterManagement,
+    adminonly: true,
+  },
+        {
+    name: "IncrementLetter",
+    path: "/incrementLetter",
+    comp: IncrementLetter,
     adminonly: true,
   },
 
