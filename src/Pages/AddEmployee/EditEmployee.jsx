@@ -68,14 +68,11 @@ const EditEmployee = () => {
 
   const formatDate = (date) => {
     if (!date) return "";
-
     const dateString = String(date);
-
     // Already YYYY-MM-DD
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
       return dateString;
     }
-
     // ISO format: 2026-08-19T00:00:00
     if (dateString.includes("T")) {
       return dateString.split("T")[0];
@@ -160,6 +157,7 @@ const EditEmployee = () => {
       }
 
       setEmployeeData({
+        eid: employee.eid,
         employeeName: employee.employeeName || "",
         employeeId: employee.employeeId
           ? String(employee.employeeId).replace(/^PSPL/i, "")
@@ -209,8 +207,6 @@ const EditEmployee = () => {
         teamName:
           employee.teamName || "",
 
-        employementType:
-          employee.employementType || "",
 
         aadharNumber:
           employee.aadharNumber || "",
@@ -275,7 +271,7 @@ const EditEmployee = () => {
 
         status:
           employee.status ||
-          "ACTIVE",
+          "",
 
         esicNumber:
           employee.esicNumber || "",
@@ -297,7 +293,7 @@ const EditEmployee = () => {
           employee.crmRole || "N/A",
 
         managerName:
-          employee.manegerName || "",
+          employee.managerName || "",
 
         employee_image: null,
       });
@@ -410,13 +406,17 @@ const EditEmployee = () => {
       } = employeeData;
 
       // Make sure employee ID is present
-      employeeDto.employeeId =
-        employeeDto.employeeId ||
-        employeeId;
+      const enteredEmployeeId =
+        String(employeeDto.employeeId || "").trim();
 
-      // =================================================
-      // ADD EMPLOYEE JSON
-      // =================================================
+      if (enteredEmployeeId) {
+        employeeDto.employeeId =
+          enteredEmployeeId.toUpperCase().startsWith("PSPL")
+            ? enteredEmployeeId.toUpperCase()
+            : `PSPL${enteredEmployeeId}`;
+      } else {
+        employeeDto.employeeId = employeeId;
+      }
 
       multipartData.append(
         "employeeDto",
@@ -573,9 +573,6 @@ const EditEmployee = () => {
     );
   }
 
-  // =====================================================
-  // RETURN
-  // =====================================================
 
   return (
     <MainPanel
