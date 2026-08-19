@@ -1,39 +1,39 @@
-// .css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input{
-//     padding: 12px 14px !important;
-// }
+.css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input{
+    padding: 12px 14px !important;
+}
 
 .input {
   width: 100%;
   position: relative;
+  display:flex;
 
-.left-icon {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  font-size: 18px;
-  color: var(--accent);
-}
+  .left-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    font-size: 18px;
+    color: var(--accent);
+  }
 
-.date-label{
-  position: absolute;
-  left: 10px;
-  font-size: 14px;
- font-family: "Roboto", sans-serif;
-top: -8px;
-background-color: white;
-z-index: 2;
-padding: 0px 5px
-}
+  .date-label {
+    position: absolute;
+    left: 10px;
+    font-size: 14px;
+    font-family: "Roboto", sans-serif;
+    top: -8px;
+    background-color: white;
+    z-index: 5;
+    padding: 0px 5px;
+  }
 
   .mq_label {
-    position: absolute;
+    position: relative;
     top: 50%;
     transform: translateY(-50%);
     left: 0;
     height: 100%;
-    width: auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -66,10 +66,9 @@ padding: 0px 5px
   transform: translateY(-50%) !important;
   left: 10px;
 }
-.css-5eu3xv-MuiFormControl-root-MuiTextField-root input{
-  color:grey !important;
+.css-5eu3xv-MuiFormControl-root-MuiTextField-root input {
+  color: grey !important;
 }
-.date-label{
-  color:grey;
-
+.date-label {
+  color: grey;
 }

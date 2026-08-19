@@ -7,123 +7,106 @@ import { MenuItem } from "@mui/material";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import Input from "../../comp/input/Input";
-
 import "./AddEmployee.scss";
-
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
-
 const EditEmployee = () => {
   const { employeeId } = useParams();
   const navigate = useNavigate();
 
-  // =====================================================
-  // STATES
-  // =====================================================
 
   const [loading, setLoading] = useState(false);
-
   const [error, setError] = useState({});
-
   const [teams, setTeams] = useState([]);
-
   const [existingImage, setExistingImage] = useState("");
-
   const [employeeData, setEmployeeData] = useState({
     employeeName: "",
     employeeId: "",
+    employementType: "",
     employee_status: "Active",
     employeeStatus: "Active",
-
     gender: "",
-
     designation: "",
     department: "",
-
     dateOfJoining: "",
     dateOfLiving: "",
-
     contactNumber: "",
-
     ifscCode: "",
     dateOfBirth: "",
-
     aadharNumber: "",
     panNumber: "",
-
     accountNumber: "",
-
     costtoCompany: "",
     employeeSalary: "",
-
     bankName: "",
     companyName: "",
-
     diduction: "",
-
     currentAddress: "",
     permanentAddress: "",
-
     uanNo: "",
-
     policyNumber: "",
     insuranceCompany: "",
-
     emergencyContactNumber: "",
     emergencyContactName: "",
     emergencyContactRelation: "",
-
     emergencyContactCurrentAddress: "",
     emergencyContactPermanentAddress: "",
-
     status: "ACTIVE",
-
     esicNumber: "",
-
     editableAccess: true,
-
     email: "",
     password: "",
-
     role: "",
-
     bloodGroup: "",
-
     crmRole: "",
     managerName: "",
     teamName: "",
-
     // Image file
     employee_image: null,
   });
 
-  // =====================================================
   // FORMAT DATE
-  // =====================================================
 
   const formatDate = (date) => {
     if (!date) return "";
 
-    return String(date).substring(0, 10);
+    const dateString = String(date);
+
+    // Already YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return dateString;
+    }
+
+    // ISO format: 2026-08-19T00:00:00
+    if (dateString.includes("T")) {
+      return dateString.split("T")[0];
+    }
+
+    const parsedDate = new Date(dateString);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return "";
+    }
+
+    return parsedDate.toISOString().split("T")[0];
   };
 
-  // =====================================================
   // GET TEAMS
-  // =====================================================
-
   const getTeams = async () => {
     try {
-      const response = await axios.get(
-        `${BASE_URL}Admin/GetAllTeam`,
-        {
-          withCredentials: true,
-        }
+      // const response = await axios.get(
+      //   `${BASE_URL}Admin/GetAllTeam`,
+      //   {
+      //     withCredentials: true,
+      //   }
+      // );
+      const res = await axios.get(
+        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams"
       );
-
-      console.log("Teams API Response:", response.data);
+      console.log("Teams API Response:", res.data);
 
       const teamData =
-        response.data?.data ||
-        response.data ||
+        res.data?.data ||
+        res.data ||
         [];
 
       setTeams(
@@ -153,7 +136,7 @@ const EditEmployee = () => {
       );
 
       const response = await axios.get(
-        `${BASE_URL}Admin/GetEmployee/${employeeId}`,
+        `${BASE_URL}Admin/GetEmployeeById/${employeeId}`,
         {
           withCredentials: true,
         }
@@ -176,16 +159,11 @@ const EditEmployee = () => {
         return;
       }
 
-      // =================================================
-      // SET EMPLOYEE DATA
-      // =================================================
-
       setEmployeeData({
-        employeeName:
-          employee.employeeName || "",
-
-        employeeId:
-          employee.employeeId || "",
+        employeeName: employee.employeeName || "",
+        employeeId: employee.employeeId
+          ? String(employee.employeeId).replace(/^PSPL/i, "")
+          : "",
 
         employee_status:
           employee.employee_status ||
@@ -197,14 +175,12 @@ const EditEmployee = () => {
           employee.employee_status ||
           "Active",
 
-        gender:
-          employee.gender || "",
+        gender: employee.gender || "",
+        designation: employee.designation || "",
+        department: employee.department || "",
 
-        designation:
-          employee.designation || "",
-
-        department:
-          employee.department || "",
+        employementType:
+          employee.employementType || "",
 
         dateOfJoining:
           formatDate(
@@ -318,10 +294,10 @@ const EditEmployee = () => {
           employee.role || "",
 
         crmRole:
-          employee.crmRole || "",
+          employee.crmRole || "N/A",
 
         managerName:
-          employee.managerName || "",
+          employee.manegerName || "",
 
         employee_image: null,
       });
@@ -700,16 +676,10 @@ const EditEmployee = () => {
                 </SelectInput>
 
                 <Input
-                  error={
-                    error.dateOfJoining
-                  }
+                  error={error.dateOfJoining}
                   name="dateOfJoining"
-                  value={
-                    employeeData.dateOfJoining
-                  }
-                  onChange={
-                    handleChange
-                  }
+                  value={employeeData.dateOfJoining}
+                  onChange={handleChange}
                   label="Date of Joining"
                   required
                   type="date"
@@ -720,20 +690,21 @@ const EditEmployee = () => {
               {/* ================= ROW 3 ================= */}
 
               <div className="form-row">
-
                 <Input
                   name="dateOfLiving"
-                  value={
-                    employeeData.dateOfLiving
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  label="Date of Leaving"
+                  value={employeeData.dateOfLiving}
+                  onChange={handleChange}
+                  label="Last Working Day"
                   type="date"
                 />
-
-                <SelectInput
+                <Input
+                  error={error.department}
+                  name="department"
+                  value={employeeData.department}
+                  onChange={handleChange}
+                  label="Department"
+                />
+                {/* <SelectInput
                   error={
                     error.department
                   }
@@ -766,295 +737,214 @@ const EditEmployee = () => {
                   <MenuItem value="Sales">
                     Sales
                   </MenuItem>
-                </SelectInput>
-
+                </SelectInput> */}
                 <Input
-                  error={
-                    error.designation
-                  }
+                  error={error.designation}
                   name="designation"
-                  value={
-                    employeeData.designation
-                  }
-                  onChange={
-                    handleChange
-                  }
+                  value={employeeData.designation}
+                  onChange={handleChange}
                   label="Designation"
                   required
                 />
 
               </div>
+            </div>
+            <div className="employee-photo-upload">
 
-              {/* ================= ROW 4 ================= */}
-
-              <div className="form-row">
-
-                <Input
-                  error={
-                    error.employeeName
-                  }
-                  name="employeeName"
-                  value={
-                    employeeData.employeeName
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  label="Employee Name"
-                  required
-                />
-
-                <SelectInput
-                  error={
-                    error.gender
-                  }
-                  name="gender"
-                  value={
-                    employeeData.gender
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  label="Gender"
-                  required
-                >
-                  <MenuItem value="Male">
-                    Male
-                  </MenuItem>
-
-                  <MenuItem value="Female">
-                    Female
-                  </MenuItem>
-
-                  <MenuItem value="Other">
-                    Other
-                  </MenuItem>
-                </SelectInput>
-
-                <Input
-                  error={
-                    error.contactNumber
-                  }
-                  name="contactNumber"
-                  value={
-                    employeeData.contactNumber
-                  }
-                  onChange={(e) => {
-                    e.target.value =
-                      e.target.value
-                        .replace(
-                          /\D/g,
-                          ""
-                        )
-                        .slice(
-                          0,
-                          10
-                        );
-
-                    handleChange(e);
-                  }}
-                  label="Contact Number"
-                  required
-                />
-
+              <div className="employee-photo-preview">
+                {employeeData.employee_image ? (
+                  // Newly selected image
+                  <img
+                    src={URL.createObjectURL(employeeData.employee_image)}
+                    alt="Employee"
+                  />
+                ) : existingImage ? (
+                  // Existing image from API
+                  <img
+                    src={existingImage}
+                    alt="Employee"
+                  />
+                ) : (
+                  <span>Photo</span>
+                )}
               </div>
 
-              {/* ================= ROW 5 ================= */}
+              {/* Upload button */}
+              <label
+                htmlFor="employee-image"
+                className="photo-upload-btn"
+              >
+                Upload Photo
+              </label>
 
-              <div className="form-row">
+              {/* Hidden file input */}
+              <input
+                id="employee-image"
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
 
-                <Input
-                  error={
-                    error.email
-                  }
-                  name="email"
-                  value={
-                    employeeData.email
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  label="Email"
-                  required
-                  type="email"
-                />
+                  if (!file) return;
 
-                <Input
-                  error={
-                    error.dateOfBirth
-                  }
-                  name="dateOfBirth"
-                  value={
-                    employeeData.dateOfBirth
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  label="Date of Birth"
-                  required
-                  type="date"
-                />
+                  setEmployeeData((prev) => ({
+                    ...prev,
+                    employee_image: file,
+                  }));
+                }}
+              />
 
-                <SelectInput
-                  error={
-                    error.bloodGroup
-                  }
-                  name="bloodGroup"
-                  value={
-                    employeeData.bloodGroup
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  label="Blood Group"
-                  required
-                >
-                  <MenuItem value="A+">
-                    A+
-                  </MenuItem>
+            </div>
 
-                  <MenuItem value="A-">
-                    A-
-                  </MenuItem>
+          </div>
+        </div>
 
-                  <MenuItem value="B+">
-                    B+
-                  </MenuItem>
 
-                  <MenuItem value="B-">
-                    B-
-                  </MenuItem>
 
-                  <MenuItem value="AB+">
-                    AB+
-                  </MenuItem>
+        <div className="personaldetails">
+          <h1>Personal Details</h1>
 
-                  <MenuItem value="AB-">
-                    AB-
-                  </MenuItem>
+          <div className="inputs">
+            <div className="form-row">
+              <Input
+                error={error.employeeName}
+                name="employeeName"
+                value={employeeData.employeeName}
+                onChange={handleChange}
+                label="Employee Name"
+                required
+              />
 
-                  <MenuItem value="O+">
-                    O+
-                  </MenuItem>
+              <SelectInput
+                label="Gender"
+                value={employeeData.gender}
+                onChange={handleChange}
+                error={error.gender}
+                name="gender"
+              >
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </SelectInput>
 
-                  <MenuItem value="O-">
-                    O-
-                  </MenuItem>
-                </SelectInput>
+              <Input
+                error={error.contactNumber}
+                name="contactNumber"
+                value={employeeData.contactNumber}
+                onChange={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 10);
 
-              </div>
+                  handleChange(e);
+                }}
+                label="Contact Number"
+                required
+              />
 
-              {/* ================= ROW 6 ================= */}
+              <Input
+                error={error.email}
+                name="email"
+                value={employeeData.email}
+                onChange={handleChange}
+                label="Email"
+                required
+              />
+            </div>
 
-              <div className="form-row">
+            <div className="form-row">
+              <Input
+                error={error.dateOfBirth}
+                name="dateOfBirth"
+                value={employeeData.dateOfBirth}
+                onChange={handleChange}
+                label="Date of Birth"
+                required
+                type="date"
+              />
 
-                <Input
-                  error={
-                    error.aadharNumber
-                  }
-                  name="aadharNumber"
-                  value={
-                    employeeData.aadharNumber
-                  }
-                  onChange={(e) => {
-                    e.target.value =
-                      e.target.value
-                        .replace(
-                          /\D/g,
-                          ""
-                        )
-                        .slice(
-                          0,
-                          12
-                        );
+              <Input
+                error={error.aadharNumber}
+                name="aadharNumber"
+                value={employeeData.aadharNumber}
+                onChange={(e) => {
+                  e.target.value = e.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 12);
 
-                    handleChange(e);
-                  }}
-                  label="Aadhaar Number"
-                  required
-                />
+                  handleChange(e);
+                }}
+                label="Aadhar No"
+                required
+              />
 
-                <Input
-                  error={
-                    error.panNumber
-                  }
-                  name="panNumber"
-                  value={
-                    employeeData.panNumber
-                  }
-                  onChange={(e) => {
-                    e.target.value =
-                      e.target.value
-                        .toUpperCase()
-                        .slice(
-                          0,
-                          10
-                        );
+              <Input
+                error={error.panNumber}
+                name="panNumber"
+                value={employeeData.panNumber}
+                onChange={(e) => {
+                  e.target.value = e.target.value
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, "")
+                    .slice(0, 10);
 
-                    handleChange(e);
-                  }}
-                  label="PAN Number"
-                  required
-                />
+                  handleChange(e);
+                }}
+                label="Pan No"
+                required
+              />
 
-              </div>
+              <SelectInput
+                error={error.bloodGroup}
+                name="bloodGroup"
+                value={employeeData.bloodGroup}
+                onChange={handleChange}
+                label="Blood Group"
+                required
+              >
+                <MenuItem value="A+">A+</MenuItem>
+                <MenuItem value="A-">A-</MenuItem>
 
-              {/* ================= ROW 7 ================= */}
+                <MenuItem value="B+">B+</MenuItem>
+                <MenuItem value="B-">B-</MenuItem>
 
-              <div className="form-row">
+                <MenuItem value="AB+">AB+</MenuItem>
+                <MenuItem value="AB-">AB-</MenuItem>
 
-                <Input
-                  error={
-                    error.currentAddress
-                  }
-                  name="currentAddress"
-                  value={
-                    employeeData.currentAddress
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  label="Current Address"
-                  required
-                />
+                <MenuItem value="O+">O+</MenuItem>
+                <MenuItem value="O-">O-</MenuItem>
+              </SelectInput>
+            </div>
 
-                <Input
-                  error={
-                    error.permanentAddress
-                  }
-                  name="permanentAddress"
-                  value={
-                    employeeData.permanentAddress
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  label="Permanent Address"
-                  required
-                />
+            <div className="form-row">
+              <Input
+                error={error.currentAddress}
+                name="currentAddress"
+                value={employeeData.currentAddress}
+                onChange={handleChange}
+                label="Current Address"
+                required
+              />
 
-              </div>
-
+              <Input
+                error={error.permanentAddress}
+                name="permanentAddress"
+                value={employeeData.permanentAddress}
+                onChange={handleChange}
+                label="Permanent Address"
+                required
+              />
             </div>
           </div>
         </div>
 
-        {/* =================================================
-            EMERGENCY DETAILS
-        ================================================= */}
+
 
         <div className="personaldetails">
-
-          <h1>
-            Emergency Details
-          </h1>
-
+          <h1>Emergency Details</h1>
           <div className="inputs">
-
-            {/* ================= ROW 1 ================= */}
-
             <div className="form-row">
-
               <Input
                 error={
                   error.emergencyContactName
@@ -1330,47 +1220,23 @@ const EditEmployee = () => {
           </div>
         </div>
 
-        {/* =================================================
-            CRM DETAILS
-        ================================================= */}
+
 
         <div className="crmdetails">
-
-          <h1>
-            CRM Details
-          </h1>
-
+          <h1>CRM Details</h1>
           <div className="inputs">
-
             <div className="form-row">
-
-              {/* CRM ROLE */}
-
               <SelectInput
-                error={
-                  error.crmRole
-                }
+                error={error.crmRole}
                 name="crmRole"
-                value={
-                  employeeData.crmRole
-                }
-                onChange={
-                  handleChange
-                }
+                value={employeeData.crmRole}
+                onChange={handleChange}
                 label="CRM Role"
                 required
               >
-                <MenuItem value="ADMIN">
-                  Admin
-                </MenuItem>
-
-                <MenuItem value="MANAGER">
-                  Manager
-                </MenuItem>
-
-                <MenuItem value="EMPLOYEE">
-                  Employee
-                </MenuItem>
+                <MenuItem value="ADMIN">Admin</MenuItem>
+                <MenuItem value="MANAGER">Manager</MenuItem>
+                <MenuItem value="EMPLOYEE">Employee</MenuItem>
               </SelectInput>
 
               {/* MANAGER */}
@@ -1429,21 +1295,14 @@ const EditEmployee = () => {
 
               <SelectInput
                 name="teamName"
-                value={
-                  employeeData.teamName
-                }
-                onChange={
-                  handleChange
-                }
+                value={employeeData.teamName}
+                onChange={handleChange}
                 label="Team Name"
                 required
               >
                 {teams.map(
                   (team, index) => {
-                    const data =
-                      team?.data ||
-                      team;
-
+                    const data = team?.data || team;
                     const teamName =
                       data?.name ||
                       data?.teamName ||
@@ -1456,111 +1315,18 @@ const EditEmployee = () => {
                     }
 
                     return (
-                      <MenuItem
-                        key={
-                          data?.id ||
-                          index
-                        }
-                        value={
-                          teamName
-                        }
+                      <MenuItem key={data?.id || index}
+                        value={teamName}
                       >
-                        {
-                          teamName
-                        }
+                        {teamName}
                       </MenuItem>
                     );
                   }
                 )}
               </SelectInput>
-
             </div>
           </div>
         </div>
-
-        {/* =================================================
-            IMAGE
-        ================================================= */}
-
-        <div className="personaldetails">
-
-          <h1>
-            Employee Image
-          </h1>
-
-          <div className="inputs">
-
-            <div className="form-row">
-
-              <Input
-                type="file"
-                name="employee_image"
-                onChange={
-                  handleChange
-                }
-                label="Select Employee Image"
-              />
-
-            </div>
-
-            {/* Existing image */}
-
-            {existingImage &&
-              !employeeData.employee_image && (
-                <div
-                  style={{
-                    marginTop: "15px",
-                  }}
-                >
-                  <img
-                    src={
-                      existingImage
-                    }
-                    alt="Employee"
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      objectFit:
-                        "cover",
-                      borderRadius:
-                        "8px",
-                    }}
-                  />
-                </div>
-              )}
-
-            {/* New image */}
-
-            {employeeData.employee_image && (
-              <div
-                style={{
-                  marginTop: "15px",
-                }}
-              >
-                <img
-                  src={URL.createObjectURL(
-                    employeeData.employee_image
-                  )}
-                  alt="Employee Preview"
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    objectFit:
-                      "cover",
-                    borderRadius:
-                      "8px",
-                  }}
-                />
-              </div>
-            )}
-
-          </div>
-        </div>
-
-        {/* =================================================
-            SUBMIT
-        ================================================= */}
-
         <button
           className="btn"
           type="submit"

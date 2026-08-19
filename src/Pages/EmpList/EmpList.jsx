@@ -41,6 +41,7 @@ const EmpList = () => {
         dob: item.data.dateOfBirth,
         address: item.data.currentAddress,
         status: item.data.employeeStatus,
+        uid: item.data.uid,
       }));
 
       setAllEmployee(employees);
@@ -49,6 +50,48 @@ const EmpList = () => {
     } catch (error) {
       console.log(
         error.response?.data || error
+      );
+    }
+  };
+
+
+  //delete employee with id 
+  const handleDeleteEmployee = async (uid) => {
+    if (!uid) {
+      console.error("Employee ID is missing");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this employee?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}Admin/deleteUserByUserId/${uid}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("Delete Employee Response:", response.data);
+
+      alert("Employee deleted successfully");
+
+      // Refresh your employee list here
+      // getEmployees();
+
+    } catch (error) {
+      console.error(
+        "Delete Employee Error:",
+        error.response?.data || error
+      );
+
+      alert(
+        error.response?.data?.message ||
+        "Failed to delete employee"
       );
     }
   };
@@ -210,12 +253,7 @@ const EmpList = () => {
           {/* DELETE */}
           <DeleteOutlined
             className="delete"
-            onClick={() => {
-              console.log(
-                "Delete Employee:",
-                record.empId
-              );
-            }}
+            onClick={() => handleDeleteEmployee(record.uid)}
           />
 
           {/* CALENDAR */}
