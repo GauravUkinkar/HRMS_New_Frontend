@@ -77,12 +77,12 @@ export const routes = [
     comp: Viewdoc,
     adminonly: false,
   },
-  {
-    name: "EmployeeList",
-    path: "/empList",
-    comp: EmployeeList,
-    adminonly: false,
-  },
+  // {
+  //   name: "EmployeeList",
+  //   path: "/empList",
+  //   comp: EmployeeList,
+  //   adminonly: false,
+  // },
   {
     name: "AdminDash",
     path: "/",
