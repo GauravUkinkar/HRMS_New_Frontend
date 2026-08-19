@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import { MdEdit, MdDelete } from "react-icons/md";
+import {
+  MdEdit,
+  MdDelete,
+  MdVisibility,
+  MdVisibilityOff,
+} from "react-icons/md";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { ImCross } from "react-icons/im";
@@ -9,14 +14,11 @@ import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
 const OfficialNotes = () => {
-  // =========================================
-  // STATES
-  // =========================================
-
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
 
@@ -27,32 +29,27 @@ const OfficialNotes = () => {
   const [noteDate, setNoteDate] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const [noteCreatedAt, setNoteCreatedAt] = useState("");
-  // =========================================
-  // EMPLOYEES
-  // =========================================
 
-  const employees = [
-    {
-      id: 1,
-      name: "Aditya More",
-    },
-    {
-      id: 2,
-      name: "Rahul Patil",
-    },
-    {
-      id: 3,
-      name: "Sachin Jadhav",
-    },
-    {
-      id: 4,
-      name: "Revti More",
-    },
-    {
-      id: 5,
-      name: "Shweta Shinde",
-    },
-  ];
+  const getShortNote = (html, wordLimit = 5) => {
+    const plainText = stripHtml(html).trim();
+
+    if (!plainText) {
+      return "";
+    }
+
+    const words = plainText.split(/\s+/);
+
+    if (words.length <= wordLimit) {
+      return plainText;
+    }
+
+    return `${words.slice(0, wordLimit).join(" ")}...`;
+  };
+
+  // =========================================
+  // EXPANDED NOTE ID
+  // =========================================
+  const [expandedNoteId, setExpandedNoteId] = useState(null);
 
   // =========================================
   // GET ALL OFFICIAL NOTES
@@ -95,6 +92,7 @@ const OfficialNotes = () => {
       console.log("5. Number of Notes:", formattedNotes.length);
 
       setNotes(formattedNotes);
+
       console.log("FINAL notes state data:", formattedNotes);
     } catch (error) {
       console.error("Get Official Notes Error:", error);
@@ -106,13 +104,30 @@ const OfficialNotes = () => {
     }
   };
 
-  // =========================================
-  // LOAD NOTES WHEN PAGE OPENS
-  // =========================================
-
   useEffect(() => {
     getOfficialNotes();
   }, []);
+
+  // =========================================
+  // TOGGLE FULL NOTE
+  // =========================================
+  const handleToggleNote = (noteId) => {
+    setExpandedNoteId((previousId) => (previousId === noteId ? null : noteId));
+  };
+
+  // =========================================
+  // REMOVE HTML FOR COLLAPSED NOTE
+  // =========================================
+  const stripHtml = (html) => {
+    if (!html) {
+      return "";
+    }
+
+    const temporaryElement = document.createElement("div");
+    temporaryElement.innerHTML = html;
+
+    return temporaryElement.textContent || temporaryElement.innerText || "";
+  };
 
   // =========================================
   // CHECK SAME-DAY EDIT
@@ -139,13 +154,13 @@ const OfficialNotes = () => {
   // =========================================
   // ADD NOTE
   // =========================================
-
   const handleAddNote = () => {
     setIsEditing(false);
     setEditingNoteId(null);
 
     setNoteDate("");
     setNoteContent("");
+    setNoteCreatedAt("");
 
     setSelectedEmployees([]);
     setIsEmployeeDropdownOpen(false);
@@ -154,9 +169,8 @@ const OfficialNotes = () => {
   };
 
   // =========================================
-  // CLOSE POPUP
+  // CLOSE ADD / EDIT POPUP
   // =========================================
-
   const handleCloseNote = () => {
     setShowAddNote(false);
 
@@ -165,6 +179,7 @@ const OfficialNotes = () => {
 
     setNoteDate("");
     setNoteContent("");
+    setNoteCreatedAt("");
 
     setSelectedEmployees([]);
     setIsEmployeeDropdownOpen(false);
@@ -173,7 +188,6 @@ const OfficialNotes = () => {
   // =========================================
   // EDIT NOTE
   // =========================================
-
   const handleEdit = async (note) => {
     if (!isEditAllowed(note)) {
       alert("This note can only be edited on the day it was created.");
@@ -210,19 +224,18 @@ const OfficialNotes = () => {
       setIsEditing(true);
       setEditingNoteId(selectedNote.notesId);
       setNoteCreatedAt(selectedNote.createdAt);
+
       setNoteContent(selectedNote.discription || "");
 
       // DATE
-      const createdDate = new Date(selectedNote.createdAt);
+      const indiaDate = new Date(selectedNote.createdAt).toLocaleDateString(
+        "en-CA",
+        {
+          timeZone: "Asia/Kolkata",
+        },
+      );
 
-      const year = createdDate.getFullYear();
-      const month = String(createdDate.getMonth() + 1).padStart(2, "0");
-      const day = String(createdDate.getDate()).padStart(2, "0");
-
-      setNoteDate(`${year}-${month}-${day}`);
-
-      // NOTE CONTENT
-      setNoteContent(selectedNote.discription || "");
+      setNoteDate(indiaDate);
 
       // OPEN POPUP
       setShowAddNote(true);
@@ -235,7 +248,6 @@ const OfficialNotes = () => {
   // =========================================
   // DELETE NOTE
   // =========================================
-
   const handleDelete = async (note) => {
     const confirmDelete = window.confirm(
       "Are you sure want to delete this official note?",
@@ -266,6 +278,11 @@ const OfficialNotes = () => {
 
       alert("Official note deleted successfully.");
 
+      // If deleted note was expanded, close it
+      if (expandedNoteId === note.notesId) {
+        setExpandedNoteId(null);
+      }
+
       // Refresh notes table
       getOfficialNotes();
     } catch (error) {
@@ -275,24 +292,94 @@ const OfficialNotes = () => {
   };
 
   // =========================================
-  // SUBMIT / UPDATE NOTE
+  // SUBMIT / ADD / UPDATE NOTE
   // =========================================
-
   const handleSubmitNote = async () => {
     try {
-      if (!isEditing) {
-        console.log("Add note API is not implemented yet.");
-        handleCloseNote();
-        return;
-      }
-
-      if (!editingNoteId) {
-        alert("Note ID is missing.");
-        return;
-      }
+      // =========================================
+      // VALIDATION
+      // =========================================
 
       if (!noteContent || noteContent.trim() === "") {
         alert("Please enter a note.");
+        return;
+      }
+
+      if (!noteDate) {
+        alert("Please select a date.");
+        return;
+      }
+
+      // =========================================
+      // ADD NOTE
+      // =========================================
+
+      if (!isEditing) {
+        const selectedDate = new Date(
+          `${noteDate}T${new Date().toTimeString().slice(0, 8)}`,
+        );
+
+        const noteData = {
+          notesId: 0,
+          discription: noteContent,
+          createdAt: selectedDate.toISOString(),
+        };
+
+        console.log("ADD NOTE REQUEST:", noteData);
+
+        const response = await fetch(
+          "https://userservicetest.pandozasolutions.com/Admin/addOfficialNotes",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(noteData),
+          },
+        );
+
+        console.log("ADD STATUS:", response.status);
+        console.log("ADD OK:", response.ok);
+
+        // Read response safely
+        const responseText = await response.text();
+
+        console.log("ADD RAW RESPONSE:", responseText);
+
+        if (!response.ok) {
+          throw new Error(
+            responseText || `Add Note API Error: ${response.status}`,
+          );
+        }
+
+        // Parse only if response contains JSON
+        let result = null;
+
+        if (responseText.trim() !== "") {
+          try {
+            result = JSON.parse(responseText);
+          } catch (error) {
+            console.warn("Add API returned non-JSON:", responseText);
+          }
+        }
+
+        console.log("ADD PARSED RESPONSE:", result);
+
+        alert("Official note added successfully.");
+
+        handleCloseNote();
+
+        await getOfficialNotes();
+
+        return;
+      }
+
+      // =========================================
+      // UPDATE NOTE
+      // =========================================
+
+      if (!editingNoteId) {
+        alert("Note ID is missing.");
         return;
       }
 
@@ -301,14 +388,13 @@ const OfficialNotes = () => {
         return;
       }
 
-      // Prepare request body according to Swagger
-      const noteData = {
+      const updateData = {
         notesId: editingNoteId,
         discription: noteContent,
         createdAt: noteCreatedAt,
       };
 
-      console.log("Update Note Request:", noteData);
+      console.log("UPDATE NOTE REQUEST:", updateData);
 
       const response = await fetch(
         "https://userservicetest.pandozasolutions.com/Admin/updateOfficialNotes",
@@ -317,35 +403,50 @@ const OfficialNotes = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(noteData),
+          body: JSON.stringify(updateData),
         },
       );
 
+      console.log("UPDATE STATUS:", response.status);
+      console.log("UPDATE OK:", response.ok);
+
+      const responseText = await response.text();
+
+      console.log("UPDATE RAW RESPONSE:", responseText);
+
       if (!response.ok) {
-        throw new Error(`Update API Error: ${response.status}`);
+        throw new Error(
+          responseText || `Update Note API Error: ${response.status}`,
+        );
       }
 
-      const result = await response.json();
+      let result = null;
 
-      console.log("Update Note Response:", result);
+      if (responseText.trim() !== "") {
+        try {
+          result = JSON.parse(responseText);
+        } catch (error) {
+          console.warn("Update API returned non-JSON:", responseText);
+        }
+      }
+
+      console.log("UPDATE PARSED RESPONSE:", result);
 
       alert("Official note updated successfully.");
 
-      // Close popup
       handleCloseNote();
 
-      // Refresh table
       await getOfficialNotes();
     } catch (error) {
-      console.error("Update Official Note Error:", error);
-      alert("Failed to update official note.");
+      console.error("Official Note Error:", error);
+
+      alert(error.message || "Failed to save official note.");
     }
   };
 
   // =========================================
   // FORMAT DATE
   // =========================================
-
   const formatDate = (createdAt) => {
     if (!createdAt) {
       return "-";
@@ -460,6 +561,7 @@ const OfficialNotes = () => {
                           <input
                             type="checkbox"
                             checked={
+                              employees.length > 0 &&
                               selectedEmployees.length === employees.length
                             }
                             onChange={(e) => {
@@ -485,13 +587,13 @@ const OfficialNotes = () => {
                               checked={selectedEmployees.includes(employee.id)}
                               onChange={(e) => {
                                 if (e.target.checked) {
-                                  setSelectedEmployees((prev) => [
-                                    ...prev,
+                                  setSelectedEmployees((previous) => [
+                                    ...previous,
                                     employee.id,
                                   ]);
                                 } else {
-                                  setSelectedEmployees((prev) =>
-                                    prev.filter((id) => id !== employee.id),
+                                  setSelectedEmployees((previous) =>
+                                    previous.filter((id) => id !== employee.id),
                                   );
                                 }
                               }}
@@ -577,9 +679,9 @@ const OfficialNotes = () => {
               <tr>
                 <th className="sr-column">Sr. No.</th>
 
-                <th className="date-column">Date &amp; Time</th>
+                <th className="date-column">Date &amp; Time Posted On</th>
 
-                <th className="note-column">Note</th>
+                <th className="note-column">Note Details</th>
 
                 <th className="action-column">Action</th>
               </tr>
@@ -620,64 +722,126 @@ const OfficialNotes = () => {
 
               {!loading &&
                 !error &&
-                notes.map((note, index) => (
-                  <tr key={note.notesId}>
-                    {/* SR NO */}
+                notes.map((note, index) => {
+                  const isExpanded = expandedNoteId === note.notesId;
 
-                    <td className="sr-column">
-                      <span className="sr-number">{index + 1}</span>
-                    </td>
+                  const plainTextNote = stripHtml(note.discription);
 
-                    {/* DATE */}
+                  return (
+                    <tr
+                      key={note.notesId}
+                      className={isExpanded ? "note-row-expanded" : ""}
+                    >
+                      {/* SR NO */}
 
-                    <td className="date-column">
-                      <span className="note-date">
-                        {formatDate(note.createdAt)}
-                      </span>
-                    </td>
+                      <td className="sr-column">
+                        <span className="sr-number">{index + 1}</span>
+                      </td>
 
-                    {/* NOTE */}
+                      {/* DATE */}
 
-                    <td className="note-column">
-                      <div className="note-content">{note.discription}</div>
-                    </td>
+                      <td className="date-column">
+                        <span className="note-date">
+                          {formatDate(note.createdAt)}
+                        </span>
+                      </td>
 
-                    {/* ACTION */}
+                      {/* NOTE */}
 
-                    <td className="action-column">
-                      <div className="note-actions">
-                        {/* EDIT */}
+                      <td className="note-column">
 
-                        <button
-                          type="button"
-                          className={`action-btn edit-btn ${
-                            !isEditAllowed(note) ? "disabled" : ""
-                          }`}
-                          onClick={() => handleEdit(note)}
-                          disabled={!isEditAllowed(note)}
-                          title={
-                            isEditAllowed(note)
-                              ? "Edit Note"
-                              : "Editing is allowed only on the day the note was created"
-                          }
-                        >
-                          <MdEdit className="icon" />
-                        </button>
+  {isExpanded ? (
+    // =========================================
+    // FULL NOTE AFTER CLICKING EYE
+    // =========================================
+    <div className="note-content-expanded">
 
-                        {/* DELETE */}
+      <div
+        dangerouslySetInnerHTML={{
+          __html: note.discription || "",
+        }}
+      />
 
-                        <button
-                          type="button"
-                          className="action-btn delete-btn"
-                          onClick={() => handleDelete(note)}
-                          title="Delete Note"
-                        >
-                          <MdDelete className="icon" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+    </div>
+
+  ) : (
+    // =========================================
+    // FIRST 5 WORDS BY DEFAULT
+    // =========================================
+    <div className="note-content">
+
+      {getShortNote(note.discription, 5)}
+
+    </div>
+  )}
+
+</td>
+
+                      {/* ACTION */}
+
+                      <td className="action-column">
+                        <div className="note-actions">
+                          {/* =================================
+                              VIEW / CLOSE NOTE
+                          ================================= */}
+
+                          <button
+                            type="button"
+                            className={`action-btn view-btn ${
+                              isExpanded ? "active" : ""
+                            }`}
+                            onClick={() => handleToggleNote(note.notesId)}
+                            title={
+                              isExpanded ? "Close Full Note" : "View Full Note"
+                            }
+                            aria-label={
+                              isExpanded ? "Close Full Note" : "View Full Note"
+                            }
+                          >
+                            {isExpanded ? (
+                              <MdVisibilityOff className="icon" />
+                            ) : (
+                              <MdVisibility className="icon" />
+                            )}
+                          </button>
+
+                          {/* =================================
+                              EDIT
+                          ================================= */}
+
+                          <button
+                            type="button"
+                            className={`action-btn edit-btn ${
+                              !isEditAllowed(note) ? "disabled" : ""
+                            }`}
+                            onClick={() => handleEdit(note)}
+                            disabled={!isEditAllowed(note)}
+                            title={
+                              isEditAllowed(note)
+                                ? "Edit Note"
+                                : "Editing is allowed only on the day the note was created"
+                            }
+                          >
+                            <MdEdit className="icon" />
+                          </button>
+
+                          {/* =================================
+                              DELETE
+                          ================================= */}
+
+                          <button
+                            type="button"
+                            className="action-btn delete-btn"
+                            onClick={() => handleDelete(note)}
+                            title="Delete Note"
+                          >
+                            <MdDelete className="icon" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
