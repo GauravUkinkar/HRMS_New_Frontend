@@ -13,15 +13,15 @@ const OfferLetter = () => {
   return (
     <>
       <MainPanel>
-        <div class="offerletter-parent parent">
+        <div className="offerletter-parent parent">
           {/* <div class="sub-header">
             <h2>View Offer</h2>
             <button className="btn">
               Download <LuDownload />
             </button>
           </div> */}
-          <div class="offerletter-cont cont">
-            <div class="left-offer">
+          <div className="offerletter-cont cont">
+            <div className="left-offer">
               <Input
                 label="Offer-Letter Date"
                 type="date"
@@ -81,10 +81,9 @@ const OfferLetter = () => {
 
 
             </div>
-            <div class="right-offer">
-              {" "}
-              <div class="pages-wrapper">
-                <div class="offer-pdf-page">
+            <div className="right-offer">
+              <div className="pages-wrapper">
+                <div className="offer-pdf-page">
                   <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
                   <div class="top">
                     <div class="date">Date:01-03-19</div>
@@ -166,18 +165,18 @@ const OfferLetter = () => {
                   </p>
                   <div class="gap"></div>
                 </div>
-                <div class="salary-pdf-page">
+                <div className="salary-pdf-page">
                   <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
-                  <div class="logo">
+                  <div className="logo">
                     <img src={logo_pan} alt="OfferLogoPan" />
                   </div>
-                  <div class="top">
+                  <div className="top">
                     <h3>ANNEXURE-1</h3>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <h3>SALARY BREAKUP</h3>
                   </div>
-                  <div class="gap"></div>
-                  <div class="info">
+                  <div className="gap"></div>
+                  <div className="info">
                     <p>
                       <span>
                         Name:<span>Kartik Hatte</span>
@@ -196,8 +195,8 @@ const OfferLetter = () => {
                       <span>Location: Pune</span>
                     </p>
                   </div>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
+                  <div className="gap"></div>
                   <table className="salary-table">
                     <thead>
                       <tr>
@@ -309,40 +308,40 @@ const OfferLetter = () => {
                       </tr>
                     </tbody>
                   </table>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <p>
                     *Professional Tax deduction for the month of February will
                     be ₹300.
                   </p>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     **The PF deduction consists of both employee and employer
                     contributions.
                   </p>
-                  <p class="footer">
+                  <p className="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
                     76666 01972
                   </p>
                 </div>
-                <div class="terms-condition-page">
-                  <div class="gap"></div>
-                  <div class="gap"></div>
+                <div className="terms-condition-page">
+                  <div className="gap"></div>
+                  <div className="gap"></div>
                   <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
-                  <div class="logo">
+                  <div className="logo">
                     <img src={logo_pan} alt="OfferLogoPan" />
                   </div>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <h4>Explanation of terms used:</h4>
-                  <div class="gap"></div>
-                  <div class="salary-description">
+                  <div className="gap"></div>
+                  <div className="salary-description">
                     <p>
                       <strong>I. Basic :</strong> This is the base component of
                       the salary to which many other components are linked. The
                       amount is fully taxable.
                     </p>
                   </div>
-                  <div class="gap"></div>
-                  <div class="salary-description">
+                  <div className="gap"></div>
+                  <div className="salary-description">
                     <p>
                       <strong>II. HRA :</strong> This amount will not be taxable
                       if you submit the appropriate rent agreement and rent
@@ -350,8 +349,8 @@ const OfferLetter = () => {
                       basis of provisions of the Income Tax Act, of 1961.
                     </p>
                   </div>
-                  <div class="gap"></div>
-                  <div class="salary-description">
+                  <div className="gap"></div>
+                  <div className="salary-description">
                     <p>
                       <strong>III. Special Allowance :</strong> This will vary
                       as it is based on the difference between your gross salary
@@ -359,8 +358,8 @@ const OfferLetter = () => {
                       a fully taxable component.
                     </p>
                   </div>
-                  <div class="gap"></div>
-                  <div class="salary-description">
+                  <div className="gap"></div>
+                  <div className="salary-description">
                     <p>
                       <strong>Income Tax :</strong> Income tax and Professional
                       tax will be deducted at source as per the rules
@@ -370,26 +369,26 @@ const OfferLetter = () => {
                       details and any increments.
                     </p>
                   </div>
-                  <div class="gap"></div>
-                  <p class="footer">
+                  <div className="gap"></div>
+                  <p className="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
                     76666 01972
                   </p>
                 </div>
                 <div class="eight-twelve-page">
                   <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="logo">
+                  <div className="gap"></div>
+                  <div className="gap"></div>
+                  <div className="logo">
                     <img src={logo_pan} alt="OfferLogoPan" />
                   </div>
-                  <div class="top">
+                  <div className="top">
                     <h3>ANNEXURE-2</h3>
                     <h3> Additional Terms and Conditions of Offer</h3>
                   </div>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <strong>1. Date of joining:</strong>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     This offer for employment is subject to your joining and
                     reporting to the designated Pandoza Solutions Pvt. Ltd.
@@ -398,9 +397,9 @@ const OfferLetter = () => {
                     Ltd. reserves the right to re-consider or reject your
                     employment with Pandoza Solutions Pvt. Ltd..{" "}
                   </p>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <strong>2. Work location and transfer:</strong>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     Your initial location after joining will be at Pandoza
                     Solutions Pvt. Ltd.<strong>Pune</strong> office. This offer
@@ -411,9 +410,9 @@ const OfferLetter = () => {
                     company on such project as Pandoza Solutions Pvt. Ltd. may
                     deem suitable{" "}
                   </p>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <strong>3. Mandatory tenure of employment:</strong>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     On joining Pandoza Solutions Pvt. Ltd., you will continue to
                     be employed with Pandoza Solutions Pvt. Ltd. for a minimum
@@ -430,9 +429,9 @@ const OfferLetter = () => {
                     hiring allowance, notice buy-out, etc. will be recovered
                     from you, in addition to the damages mentioned above.
                   </p>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <strong> Background verification:</strong>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     This offer for employment is subject to the satisfactory
                     completion of your background reference check, which
@@ -448,32 +447,32 @@ const OfferLetter = () => {
                     terminate your employment irrespective of anything to the
                     contrary in the Company’s Policies.
                   </p>
-                  <div class="gap"></div>
-                  <p class="footer">
+                  <div className="gap"></div>
+                  <p className="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
                     76666 01972
                   </p>
                 </div>
-                <div class="new-page">
+                <div className="new-page">
                   <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="logo">
+                  <div className="gap"></div>
+                  <div className="gap"></div>
+                  <div className="logo">
                     <img src={logo_pan} alt="OfferLogoPan" />
                   </div>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
+                  <div className="gap"></div>
                   <strong>5. Travel and passport:</strong>
-                  <div class="small-gap"> </div>
+                  <div className="small-gap"> </div>
                   <p>
                     You should possess a valid passport during your employment
                     with Pandoza Solutions Pvt. Ltd.. In case you do not have a
                     valid passport at the time of joining, you should get one
                     issued within three months from the date of joining.
                   </p>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <strong>6. Confidentiality and return of materials:</strong>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     You will be required to maintain organizational secrecy and
                     confidentiality with respect to information and procedures
@@ -488,9 +487,9 @@ const OfferLetter = () => {
                     associates or branches and you will not retain any copies or
                     extracts therefrom.
                   </p>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <strong>7. Non-competition:</strong>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     During the term of your employment with Pandoza Solutions
                     Pvt. Ltd., you will not engage in any other employment,
@@ -504,16 +503,16 @@ const OfferLetter = () => {
                     employment and for one year thereafter without the prior
                     written consent of Pandoza Solutions Pvt. Ltd..
                   </p>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <strong>8. Leaves and holidays:</strong>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     The company will announce the list of holidays at the
                     beginning of each calendar year. Employees are entitled to{" "}
                     <strong>two paid leaves per month</strong>, which must be
                     accrued before they can be availed.
                   </p>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     To request a leave, employees are required to
                     <strong>
@@ -522,27 +521,27 @@ const OfferLetter = () => {
                     </strong>
                     for it to be considered.
                   </p>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
+                  <div className="gap"></div>
                   <strong>
                     *It Will be applicable after probation period.
                   </strong>
-                  <p class="footer">
+                  <p className="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
                     76666 01972
                   </p>
                 </div>
-                <div class="acceptance-page">
+                <div className="acceptance-page">
                   <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="logo">
+                  <div className="gap"></div>
+                  <div className="gap"></div>
+                  <div className="logo">
                     <img src={logo_pan} alt="OfferLogoPan" />
                   </div>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
+                  <div className="gap"></div>
                   <strong>9. Dress code:</strong>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     The work dress code ranges from Formal to Business Casual to
                     Casual. Pandoza Solutions Pvt. Ltd.’s objective in
@@ -556,7 +555,7 @@ const OfferLetter = () => {
                     should adhere to the dress code published in the employee
                     manual on the intranet.
                   </p>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <p> You are required to wear formal on your date of joining, which
                   is:
                   <br />
@@ -565,25 +564,25 @@ const OfferLetter = () => {
                   <strong>* For Ladies</strong>: Western formals, salwar-kameez
                   or formal saris with sandals.</p>
                  
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <strong>10. Termination and resignation:</strong>
-                  <div class="small-gap"></div>
-                  <div class="a-point">
+                  <div className="small-gap"></div>
+                  <div className="a-point">
                     <p> A.
                     <strong>Termination :</strong>
                     Pandoza Solutions Pvt. Ltd.reserves the right to terminate
                     the services of an employee :</p>
                    
                   </div>
-                  <div class="small-gap"></div>
-                  <div class="subpoints">
+                  <div className="small-gap"></div>
+                  <div className="subpoints">
                     <p>
                       a. With or without cause by providing immediate
                       termination.
                     </p>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <p>b. Without notice in the following cases:</p>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                   </div>
                   <ul className="listing">
                     <li>
@@ -611,9 +610,9 @@ const OfferLetter = () => {
 
                     <div className="small-gap"></div>
                   </ul>
-                  <div class="a-point">
-                    <div class="gap"></div>
-                    <div class="gap"></div>
+                  <div className="a-point">
+                    <div className="gap"></div>
+                    <div className="gap"></div>
                     <p>B.
                     <strong>Resignation :</strong>
                     For resigning fromPandoza Solutions Pvt. Ltd., you are
@@ -626,22 +625,22 @@ const OfferLetter = () => {
                     right to recover an amount equivalent to the consolidated
                     salary for the number of days of the shortfall.</p>
                   </div>
-                  <p class="footer">
+                  <p className="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
                     76666 01972
                   </p>
                 </div>
-                <div class="third-last-page">
+                <div className="third-last-page">
                   <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="logo">
+                  <div className="gap"></div>
+                  <div className="gap"></div>
+                  <div className="logo">
                     <img src={logo_pan} alt="OfferLogoPan" />
                   </div>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
+                  <div className="gap"></div>
                   <strong>11. Rules and regulations:</strong>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     You will be subject to all rules and regulations ofPandoza
                     Solutions Pvt. Ltd. that are in force and shall abide by
@@ -656,7 +655,7 @@ const OfferLetter = () => {
                     modified and updated from time to time, and these will be
                     deemed to form an integral part of this offer of employment.
                   </p>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <strong>12. Acceptance:</strong>
                   <p>
                     If the terms and conditions of this offer are acceptable to
@@ -667,8 +666,8 @@ const OfferLetter = () => {
                     to deferment of joining formalities. Original documents will
                     be returned after verification.
                   </p>
-                  <div class="small-gap"></div>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     Before the date of joining, kindly forward a copy of your
                     resignation letter and the acceptance of the same from your
@@ -682,74 +681,74 @@ const OfferLetter = () => {
                     </a>
                     if you have any queries.
                   </p>
-                  <p class="footer">
+                  <p className="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
                     76666 01972
                   </p>
                 </div>
-                <div class="secondlast-page">
+                <div className="secondlast-page">
                   <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="logo">
+                  <div className="gap"></div>
+                  <div className="gap"></div>
+                  <div className="logo">
                     <img src={logo_pan} alt="OfferLogoPan" />
                   </div>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="top">
+                  <div className="gap"></div>
+                  <div className="gap"></div>
+                  <div className="top">
                     <h3>ANNEXURE-3</h3>
                   </div>
-                  <div class="gap"></div>
-                  <div class="small-gap"></div>
+                  <div className="gap"></div>
+                  <div className="small-gap"></div>
                   <ul className="edu-doc">
                     <h3> Educational documents:</h3>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li> 10th and 12th/Diploma mark sheets</li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li>
                       Degree certificate and mark sheet (all semesters/years)
                     </li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li>
                       PG certificate and mark sheet (if applicable – for all
                       semesters/years)
                     </li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li>Any Certification mark sheet/certificate</li>
                   </ul>
                   <ul className="emp-doc">
                     <h3> Employment documents:</h3>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li>
                       {" "}
                       Relieving and Experience letters from past employers
                     </li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li>Last 3 salary slips</li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li>
                       Salary proof of fixed and variable components
                       (appointment/increment letter)
                     </li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li>
                       Bank statement for last 3 months (if working on contract)
                     </li>
                   </ul>
                   <ul className="emp-doc">
                     <h3> Personal documents:</h3>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li> Marriage certificate (if applicable)</li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li>3 passport-size photographs</li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li>Passport Copy (If Applicable)</li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li> PAN (Permanent Account Number) Card</li>
-                    <div class="small-gap"></div>
+                    <div className="small-gap"></div>
                     <li> Aadhar Card</li>
                   </ul>
-                  <div class="gap"></div>
+                  <div className="gap"></div>
                   <p>
                     Before the date of joining, kindly forward a copy of your
                     resignation letter and the acceptance of the same from your
@@ -763,51 +762,51 @@ const OfferLetter = () => {
                     info@pandozasolutions.com
                   </a>
                   if you have any queries.
-                  <p class="footer">
+                  <p className="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
                     76666 01972
                   </p>
                 </div>
-                <div class="last-page">
+                <div className="last-page">
                   <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="logo">
+                  <div className="gap"></div>
+                  <div className="gap"></div>
+                  <div className="logo">
                     <img src={logo_pan} alt="OfferLogoPan" />
                   </div>
-                  <div class="gap"></div>
-                  <div class="gap"></div>
-                  <div class="top">
+                  <div className="gap"></div>
+                  <div className="gap"></div>
+                  <div className="top">
                     <h3>ACCEPTANCE OF OFFER</h3>
                   </div>
-                  <div class="gap"></div>
-                  <div class="small-gap"></div>
+                  <div className="gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     I have read the offer letter and the annexed policies. I
                     hereby accept the offer on the aforesaid terms.
                   </p>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     I solemnly affirm that I am not under any medication on
                     account of any medical condition, which may adversely affect
                     the performance of my duties in the event of my appointment
                     pursuant to me acceptance of this offer.
                   </p>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>
                     I shall join duties with effect from the date mentioned
                     hereinabove. In case of delays in joining, I shall inform
                     the concerned authority one week in advance in writing.
                   </p>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>Name:</p>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>Date:</p>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>Signature:</p>
-                  <div class="small-gap"></div>
+                  <div className="small-gap"></div>
                   <p>Place:</p>
-                  <p class="footer">
+                  <p className="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
                     76666 01972
                   </p>
