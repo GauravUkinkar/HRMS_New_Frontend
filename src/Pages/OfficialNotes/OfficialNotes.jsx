@@ -151,6 +151,9 @@ const OfficialNotes = () => {
   const getAllEmployees = async () => {
     try {
       setEmployeeLoading(true);
+
+
+      
       setEmployeeError("");
 
       const res = await axios.get(`${BASE_URL}Admin/GetAllEmployee`, {
