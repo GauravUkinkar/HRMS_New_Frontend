@@ -3,10 +3,11 @@ import "./SalaryManagement.scss";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
-import { Table, Avatar, Space } from "antd";
+import { Avatar, Space, Table } from "antd";
+
+import { FaEye } from "react-icons/fa";
 
 import {
-  SearchOutlined,
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
@@ -14,15 +15,54 @@ import {
 import { FaPlus } from "react-icons/fa6";
 
 import axios from "axios";
+import SelectInput from "../../comp/selectInput/SelectInput";
+import { MenuItem } from "@mui/material";
 
 const SalaryManagement = () => {
   const [salaryData, setSalaryData] = useState([]);
   const [loader, setLoader] = useState(false);
 
+  // ==========================================
+  // FILTER STATES
+  // ==========================================
+
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+
   const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
   // ==========================================
-  // GET ALL SALARIES
+  // MONTHS
+  // ==========================================
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  // ==========================================
+  // YEARS
+  // ==========================================
+
+  const currentYear = new Date().getFullYear();
+
+  const years = Array.from(
+    { length: 10 },
+    (_, index) => currentYear - index
+  );
+
+  // ==========================================
+  // GET SALARY
   // ==========================================
 
   const getSalary = async () => {
@@ -53,8 +93,8 @@ const SalaryManagement = () => {
 
             grossSalary: item.data.grossSalary ?? 0,
 
-            totalWorkingDays:
-              item.data.totalWorkingDays ?? 0,
+            totalWorkingDay:
+              item.data.totalWorkingDay ?? 0,
 
             presentDay:
               item.data.presentDay ?? 0,
@@ -62,11 +102,9 @@ const SalaryManagement = () => {
             absentDays:
               item.data.absentDays ?? 0,
 
-            lop:
-              item.data.lop ?? 0,
+            lop: item.data.lop ?? 0,
 
-            da:
-              item.data.da ?? 0,
+            da: item.data.da ?? 0,
 
             employeePf:
               item.data.employeePf ?? 0,
@@ -80,8 +118,8 @@ const SalaryManagement = () => {
             salaryAdvance:
               item.data.salaryAdvance ?? 0,
 
-            otherDeduction:
-              item.data.otherDeduction ?? 0,
+            otherDiduction:
+              item.data.otherDiduction ?? 0,
 
             otherAllowance:
               item.data.otherAllowance ?? 0,
@@ -98,10 +136,12 @@ const SalaryManagement = () => {
         })
         .filter(Boolean);
 
-      console.log("Formatted Salary Data:", salaryRecords);
+      console.log(
+        "Formatted Salary Data:",
+        salaryRecords
+      );
 
       setSalaryData(salaryRecords);
-
     } catch (error) {
       console.log(
         "STATUS:",
@@ -112,15 +152,51 @@ const SalaryManagement = () => {
         "ERROR:",
         error.response?.data
       );
-
     } finally {
       setLoader(false);
     }
   };
 
+  // ==========================================
+  // API CALL
+  // ==========================================
+
   useEffect(() => {
     getSalary();
   }, []);
+
+  // ==========================================
+  // FILTER SALARY DATA
+  // ==========================================
+
+  const filteredSalaryData = salaryData.filter(
+    (salary) => {
+      const monthMatch =
+        !selectedMonth ||
+        String(salary.month)
+          .trim()
+          .toLowerCase() ===
+          selectedMonth
+            .trim()
+            .toLowerCase();
+
+      const yearMatch =
+        !selectedYear ||
+        String(salary.year).trim() ===
+          String(selectedYear).trim();
+
+      return monthMatch && yearMatch;
+    }
+  );
+
+  // ==========================================
+  // CLEAR FILTER
+  // ==========================================
+
+  const clearFilters = () => {
+    setSelectedMonth("");
+    setSelectedYear("");
+  };
 
   // ==========================================
   // TABLE COLUMNS
@@ -128,11 +204,8 @@ const SalaryManagement = () => {
 
   const columns = [
     {
-      title: (
-        <>
-          Employee Name <SearchOutlined />
-        </>
-      ),
+      title: "Employee Name",
+      search: true,
       dataIndex: "employeeName",
       key: "employeeName",
       width: 220,
@@ -141,9 +214,8 @@ const SalaryManagement = () => {
       render: (name) => {
         const employeeName = name || "N/A";
 
-        const nameParts = employeeName
-          .trim()
-          .split(" ");
+        const nameParts =
+          employeeName.trim().split(" ");
 
         const initials =
           nameParts.length > 1
@@ -165,14 +237,11 @@ const SalaryManagement = () => {
     },
 
     {
-      title: (
-        <>
-          Employee ID <SearchOutlined />
-        </>
-      ),
+      title: "Employee ID",
       dataIndex: "employeeId",
       key: "employeeId",
       width: 160,
+      search: true,
     },
 
     {
@@ -180,6 +249,7 @@ const SalaryManagement = () => {
       dataIndex: "month",
       key: "month",
       width: 130,
+      search: true,
     },
 
     {
@@ -187,6 +257,7 @@ const SalaryManagement = () => {
       dataIndex: "year",
       key: "year",
       width: 100,
+      search: true,
     },
 
     {
@@ -196,13 +267,15 @@ const SalaryManagement = () => {
       width: 150,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
       title: "Total Working Days",
-      dataIndex: "totalWorkingDays",
-      key: "totalWorkingDays",
+      dataIndex: "totalWorkingDay",
+      key: "totalWorkingDay",
       width: 180,
     },
 
@@ -227,7 +300,9 @@ const SalaryManagement = () => {
       width: 140,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
@@ -237,7 +312,9 @@ const SalaryManagement = () => {
       width: 180,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
@@ -247,7 +324,9 @@ const SalaryManagement = () => {
       width: 150,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
@@ -257,7 +336,9 @@ const SalaryManagement = () => {
       width: 150,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
@@ -267,7 +348,9 @@ const SalaryManagement = () => {
       width: 160,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
@@ -277,17 +360,21 @@ const SalaryManagement = () => {
       width: 170,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
       title: "Other Deduction",
-      dataIndex: "otherDeduction",
-      key: "otherDeduction",
+      dataIndex: "otherDiduction",
+      key: "otherDiduction",
       width: 170,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
@@ -297,7 +384,9 @@ const SalaryManagement = () => {
       width: 170,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
@@ -307,7 +396,9 @@ const SalaryManagement = () => {
       width: 170,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
@@ -317,7 +408,9 @@ const SalaryManagement = () => {
       width: 200,
 
       render: (value) =>
-        `₹ ${Number(value).toLocaleString("en-IN")}`,
+        `₹ ${Number(value).toLocaleString(
+          "en-IN"
+        )}`,
     },
 
     {
@@ -328,14 +421,15 @@ const SalaryManagement = () => {
 
       render: (value) => (
         <strong>
-          ₹ {Number(value).toLocaleString("en-IN")}
+          ₹{" "}
+          {Number(value).toLocaleString(
+            "en-IN"
+          )}
         </strong>
       ),
     },
 
-    // ==========================================
-    // ACTIONS
-    // ==========================================
+
 
     {
       title: "Actions",
@@ -345,7 +439,6 @@ const SalaryManagement = () => {
 
       render: (_, record) => (
         <Space size="middle">
-
           <EditOutlined
             className="edit"
             onClick={() => {
@@ -366,42 +459,119 @@ const SalaryManagement = () => {
             }}
           />
 
+          <FaEye
+            className="viewsalary"
+            onClick={() => {
+              console.log(
+                "View Salary:",
+                record
+              );
+            }}
+          />
         </Space>
       ),
     },
   ];
 
-  // ==========================================
-  // JSX
-  // ==========================================
+
 
   return (
     <MainPanel>
-
       <div className="salary-management">
 
-        {/* HEADER */}
+
 
         <div className="page-header">
 
           <h2>Salary Management</h2>
 
-          <button className="add-salary-btn">
-            <FaPlus />
-            Add Salary
-          </button>
+          <div className="rightside">
 
+            {/* MONTH */}
+
+            <SelectInput
+              label="Month"
+              name="month"
+              value={selectedMonth}
+              onChange={(e) =>
+                setSelectedMonth(
+                  e.target.value
+                )
+              }
+            >
+              {months.map((month) => (
+                <MenuItem
+                  key={month}
+                  value={month}
+                >
+                  {month}
+                </MenuItem>
+              ))}
+            </SelectInput>
+
+     
+
+            <SelectInput
+              label="Year"
+              name="year"
+              value={selectedYear}
+              onChange={(e) =>
+                setSelectedYear(
+                  e.target.value
+                )
+              }
+            >
+              {years.map((year) => (
+                <MenuItem
+                  key={year}
+                  value={year}
+                >
+                  {year}
+                </MenuItem>
+              ))}
+            </SelectInput>
+
+     
+
+            {(selectedMonth ||
+              selectedYear) && (
+              <button
+                type="button"
+                className="clear-filter-btn"
+                onClick={clearFilters}
+              >
+                Clear
+              </button>
+            )}
+
+      
+
+            <button
+              type="button"
+              className="add-salary-btn"
+              onClick={() => {
+                console.log(
+                  "Add Salary"
+                );
+              }}
+            >
+              <FaPlus />
+              Add Salary
+            </button>
+
+          </div>
         </div>
 
-        {/* TABLE */}
+
 
         <Table
           columns={columns}
-          dataSource={salaryData}
+          dataSource={filteredSalaryData}
           bordered
           loading={loader}
-          scroll={{ x: "max-content" }}
-
+          scroll={{
+            x: "max-content",
+          }}
           pagination={{
             pageSize: 5,
             showSizeChanger: true,
@@ -412,7 +582,6 @@ const SalaryManagement = () => {
               "50",
             ],
           }}
-
           rowClassName={(_, index) =>
             index % 2 === 0
               ? "table-row-light"
@@ -421,7 +590,6 @@ const SalaryManagement = () => {
         />
 
       </div>
-
     </MainPanel>
   );
 };

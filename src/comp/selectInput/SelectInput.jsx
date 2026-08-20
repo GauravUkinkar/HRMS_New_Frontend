@@ -1,34 +1,37 @@
 import { FormControl, InputLabel, Select } from "@mui/material";
 import "./SelectInput.scss";
 
-
-const SelectInput = ({ children,name, value, onChange,label,error,required }) => {
+const SelectInput = ({
+  children,
+  name,
+  value,
+  onChange,
+  label,
+  error,
+  required,
+}) => {
   return (
-    <>
-      <FormControl fullWidth>
-        <InputLabel
-// sx={{
-//     // transform: "translate(10px, 16px) scale(1)",
-//     "&.MuiInputLabel-shrink": {
-//       // transform: "translate(10px, -9px) scale(0.75)",
-//     },
-//   }}
-        id="demo-simple-select-label">{label}</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={value}
-          label={label}
-          name={name}
-          onChange={onChange}
-          error={error}
-          required={required}
-  
-        >
-          {children}
-        </Select>
-      </FormControl>
-    </>
+    <FormControl
+      fullWidth
+      className="SelectInput"
+      error={error}
+      required={required}
+    >
+      <InputLabel id={`${name}-label`}>
+        {label}
+      </InputLabel>
+
+      <Select
+        labelId={`${name}-label`}
+        id={name}
+        value={value}
+        label={label}
+        name={name}
+        onChange={onChange}
+      >
+        {children}
+      </Select>
+    </FormControl>
   );
 };
 

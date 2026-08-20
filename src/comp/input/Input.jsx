@@ -1,7 +1,9 @@
 import { TextField } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import "./Input.scss";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import { useState } from "react";
+import dayjs from "dayjs";
 
 const Input = ({
   label,
@@ -21,7 +23,7 @@ const Input = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const types = ["date", "file"];
+  const types = ["date", "file", "year"];
 
   return (
     <div className="input">
@@ -35,96 +37,96 @@ const Input = ({
         </label>
       )}
 
-      <TextField
-        error={!!error}
-        name={name}
-        label={
-          types.includes(type)
-            ? undefined
-            : required
-              ? `${error || label} *`
-              : error || label
-        }
-        onChange={onChange}
-        value={value}
-        disabled={disabled} // ✅ IMPORTANT
-        type={
-          type === "password"
-            ? showPassword
-              ? "text"
-              : "password"
-            : type
-        }
-        variant="outlined"
-        InputLabelProps={
-          types.includes(type)
-            ? { shrink: true }
-            : {}
-        }
-        sx={{
-          "& input": {
-            color: text_color || "#000",
-            paddingLeft: types.includes(type)
-              ? "14px"
-              : icon
-                ? "52px"
-                : mq_label
-                  ? "10%"
-                  : "10px",
+{type === "year" ? (
+  <div className="year-picker">
+    <DatePicker
+      views={["year"]}
+      value={value ? dayjs(value, "YYYY") : null}
+      onChange={(newValue) => {
+        onChange({
+          target: {
+            name,
+            value: newValue ? newValue.format("YYYY") : "",
           },
-
-          "& .MuiInputLabel-root": {
-            color: lb_color || "rgba(0,0,0,0.6)",
-            marginLeft:
-              types.includes(type)
-                ? 0
+        });
+      }}
+      disabled={disabled}
+      slotProps={{
+        textField: {
+          label: required ? `${label} *` : label,
+          error: !!error,
+          fullWidth: true,
+          InputLabelProps: {
+            shrink: true,
+          },
+        },
+      }}
+    />
+  </div>
+) : (
+        <TextField
+          error={!!error}
+          name={name}
+          label={
+            types.includes(type)
+              ? undefined
+              : required
+                ? `${error || label} *`
+                : error || label
+          }
+          onChange={onChange}
+          value={value}
+          disabled={disabled}
+          type={
+            type === "password"
+              ? showPassword
+                ? "text"
+                : "password"
+              : type
+          }
+          variant="outlined"
+          InputLabelProps={
+            types.includes(type)
+              ? { shrink: true }
+              : {}
+          }
+          sx={{
+            "& input": {
+              color: text_color || "#000",
+              paddingLeft: types.includes(type)
+                ? "14px"
                 : icon
-                  ? "28px"
+                  ? "52px"
                   : mq_label
                     ? "10%"
                     : "10px",
-          },
-
-          "& .MuiInputLabel-root.Mui-focused": {
-            color: fc_color || "rgba(0,0,0,0.6)",
-            left:
-              types.includes(type)
-                ? 0
-                : icon
-                  ? "28px"
-                  : mq_label
-                    ? "10px"
-                    : "10px",
-          },
-
-          "& .MuiOutlinedInput-notchedOutline legend": {
-            marginLeft:
-              types.includes(type)
-                ? 0
-                : mq_label
-                  ? "10%"
-                  : "10px",
-          },
-
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor:
-                bd_color || "rgba(0,0,0,0.23)",
             },
 
-            "&:hover fieldset": {
-              borderColor:
-                bd_color || "rgba(0,0,0,0.4)",
+            "& .MuiInputLabel-root": {
+              color: lb_color || "rgba(0,0,0,0.6)",
             },
 
-            "&.Mui-focused fieldset": {
-              borderColor:
-                fc_color || "#00615a",
-              borderWidth: "2px",
+            "& .MuiInputLabel-root.Mui-focused": {
+              color: fc_color || "rgba(0,0,0,0.6)",
             },
-          },
-        }}
-      />
+
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: bd_color || "rgba(0,0,0,0.23)",
+              },
+
+              "&:hover fieldset": {
+                borderColor: bd_color || "rgba(0,0,0,0.4)",
+              },
+
+              "&.Mui-focused fieldset": {
+                borderColor: fc_color || "#00615a",
+                borderWidth: "2px",
+              },
+            },
+          }}
+        />
+      )}
 
       {type === "password" && !disabled && (
         <span

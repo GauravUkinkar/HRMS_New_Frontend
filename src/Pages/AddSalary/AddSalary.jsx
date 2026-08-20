@@ -13,6 +13,7 @@ const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 const AddSalary = () => {
   const [employees, setEmployees] = useState([]);
   const formObj = {
+    email:"",
     employeeSalary: "",
     presentDay: "",
     paydate: "",

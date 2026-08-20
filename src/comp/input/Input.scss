@@ -1,11 +1,7 @@
-.css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input{
-    padding: 12px 14px !important;
-}
-
 .input {
   width: 100%;
   position: relative;
-  display:flex;
+  display: flex;
 
   .left-icon {
     position: absolute;
@@ -20,12 +16,13 @@
   .date-label {
     position: absolute;
     left: 10px;
+    top: -8px;
     font-size: 14px;
     font-family: "Roboto", sans-serif;
-    top: -8px;
     background-color: white;
     z-index: 5;
-    padding: 0px 5px;
+    padding: 0 5px;
+    color: grey;
   }
 
   .mq_label {
@@ -40,7 +37,7 @@
     z-index: 2;
     padding: 5px;
     background-color: var(--accent2);
-    border-radius: 4px 0px 0px 4px;
+    border-radius: 4px 0 0 4px;
     color: white;
   }
 
@@ -51,24 +48,42 @@
     transform: translateY(-50%);
     cursor: pointer;
   }
+
   .MuiFormControl-root {
     width: 100%;
   }
-}
 
-.css-16wblaj-MuiInputBase-input-MuiOutlinedInput-input {
-  padding-top: 8.5px !important;
-  padding-bottom: 8.5px !important;
-}
 
-.css-19qnlrw-MuiFormLabel-root-MuiInputLabel-root {
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  left: 10px;
-}
-.css-5eu3xv-MuiFormControl-root-MuiTextField-root input {
-  color: grey !important;
-}
-.date-label {
-  color: grey;
+  .MuiInputBase-input {
+    padding: 12px 14px !important;
+  }
+
+
+  .MuiInputLabel-root {
+    left: 0;
+  }
+
+
+  .year-picker {
+    width: 150px;
+
+    .MuiInputLabel-root {
+      top: 0 !important;
+      left: 0 !important;
+      transform: translate(14px, -9px) scale(0.75) !important;
+      transform-origin: left top !important;
+      background: white;
+      padding: 0 5px;
+      z-index: 1;
+    }
+  
+
+    .MuiInputBase-input {
+      padding: 12px 14px !important;
+    }
+
+    .MuiOutlinedInput-root {
+      height: 56px;
+    }
+  }
 }

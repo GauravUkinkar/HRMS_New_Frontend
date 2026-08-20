@@ -14,14 +14,55 @@
     justify-content: space-between;
     align-items: center;
 
-    h2 {
-      margin: 0;
 
+    h2 {
       font-size: 28px;
       font-weight: 700;
     }
+   .rightside {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+    .MuiFormControl-root {
+    height: 40px;
+    flex-shrink: 0;
+  }
 
-    .add-salary-btn {
+  .MuiFormControl-root:nth-child(1) {
+    width: 130px;
+  }
+
+  .MuiFormControl-root:nth-child(2) {
+    width: 100px;
+  }
+   .SelectInput {
+    flex-shrink: 0;
+  }
+
+  .clear-filter-btn {
+    height: 40px;
+    padding: 0 16px;
+
+    border: 1px solid #0b8b95;
+    border-radius: 5px;
+
+    background: #fff;
+    color: #0b8b95;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+
+    &:hover {
+      background: #0b8b95;
+      color: #fff;
+    }
+  }
+}
+       .add-salary-btn {
       border: none;
       outline: none;
 
@@ -51,6 +92,10 @@
         font-size: 13px;
       }
     }
+
+    }
+
+   
   }
 
   // ==========================================
@@ -63,6 +108,7 @@
     border-radius: 10px;
 
     overflow: hidden;
+
   }
 
   // ==========================================
@@ -215,4 +261,3 @@
       background: #f1f1f1;
     }
   }
-}

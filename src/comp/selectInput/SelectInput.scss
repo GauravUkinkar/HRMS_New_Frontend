@@ -1,37 +1,26 @@
-// .css-ytlejw-MuiFormControl-root{
-//     label{
-// top: 50%;
-//     transform: translateY(-50%);
-//     left: 2%;
-//     }
+.SelectInput {
+  width: 100%;
 
-// }
+  .MuiOutlinedInput-root {
+    height: 40px;
+  }
 
-.css-1toxriw-MuiList-root-MuiMenu-list {
-   padding: 0 !important;
-}
+  .MuiSelect-select {
+    box-sizing: border-box;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 32px 0 10px !important;
+  }
 
-.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
-   padding: 0 !important;
-}
+  .MuiInputLabel-root {
+    left: 0 !important;
 
-.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
-height: 40px !important;
-}
+    // Center label vertically in 40px select
+    transform: translate(10px, 10px) scale(1) !important;
 
-#demo-simple-select-label{
-   left: 10px;
-}
-
-// .css-19qnlrw-MuiFormLabel-root-MuiInputLabel-root{
-//    left: 10px !important;
-// }
-
-.css-ex8a5f-MuiNotchedOutlined-root{
-   margin-left: 10px;
-}
-.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-18jp67o-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
-   display: flex;
-   align-items: center;
-   padding-left: 10px !important;
+    &.MuiInputLabel-shrink {
+      transform: translate(10px, -9px) scale(0.75) !important;
+    }
+  }
 }

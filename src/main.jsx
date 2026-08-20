@@ -1,14 +1,18 @@
 import { createRoot } from "react-dom/client";
-
-import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
-import ContextProvider from "../Context.jsx";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
+import App from "./App";
+import ContextProvider from "../Context";
 
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <ContextProvider>
-      <App />
-    </ContextProvider>
-  </BrowserRouter>,
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <ContextProvider>
+        <App />
+      </ContextProvider>
+    </LocalizationProvider>
+  </BrowserRouter>
 );
