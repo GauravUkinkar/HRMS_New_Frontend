@@ -289,12 +289,12 @@ const UserList = () => {
 
         <>
             <MainPanel
-             title="User List "
-        breadcrumbs={[
-          { label: "Dashboard", link: "/dashboard" },
-          { label: "User List" },
-        ]}
-            
+                title="User List "
+                breadcrumbs={[
+                    { label: "Dashboard", link: "/dashboard" },
+                    { label: "User List" },
+                ]}
+
             >
                 <div className="user-list">
                     <div className="page-header">
@@ -304,6 +304,9 @@ const UserList = () => {
                                 : "All Users"}
                         </h2>
                         <div className="btn-group">
+                            <div className="count">
+                                Total Number Of Users: <span>{alluser.length}</span>
+                            </div>
                             <button
                                 type="button"
                                 className={
@@ -336,7 +339,7 @@ const UserList = () => {
                             x: "max-content",
                         }}
                         pagination={{
-                            pageSize: 5,
+                            pageSize: 20,
                             showSizeChanger: true,
                         }}
 

@@ -279,12 +279,19 @@ const EmpList = () => {
         <div className="page-header">
           <h2>Employees</h2>
 
-          <Link to="/addEmployee">
-            <span>
-              <FaPlus />
-            </span>{" "}
-            Add Employee
-          </Link>
+          <div className="btn-group">
+            <div className="count">
+              Total Number Of Employee: <span>{allemployee.length}</span>
+            </div>
+            <Link to="/addEmployee">
+              <span>
+                <FaPlus />
+              </span>{" "}
+              Add Employee
+            </Link>
+          </div>
+
+
         </div>
 
         <Table
