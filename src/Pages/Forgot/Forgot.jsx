@@ -67,7 +67,7 @@ const navigate = useNavigate()
             <div class="ct">
               <h2>Forgot password ?</h2>
               <p>
-                To reset your password,please enter your email address below.
+                To reset your password , please enter your email address below.
               </p>
             </div>
 

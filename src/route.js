@@ -3,17 +3,20 @@ import Profile from "./Pages/EmployeeProfile/Profile";
 import EditEmployee from "./Pages/AddEmployee/EditEmployee";
 import UserList from "./Pages/UserList/UserList";
 
-
 const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
 
-
-const LeaveManagement = lazy(() => import("./Pages/Leavemanagement/Leavemanagement"));
+const LeaveManagement = lazy(
+  () => import("./Pages/Leavemanagement/Leavemanagement"),
+);
 const EmpList = lazy(() => import("./Pages/EmpList/EmpList"));
 const AddEmployee = lazy(() => import("../src/Pages/AddEmployee/AddEmployee"));
-const OfficialNotes = lazy(() => import("../src/Pages/OfficialNotes/OfficialNotes"));
+const OfficialNotes = lazy(
+  () => import("../src/Pages/OfficialNotes/OfficialNotes"),
+);
 const SalaryDetails = lazy(
   () => import("../src/Pages/AddEmployee/SalaryDetails"),
 );
+
 const UploadDoc = lazy(() => import("../src/Pages/UploadDoc/UploadDoc"));
 const Viewdoc = lazy(() => import("../src/Pages/Viewdoc/Viewdoc"));
 const EmployeeList = lazy(
@@ -25,21 +28,26 @@ const Generatesalary = lazy(
 );
 const Attendance = lazy(() => import("./Pages/Attendence/Attendance"));
 const AddSalary = lazy(() => import("./Pages/AddSalary/AddSalary"));
-const SalaryManagement = lazy(() => import("./Pages/SalaryManagement/SalaryManagement"));
+const SalaryManagement = lazy(
+  () => import("./Pages/SalaryManagement/SalaryManagement"),
+);
 const OfferLetter = lazy(() => import("./Pages/OfferLetter/OfferLetter"));
-const OfferLetterManagement = lazy(() => import("./Pages/OfferLetterManagement/OfferLetterManagement"));
-const IncrementLetter = lazy(() => import("./Pages/IncrementLetter/IncrementLetter"));
-
-
-
-
+const OfferLetterManagement = lazy(
+  () => import("./Pages/OfferLetterManagement/OfferLetterManagement"),
+);
+const IncrementLetter = lazy(
+  () => import("./Pages/IncrementLetter/IncrementLetter"),
+);
+const Empdashboard = lazy(
+  () => import("../src/Pages/Empdashboard/Empdashboard"),
+);
 
 export const routes = [
   {
     name: "All Employees",
     path: "/empList",
     comp: EmpList,
-    adminonly: false
+    adminonly: false,
   },
 
   {
@@ -74,11 +82,12 @@ export const routes = [
     adminonly: true,
   },
   {
-    name: "UploadDoc",
-    path: "/uploadDoc",
-    comp: UploadDoc,
+    name: "Empdashboard",
+    path: "/Empdashboard",
+    comp: Empdashboard,
     adminonly: false,
   },
+
   {
     name: "Viewdoc",
     path: "/Viewdoc",
@@ -95,8 +104,8 @@ export const routes = [
     name: "AdminDash",
     path: "/",
     comp: AdminDash,
-
   },
+
   {
     name: "Generatesalary",
     path: "/generatesalary",
@@ -158,11 +167,5 @@ export const routes = [
     path: "/EmployeeProfile/:employeeId",
     comp: Profile,
     adminonly: true,
-  }
-
-
-
-
-
-
+  },
 ];
