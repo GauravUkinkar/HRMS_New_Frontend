@@ -7,7 +7,7 @@ import {
   MdDelete,
   MdVisibility,
   MdVisibilityOff,
-} from "react-icons/md";
+} from "react-icons/md";    
 import { ImCross } from "react-icons/im";
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -52,7 +52,6 @@ const OfficialNotes = () => {
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState(null);
-
   const [noteDate, setNoteDate] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const [noteCreatedAt, setNoteCreatedAt] = useState("");
@@ -152,8 +151,6 @@ const OfficialNotes = () => {
     try {
       setEmployeeLoading(true);
 
-
-      
       setEmployeeError("");
 
       const res = await axios.get(`${BASE_URL}Admin/GetAllEmployee`, {
