@@ -97,6 +97,7 @@ export const routes = [
     comp: AdminDash,
 
   },
+  
   {
     name: "Generatesalary",
     path: "/generatesalary",
