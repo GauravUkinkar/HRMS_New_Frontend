@@ -4,6 +4,11 @@
   display: flex;
   gap: 20px;
   padding: 10px 5px;
+
+  /* =========================================
+     LEFT SECTION
+  ========================================= */
+
   .left {
     width: 20%;
     display: flex;
@@ -21,6 +26,10 @@
       gap: 16px;
       overflow-y: auto;
 
+      h3 {
+        color: var(--accent);
+      }
+
       .documents {
         display: flex;
         gap: 20px;
@@ -30,12 +39,18 @@
           font-size: 30px;
           color: var(--accent2);
         }
+
         h4 {
           font-size: 16px;
           color: var(--accent);
         }
       }
+
+      .btn {
+        margin-top: auto;
+      }
     }
+
     .left2 {
       height: 40%;
       box-shadow: var(--shadow);
@@ -48,15 +63,19 @@
 
       .heading {
         display: flex;
+        justify-content: space-between;
         gap: 30px;
+
         p {
           color: var(--accent2);
+
           span {
             color: grey;
           }
         }
       }
     }
+
     .left3 {
       height: 30%;
       box-shadow: var(--shadow);
@@ -65,11 +84,21 @@
       flex-direction: column;
       padding: 10px;
       gap: 16px;
+      overflow-y: auto;
 
       .top {
         display: flex;
         justify-content: space-between;
+
+        h3 {
+          color: var(--accent);
+        }
+
+        svg {
+          color: var(--accent);
+        }
       }
+
       .card {
         display: flex;
         flex-direction: column;
@@ -77,11 +106,13 @@
         background-color: #f6f8fb;
         border-radius: 5px;
         padding: 10px 20px;
+
         .heading {
           font-size: 18px;
           color: black;
           font-weight: 500;
         }
+
         p {
           font-size: 12px;
           color: rgba(0, 0, 0, 0.74);
@@ -90,6 +121,11 @@
       }
     }
   }
+
+  /* =========================================
+     MIDDLE SECTION
+  ========================================= */
+
   .middle {
     width: 50%;
     display: flex;
@@ -102,57 +138,169 @@
       box-shadow: var(--shadow);
       border-radius: 5px;
     }
+
     .middle2 {
       height: 50%;
       box-shadow: var(--shadow);
       border-radius: 5px;
     }
+
+    /* =====================================
+       RECENT CRM ENTRIES
+    ===================================== */
+
     .middle3 {
       height: 20%;
       box-shadow: var(--shadow);
-      border-radius: 5px;
-      padding: 10px 20px;
-      overflow-y: scroll;
-      .card-wrapper {
+      border-radius: 8px;
+      padding: 15px 20px;
+      overflow-y: auto;
+      background: var(--white);
+
+      /* Header */
+
+      .recent-header {
+        width: 100%;
         display: flex;
-        flex-wrap: wrap;
-        gap: 30px;
-        padding: 10px 0px;
         align-items: center;
-        justify-content: center;
-        
-        .card {
-          background-color: #d4f2f0;
-          padding: 10px 20px;
-          border-radius: 5px;
-          flex-direction: column;
-          gap: 5px;
-            display: flex;
-        
-          .title {
-            display: flex;
-            gap: 10px;
-            svg {
-              color: var(--accent);
-            }
-            h5 {
-              color: var(--accent);
-            }
+        justify-content: space-between;
+        margin-bottom: 10px;
+
+        h3 {
+          margin: 0;
+          font-size: 18px;
+          font-weight: 600;
+          color: #1d1d1d;
+        }
+
+        button {
+          border: none;
+          background: transparent;
+          color: #3478f6;
+          font-size: 13px;
+          font-weight: 600;
+          cursor: pointer;
+          padding: 0;
+
+          &:hover {
+            text-decoration: underline;
           }
-          .des {
-            p {
-              font-size: 14px;
-            }
+        }
+      }
+
+      /* CRM LIST */
+
+      .crm-list {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* CRM ENTRY */
+
+      .crm-entry {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 12px 0;
+        position: relative;
+
+        &:not(:last-child) {
+          border-bottom: 1px solid #e9edf3;
+        }
+
+        /* Icon */
+
+        .crm-icon {
+          min-width: 45px;
+          width: 45px;
+          height: 45px;
+          border-radius: 8px;
+
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            font-size: 22px;
           }
-          .task {
-            p {
-              font-size: 12px;
-            }
+        }
+
+        .code-icon {
+          background-color: #eef0ff;
+
+          svg {
+            color: #3549d6;
           }
+        }
+
+        .bug-icon {
+          background-color: #e8f7f5;
+
+          svg {
+            color: #239d91;
+          }
+        }
+
+        /* Content */
+
+        .crm-content {
+          flex: 1;
+          min-width: 0;
+
+          h4 {
+            margin: 0 0 4px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #222;
+          }
+
+          .role {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #4d5663;
+          }
+
+          p {
+            margin: 2px 0;
+            font-size: 11px;
+            line-height: 15px;
+            color: #4d5663;
+          }
+        }
+
+        /* Status */
+
+        .status {
+          min-width: 78px;
+          padding: 8px 10px;
+          border-radius: 7px;
+          text-align: center;
+          font-size: 11px;
+          font-weight: 600;
+          margin-left: 5px;
+        }
+
+        .in-progress {
+          background-color: #edf4ff;
+          color: #3676dc;
+        }
+
+        .paused {
+          background-color: #e8f6f4;
+          color: #319a91;
         }
       }
     }
   }
+
+  /* =========================================
+     RIGHT SECTION
+  ========================================= */
+
   .right {
     width: 30%;
     display: flex;
@@ -164,12 +312,15 @@
       height: 50%;
       box-shadow: var(--shadow);
       border-radius: 5px;
+
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-start;
+
       gap: var(--unit);
       padding: 15px;
+
       h1 {
         color: var(--accent);
       }
@@ -178,6 +329,7 @@
         width: 100%;
         display: flex;
         justify-content: space-around;
+
         .absent,
         .today,
         .halfday {
@@ -185,6 +337,7 @@
           align-items: center;
           gap: 10px;
           justify-content: center;
+
           .red,
           .blue,
           .grey {
@@ -193,35 +346,43 @@
             background-color: red;
             border-radius: 50%;
           }
+
           .blue {
             background-color: var(--accent2);
           }
+
           .grey {
             background-color: grey;
           }
         }
       }
     }
+
     .right2 {
       height: 50%;
       box-shadow: var(--shadow);
       border-radius: 5px;
+
       padding: 10px 20px;
       gap: var(--unit);
+
       display: flex;
       flex-direction: column;
+
       .top {
         display: flex;
-
         justify-content: space-between;
+
         h3 {
           color: var(--accent);
         }
+
         svg {
           color: var(--accent);
           font-size: 20px;
         }
       }
+
       .card {
         display: flex;
         align-items: center;
@@ -230,29 +391,40 @@
         .name {
           display: flex;
           gap: var(--unit);
+
           .user-avatar {
             display: flex;
             align-items: center;
+            justify-content: center;
+
             background: var(--accent);
             color: white;
-            padding: 10px;
+
+            width: 42px;
+            height: 42px;
+
             border-radius: 50%;
-            font-size: 20px;
+            font-size: 16px;
           }
+
           .user-info {
             display: flex;
             flex-direction: column;
             gap: 5px;
+
             p {
               font-size: 16px;
               font-weight: 600;
+              margin: 0;
             }
+
             span {
               font-size: 12px;
               color: rgba(0, 0, 0, 0.677);
             }
           }
         }
+
         .date {
           p {
             font-weight: 500;

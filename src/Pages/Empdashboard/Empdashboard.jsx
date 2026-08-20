@@ -6,6 +6,7 @@ import { IoDocumentTextSharp } from "react-icons/io5";
 import { FaPlus } from "react-icons/fa";
 import { FaBirthdayCake } from "react-icons/fa";
 import { FaCode } from "react-icons/fa";
+import { FaBug } from "react-icons/fa";
 
 import Calender from "../../comp/Calender/Calender";
 
@@ -20,8 +21,10 @@ const Empdashboard = () => {
         ]}
       >
         <div className="empdash-parent">
+
           {/* ================= LEFT SECTION ================= */}
           <div className="left">
+
             {/* Documents */}
             <div className="left1">
               <h3>Documents</h3>
@@ -79,117 +82,97 @@ const Empdashboard = () => {
 
           {/* ================= MIDDLE SECTION ================= */}
           <div className="middle">
+
+            {/* Top Middle Section */}
             <div className="middle1"></div>
 
+            {/* Middle Section */}
             <div className="middle2"></div>
 
-            {/* Team Status */}
+            {/* ================= RECENT CRM ENTRIES ================= */}
             <div className="middle3">
-              <h3>Team Status Overview</h3>
 
-              <div className="card-wrapper">
-                <div className="card">
-                  <div className="title">
+              <div className="recent-header">
+                <h3>Recent CRM Entries</h3>
+                <button>View all</button>
+              </div>
+
+              <div className="crm-list">
+
+                {/* CRM ENTRY 1 */}
+                <div className="crm-entry">
+
+                  <div className="crm-icon code-icon">
                     <FaCode />
-                    <h5>Website Team</h5>
                   </div>
 
-                  <div className="des">
-                    <p>Total Members: 8</p>
+                  <div className="crm-content">
+                    <h4>E-commerce Website Redesign</h4>
+
+                    <span className="role">
+                      Role: Frontend Developer
+                    </span>
+
+                    <p>
+                      Redesigning product listing and filters component.
+                    </p>
+
+                    <p>
+                      API integration in progress.
+                    </p>
                   </div>
 
-                  <div className="task">
-                    <p>New HRMS Development</p>
+                  <div className="status in-progress">
+                    In Progress
                   </div>
+
                 </div>
 
-                <div className="card">
-                  <div className="title">
-                    <FaCode />
-                    <h5>Website Team</h5>
+                {/* CRM ENTRY 2 */}
+                <div className="crm-entry">
+
+                  <div className="crm-icon bug-icon">
+                    <FaBug />
                   </div>
 
-                  <div className="des">
-                    <p>Total Members: 8</p>
+                  <div className="crm-content">
+                    <h4>Bug Fix Sprint - Payment Module</h4>
+
+                    <span className="role">
+                      Role: Full Stack Developer
+                    </span>
+
+                    <p>
+                      Investigating issue with payment gateway timeout.
+                    </p>
+
+                    <p>
+                      Fix and testing in progress.
+                    </p>
                   </div>
 
-                  <div className="task">
-                    <p>New HRMS Development</p>
+                  <div className="status paused">
+                    Paused
                   </div>
+
                 </div>
 
-                <div className="card">
-                  <div className="title">
-                    <FaCode />
-                    <h5>Website Team</h5>
-                  </div>
-
-                  <div className="des">
-                    <p>Total Members: 8</p>
-                  </div>
-
-                  <div className="task">
-                    <p>New HRMS Development</p>
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div className="title">
-                    <FaCode />
-                    <h5>Website Team</h5>
-                  </div>
-
-                  <div className="des">
-                    <p>Total Members: 8</p>
-                  </div>
-
-                  <div className="task">
-                    <p>New HRMS Development</p>
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div className="title">
-                    <FaCode />
-                    <h5>Website Team</h5>
-                  </div>
-
-                  <div className="des">
-                    <p>Total Members: 8</p>
-                  </div>
-
-                  <div className="task">
-                    <p>New HRMS Development</p>
-                  </div>
-                </div>
-
-                <div className="card">
-                  <div className="title">
-                    <FaCode />
-                    <h5>Website Team</h5>
-                  </div>
-
-                  <div className="des">
-                    <p>Total Members: 8</p>
-                  </div>
-
-                  <div className="task">
-                    <p>New HRMS Development</p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
 
           {/* ================= RIGHT SECTION ================= */}
           <div className="right">
+
             {/* Attendance */}
             <div className="right1">
+
               <h1 className="heading">Attendance</h1>
 
               <Calender />
 
               <div className="bottom">
+
                 <div className="absent">
                   <div className="red"></div>
                   <p>Absent</p>
@@ -204,31 +187,40 @@ const Empdashboard = () => {
                   <div className="grey"></div>
                   <p>Half Day</p>
                 </div>
+
               </div>
             </div>
 
             {/* Birthdays */}
             <div className="right2">
+
               <div className="top">
                 <h3>Birthdays This Month</h3>
                 <FaBirthdayCake />
               </div>
 
               <div className="card">
+
                 <div className="name">
-                  <div className="user-avatar">SS</div>
+
+                  <div className="user-avatar">
+                    SS
+                  </div>
 
                   <div className="user-info">
                     <p>Davis Lewis</p>
                     <span>Accountant</span>
                   </div>
+
                 </div>
 
                 <div className="date">
                   <p>01-08-2026</p>
                 </div>
+
               </div>
             </div>
+
           </div>
         </div>
       </MainPanel>
