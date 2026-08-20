@@ -102,7 +102,7 @@ const IncrementLetter = () => {
                 <div className="gap"></div>
                 <p>
                   We truly appreciate your performance and look forward to your
-                  continued contribution to the growth and success of{" "}
+                  continued contribution to the growth and success of
                   <strong>Pandoza Solutions Pvt. Ltd.</strong>
                 </p>
                 <div className="gap"></div>
