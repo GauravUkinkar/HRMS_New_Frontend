@@ -7,10 +7,10 @@ import { FiHome } from "react-icons/fi";
 import { BsPerson } from "react-icons/bs";
 import { LuLogOut } from "react-icons/lu";
 import { IoCloudUploadOutline } from "react-icons/io5";
-
+import { IoDocumentTextOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-
+import { LuSquareUser } from "react-icons/lu";
 const Sidebar = ({ active, setActive, closeSidebar }) => {
 
   const [childIndex, setChildIndex] = useState(null);
@@ -21,14 +21,11 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
       name: "Dashboard",
       link: "/",
     },
-
-
     {
-      icon: <BsPerson />,
+      icon: <LuSquareUser />,
       name: "All Users",
       link: "/userlist"
     },
-
     {
       icon: <BsPerson />,
       name: "Employee",
@@ -43,31 +40,35 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
         },
       ],
     },
-
     {
-      icon: <FiHome />,
+      icon: <IoDocumentTextOutline />,
       name: "Document Management",
-      link: "/",
+      children: [
+        {
+          name: "Upload Documents",
+          link: "/uploadDoc",
+        },
+        {
+          name: "View Documents",
+          link: "/Viewdoc"
+        }
+      ]
     },
-
     {
       icon: <FiHome />,
       name: "Leave Management",
       link: "/LeaveManagement",
     },
-
     {
       icon: <IoCloudUploadOutline />,
       name: "Salary Management",
       link: "/salaryManagement",
     },
-
     {
       icon: <FiHome />,
       name: "User Management",
       link: "/",
     },
-
     {
       icon: <BsPerson />,
       name: "Official Documents",
