@@ -8,7 +8,7 @@ import OtpVerification from "./Pages/OtpVerification/OtpVerification";
 import ChangePass from "./Pages/ChangePass/ChangePass";
 import SuccessPage from "./Pages/SuccessPage/SuccessPage";
 import Forgot from "./Pages/Forgot/Forgot";
-import Empdashboard from "./Pages/Empdashboard/Empdashboard";
+
 import Loader from "./comp/Loader/Loader";
 import { useContext } from "react";
 import { UserContext } from "../Context";
@@ -29,7 +29,7 @@ function App() {
          <Route path="/changepass" element={<ChangePass />} />
          <Route path="/successpage" element={<SuccessPage />} />
          <Route path="/forgot" element={<Forgot />} />
-         <Route path="/Empdashboard" element={<Empdashboard />} />
+        
         {routes.map((item, index) =>(
             <Route key={index} path={item.path} element={<AuthRoute  adminonly={item.adminonly}><item.comp /></AuthRoute>} />
         ))}

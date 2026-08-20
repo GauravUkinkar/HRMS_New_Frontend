@@ -74,11 +74,12 @@ export const routes = [
     adminonly: true,
   },
   {
-    name: "UploadDoc",
-    path: "/uploadDoc",
-    comp: UploadDoc,
+    name: "Empdashboard",
+    path: "/Empdashboard",
+    comp: Empdashboard,
     adminonly: false,
   },
+
   {
     name: "Viewdoc",
     path: "/Viewdoc",
