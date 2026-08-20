@@ -63,9 +63,13 @@ const AddEmployee = () => {
     try {
       const formData = new FormData();
 
-      // Remove image from employee JSON
+      const employeeId = String(values.employeeId || "")
+        .replace(/^PSPL/i, "")
+        .trim();
+
       const employeeData = {
         ...values,
+        employeeId: `PSPL${employeeId}`,
       };
 
       delete employeeData.employee_image;
@@ -76,7 +80,7 @@ const AddEmployee = () => {
         JSON.stringify(employeeData)
       );
 
-      // Add image using BACKEND field name: "image"
+
       if (values.employee_image) {
         formData.append(
           "image",

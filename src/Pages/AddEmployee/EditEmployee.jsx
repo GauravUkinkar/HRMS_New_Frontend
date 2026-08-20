@@ -12,17 +12,15 @@ const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 const EditEmployee = () => {
   const { employeeId } = useParams();
   const navigate = useNavigate();
-
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({});
   const [teams, setTeams] = useState([]);
   const [existingImage, setExistingImage] = useState("");
   const [employeeData, setEmployeeData] = useState({
+    eid: "",
     employeeName: "",
     employeeId: "",
     employementType: "",
-    employee_status: "Active",
     employeeStatus: "Active",
     gender: "",
     designation: "",
@@ -163,14 +161,8 @@ const EditEmployee = () => {
           ? String(employee.employeeId).replace(/^PSPL/i, "")
           : "",
 
-        employee_status:
-          employee.employee_status ||
-          employee.employeeStatus ||
-          "Active",
-
         employeeStatus:
           employee.employeeStatus ||
-          employee.employee_status ||
           "Active",
 
         gender: employee.gender || "",
@@ -298,10 +290,6 @@ const EditEmployee = () => {
         employee_image: null,
       });
 
-      // =================================================
-      // EXISTING IMAGE
-      // =================================================
-
       setExistingImage(
         employee.image ||
         employee.employee_image ||
@@ -321,18 +309,11 @@ const EditEmployee = () => {
     }
   };
 
-  // =====================================================
-  // USE EFFECT
-  // =====================================================
-
   useEffect(() => {
     if (employeeId) {
       getEmployee();
     }
-
     getTeams();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [employeeId]);
 
   // =====================================================
@@ -365,16 +346,11 @@ const EditEmployee = () => {
     }));
   };
 
-  // =====================================================
-  // HANDLE UPDATE
-  // =====================================================
 
   const handleUpdate = async (e) => {
     e.preventDefault();
 
-    console.log(
-      "========== UPDATE EMPLOYEE START =========="
-    );
+
 
     console.log(
       "Employee ID:",
@@ -389,23 +365,14 @@ const EditEmployee = () => {
     try {
       setLoading(true);
 
-      // =================================================
-      // CREATE MULTIPART FORM DATA
-      // =================================================
-
       const multipartData =
         new FormData();
-
-      // =================================================
-      // REMOVE IMAGE FROM JSON
-      // =================================================
 
       const {
         employee_image,
         ...employeeDto
       } = employeeData;
 
-      // Make sure employee ID is present
       const enteredEmployeeId =
         String(employeeDto.employeeId || "").trim();
 
@@ -423,9 +390,6 @@ const EditEmployee = () => {
         JSON.stringify(employeeDto)
       );
 
-      // =================================================
-      // ADD IMAGE
-      // =================================================
 
       if (
         employee_image instanceof File
@@ -435,14 +399,6 @@ const EditEmployee = () => {
           employee_image
         );
       }
-
-      // =================================================
-      // DEBUG FORMDATA
-      // =================================================
-
-      console.log(
-        "========== FORM DATA =========="
-      );
 
       for (
         const [
@@ -464,14 +420,6 @@ const EditEmployee = () => {
         }
       }
 
-      // =================================================
-      // API CALL
-      // =================================================
-
-      console.log(
-        "========== CALLING UPDATE API =========="
-      );
-
       const response =
         await axios.post(
           `${BASE_URL}Admin/updateEmployee`,
@@ -480,40 +428,13 @@ const EditEmployee = () => {
             withCredentials: true,
           }
         );
-
-      // =================================================
-      // SUCCESS
-      // =================================================
-
-      console.log(
-        "========== UPDATE SUCCESS =========="
-      );
-
-      console.log(
-        "Status:",
-        response.status
-      );
-
-      console.log(
-        "Response:",
-        response.data
-      );
-
       toast.success(
         "Employee updated successfully!"
       );
 
-      // Go back to employee list
-      navigate("/employees");
+      
+      navigate("/empList");
     } catch (error) {
-      // =================================================
-      // ERROR
-      // =================================================
-
-      console.log(
-        "========== UPDATE ERROR =========="
-      );
-
       console.error(
         "Status:",
         error.response?.status
