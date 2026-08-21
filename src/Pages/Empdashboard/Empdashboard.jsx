@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Empdashboard.scss";
 
@@ -8,10 +8,74 @@ import { FaCode } from "react-icons/fa";
 import { FaEllipsisV } from "react-icons/fa";
 import { FaClock } from "react-icons/fa";
 import { MdArrowForward } from "react-icons/md";
-
+import { FaPlus } from "react-icons/fa";
 import Calender from "../../comp/Calender/Calender";
 
+// =====================================================
+// DUMMY ATTENDANCE DATA
+// Later this data will come from your API
+// =====================================================
+
+const attendanceData = {
+  thisWeek: [
+    { day: "M", hours: 8 },
+    { day: "T", hours: 7 },
+    { day: "W", hours: 7 },
+    { day: "T", hours: 9 },
+    { day: "F", hours: 7 },
+    { day: "S", hours: 8 },
+    { day: "S", hours: 0 },
+  ],
+
+  lastWeek: [
+    { day: "M", hours: 9 },
+    { day: "T", hours: 8 },
+    { day: "W", hours: 9 },
+    { day: "T", hours: 6 },
+    { day: "F", hours: 9 },
+    { day: "S", hours: 7 },
+    { day: "S", hours: 0 },
+  ],
+
+  thisMonth: [
+    { day: "M", hours: 8.2 },
+    { day: "T", hours: 7.8 },
+    { day: "W", hours: 8.5 },
+    { day: "T", hours: 8.1 },
+    { day: "F", hours: 7.6 },
+    { day: "S", hours: 6.5 },
+    { day: "S", hours: 2.0 },
+  ],
+};
+
 const EmployeeDash = () => {
+  // =====================================================
+  // HOURS LOGGED STATE
+  // =====================================================
+
+  const [selectedPeriod, setSelectedPeriod] = useState("thisWeek");
+
+  // =====================================================
+  // GET CURRENT ATTENDANCE DATA
+  // =====================================================
+
+  const currentAttendance = attendanceData[selectedPeriod];
+
+  // =====================================================
+  // CALCULATE TOTAL HOURS
+  // =====================================================
+
+  const totalHours = currentAttendance.reduce(
+    (total, item) => total + item.hours,
+    0,
+  );
+
+  // =====================================================
+  // FORMAT TOTAL HOURS
+  // =====================================================
+
+  const totalHoursText = `${totalHours}h 00m`;
+
   return (
     <>
       <MainPanel
@@ -25,8 +89,10 @@ const EmployeeDash = () => {
           {/* =================================
               LEFT SECTION
           ================================= */}
+
           <div className="left">
             {/* DOCUMENTS */}
+
             <div className="left1">
               <h3>Documents</h3>
 
@@ -48,102 +114,132 @@ const EmployeeDash = () => {
               <button className="btn">View Documents</button>
             </div>
 
-            {/* HOURS LOGGED */}
+            {/* =================================
+                HOURS LOGGED
+            ================================= */}
+
             <div className="left2">
+              {/* HOURS HEADER */}
+
               <div className="top">
                 <div>
                   <h3>Hours Logged</h3>
-                  <h2>45h 00m</h2>
+
+                  <h2>{totalHoursText}</h2>
                 </div>
 
-                <select>
-                  <option>This Week</option>
-                  <option>Last Week</option>
-                  <option>This Month</option>
+                {/* PERIOD DROPDOWN */}
+
+                <select
+                  value={selectedPeriod}
+                  onChange={(e) => setSelectedPeriod(e.target.value)}
+                >
+                  <option value="thisWeek">This Week</option>
+
+                  <option value="lastWeek">Last Week</option>
+
+                  <option value="thisMonth">This Month</option>
                 </select>
               </div>
 
-              <div className="hours-chart">
-                <div className="chart-column">
-                  <span>08h</span>
-                  <div className="bar" style={{ height: "75%" }}></div>
-                  <p>M</p>
-                </div>
+              {/* =================================
+                  DYNAMIC HOURS CHART
+              ================================= */}
 
-                <div className="chart-column">
-                  <span>07h</span>
-                  <div className="bar" style={{ height: "65%" }}></div>
-                  <p>T</p>
-                </div>
+              <div
+                className={`hours-chart ${
+                  selectedPeriod === "thisMonth" ? "month-chart" : ""
+                }`}
+              >
+                {currentAttendance.map((item, index) => {
+                  /*
+                    Daily target = 9 hours
 
-                <div className="chart-column">
-                  <span>07h</span>
-                  <div className="bar" style={{ height: "62%" }}></div>
-                  <p>W</p>
-                </div>
+                    9h = 100%
+                    8h = 88.8%
+                    7h = 77.7%
+                    6h = 66.6%
+                    etc.
+                  */
 
-                <div className="chart-column">
-                  <span>09h</span>
-                  <div className="bar" style={{ height: "88%" }}></div>
-                  <p>T</p>
-                </div>
+                  const barHeight = Math.min((item.hours / 9) * 100, 100);
 
-                <div className="chart-column">
-                  <span>07h</span>
-                  <div className="bar" style={{ height: "68%" }}></div>
-                  <p>F</p>
-                </div>
+                  /*
+                    Check whether employee completed
+                    the required 9 hours.
+                  */
 
-                <div className="chart-column">
-                  <span>08h</span>
-                  <div className="bar" style={{ height: "78%" }}></div>
-                  <p>S</p>
-                </div>
+                  const completed = item.hours >= 9;
 
-                <div className="chart-column">
-                  <span>00h</span>
-                  <div className="bar absent" style={{ height: "15%" }}></div>
-                  <p>S</p>
-                </div>
+                  /*
+                    Check whether employee was absent.
+                  */
+
+                  const absent = item.hours === 0;
+
+                  return (
+                    <div className="chart-column" key={index}>
+                      {/* HOURS LABEL */}
+
+                      <span>{String(item.hours).padStart(2, "0")}h</span>
+
+                      {/* BAR */}
+
+                      <div className="bar-container">
+                        <div
+                          className={`bar ${
+                            absent
+                              ? "absent"
+                              : completed
+                                ? "completed"
+                                : "incomplete"
+                          }`}
+                          style={{
+                            height: `${barHeight}%`,
+                          }}
+                        />
+                      </div>
+
+                      {/* DAY */}
+
+                      <p>{item.day}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
             {/* INTERNAL NOTES */}
-            <div className="left3">
-              <div className="top">
-                <h3>Internal Notes</h3>
-                <FaEllipsisV />
-              </div>
 
-              <div className="card">
-                <div className="heading">Promotion Review</div>
-
-                <p>11 November 2024</p>
-
-                <p>
-                  Discussed potential promotion in Q1 based on consistent
-                  performance and leadership in the recent project.
-                </p>
-              </div>
-
-              <div className="card">
-                <div className="heading">Employee Appreciation</div>
-
-                <p>7 October 2024</p>
-
-                <p>
-                  Recognized by the team and CEO for outstanding contribution in
-                  the client workshop and delivery timeline.
-                </p>
-              </div>
-            </div>
+           <div className="left3">
+                         <div className="top">
+                           <h3>Notification</h3>
+                           <FaPlus />
+                         </div>
+                         <div className="card">
+                           <div className="heading">Pramotion Review</div>
+                           <p>
+                             11 June 2026Discussed potential promotion in Q1based on
+                             consistent performance andleadership in the recentproject.
+                           </p>
+                         </div>
+                         <div className="card">
+                           <div className="heading">Employee Appreciation</div>
+                           <p>
+                             7 May 2026Recognized by the team and CEO foroutstanding
+                             contribution in the clientworkshop and delivery timeline.
+                           </p>
+                         </div>
+                       </div>
           </div>
 
           {/* =================================
               MIDDLE SECTION
           ================================= */}
+
           <div className="middle">
             {/* LEAVE SUMMARY */}
+
             <div className="middle1">
               <div className="leave-card">
                 <h4>All Leaves</h4>
@@ -180,6 +276,7 @@ const EmployeeDash = () => {
             </div>
 
             {/* PERFORMANCE OVERVIEW */}
+
             <div className="middle2">
               <div className="performance-top">
                 <div>
@@ -187,6 +284,7 @@ const EmployeeDash = () => {
 
                   <div className="performance-score">
                     <h2>86.75%</h2>
+
                     <span>↑ 5.4%</span>
                   </div>
                 </div>
@@ -196,6 +294,7 @@ const EmployeeDash = () => {
 
                   <div>
                     <span>This Cycle</span>
+
                     <strong>86.75%</strong>
                   </div>
                 </div>
@@ -265,9 +364,11 @@ const EmployeeDash = () => {
             </div>
 
             {/* RECENT CRM ENTRIES */}
+
             <div className="middle3">
               <div className="top">
                 <h3>Recent CRM Entries</h3>
+
                 <a href="#view-all">View all</a>
               </div>
 
@@ -316,16 +417,20 @@ const EmployeeDash = () => {
           {/* =================================
               RIGHT SECTION
           ================================= */}
+
           <div className="right">
             {/* ATTENDANCE */}
+
             <div className="right1">
               <Calender />
             </div>
 
             {/* BIRTHDAYS */}
+
             <div className="right2">
               <div className="top">
                 <h3>Birthdays This Month</h3>
+
                 <FaBirthdayCake />
               </div>
 
@@ -335,17 +440,51 @@ const EmployeeDash = () => {
 
                   <div className="user-info">
                     <p>Ava Martinez</p>
+
                     <span>Product Designer</span>
                   </div>
                 </div>
 
                 <div className="date">
                   <FaBirthdayCake />
+
                   <p>June 5</p>
                 </div>
               </div>
 
               <button className="birthday-btn">View Birthdays</button>
+            </div>
+
+            {/* INTERNAL NOTES */}
+
+            <div className="right3">
+              <div className="top">
+                <h3>Internal Notes</h3>
+
+                <FaEllipsisV />
+              </div>
+
+              <div className="card">
+                <div className="heading">Promotion Review</div>
+
+                <p>11 November 2024</p>
+
+                <p>
+                  Discussed potential promotion in Q1 based on consistent
+                  performance and leadership in the recent project.
+                </p>
+              </div>
+
+              <div className="card">
+                <div className="heading">Employee Appreciation</div>
+
+                <p>7 October 2024</p>
+
+                <p>
+                  Recognized by the team and CEO for outstanding contribution in
+                  the client workshop and delivery timeline.
+                </p>
+              </div>
             </div>
           </div>
         </div>
