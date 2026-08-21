@@ -261,54 +261,50 @@ const Viewdoc = () => {
     if (!fileUrl) {
       return;
     }
-
-    console.log(
-      "Preview URL:",
-      fileUrl
-    );
+    console.log("Preview URL:",fileUrl);
 
     setPreviewFile(fileUrl);
     setPreviewName(documentName);
   };
 
   const handleDownload = async (filePath, documentName) => {
-  try {
-    const fileUrl = getFileUrl(filePath);
+    try {
+      const fileUrl = getFileUrl(filePath);
 
-    if (!fileUrl) {
-      alert("Document not available");
-      return;
+      if (!fileUrl) {
+        alert("Document not available");
+        return;
+      }
+
+      const response = await axios.get(fileUrl, {
+        responseType: "blob",
+        withCredentials: true,
+      });
+
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"] || "application/pdf",
+      });
+
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `${documentName}.pdf`;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error(
+        "Download Error:",
+        error.response?.data || error
+      );
+
+      alert("Unable to download document");
     }
-
-    const response = await axios.get(fileUrl, {
-      responseType: "blob",
-      withCredentials: true,
-    });
-
-    const blob = new Blob([response.data], {
-      type: response.headers["content-type"] || "application/pdf",
-    });
-
-    const blobUrl = window.URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = `${documentName}.pdf`;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    window.URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error(
-      "Download Error:",
-      error.response?.data || error
-    );
-
-    alert("Unable to download document");
-  }
-};
+  };
 
   const isImageFile = (fileUrl) => {
     return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(
@@ -333,13 +329,10 @@ const Viewdoc = () => {
         {
           label: "View Documents",
         },
-      ]}
-    >
+      ]}>
       <div className="view-doc">
         <h1>View Documents</h1>
-
         <div className="view-doc-bottom">
-
           <div className="emp-list">
             <select
               name="employeeName"
@@ -352,7 +345,6 @@ const Viewdoc = () => {
                   ? "Loading Employees..."
                   : "Select Employee"}
               </option>
-
               {employees.map(
                 (employee) => (
                   <option
@@ -376,7 +368,7 @@ const Viewdoc = () => {
           {!loadingDocuments &&
             selectedEmployee &&
             availableDocuments.length ===
-              0 && (
+            0 && (
               <div className="no-documents">
                 No documents uploaded for
                 this employee.
@@ -386,28 +378,15 @@ const Viewdoc = () => {
           {!loadingDocuments &&
             availableDocuments.length > 0 && (
               <div className="document-preview-wrapper">
-
                 <div className="document-list">
                   {availableDocuments.map(
                     (document) => {
-                      const filePath =
-                        documents[
-                          document.key
-                        ];
-
+                      const filePath =documents[document.key];
                       return (
-                        <div
-                          className="document-card"
-                          key={document.key}
-                        >
+                        <div className="document-card" key={document.key}>
                           <GrDocumentPdf className="pdf-icon" />
-
-                          <p>
-                            {document.name}
-                          </p>
-
+                          <p> {document.name}</p>
                           <div className="btn-parent">
-
                             <button
                               type="button"
                               className="pre"
@@ -426,12 +405,8 @@ const Viewdoc = () => {
                               type="button"
                               className="down"
                               onClick={() =>
-                                handleDownload(
-                                  filePath,
-                                  document.name
-                                )
-                              }
-                            >
+                                handleDownload(filePath,document.name
+                                )}>
                               <IoMdDownload />
                               Download
                             </button>
@@ -473,8 +448,8 @@ const Viewdoc = () => {
                             alt={previewName}
                           />
                         ) : isPdfFile(
-                            previewFile
-                          ) ? (
+                          previewFile
+                        ) ? (
                           <iframe
                             src={previewFile}
                             title={previewName}

@@ -8,6 +8,7 @@ import { BsPerson } from "react-icons/bs";
 import { LuLogOut } from "react-icons/lu";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { IoDocumentTextOutline } from "react-icons/io5";
+import { LuCalendarClock } from "react-icons/lu";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { LuSquareUser } from "react-icons/lu";
@@ -55,7 +56,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
       ]
     },
     {
-      icon: <FiHome />,
+      icon:<LuCalendarClock />,
       name: "Leave Management",
       link: "/LeaveManagement",
     },
