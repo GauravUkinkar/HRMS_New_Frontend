@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import Profile from "./Pages/EmployeeProfile/Profile";
 import EditEmployee from "./Pages/AddEmployee/EditEmployee";
+import EditSalary from "./Pages/AddSalary/EditSalary";
 import UserList from "./Pages/UserList/UserList";
 
 const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
@@ -19,9 +20,7 @@ const SalaryDetails = lazy(
 
 const UploadDoc = lazy(() => import("../src/Pages/UploadDoc/UploadDoc"));
 const Viewdoc = lazy(() => import("../src/Pages/Viewdoc/Viewdoc"));
-const EmployeeList = lazy(
-  () => import("../src/Pages/EmployeeList/EmployeeList"),
-);
+
 const AdminDash = lazy(() => import("../src/Pages/AdminDash/AdminDash"));
 const Generatesalary = lazy(
   () => import("../src/Pages/Generatesalary/Generatesalary"),
@@ -68,6 +67,13 @@ export const routes = [
     path: "/editEmployee/:employeeId",
     comp: EditEmployee,
     adminonly: true,
+  },
+  {
+     name: "Edit Salary",
+    path: "/editSalary/:employeeId",
+    comp: EditSalary,
+    adminonly: true,
+
   },
   {
     name: "OfficialNotes",

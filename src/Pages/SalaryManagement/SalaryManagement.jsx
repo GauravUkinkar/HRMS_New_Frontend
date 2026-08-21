@@ -17,8 +17,10 @@ import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const SalaryManagement = () => {
+   const navigate = useNavigate();
   const [salaryData, setSalaryData] = useState([]);
   const [loader, setLoader] = useState(false);
 
@@ -442,6 +444,7 @@ const SalaryManagement = () => {
           <EditOutlined
             className="edit"
             onClick={() => {
+              navigate(`/editSalary/${record.employeeId}`);
               console.log(
                 "Edit Salary:",
                 record
