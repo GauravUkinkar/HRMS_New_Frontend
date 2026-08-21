@@ -242,67 +242,78 @@
     gap: 20px;
 
     .middle1 {
-      height: 30%;
-      display: flex;
-      gap: 12px;
+  height: 30%;
+  display: flex;
+  gap: 12px;
 
-      .leave-card {
-        width: 33.33%;
-        box-shadow: var(--shadow);
-        border-radius: 5px;
+  .leave-card {
+    width: 33.33%;
+    box-shadow: var(--shadow);
+    border-radius: 5px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    h4 {
+      color: var(--accent);
+      font-size: 13px;
+    }
+
+    .circle {
+      width: 95px;
+      height: 95px;
+
+      border-radius: 50%;
+
+      background: conic-gradient(
+        var(--accent2) 0deg var(--progress, 0deg),
+        #dcefee var(--progress, 0deg) 360deg
+      );
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      position: relative;
+
+      &::before {
+        content: "";
+
+        position: absolute;
+
+        width: 76px;
+        height: 76px;
+
+        background-color: white;
+
+        border-radius: 50%;
+      }
+
+      div {
+        position: relative;
+        z-index: 1;
+
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 10px;
 
-        h4 {
-          color: var(--accent);
-          font-size: 13px;
+        strong {
+          font-size: 20px;
+          color: black;
         }
 
-        .circle {
-          width: 95px;
-          height: 95px;
-          border-radius: 50%;
-          background: conic-gradient(
-            var(--accent2) 0deg 250deg,
-            #dcefee 250deg 360deg
-          );
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-
-          &::before {
-            content: "";
-            position: absolute;
-            width: 76px;
-            height: 76px;
-            background-color: white;
-            border-radius: 50%;
-          }
-
-          div {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-
-            strong {
-              font-size: 20px;
-              color: black;
-            }
-
-            span {
-              font-size: 11px;
-              color: black;
-            }
-          }
+        span {
+          font-size: 11px;
+          color: black;
         }
       }
     }
+  }
+}
 
     .middle2 {
       height: 50%;

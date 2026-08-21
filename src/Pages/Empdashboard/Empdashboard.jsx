@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Empdashboard.scss";
-
+import { useNavigate } from "react-router-dom";
 import { IoDocumentTextSharp } from "react-icons/io5";
 import { FaBirthdayCake } from "react-icons/fa";
 import { FaCode } from "react-icons/fa";
@@ -49,6 +49,41 @@ const attendanceData = {
 };
 
 const EmployeeDash = () => {
+  const navigate = useNavigate();
+
+  const [leaveSummary, setLeaveSummary] = useState({
+    totalLeaves: 0,
+    takenLeaves: 0,
+    remainingLeaves: 0,
+  });
+
+  const [leaveLoading, setLeaveLoading] = useState(true);
+  const getLeaveSummary = async () => {
+    try {
+      setLeaveLoading(true);
+
+      const response = await fetch(
+        "YOUR_API_URL/api/EmployeeLeaveSummary?employeeId=123",
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch leave summary");
+      }
+
+      const result = await response.json();
+
+      setLeaveSummary(result.data);
+    } catch (error) {
+      console.error("Leave summary error:", error);
+    } finally {
+      setLeaveLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getLeaveSummary();
+  }, []);
+
   // =====================================================
   // HOURS LOGGED STATE
   // =====================================================
@@ -111,7 +146,9 @@ const EmployeeDash = () => {
                 <h4>Degree Certificate</h4>
               </div>
 
-              <button className="btn">View Documents</button>
+              <button className="btn" onClick={() => navigate("/Viewdoc")}>
+                View Documents
+              </button>
             </div>
 
             {/* =================================
@@ -211,26 +248,25 @@ const EmployeeDash = () => {
 
             {/* INTERNAL NOTES */}
 
-           <div className="left3">
-                         <div className="top">
-                           <h3>Notification</h3>
-                           <FaPlus />
-                         </div>
-                         <div className="card">
-                           <div className="heading">Pramotion Review</div>
-                           <p>
-                             11 June 2026Discussed potential promotion in Q1based on
-                             consistent performance andleadership in the recentproject.
-                           </p>
-                         </div>
-                         <div className="card">
-                           <div className="heading">Employee Appreciation</div>
-                           <p>
-                             7 May 2026Recognized by the team and CEO foroutstanding
-                             contribution in the clientworkshop and delivery timeline.
-                           </p>
-                         </div>
-                       </div>
+            <div className="left3">
+              <div className="top">
+                <h3>Notification</h3>
+              </div>
+              <div className="card">
+                <div className="heading">Pramotion Review</div>
+                <p>
+                  11 June 2026Discussed potential promotion in Q1based on
+                  consistent performance andleadership in the recentproject.
+                </p>
+              </div>
+              <div className="card">
+                <div className="heading">Employee Appreciation</div>
+                <p>
+                  7 May 2026Recognized by the team and CEO foroutstanding
+                  contribution in the clientworkshop and delivery timeline.
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* =================================
@@ -241,34 +277,70 @@ const EmployeeDash = () => {
             {/* LEAVE SUMMARY */}
 
             <div className="middle1">
+              {/* ALL LEAVES */}
               <div className="leave-card">
                 <h4>All Leaves</h4>
 
-                <div className="circle">
+                <div className="circle all-leaves">
                   <div>
-                    <strong>14</strong>
+                    <strong>
+                      {leaveLoading ? "..." : leaveSummary.totalLeaves}
+                    </strong>
+
                     <span>Days</span>
                   </div>
                 </div>
               </div>
 
+              {/* TAKEN LEAVES */}
               <div className="leave-card">
-                <h4>Annual Leaves</h4>
+                <h4>Taken Leaves</h4>
 
-                <div className="circle">
+                <div
+                  className="circle taken-leaves"
+                  style={{
+                    "--progress":
+                      leaveSummary.totalLeaves > 0
+                        ? `${
+                            (leaveSummary.takenLeaves /
+                              leaveSummary.totalLeaves) *
+                            360
+                          }deg`
+                        : "0deg",
+                  }}
+                >
                   <div>
-                    <strong>10</strong>
+                    <strong>
+                      {leaveLoading ? "..." : leaveSummary.takenLeaves}
+                    </strong>
+
                     <span>Days</span>
                   </div>
                 </div>
               </div>
 
+              {/* REMAINING LEAVES */}
               <div className="leave-card">
-                <h4>Casual Leaves</h4>
+                <h4>Remaining Leaves</h4>
 
-                <div className="circle">
+                <div
+                  className="circle remaining-leaves"
+                  style={{
+                    "--progress":
+                      leaveSummary.totalLeaves > 0
+                        ? `${
+                            (leaveSummary.remainingLeaves /
+                              leaveSummary.totalLeaves) *
+                            360
+                          }deg`
+                        : "0deg",
+                  }}
+                >
                   <div>
-                    <strong>8</strong>
+                    <strong>
+                      {leaveLoading ? "..." : leaveSummary.remainingLeaves}
+                    </strong>
+
                     <span>Days</span>
                   </div>
                 </div>
