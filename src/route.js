@@ -3,12 +3,11 @@ import Profile from "./Pages/EmployeeProfile/Profile";
 import EditEmployee from "./Pages/AddEmployee/EditEmployee";
 import EditSalary from "./Pages/AddSalary/EditSalary";
 import UserList from "./Pages/UserList/UserList";
+import LeaveManagement from "./Pages/LeaveManagement/LeaveManagement";
+import Leave_details from "./Pages/LeaveManagement/Leave_details";
 
 const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
 
-const LeaveManagement = lazy(
-  () => import("./Pages/Leavemanagement/Leavemanagement"),
-);
 const EmpList = lazy(() => import("./Pages/EmpList/EmpList"));
 const AddEmployee = lazy(() => import("../src/Pages/AddEmployee/AddEmployee"));
 const OfficialNotes = lazy(
@@ -68,7 +67,7 @@ export const routes = [
     adminonly: true,
   },
   {
-     name: "Edit Salary",
+    name: "Edit Salary",
     path: "/editSalary/:employeeId",
     comp: EditSalary,
     adminonly: true,
@@ -93,18 +92,19 @@ export const routes = [
     adminonly: false,
   },
 
+
+  {
+    name: "Upload Documents",
+    path: "/uploadDoc",
+    comp: UploadDoc,
+    adminonly: "false",
+  },
   {
     name: "Viewdoc",
     path: "/Viewdoc",
     comp: Viewdoc,
     adminonly: false,
   },
-  // {
-  //   name: "EmployeeList",
-  //   path: "/empList",
-  //   comp: EmployeeList,
-  //   adminonly: false,
-  // },
   {
     name: "AdminDash",
     path: "/",
@@ -173,4 +173,10 @@ export const routes = [
     comp: Profile,
     adminonly: true,
   },
+  {
+    name: "EmployeeLeaves",
+    path: "/EmployeeLeaves/:employeeId",
+    comp: Leave_details,
+    adminonly: true,
+  }
 ];

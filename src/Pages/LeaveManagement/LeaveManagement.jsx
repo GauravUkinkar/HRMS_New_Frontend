@@ -1,479 +1,819 @@
-import React, { useRef, useState } from "react";
-import { Table, Tag, Space, Input, Button } from "antd";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  SearchOutlined,
-  EyeOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+    Table,
+    Space,
+    Input,
+    Button,
+    message,
+} from "antd";
+import { DeleteOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import axios from "axios";
 import "./LeaveManagement.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
+import { useNavigate } from "react-router-dom";
 
-const leaveData = [
-  {
-    key: 1,
-    employeeName: "Rahul Patil",
-    employeeId: "EMP001",
-    leaveType: "Sick Leave",
-    from: "Jan 14 2025",
-    to: "Jan 19 2025",
-    days: 5,
-    reason: "Not feeling well",
-    status: "Pending",
-  },
-  {
-    key: 2,
-    employeeName: "Priya Sharma",
-    employeeId: "EMP002",
-    leaveType: "Sick Leave",
-    from: "Jan 14 2025",
-    to: "Jan 19 2025",
-    days: 5,
-    reason: "Medical reason",
-    status: "Pending",
-  },
-  {
-    key: 3,
-    employeeName: "Amit Deshmukh",
-    employeeId: "EMP003",
-    leaveType: "Personal Leave",
-    from: "March 04 2024",
-    to: "March 07 2024",
-    days: 3,
-    reason: "Personal work",
-    status: "Rejected",
-  },
-  {
-    key: 4,
-    employeeName: "Sneha Joshi",
-    employeeId: "EMP004",
-    leaveType: "Paid Leave",
-    from: "June 10 2024",
-    to: "June 24 2024",
-    days: 14,
-    reason: "Family vacation",
-    status: "Approved",
-  },
-  {
-    key: 5,
-    employeeName: "Akash Jadhav",
-    employeeId: "EMP005",
-    leaveType: "Sick Leave",
-    from: "Dec 24 2025",
-    to: "Dec 26 2025",
-    days: 2,
-    reason: "Health issue",
-    status: "Rejected",
-  },
-  {
-    key: 6,
-    employeeName: "Neha Kulkarni",
-    employeeId: "EMP006",
-    leaveType: "Personal Leave",
-    from: "Feb 07 2025",
-    to: "Feb 14 2025",
-    days: 7,
-    reason: "Personal work",
-    status: "Pending",
-  },
-];
+
+const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const LeaveManagement = () => {
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
 
-  const searchInput = useRef(null);
+    const navigate = useNavigate();
+    const [leaveData, setLeaveData] = useState([]);
+    const [statusFilter, setStatusFilter] =
+        useState(null);
+    const [loading, setLoading] = useState(false);
+    const [actionLoading, setActionLoading] =
+        useState(null);
+    const searchInput = useRef(null);
+    const normalizeStatus = (status) => {
+        if (!status) {
+            return "Pending";
+        }
 
-  // ==========================================
-  // SEARCH
-  // ==========================================
+        const value = status
+            .toString()
+            .trim()
+            .toLowerCase();
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
+        if (value === "pending") {
+            return "Pending";
+        }
 
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
+        if (value === "approved") {
+            return "Approved";
+        }
 
-  // ==========================================
-  // RESET SEARCH
-  // ==========================================
+        if (value === "rejected") {
+            return "Rejected";
+        }
 
-  const handleReset = (clearFilters, confirm) => {
-    clearFilters();
-    setSearchText("");
-    setSearchedColumn("");
+        return status;
+    };
 
-    confirm();
-  };
+    const getAllLeaves = async () => {
+        try {
+            setLoading(true);
 
-  // ==========================================
-  // SEARCH DROPDOWN
-  // ==========================================
-
-  const getColumnSearchProps = (dataIndex, placeholder) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
-        <Input
-          ref={searchInput}
-          placeholder={placeholder}
-          value={selectedKeys[0] || ""}
-          onChange={(e) => {
-            setSelectedKeys(
-              e.target.value
-                ? [e.target.value]
-                : []
+            const response = await axios.get(
+                `${BASE_URL}admin/getAllLeaves`,
+                {
+                    withCredentials: true,
+                }
             );
-          }}
-          onPressEnter={() =>
-            handleSearch(
-              selectedKeys,
-              confirm,
-              dataIndex
-            )
-          }
-          style={{
-            marginBottom: 8,
-            display: "block",
-            width: 220,
-          }}
-        />
 
-        <Space>
-          <Button
-            type="primary"
-            onClick={() =>
-              handleSearch(
-                selectedKeys,
-                confirm,
-                dataIndex
-              )
-            }
-            icon={<SearchOutlined />}
-            size="small"
-          >
-            Search
-          </Button>
+            console.log(
+                "GETALLLEAVES",
+                response.data
+            );
 
-          <Button
-            onClick={() =>
-              handleReset(
-                clearFilters,
-                confirm
-              )
-            }
-            size="small"
-          >
-            Reset
-          </Button>
-        </Space>
-      </div>
-    ),
+            const leaves =
+                response.data?.data || [];
 
-    filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered
-            ? "#1677ff"
-            : undefined,
-        }}
-      />
-    ),
+            const formattedData = leaves.map(
+                (item) => ({
+                    key: item.lid,
 
-    onFilter: (value, record) => {
-      const recordValue =
-        record[dataIndex];
+                    lid: item.lid,
 
-      if (!recordValue) {
-        return false;
-      }
+                    uid: item.uid,
 
-      return recordValue
-        .toString()
-        .toLowerCase()
-        .includes(
-          value.toString().toLowerCase()
+                    employeeName:
+                        item.employeeName || "-",
+
+                    employeeId:
+                        item.employeeId || "-",
+
+                    leaveType:
+                        item.leaveReason || "-",
+
+                    reason:
+                        item.leaveReason || "-",
+
+                    days:
+                        item.totalleaveDays || 0,
+
+                    from:
+                        item.leaveDates?.length
+                            ? item.leaveDates[0]?.date ||
+                            "-"
+                            : "-",
+
+                    to:
+                        item.leaveDates?.length
+                            ? item.leaveDates[
+                                item.leaveDates.length - 1
+                            ]?.date || "-"
+                            : "-",
+
+                    leaveDates:
+                        item.leaveDates || [],
+
+                    entryDate:
+                        item.entryDate || null,
+
+                    status: normalizeStatus(
+                        item.approved
+                    ),
+                })
+            );
+
+            console.log(
+                "FORMATTED LEAVE DATA",
+                formattedData
+            );
+
+            setLeaveData(formattedData);
+        } catch (error) {
+            console.error(
+                "GET ALL LEAVES ERROR",
+                error.response?.data || error
+            );
+
+            message.error(
+                "Failed to fetch leaves"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        getAllLeaves();
+    }, []);
+
+    const handleLeaveStatus = async (
+        lid,
+        status
+    ) => {
+        console.log(
+            "================================"
         );
-    },
 
-    filterDropdownProps: {
-      onOpenChange: (visible) => {
-        if (visible) {
-          setTimeout(
-            () =>
-              searchInput.current?.select(),
-            100
-          );
-        }
-      },
-    },
-  });
+        console.log("LID:", lid);
+        console.log("STATUS:", status);
 
-  const columns = [
-    {
-      title: "Employee Name",
-
-      dataIndex: "employeeName",
-      key: "employeeName",
-
-      width: 220,
-      fixed: "left",
-
-      ...getColumnSearchProps(
-        "employeeName",
-        "Search employee name"
-      ),
-    },
-
-    {
-      title: "Employee ID",
-
-      dataIndex: "employeeId",
-      key: "employeeId",
-
-      width: 150,
-      fixed: "left",
-
-      ...getColumnSearchProps(
-        "employeeId",
-        "Search employee ID"
-      ),
-    },
-
-    {
-      title: "Leave Type",
-
-      dataIndex: "leaveType",
-      key: "leaveType",
-
-      width: 180,
-
-      ...getColumnSearchProps(
-        "leaveType",
-        "Search leave type"
-      ),
-    },
-
-    {
-      title: "From",
-
-      dataIndex: "from",
-      key: "from",
-
-      width: 150,
-
-      ...getColumnSearchProps(
-        "from",
-        "Search from date"
-      ),
-    },
-
-    {
-      title: "To",
-
-      dataIndex: "to",
-      key: "to",
-
-      width: 150,
-
-      ...getColumnSearchProps(
-        "to",
-        "Search to date"
-      ),
-    },
-
-    {
-      title: "Days",
-
-      dataIndex: "days",
-      key: "days",
-
-      width: 100,
-      align: "center",
-    },
-
-    {
-      title: "Reason",
-
-      dataIndex: "reason",
-      key: "reason",
-
-      width: 250,
-
-      render: (reason) => (
-        <span
-          title={reason}
-          style={{
-            display: "inline-block",
-            maxWidth: "25ch",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {reason || "N/A"}
-        </span>
-      ),
-
-      ...getColumnSearchProps(
-        "reason",
-        "Search reason"
-      ),
-    },
-
-    // ==========================================
-    // STATUS FILTER
-    // ==========================================
-
-    {
-      title: "Status",
-
-      dataIndex: "status",
-      key: "status",
-
-      width: 130,
-      align: "center",
-
-      filters: [
-        {
-          text: "Pending",
-          value: "Pending",
-        },
-        {
-          text: "Approved",
-          value: "Approved",
-        },
-        {
-          text: "Rejected",
-          value: "Rejected",
-        },
-      ],
-
-      onFilter: (value, record) =>
-        record.status === value,
-
-      render: (status) => {
-        let color = "default";
-
-        if (status === "Approved") {
-          color = "success";
+        if (
+            lid === undefined ||
+            lid === null ||
+            lid === ""
+        ) {
+            message.error(
+                "Leave ID is missing"
+            );
+            return;
         }
 
-        if (status === "Pending") {
-          color = "warning";
-        }
+        try {
+            setActionLoading(
+                `${lid}-${status}`
+            );
 
-        if (status === "Rejected") {
-          color = "error";
-        }
+            const response = await axios.post(
+                `${BASE_URL}admin/approveLeave`,
+                null,
+                {
+                    params: {
+                        lid: lid,
+                        status: status,
+                    },
+                    withCredentials: true,
+                }
+            );
 
-        return (
-          <Tag color={color}>
-            {status || "N/A"}
-          </Tag>
+            console.log(
+                "APPROVE LEAVE RESPONSE",
+                response.data
+            );
+
+            if (
+                status === "approved"
+            ) {
+                message.success(
+                    "Leave approved successfully"
+                );
+            } else if (
+                status === "rejected"
+            ) {
+                message.success(
+                    "Leave rejected successfully"
+                );
+            }
+
+            await getAllLeaves();
+
+            if (
+                statusFilter &&
+                statusFilter !== "Pending"
+            ) {
+                setStatusFilter(null);
+            }
+        } catch (error) {
+            console.error(
+                "APPROVE/REJECT ERROR",
+                error.response?.data || error
+            );
+
+            console.error(
+                "STATUS CODE",
+                error.response?.status
+            );
+
+            console.error(
+                "REQUEST URL",
+                error.config?.url
+            );
+
+            console.error(
+                "REQUEST PARAMS",
+                error.config?.params
+            );
+
+            message.error(
+                error.response?.data?.message ||
+                "Failed to update leave status"
+            );
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleApprove = (record) => {
+        console.log(
+            "APPROVE RECORD",
+            record
         );
-      },
-    },
 
-    // ==========================================
-    // ACTIONS
-    // ==========================================
+        console.log(
+            "APPROVE LID",
+            record.lid
+        );
 
-    {
-      title: "Actions",
+        handleLeaveStatus(
+            record.lid,
+            "approved"
+        );
+    };
 
-      key: "actions",
+    const handleReject = (record) => {
+        console.log(
+            "REJECT RECORD",
+            record
+        );
 
-      width: 150,
+        console.log(
+            "REJECT LID",
+            record.lid
+        );
 
-      fixed: "right",
+        handleLeaveStatus(
+            record.lid,
+            "rejected"
+        );
+    };
 
-      render: (_, record) => (
-        <Space size="middle">
+    const handleDelete = async (record) => {
+        console.log("DELETE RECORD:", record);
+        console.log("DELETE LID:", record.lid);
 
-          <EyeOutlined
-            className="view"
-            onClick={() => {
-              console.log(
-                "View Leave:",
-                record
-              );
-            }}
-          />
+        if (
+            record.lid === undefined ||
+            record.lid === null
+        ) {
+            message.error("Leave ID is missing");
+            return;
+        }
 
-          <EditOutlined
-            className="edit"
-            onClick={() => {
-              console.log(
-                "Edit Leave:",
-                record
-              );
-            }}
-          />
+        try {
+            setActionLoading(`delete-${record.lid}`);
 
-          <DeleteOutlined
-            className="delete"
-            onClick={() => {
-              console.log(
-                "Delete Leave:",
-                record
-              );
-            }}
-          />
+            const response = await axios.delete(
+                `${BASE_URL}AuthController/deleteLeave`,
+                {
+                    params: {
+                        lId: record.lid,
+                    },
+                    withCredentials: true,
+                }
+            );
 
-        </Space>
-      ),
-    },
-  ];
+            console.log(
+                "DELETE LEAVE RESPONSE:",
+                response.data
+            );
 
-  return (
-    <MainPanel>
+            message.success(
+                "Leave deleted successfully"
+            );
 
-      <div className="leave-list">
-        <div className="page-header">
-          <h2>Leave Management</h2>
-          <div className="btn-group">
-            <div className="count">
-              Total Number Of Leaves:
-              <span>{leaveData.length}</span>
+            await getAllLeaves();
+        } catch (error) {
+            console.error(
+                "DELETE LEAVE ERROR:",
+                error.response?.data || error
+            );
+
+            console.error(
+                "DELETE STATUS:",
+                error.response?.status
+            );
+
+            message.error(
+                error.response?.data?.message ||
+                "Failed to delete leave"
+            );
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleSearch = (
+        selectedKeys,
+        confirm
+    ) => {
+        confirm();
+    };
+
+    const handleReset = (
+        clearFilters,
+        confirm
+    ) => {
+        clearFilters();
+        confirm();
+    };
+
+    const getColumnSearchProps = (
+        dataIndex,
+        placeholder
+    ) => ({
+        filterDropdown: ({
+            setSelectedKeys,
+            selectedKeys,
+            confirm,
+            clearFilters,
+        }) => (
+            <div
+                style={{
+                    padding: 8,
+                }}
+                onKeyDown={(e) =>
+                    e.stopPropagation()
+                }
+            >
+                <Input
+                    ref={searchInput}
+                    placeholder={placeholder}
+                    value={
+                        selectedKeys[0] || ""
+                    }
+                    onChange={(e) => {
+                        setSelectedKeys(
+                            e.target.value
+                                ? [e.target.value]
+                                : []
+                        );
+                    }}
+                    onPressEnter={() =>
+                        handleSearch(
+                            selectedKeys,
+                            confirm
+                        )
+                    }
+                    style={{
+                        marginBottom: 8,
+                        display: "block",
+                        width: 220,
+                    }}
+                />
+
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() =>
+                            handleSearch(
+                                selectedKeys,
+                                confirm
+                            )
+                        }
+                        icon={
+                            <SearchOutlined />
+                        }
+                        size="small"
+                    >
+                        Search
+                    </Button>
+
+                    <Button
+                        onClick={() =>
+                            handleReset(
+                                clearFilters,
+                                confirm
+                            )
+                        }
+                        size="small"
+                    >
+                        Reset
+                    </Button>
+                </Space>
             </div>
-            <div className="count1">Pending Leaves</div>
-            <div className="count1">Approved Leaves</div>
-            <div className="count1">Rejected Leaves</div>
-          </div>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={leaveData}
-          bordered
-          scroll={{
-            x: "max-content",
-          }}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-          }}
-          rowClassName={(_, index) =>
-            index % 2 === 0
-              ? "table-row-light"
-              : "table-row-dark"
-          }
-        />
+        ),
 
-      </div>
+        filterIcon: (filtered) => (
+            <SearchOutlined
+                style={{
+                    color: filtered
+                        ? "#1677ff"
+                        : undefined,
+                }}
+            />
+        ),
 
-    </MainPanel>
-  );
+        onFilter: (
+            value,
+            record
+        ) => {
+            const recordValue =
+                record[dataIndex];
+
+            if (
+                recordValue === undefined ||
+                recordValue === null
+            ) {
+                return false;
+            }
+
+            return recordValue
+                .toString()
+                .toLowerCase()
+                .includes(
+                    value
+                        .toString()
+                        .toLowerCase()
+                );
+        },
+
+        filterDropdownProps: {
+            onOpenChange: (
+                visible
+            ) => {
+                if (visible) {
+                    setTimeout(() => {
+                        searchInput.current?.select();
+                    }, 100);
+                }
+            },
+        },
+    });
+
+
+
+    const pendingCount =
+        leaveData.filter(
+            (item) =>
+                item.status ===
+                "Pending"
+        ).length;
+
+    const approvedCount =
+        leaveData.filter(
+            (item) =>
+                item.status ===
+                "Approved"
+        ).length;
+
+    const rejectedCount =
+        leaveData.filter(
+            (item) =>
+                item.status ===
+                "Rejected"
+        ).length;
+
+    const filteredLeaveData =
+        statusFilter
+            ? leaveData.filter(
+                (item) =>
+                    item.status ===
+                    statusFilter
+            )
+            : leaveData;
+
+    const columns = [
+        {
+            title: "Employee Name",
+            dataIndex:
+                "employeeName",
+            key: "employeeName",
+            width: 220,
+            fixed: "left",
+
+            ...getColumnSearchProps(
+                "employeeName",
+                "Search employee name"
+            ),
+        },
+
+        {
+            title: "Employee ID",
+            dataIndex:
+                "employeeId",
+            key: "employeeId",
+            width: 160,
+            fixed: "left",
+
+            ...getColumnSearchProps(
+                "employeeId",
+                "Search employee ID"
+            ),
+        },
+
+        {
+            title: "Leave Type",
+            dataIndex:
+                "leaveType",
+            key: "leaveType",
+            width: 160,
+
+            ...getColumnSearchProps(
+                "leaveType",
+                "Search leave type"
+            ),
+        },
+
+        {
+            title: "From",
+            dataIndex: "from",
+            key: "from",
+            width: 140,
+        },
+
+        {
+            title: "To",
+            dataIndex: "to",
+            key: "to",
+            width: 140,
+        },
+
+        {
+            title: "Days",
+            dataIndex: "days",
+            key: "days",
+            width: 100,
+            align: "center",
+        },
+
+        {
+            title: "Reason",
+            dataIndex: "reason",
+            key: "reason",
+            width: 220,
+
+            render: (reason) => (
+                <span
+                    title={reason}
+                    style={{
+                        display: "inline-block",
+                        maxWidth: "200px",
+                        whiteSpace:
+                            "nowrap",
+                        overflow:
+                            "hidden",
+                        textOverflow:
+                            "ellipsis",
+                    }}
+                >
+                    {reason || "-"}
+                </span>
+            ),
+
+            ...getColumnSearchProps(
+                "reason",
+                "Search reason"
+            ),
+        },
+
+        {
+            title: "Status",
+            dataIndex: "status",
+            key: "status",
+            width: 250,
+            align: "center",
+
+            render: (
+                status,
+                record
+            ) => {
+                const currentStatus =
+                    status
+                        ?.toString()
+                        .trim()
+                        .toLowerCase();
+
+                if (
+                    currentStatus ===
+                    "pending"
+                ) {
+                    return (
+                        <Space>
+                            <Button
+                                className="approve-action-btn"
+                                size="small"
+                                loading={
+                                    actionLoading ===
+                                    `${record.lid}-approved`
+                                }
+                                disabled={
+                                    actionLoading !==
+                                    null
+                                }
+                                onClick={() =>
+                                    handleApprove(
+                                        record
+                                    )
+                                }
+                            >
+                                Approve
+                            </Button>
+
+                            <Button
+                                className="reject-action-btn"
+                                size="small"
+                                loading={
+                                    actionLoading ===
+                                    `${record.lid}-rejected`
+                                }
+                                disabled={
+                                    actionLoading !==
+                                    null
+                                }
+                                onClick={() =>
+                                    handleReject(
+                                        record
+                                    )
+                                }
+                            >
+                                Reject
+                            </Button>
+                        </Space>
+                    );
+                }
+
+                if (
+                    currentStatus ===
+                    "approved"
+                ) {
+                    return (
+                        <span className="approved-status">
+                            Approved
+                        </span>
+                    );
+                }
+
+                if (
+                    currentStatus ===
+                    "rejected"
+                ) {
+                    return (
+                        <span className="rejected-status">
+                            Rejected
+                        </span>
+                    );
+                }
+
+                return null;
+            },
+        },
+
+        {
+            title: "Actions",
+            key: "actions",
+            width: 120,
+            fixed: "right",
+
+            render: (_, record) => (
+                <Space size="middle">
+                    <EyeOutlined
+                        className="view-action-icon"
+                        onClick={() =>
+                            navigate(`/EmployeeLeaves/${record.employeeId}`)
+                        }
+                    />
+
+                    <DeleteOutlined
+                        className="delete-action-icon"
+                        onClick={() => handleDelete(record)}
+                    />
+                </Space>
+            ),
+        },
+    ];
+
+    return (
+        <MainPanel>
+            <div className="leave-list">
+                <div className="page-header">
+                    <h2>
+                        Leave Management
+                    </h2>
+
+                    <div className="btn-group">
+
+
+                        <div
+                            className={`pending ${statusFilter ===
+                                "Pending"
+                                ? "active-filter"
+                                : ""
+                                }`}
+                            onClick={() =>
+                                setStatusFilter(
+                                    "Pending"
+                                )
+                            }
+                        >
+                            <span>
+                                Pending Leaves
+                            </span>
+
+                            <span>
+                                {pendingCount}
+                            </span>
+                        </div>
+
+                        <div
+                            className={`approved ${statusFilter ===
+                                "Approved"
+                                ? "active-filter"
+                                : ""
+                                }`}
+                            onClick={() =>
+                                setStatusFilter(
+                                    "Approved"
+                                )
+                            }
+                        >
+                            <span>
+                                Approved Leaves
+                            </span>
+
+                            <span>
+                                {approvedCount}
+                            </span>
+                        </div>
+
+                        <div
+                            className={`rejected ${statusFilter ===
+                                "Rejected"
+                                ? "active-filter"
+                                : ""
+                                }`}
+                            onClick={() =>
+                                setStatusFilter(
+                                    "Rejected"
+                                )
+                            }
+                        >
+                            <span>
+                                Rejected Leaves
+                            </span>
+
+                            <span>
+                                {rejectedCount}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <Table
+                    loading={loading}
+                    columns={columns}
+                    dataSource={
+                        filteredLeaveData
+                    }
+                    bordered
+                    scroll={{
+                        x: "max-content",
+                    }}
+                    pagination={{
+                        pageSize: 10,
+                        showSizeChanger: true,
+                        pageSizeOptions: [
+                            "10",
+                            "20",
+                            "50",
+                            "100",
+                        ],
+                    }}
+                    rowClassName={(
+                        _record,
+                        index
+                    ) =>
+                        index % 2 === 0
+                            ? "table-row-light"
+                            : "table-row-dark"
+                    }
+                />
+            </div>
+        </MainPanel>
+    );
 };
 
 export default LeaveManagement;
