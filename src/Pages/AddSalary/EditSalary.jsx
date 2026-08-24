@@ -1,22 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./AddSalary.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import SelectInput from "../../comp/selectInput/SelectInput";
-
-import { MenuItem } from "@mui/material";
 import { useParams } from "react-router-dom";
-
+import { MenuItem } from "@mui/material";
 import Input from "../../comp/input/Input";
-import UseForm from "../../UseForm";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const EditSalary = () => {
-  // Get employeeId from:
-  // /editSalary/:employeeId
-  const { employeeId } = useParams();
+const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
-  const [salaryData, setSalaryData] = {
+const EditSalary = () => {
+  const { sId } = useParams();
+
+  const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const [salaryData, setSalaryData] = useState({
     email: "",
     employeeSalary: "",
     grossSalary: "",
@@ -31,257 +31,275 @@ const EditSalary = () => {
     month: "",
     year: "",
     reimbursement: "",
-    employeeId: employeeId || "",
+    employeeId: "",
     uid: "",
-    sid:"",
+    sId: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setSalaryData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
+const getSalary = async () => {
+  if (!sId) {
+    console.error("Salary ID is missing");
+    return;
+  }
 
-  const {
-    handleChange,
+  try {
+    setLoading(true);
 
-    values,
-    error={} ,
+    console.log("Salary ID from URL:", sId);
 
-    handleSubmit,
-  } = UseForm(formObj);
+    const response = await axios.get(
+      `${BASE_URL}admin/getSalaryById`,
+      {
+        params: {
+          sId: sId,
+        },
+        withCredentials: true,
+      }
+    );
 
-//   // Set employeeId from URL
-//   useEffect(() => {
-//     if (employeeId) {
-//       setValues((prev) => ({
-//         ...prev,
-//         employeeId: employeeId,
-//       }));
-//     }
-//   }, [employeeId, setValues]);
+    console.log("STATUS:", response.status);
+    console.log("FULL RESPONSE:", response.data);
 
-  console.log("Employee ID from URL:", employeeId);
-  console.log("Form Values:", values);
-  const getSalary = async ()=>{
-    try{
-        setLoading(true);
-        console.log(
-            "Getting Salary:",
-            employeeId
-        );
-        const response = await axios.get(
-            `${BASE_URL}admin/getSalaryById/{sid}`,
-            {
-                withCredentials: true,
-            }
-        );
-        console.log(
-            "Salary API Response:",
-            response.data
-        );
-        const salary =
-        response.data?.data ||
-        response.data;
-        if (!salary) {
-            toast.error(
-                "Salary data not found"
-            );
-            return;
-        }
-        setSalaryData({
-              email: salary.email || "",
-          employeeSalary: salary.employeeSalary || "",
-          grossSalary: salary.grossSalary || "",
-          presentDay: salary.presentDay || "",
-          paydate: salary.paydate || "",
-          totalWorkingDay: salary.totalWorkingDay || "",
-          salaryAdvance: salary.salaryAdvance || "",
-          otherDiduction: salary.otherDiduction || "",
-          professionalTax: salary.professionalTax || "",
-          employeeName: salary.employeeName || "",
-          insuranceCorporation: salary.insuranceCorporation || "",
-          month: salary.month || "",
-          year: salary.year || "",
-          reimbursement: salary.reimbursement || "",
-          employeeId: salary.employeeId || employeeId,
-          uid: salary.uid || "",
+    const salary = response.data?.data;
 
-        });
-    }catch(error){
-        console.error(
-            "Get Salary Error:",
-            error.response?.data || error
-        );
-        toast.error(
-            "Unable to load salary details"
-        );
-    } finally {
-        setLoading(false);
+    if (!salary) {
+      toast.error("Salary data not found");
+      return;
     }
+
+    setSalaryData({
+      email: salary.email ?? "",
+      employeeSalary: salary.employeeSalary ?? "",
+      grossSalary: salary.grossSalary ?? "",
+      presentDay: salary.presentDay ?? "",
+      paydate: salary.paydate ?? "",
+      totalWorkingDay: salary.totalWorkingDay ?? "",
+      salaryAdvance: salary.salaryAdvance ?? "",
+      otherDiduction: salary.otherDiduction ?? "",
+      professionalTax: salary.professionalTax ?? "",
+      employeeName: salary.employeeName ?? "",
+      insuranceCorporation: salary.insuranceCorporation ?? "",
+      month: salary.month ?? "",
+      year: salary.year ?? "",
+      reimbursement: salary.reimbursement ?? "",
+      employeeId: salary.employeeId ?? "",
+      uid: salary.uid ?? "",
+      sId: salary.sid ?? sId,
+    });
+
+  } catch (err) {
+    console.error("GET SALARY ERROR:", err);
+    console.error("Status:", err.response?.status);
+    console.error("Response:", err.response?.data);
+
+    toast.error(
+      err.response?.data?.responseMessage ||
+      "Unable to load salary details"
+    );
+  } finally {
+    setLoading(false);
+  }
 };
-useEffect(()=>{
-    if (employeeId) {
-        getSalary();
-    }
-},[employeeId])
 
+  useEffect(() => {
+    getSalary();
+  }, [sId]);
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log("Updating salary:", salaryData);
+
+
+  };
 
   return (
     <MainPanel>
-      <form onSubmit={handleSubmit} className="salary-parent">
+      <form
+        onSubmit={handleSubmit}
+        className="salary-parent"
+      >
         <h1>Edit Salary Slip</h1>
-        <div className="inputs">
-            <div className="form-row">
-              {/* <SelectInput
-                label="Select Employee"
-                name="employeeName"
-                error={error.employeeName}
-                value={values.employeeName}
-                onChange={handleChange}
-                required
-              >
-                {employees.map((employees) => (
-                  <MenuItem key={employees.data.id} value={employees.data.employeeName}>
-                    {employees.data.employeeName}
-                  </MenuItem>
-                ))}
-              </SelectInput>
-              <Input
-                name="employeeId"
-                label="Employee ID"
-                mq_label="PSPL"
-                value={values.employeeId}
-                error={error.employeeId}
-                onChange={handleChange}
-                required
-              /> */}
 
-              <SelectInput
-                label="Select Employee"
-                name="employeeName"
-                error={error?.employeeName}
-                value={values.employeeName}
-                required
-              >
-          
-                 
-                
-              </SelectInput>
-              <Input
-                name="employeeId"
-                label="Employee ID"
-                value={values.employeeId}
-                error={error.employeeId}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-row">
-              <Input
-                name="paydate"
-                label="pay Date"
-                error={error?.paydate}
-                value={values.paydate}
-                onChange={handleChange}
-                required
-              />
-              <SelectInput
-                label="Select Month"
-                name="month"
-                value={values.month}
-                error={error?.month}
-                onChange={handleChange}
-                required
-              >
-                <MenuItem value="January">January</MenuItem>
-                <MenuItem value="February">February</MenuItem>
-                <MenuItem value="March">March</MenuItem>
-                <MenuItem value="April">April</MenuItem>
-                <MenuItem value="May">May</MenuItem>
-                <MenuItem value="June">June</MenuItem>
-                <MenuItem value="July">July</MenuItem>
-                <MenuItem value="August">August</MenuItem>
-                <MenuItem value="September">September</MenuItem>
-                <MenuItem value="October">October</MenuItem>
-                <MenuItem value="November">November</MenuItem>
-                <MenuItem value="December">December</MenuItem>
-              </SelectInput>
-              <Input
-                name="year"
-                label="Year"
-                value={values.year}
-                error={error?.year}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="form-row">
-              <Input
-                name="totalWorkingDay"
-                label="Total Working Days"
-                error={error?.totalWorkingDay}
-                value={values.totalWorkingDay}
-                onChange={handleChange}
-                required
-              />
-              <Input
-                name="presentDay"
-                label="Total Present Days"
-                value={values.presentDay}
-                onChange={handleChange}
-                error={error?.presentDay}
-                required
-              />
-            </div>
-            <div className="form-row">
-              <Input
-                name="grossSalary"
-                label="Gross Salary"
-                value={values.grossSalary ?? ""}
-                onChange={handleChange}
-                
-                required
-              />
-              <Input
-                name="salaryAdvance"
-                label="Advance Salary"
-                error={error?.salaryAdvance}
-                value={values.salaryAdvance}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-row">
-              <Input
-                name="insuranceCorporation"
-                label="Insurance Corporation"
-                error={error?.insuranceCorporation}
-                value={values.insuranceCorporation}
-                onChange={handleChange}
-              />
-              <Input
-                name="otherDiduction"
-                label="Other Deduction"
-                error={error?.otherDiduction}
-                value={values.otherDiduction}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-row">
-              <Input
-                name="insurance premium"
-                label="Insurance Premium"
-                error={error?.professionalTax}
-                value={values.professionalTax}
-                onChange={handleChange}
-              />
-              <Input
-                name="reimbursement"
-                label="Riembursement"
-                error={error?.reimbursement}
-                value={values.reimbursement}
-                onChange={handleChange}
-              />
-            </div>
+        {loading && <p>Loading salary details...</p>}
+
+        <div className="inputs">
+
+          {/* Employee */}
+          <div className="form-row">
+
+            <Input
+              label="Employee Name"
+              name="employeeName"
+              error={error?.employeeName}
+              value={salaryData.employeeName || ""}
+              onChange={handleChange}
+              required
+            />
+
+            <Input
+              name="employeeId"
+              label="Employee ID"
+              value={salaryData.employeeId || ""}
+              error={error?.employeeId}
+              onChange={handleChange}
+              required
+            />
+
           </div>
 
-        <button className="btn" type="submit">
+          {/* Pay Date / Month / Year */}
+          <div className="form-row">
+
+            <Input
+              name="paydate"
+              label="Pay Date"
+              error={error?.paydate}
+              value={salaryData.paydate || ""}
+              onChange={handleChange}
+              required
+            />
+
+            <SelectInput
+              label="Select Month"
+              name="month"
+              value={salaryData.month || ""}
+              error={error?.month}
+              onChange={handleChange}
+              required
+            >
+              <MenuItem value="January">January</MenuItem>
+              <MenuItem value="February">February</MenuItem>
+              <MenuItem value="March">March</MenuItem>
+              <MenuItem value="April">April</MenuItem>
+              <MenuItem value="May">May</MenuItem>
+              <MenuItem value="June">June</MenuItem>
+              <MenuItem value="July">July</MenuItem>
+              <MenuItem value="August">August</MenuItem>
+              <MenuItem value="September">September</MenuItem>
+              <MenuItem value="October">October</MenuItem>
+              <MenuItem value="November">November</MenuItem>
+              <MenuItem value="December">December</MenuItem>
+            </SelectInput>
+
+            <Input
+              name="year"
+              label="Year"
+              value={salaryData.year || ""}
+              error={error?.year}
+              onChange={handleChange}
+              required
+            />
+
+          </div>
+
+          {/* Working Days */}
+          <div className="form-row">
+
+            <Input
+              name="totalWorkingDay"
+              label="Total Working Days"
+              error={error?.totalWorkingDay}
+              value={salaryData.totalWorkingDay || ""}
+              onChange={handleChange}
+              required
+            />
+
+            <Input
+              name="presentDay"
+              label="Total Present Days"
+              value={salaryData.presentDay || ""}
+              error={error?.presentDay}
+              onChange={handleChange}
+              required
+            />
+
+          </div>
+
+          {/* Salary */}
+          <div className="form-row">
+
+            <Input
+              name="grossSalary"
+              label="Gross Salary"
+              value={salaryData.grossSalary || ""}
+              error={error?.grossSalary}
+              onChange={handleChange}
+              required
+            />
+
+            <Input
+              name="salaryAdvance"
+              label="Advance Salary"
+              error={error?.salaryAdvance}
+              value={salaryData.salaryAdvance || ""}
+              onChange={handleChange}
+            />
+
+          </div>
+
+          {/* Insurance / Deduction */}
+          <div className="form-row">
+
+            <Input
+              name="insuranceCorporation"
+              label="Insurance Corporation"
+              error={error?.insuranceCorporation}
+              value={salaryData.insuranceCorporation || ""}
+              onChange={handleChange}
+            />
+
+            <Input
+              name="otherDiduction"
+              label="Other Deduction"
+              error={error?.otherDiduction}
+              value={salaryData.otherDiduction || ""}
+              onChange={handleChange}
+            />
+
+          </div>
+
+          {/* Professional Tax / Reimbursement */}
+          <div className="form-row">
+
+            <Input
+              name="professionalTax"
+              label="Professional Tax"
+              error={error?.professionalTax}
+              value={salaryData.professionalTax || ""}
+              onChange={handleChange}
+            />
+
+            <Input
+              name="reimbursement"
+              label="Reimbursement"
+              error={error?.reimbursement}
+              value={salaryData.reimbursement || ""}
+              onChange={handleChange}
+            />
+
+          </div>
+
+        </div>
+
+        <button
+          className="btn"
+          type="submit"
+          disabled={loading}
+        >
           Update Salary
         </button>
+
       </form>
     </MainPanel>
   );

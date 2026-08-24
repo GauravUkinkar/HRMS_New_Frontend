@@ -444,7 +444,8 @@ const SalaryManagement = () => {
           <EditOutlined
             className="edit"
             onClick={() => {
-              navigate(`/editSalary/${record.employeeId}`);
+                console.log("FULL RECORD:", record);
+              navigate(`/editSalary/${record.key}`);
               console.log(
                 "Edit Salary:",
                 record
