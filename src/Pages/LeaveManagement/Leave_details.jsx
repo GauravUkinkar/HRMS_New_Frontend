@@ -7,6 +7,7 @@ import {
   CloseCircleOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import { Table } from "antd";
 import "./leave_details.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { MdAttachEmail } from "react-icons/md";
@@ -16,6 +17,9 @@ import { SiMaterialdesign } from "react-icons/si";
 import { FaUserTie } from "react-icons/fa";
 import { FaCalendarAlt } from "react-icons/fa";
 import axios from "axios";
+
+import maleUser from "../../assets/manuser.webp";
+import femaleUser from "../../assets/women_user.png";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 const BASE_URL1 = import.meta.env.VITE_SALARY_BACKEND_URL;
@@ -28,6 +32,7 @@ const Leave_details = () => {
   const [leaveSummary, setLeaveSummary] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [imageError, setImageError] = useState(false);
 
   const getEmployee = async () => {
     try {
@@ -42,6 +47,7 @@ const Leave_details = () => {
 
       console.log("Employee Response:", employeeData);
 
+      setImageError(false);
       setEmployee(employeeData);
 
       if (employeeData?.uid) {
@@ -89,7 +95,7 @@ const Leave_details = () => {
         }
       );
 
-      console.log("Leave History Response:", res.data.data);
+      console.log("Leave History Response:", res.data);
 
       const historyData = res.data.data;
 
@@ -217,8 +223,6 @@ const Leave_details = () => {
 
   const empId = employee.employeeId || employeeId;
 
-  const uid = employee.uid || "";
-
   const department = employee.department || "N/A";
 
   const designation = employee.designation || "N/A";
@@ -245,6 +249,17 @@ const Leave_details = () => {
     employee.status ||
     "Active";
 
+  const profileImage =
+    employee.image || "";
+
+  const gender =
+    employee.gender?.toLowerCase() || "";
+
+  const fallbackImage =
+    gender === "female"
+      ? femaleUser
+      : maleUser;
+
   const totalPaidLeaves =
     Number(leaveData?.paidLeaves) || 0;
 
@@ -254,57 +269,107 @@ const Leave_details = () => {
   const remainingLeaves =
     Number(leaveData?.remainingLeaves) || 0;
 
-  const pendingLeaves = leaveSummary.filter((leave) => {
-    const status =
-      leave.status ||
-      leave.leaveStatus ||
-      leave.requestStatus ||
-      "";
+  const getLeaveStatus = (leave) => {
+    if (typeof leave.approved === "string") {
+      const value = leave.approved
+        .trim()
+        .toLowerCase();
 
-    return status.toLowerCase() === "pending";
-  }).length;
+      if (value === "approved") {
+        return "Approved";
+      }
+
+      if (value === "rejected") {
+        return "Rejected";
+      }
+
+      return "Pending";
+    }
+
+    if (
+      leave.approved === true ||
+      leave.approved === 1
+    ) {
+      return "Approved";
+    }
+
+    if (
+      leave.rejected === true ||
+      leave.rejected === 1
+    ) {
+      return "Rejected";
+    }
+
+    if (
+      typeof leave.status === "string"
+    ) {
+      const value = leave.status
+        .trim()
+        .toLowerCase();
+
+      if (value === "approved") {
+        return "Approved";
+      }
+
+      if (value === "rejected") {
+        return "Rejected";
+      }
+
+      if (value === "pending") {
+        return "Pending";
+      }
+    }
+
+    if (
+      typeof leave.leaveStatus === "string"
+    ) {
+      const value = leave.leaveStatus
+        .trim()
+        .toLowerCase();
+
+      if (value === "approved") {
+        return "Approved";
+      }
+
+      if (value === "rejected") {
+        return "Rejected";
+      }
+
+      if (value === "pending") {
+        return "Pending";
+      }
+    }
+
+    return "Pending";
+  };
 
   const leaveHistory = leaveSummary.map(
     (leave, index) => {
-      const status =
-        leave.status ||
-        leave.leaveStatus ||
-        leave.requestStatus ||
-        "Pending";
+      const status = getLeaveStatus(leave);
 
       return {
         id:
-          leave.id ||
-          leave.leaveId ||
           leave.lid ||
+          leave.leaveId ||
           index + 1,
 
-        type:
-          leave.type ||
-          leave.leaveType ||
-          leave.leaveName ||
-          "Leave",
-
         from:
-          leave.from ||
-          leave.fromDate ||
-          leave.startDate ||
-          "N/A",
+          leave.leaveDates?.length
+            ? leave.leaveDates[0]?.date || "-"
+            : "-",
 
         to:
-          leave.to ||
-          leave.toDate ||
-          leave.endDate ||
-          "N/A",
+          leave.leaveDates?.length
+            ? leave.leaveDates[
+                leave.leaveDates.length - 1
+              ]?.date || "-"
+            : "-",
 
         days:
-          leave.days ||
-          leave.totalDays ||
-          leave.numberOfDays ||
+          leave.totalleaveDays ||
           0,
 
         reason:
-          leave.reason ||
           leave.leaveReason ||
           "N/A",
 
@@ -312,6 +377,102 @@ const Leave_details = () => {
       };
     }
   );
+
+  const pendingLeaves =
+    leaveHistory.filter(
+      (leave) =>
+        leave.status === "Pending"
+    ).length;
+
+  const leaveColumns = [
+    {
+      title: "Reason",
+      dataIndex: "reason",
+      key: "reason",
+      width: 280,
+
+      render: (reason) => (
+        <span
+          title={reason}
+          style={{
+            display: "inline-block",
+            maxWidth: "250px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {reason || "-"}
+        </span>
+      ),
+    },
+
+    {
+      title: "From Date",
+      dataIndex: "from",
+      key: "from",
+      width: 150,
+    },
+
+    {
+      title: "To Date",
+      dataIndex: "to",
+      key: "to",
+      width: 150,
+    },
+
+    {
+      title: "Days",
+      dataIndex: "days",
+      key: "days",
+      width: 100,
+      align: "center",
+
+      render: (days) => (
+        <strong>{days}</strong>
+      ),
+    },
+
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 180,
+      align: "center",
+
+      render: (status) => {
+        const currentStatus = status
+          ?.toString()
+          .trim()
+          .toLowerCase();
+
+        if (currentStatus === "approved") {
+          return (
+            <span className="approved-status">
+              <CheckCircleOutlined />
+              Approved
+            </span>
+          );
+        }
+
+        if (currentStatus === "rejected") {
+          return (
+            <span className="rejected-status">
+              <CloseCircleOutlined />
+              Rejected
+            </span>
+          );
+        }
+
+        return (
+          <span className="pending-status">
+            <ClockCircleOutlined />
+            Pending
+          </span>
+        );
+      },
+    },
+  ];
 
   return (
     <MainPanel
@@ -343,7 +504,17 @@ const Leave_details = () => {
             <div className="employee-profile">
 
               <div className="employee-avatar">
-                <UserOutlined />
+                <img
+                  src={
+                    !imageError && profileImage
+                      ? profileImage
+                      : fallbackImage
+                  }
+                  alt={name}
+                  onError={() => {
+                    setImageError(true);
+                  }}
+                />
               </div>
 
               <div className="employee-info">
@@ -365,7 +536,9 @@ const Leave_details = () => {
                   <div className="mail">
                     <MdAttachEmail />
 
-                    <a href={`mailto:${email}`}>
+                    <a
+                      href={`mailto:${email}`}
+                    >
                       {email}
                     </a>
                   </div>
@@ -375,7 +548,9 @@ const Leave_details = () => {
                   <div className="phone">
                     <FaPhoneAlt />
 
-                    <a href={`tel:${phone}`}>
+                    <a
+                      href={`tel:${phone}`}
+                    >
                       {phone}
                     </a>
                   </div>
@@ -557,111 +732,36 @@ const Leave_details = () => {
 
           <div className="leave-table-wrapper">
 
-            <table className="leave-table">
-
-              <thead>
-
-                <tr>
-                  <th>Leave Type</th>
-                  <th>From Date</th>
-                  <th>To Date</th>
-                  <th>Days</th>
-                  <th>Reason</th>
-                  <th>Status</th>
-                </tr>
-
-              </thead>
-
-              <tbody>
-
-                {leaveHistory.length > 0 ? (
-
-                  leaveHistory.map((leave) => (
-
-                    <tr key={leave.id}>
-
-                      <td>
-
-                        <div className="leave-type">
-
-                          <CalendarOutlined />
-
-                          {leave.type}
-
-                        </div>
-
-                      </td>
-
-                      <td>
-                        {leave.from}
-                      </td>
-
-                      <td>
-                        {leave.to}
-                      </td>
-
-                      <td>
-
-                        <strong>
-                          {leave.days}
-                        </strong>
-
-                      </td>
-
-                      <td>
-                        {leave.reason}
-                      </td>
-
-                      <td>
-
-                        <span
-                          className={`status-badge ${leave.status
-                            .toLowerCase()
-                            .replace(/\s+/g, "-")}`}
-                        >
-
-                          {leave.status === "Approved" && (
-                            <CheckCircleOutlined />
-                          )}
-
-                          {leave.status === "Rejected" && (
-                            <CloseCircleOutlined />
-                          )}
-
-                          {leave.status === "Pending" && (
-                            <ClockCircleOutlined />
-                          )}
-
-                          {leave.status}
-
-                        </span>
-
-                      </td>
-
-                    </tr>
-
-                  ))
-
-                ) : (
-
-                  <tr>
-
-                    <td
-                      colSpan="6"
-                      style={{
-                        textAlign: "center",
-                      }}
-                    >
-                      No leave history found.
-                    </td>
-
-                  </tr>
-
-                )}
-
-              </tbody>
-
-            </table>
+            <Table
+              columns={leaveColumns}
+              dataSource={leaveHistory}
+              rowKey={(record) => record.id}
+              loading={loading}
+              bordered
+              scroll={{
+                x: "max-content",
+              }}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+                pageSizeOptions: [
+                  "10",
+                  "20",
+                  "50",
+                  "100",
+                ],
+              }}
+              rowClassName={
+                (_record, index) =>
+                  index % 2 === 0
+                    ? "table-row-light"
+                    : "table-row-dark"
+              }
+              locale={{
+                emptyText:
+                  "No leave history found.",
+              }}
+            />
 
           </div>
 

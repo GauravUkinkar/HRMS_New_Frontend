@@ -145,9 +145,6 @@ const LeaveManagement = () => {
         lid,
         status
     ) => {
-        console.log(
-            "================================"
-        );
 
         console.log("LID:", lid);
         console.log("STATUS:", status);

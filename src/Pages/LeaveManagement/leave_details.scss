@@ -33,15 +33,25 @@
         align-items: center;
         gap: 16px;
         .employee-avatar {
-          width: 65px;
-          height: 65px;
+          width: 90px;
+          height: 90px;
           border-radius: 50%;
-          background: #0b8b95;
-          color: #ffffff;
+          overflow: hidden;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 27px;
+          flex-shrink: 0;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+          }
+
+          svg {
+            font-size: 42px;
+          }
         }
       }
       .employee-info {
@@ -87,7 +97,7 @@
     }
 
     .right-side {
-      width:50%;
+      width: 50%;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -231,49 +241,32 @@
   margin-top: 20px;
 }
 
-.leave-table {
-  width: 100%;
-  min-width: 800px;
-  border-collapse: collapse;
-
-  thead {
-    tr {
-      background: #f7fbfb;
-    }
-
-    th {
-      padding: 14px 16px;
-      text-align: left;
-      color: #374151;
-      font-size: 13px;
-      font-weight: 600;
-      border-bottom: 1px solid #e5eeee;
-      white-space: nowrap;
-    }
-  }
-
-  tbody {
-    tr {
-      transition: 0.2s ease;
-
-      &:nth-child(even) {
-        background: #fbfefe;
-      }
-
-      &:hover {
-        background: #f0fbfb;
-      }
-    }
-
+ .table-row-light {
     td {
-      padding: 16px;
-      color: #4b5563;
-      font-size: 13px;
-      border-bottom: 1px solid #edf1f1;
-      white-space: nowrap;
+      background: #eafafa !important;
     }
   }
-}
+
+  .table-row-dark {
+    td {
+      background: var(--white) !important;
+    }
+  }
+
+  .ant-table {
+    background: var(--white);
+    border-radius: 10px;
+  }
+
+  .ant-table-thead > tr > th {
+    background: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+
+    .anticon {
+      color: #0b8b95;
+    }
+  }
 
 .leave-type {
   display: flex;
@@ -287,41 +280,53 @@
   }
 }
 
-.status-badge {
+.approved-status {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 5px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
-  font-size: 12px;
+  background: #e8f7ee;
+  color: #16a34a;
+  font-size: 13px;
   font-weight: 600;
+}
 
-  &.approved {
-    color: #389e0d;
-    background: #f6ffed;
-    border: 1px solid #b7eb8f;
-  }
+.rejected-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: #fdecec;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+}
 
-  &.rejected {
-    color: #cf1322;
-    background: #fff1f0;
-    border: 1px solid #ffa39e;
-  }
-
-  &.pending {
-    color: #d48806;
-    background: #fffbe6;
-    border: 1px solid #ffe58f;
-  }
+.pending-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: #fff4df;
+  color: #f59e0b;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 @media (max-width: 1100px) {
   .employee-card {
     align-items: flex-start;
     flex-direction: column;
-    .left-side,.right-side{
+    .left-side,
+    .right-side {
       width: 100% !important;
-      border-left:none !important;
+      border-left: none !important;
     }
   }
 
