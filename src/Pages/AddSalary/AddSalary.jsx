@@ -8,10 +8,12 @@ import UseForm from "../../UseForm";
 import { ValidateSalary } from "../../validators/SalaryValidate";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Loader from "../../comp/Loader/Loader";
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const AddSalary = () => {
   const [employees, setEmployees] = useState([]);
+  const [loader, setLoader]=useState(false);
   const formObj = {
     email:"",
     employeeSalary: "",
@@ -31,6 +33,7 @@ const AddSalary = () => {
 
   const getEmployees = async () => {
     try {
+      
       const res = await axios.get(
         "https://userservicetest.pandozasolutions.com/Admin/GetAllEmployee",
         {
@@ -49,6 +52,7 @@ const AddSalary = () => {
 
   const generateSalary = async () => {
     try {
+      setLoader(true);
       const response = await axios.post(
         `${BASE_URL}admin/addNewSalary`,
         values,
@@ -66,6 +70,8 @@ const AddSalary = () => {
       toast.error("Salary already exists");
       console.error("Status:", error.response?.status);
       console.error("Response:", error.response?.data);
+    }finally{
+      setLoader(false);
     }
   };
 
@@ -81,6 +87,7 @@ const AddSalary = () => {
   return (
     <>
       <MainPanel>
+        {loader && <Loader/>}
         <form onSubmit={handleSubmit} className="salary-parent">
           <h1>Generate Salary Slip</h1>
 
