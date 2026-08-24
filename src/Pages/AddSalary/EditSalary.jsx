@@ -2,20 +2,21 @@ import React, { useEffect, useState } from "react";
 import "./AddSalary.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import SelectInput from "../../comp/selectInput/SelectInput";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { MenuItem } from "@mui/material";
 import Input from "../../comp/input/Input";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Loader from "../../comp/Loader/Loader";
 
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const EditSalary = () => {
   const { sId } = useParams();
-
+  const navigate = useNavigate();
   const [error, setError] = useState({});
-  const [loading, setLoading] = useState(false);
-
+  const [loader, setLoader] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const [salaryData, setSalaryData] = useState({
     email: "",
     employeeSalary: "",
@@ -44,100 +45,121 @@ const EditSalary = () => {
       [name]: value,
     }));
   };
-const getSalary = async () => {
-  if (!sId) {
-    console.error("Salary ID is missing");
-    return;
-  }
+  const getSalary = async () => {
+    if (!sId) {
+      console.error("Salary ID is missing");
+      setLoader(false);
 
-  try {
-    setLoading(true);
+      return;
+    }
 
-    console.log("Salary ID from URL:", sId);
+    try {
+      setLoader(true);
 
-    const response = await axios.get(
-      `${BASE_URL}admin/getSalaryById`,
-      {
+      console.log("Salary ID from URL:", sId);
+
+      const response = await axios.get(`${BASE_URL}admin/getSalaryById`, {
         params: {
           sId: sId,
         },
         withCredentials: true,
+      });
+
+      console.log("STATUS:", response.status);
+      console.log("FULL RESPONSE:", response.data);
+
+      const salary = response.data?.data;
+
+      if (!salary) {
+        toast.error("Salary data not found");
+        return;
       }
-    );
 
-    console.log("STATUS:", response.status);
-    console.log("FULL RESPONSE:", response.data);
+      setSalaryData({
+        email: salary.email ?? "",
+        employeeSalary: salary.employeeSalary ?? "",
+        grossSalary: salary.grossSalary ?? "",
+        presentDay: salary.presentDay ?? "",
+        paydate: salary.paydate ?? "",
+        totalWorkingDay: salary.totalWorkingDay ?? "",
+        salaryAdvance: salary.salaryAdvance ?? "",
+        otherDiduction: salary.otherDiduction ?? "",
+        professionalTax: salary.professionalTax ?? "",
+        employeeName: salary.employeeName ?? "",
+        insuranceCorporation: salary.insuranceCorporation ?? "",
+        month: salary.month ?? "",
+        year: salary.year ?? "",
+        reimbursement: salary.reimbursement ?? "",
+        employeeId: salary.employeeId ?? "",
+        uid: salary.uid ?? "",
+        sId: salary.sid ?? sId,
+      });
+    } catch (err) {
+      console.error("GET SALARY ERROR:", err);
+      console.error("Status:", err.response?.status);
+      console.error("Response:", err.response?.data);
 
-    const salary = response.data?.data;
-
-    if (!salary) {
-      toast.error("Salary data not found");
-      return;
+      toast.error(
+        err.response?.data?.responseMessage || "Unable to load salary details",
+      );
+    } finally {
+      setLoader(false);
     }
-
-    setSalaryData({
-      email: salary.email ?? "",
-      employeeSalary: salary.employeeSalary ?? "",
-      grossSalary: salary.grossSalary ?? "",
-      presentDay: salary.presentDay ?? "",
-      paydate: salary.paydate ?? "",
-      totalWorkingDay: salary.totalWorkingDay ?? "",
-      salaryAdvance: salary.salaryAdvance ?? "",
-      otherDiduction: salary.otherDiduction ?? "",
-      professionalTax: salary.professionalTax ?? "",
-      employeeName: salary.employeeName ?? "",
-      insuranceCorporation: salary.insuranceCorporation ?? "",
-      month: salary.month ?? "",
-      year: salary.year ?? "",
-      reimbursement: salary.reimbursement ?? "",
-      employeeId: salary.employeeId ?? "",
-      uid: salary.uid ?? "",
-      sId: salary.sid ?? sId,
-    });
-
-  } catch (err) {
-    console.error("GET SALARY ERROR:", err);
-    console.error("Status:", err.response?.status);
-    console.error("Response:", err.response?.data);
-
-    toast.error(
-      err.response?.data?.responseMessage ||
-      "Unable to load salary details"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     getSalary();
   }, [sId]);
-
-
+  if (loader) {
+    return <Loader />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      setUpdating(true);
+      const payload = {
+        ...salaryData,
+        sid: sId,
+      };
+      console.log("Updating salary Data:", payload);
 
-    console.log("Updating salary:", salaryData);
+      const response = await axios.put(
+        `${BASE_URL}admin/updateNewSalary`,
+        payload,
+        {
+          withCredentials: true,
+        },
+      );
+      console.log("Update Salary Response:", response.data);
+      toast.success(
+        response.data?.responseMessage || "Salary Updated successfully!",
+      );
+       navigate("/salaryManagement");
+    } catch (err) {
+      console.error("UPDATE SALARY ERROR:", err);
+      console.error("Status:", err.response?.status);
+      console.error("Response:", err.response?.data);
 
-
+      toast.error(
+        err.response?.data?.responseMessage || "Unable to update Salary",
+      );
+    } finally {
+      setUpdating(false);
+    }
   };
 
   return (
     <MainPanel>
-      <form
-        onSubmit={handleSubmit}
-        className="salary-parent"
-      >
+      {updating && <Loader />}
+      <form onSubmit={handleSubmit} className="salary-parent">
         <h1>Edit Salary Slip</h1>
 
-        {loading && <p>Loading salary details...</p>}
+        {loader && <p>Loading salary details...</p>}
 
         <div className="inputs">
-
           {/* Employee */}
           <div className="form-row">
-
             <Input
               label="Employee Name"
               name="employeeName"
@@ -155,12 +177,10 @@ const getSalary = async () => {
               onChange={handleChange}
               required
             />
-
           </div>
 
           {/* Pay Date / Month / Year */}
           <div className="form-row">
-
             <Input
               name="paydate"
               label="Pay Date"
@@ -200,12 +220,10 @@ const getSalary = async () => {
               onChange={handleChange}
               required
             />
-
           </div>
 
           {/* Working Days */}
           <div className="form-row">
-
             <Input
               name="totalWorkingDay"
               label="Total Working Days"
@@ -223,12 +241,10 @@ const getSalary = async () => {
               onChange={handleChange}
               required
             />
-
           </div>
 
           {/* Salary */}
           <div className="form-row">
-
             <Input
               name="grossSalary"
               label="Gross Salary"
@@ -245,12 +261,10 @@ const getSalary = async () => {
               value={salaryData.salaryAdvance || ""}
               onChange={handleChange}
             />
-
           </div>
 
           {/* Insurance / Deduction */}
           <div className="form-row">
-
             <Input
               name="insuranceCorporation"
               label="Insurance Corporation"
@@ -266,12 +280,10 @@ const getSalary = async () => {
               value={salaryData.otherDiduction || ""}
               onChange={handleChange}
             />
-
           </div>
 
           {/* Professional Tax / Reimbursement */}
           <div className="form-row">
-
             <Input
               name="professionalTax"
               label="Professional Tax"
@@ -287,19 +299,12 @@ const getSalary = async () => {
               value={salaryData.reimbursement || ""}
               onChange={handleChange}
             />
-
           </div>
-
         </div>
 
-        <button
-          className="btn"
-          type="submit"
-          disabled={loading}
-        >
+        <button className="btn" type="submit" disabled={updating}>
           Update Salary
         </button>
-
       </form>
     </MainPanel>
   );

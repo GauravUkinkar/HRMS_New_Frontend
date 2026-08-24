@@ -441,6 +441,15 @@ const SalaryManagement = () => {
 
       render: (_, record) => (
         <Space size="middle">
+                 <FaEye
+            className="viewsalary"
+            onClick={() => {
+              console.log(
+                "View Salary:",
+                record
+              );
+            }}
+          />
           <EditOutlined
             className="edit"
             onClick={() => {
@@ -463,15 +472,7 @@ const SalaryManagement = () => {
             }}
           />
 
-          <FaEye
-            className="viewsalary"
-            onClick={() => {
-              console.log(
-                "View Salary:",
-                record
-              );
-            }}
-          />
+   
         </Space>
       ),
     },
