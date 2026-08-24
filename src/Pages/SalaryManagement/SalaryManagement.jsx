@@ -554,11 +554,9 @@ const SalaryManagement = () => {
             <button
               type="button"
               className="add-salary-btn"
-              onClick={() => {
-                console.log(
-                  "Add Salary"
-                );
-              }}
+              onClick={() => navigate("/addSalary")}
+        
+              
             >
               <FaPlus />
               Add Salary

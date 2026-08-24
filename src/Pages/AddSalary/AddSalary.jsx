@@ -239,13 +239,13 @@ const AddSalary = () => {
               />
             </div>
             <div className="form-row">
-              <Input
-                name="insurance premium"
-                label="Insurance Premium"
-                error={error.professionalTax}
-                value={values.professionalTax}
-                onChange={handleChange}
-              />
+            <Input
+              name="professionalTax"
+              label="Professional Tax"
+              error={error?.professionalTax}
+              value={values.professionalTax || ""}
+              onChange={handleChange}
+            />
               <Input
                 name="reimbursement"
                 label="Riembursement"

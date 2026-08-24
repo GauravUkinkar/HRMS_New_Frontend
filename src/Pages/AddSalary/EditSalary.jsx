@@ -282,7 +282,7 @@ const EditSalary = () => {
             />
           </div>
 
-          {/* Professional Tax / Reimbursement */}
+         
           <div className="form-row">
             <Input
               name="professionalTax"
