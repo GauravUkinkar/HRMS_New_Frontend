@@ -18,6 +18,7 @@ import axios from "axios";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SalaryManagement = () => {
    const navigate = useNavigate();
@@ -63,9 +64,6 @@ const SalaryManagement = () => {
     (_, index) => currentYear - index
   );
 
-  // ==========================================
-  // GET SALARY
-  // ==========================================
 
   const getSalary = async () => {
     try {
@@ -158,18 +156,45 @@ const SalaryManagement = () => {
       setLoader(false);
     }
   };
+  const deleteSalary = async (record) => {
+    try{
+      console.log("Deleting Salary:", record);
 
-  // ==========================================
-  // API CALL
-  // ==========================================
+      const response = await axios.delete(
+        `${BASE_URL}admin/deleteNewSalary`,
+        {
+          params: {
+            sId:record.key,
+          },
+          withCredentials:true,
+        }
+      );
+      console.log("Deleye Salary Response:",response.data);
+
+      toast.success(
+        response.data?.responseMessage ||
+        "Salary Deleted Successfully!"
+      );
+      getSalary();
+    } catch(err){
+      console.error("DELETE SALARY ERROR:",err);
+      console.error("Status:",err.response?.status);
+      console.error("Response:",err.response?.data);
+
+      toast.error(
+        err.response?.data?.responseMessage||
+        "Unable to delete salary"
+
+      );
+    }
+  };
+
 
   useEffect(() => {
     getSalary();
   }, []);
 
-  // ==========================================
-  // FILTER SALARY DATA
-  // ==========================================
+
 
   const filteredSalaryData = salaryData.filter(
     (salary) => {
@@ -191,18 +216,14 @@ const SalaryManagement = () => {
     }
   );
 
-  // ==========================================
-  // CLEAR FILTER
-  // ==========================================
+
 
   const clearFilters = () => {
     setSelectedMonth("");
     setSelectedYear("");
   };
 
-  // ==========================================
-  // TABLE COLUMNS
-  // ==========================================
+
 
   const columns = [
     {
@@ -465,6 +486,7 @@ const SalaryManagement = () => {
           <DeleteOutlined
             className="delete"
             onClick={() => {
+              deleteSalary(record)
               console.log(
                 "Delete Salary:",
                 record

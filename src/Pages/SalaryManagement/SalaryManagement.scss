@@ -27,7 +27,9 @@
     height: 40px;
     flex-shrink: 0;
   }
-
+.MuiSelect-select {
+  background-color: white;
+}
   .MuiFormControl-root:nth-child(1) {
     width: 130px;
   }
