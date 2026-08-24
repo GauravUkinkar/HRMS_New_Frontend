@@ -528,7 +528,6 @@ const EmployeeDash = () => {
             </div>
 
             {/* INTERNAL NOTES */}
-
             <div className="right3">
               <div className="top">
                 <h3>Internal Notes</h3>

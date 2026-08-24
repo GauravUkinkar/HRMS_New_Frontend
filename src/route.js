@@ -68,10 +68,9 @@ export const routes = [
   },
   {
     name: "Edit Salary",
-    path: "/editSalary/:employeeId",
+    path: "/editSalary/:sId",
     comp: EditSalary,
     adminonly: true,
-
   },
   {
     name: "OfficialNotes",
@@ -92,7 +91,7 @@ export const routes = [
     adminonly: false,
   },
 
-
+  
   {
     name: "Upload Documents",
     path: "/uploadDoc",
