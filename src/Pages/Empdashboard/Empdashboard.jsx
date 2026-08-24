@@ -146,7 +146,7 @@ const EmployeeDash = () => {
                 <h4>Degree Certificate</h4>
               </div>
 
-              <button className="btn" onClick={() => navigate("/Viewdoc")}>
+              <button className="btn" onClick={() => navigate("/Empviewdoc")}>
                 View Documents
               </button>
             </div>

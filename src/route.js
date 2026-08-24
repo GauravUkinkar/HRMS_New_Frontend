@@ -6,6 +6,7 @@ import UserList from "./Pages/UserList/UserList";
 import LeaveManagement from "./Pages/LeaveManagement/LeaveManagement";
 import Leave_details from "./Pages/LeaveManagement/Leave_details";
 
+
 const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
 
 const EmpList = lazy(() => import("./Pages/EmpList/EmpList"));
@@ -19,6 +20,7 @@ const SalaryDetails = lazy(
 
 const UploadDoc = lazy(() => import("../src/Pages/UploadDoc/UploadDoc"));
 const Viewdoc = lazy(() => import("../src/Pages/Viewdoc/Viewdoc"));
+const Empviewdoc = lazy(() => import("../src/Pages/Empviewdoc/Empviewdoc"));
 const AdminDash = lazy(() => import("../src/Pages/AdminDash/AdminDash"));
 const Generatesalary = lazy(
   () => import("../src/Pages/Generatesalary/Generatesalary"),
@@ -91,7 +93,6 @@ export const routes = [
     adminonly: false,
   },
 
-  
   {
     name: "Upload Documents",
     path: "/uploadDoc",
@@ -102,6 +103,12 @@ export const routes = [
     name: "Viewdoc",
     path: "/Viewdoc",
     comp: Viewdoc,
+    adminonly: false,
+  },
+  {
+    name: "Empviewdoc",
+    path: "/Empviewdoc",
+    comp: Empviewdoc,
     adminonly: false,
   },
   {
@@ -177,5 +184,5 @@ export const routes = [
     path: "/EmployeeLeaves/:employeeId",
     comp: Leave_details,
     adminonly: true,
-  }
+  },
 ];

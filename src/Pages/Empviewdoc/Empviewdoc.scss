@@ -1,0 +1,572 @@
+.view-doc {
+  width: 100%;
+
+  padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 30px;
+
+  background: #e9f0f0;
+
+  border-radius: 10px;
+
+  box-shadow: var(--shadow);
+
+  box-sizing: border-box;
+
+  // ==========================================
+  // HEADER
+  // ==========================================
+
+  h1 {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 10px 14px;
+
+    text-align: left;
+
+    background-color: var(--accent2);
+
+    color: white;
+
+    font-size: 18px;
+
+    font-weight: 500;
+
+    border-radius: 5px;
+
+    box-shadow: var(--shadow);
+
+    box-sizing: border-box;
+  }
+
+  // ==========================================
+  // BOTTOM SECTION
+  // ==========================================
+
+  .view-doc-bottom {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+  }
+
+  // ==========================================
+  // DOCUMENT + PREVIEW WRAPPER
+  // ==========================================
+
+  .document-preview-wrapper {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+
+    gap: 20px;
+
+    align-items: start;
+
+    box-sizing: border-box;
+  }
+
+  // ==========================================
+  // DOCUMENT LIST
+  // ==========================================
+
+  .document-list {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+
+    box-sizing: border-box;
+  }
+
+  // ==========================================
+  // DOCUMENT CARD
+  // ==========================================
+
+  .document-card {
+    width: 100%;
+
+    min-height: 180px;
+
+    padding: 25px 10px;
+
+    background: white;
+
+    border: 1px solid var(--bg-color);
+
+    border-radius: 8px;
+
+    box-shadow: var(--shadow);
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 10px;
+
+    box-sizing: border-box;
+
+    transition: var(--trans);
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    .pdf-icon {
+      font-size: 32px;
+
+      color: red;
+    }
+
+    p {
+      margin: 0;
+
+      font-size: 16px;
+
+      font-weight: 500;
+
+      text-align: center;
+
+      color: #333;
+    }
+
+    // ========================================
+    // BUTTONS
+    // ========================================
+
+    .btn-parent {
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 10px;
+
+      flex-wrap: wrap;
+
+      .pre,
+      .down {
+        padding: 7px 12px;
+
+        border: 1px solid var(--accent2);
+
+        border-radius: 5px;
+
+        background: transparent;
+
+        color: var(--accent2);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 6px;
+
+        font-size: 13px;
+
+        cursor: pointer;
+
+        transition: var(--trans);
+
+        svg {
+          font-size: 16px;
+        }
+
+        &:hover {
+          background: var(--accent2);
+
+          color: var(--white);
+        }
+      }
+    }
+  }
+
+  // ==========================================
+  // PREVIEW SECTION
+  // ==========================================
+
+  .preview-section {
+    width: 100%;
+
+    min-height: 500px;
+
+    background: white;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
+
+    position: sticky;
+
+    top: 20px;
+
+    box-sizing: border-box;
+
+    // ========================================
+    // PREVIEW HEADER
+    // ========================================
+
+    .preview-header {
+      min-height: 55px;
+
+      padding: 10px 15px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+      background: var(--accent2);
+
+      color: white;
+
+      box-sizing: border-box;
+
+      h2 {
+        margin: 0;
+
+        padding: 0;
+
+        background: none;
+
+        box-shadow: none;
+
+        color: white;
+
+        font-size: 16px;
+
+        font-weight: 500;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+      }
+
+      button {
+        flex-shrink: 0;
+
+        padding: 5px 12px;
+
+        border: 1px solid white;
+
+        border-radius: 5px;
+
+        background: transparent;
+
+        color: white;
+
+        cursor: pointer;
+
+        transition: var(--trans);
+
+        &:hover {
+          background: white;
+
+          color: var(--accent2);
+        }
+      }
+    }
+
+    // ========================================
+    // PREVIEW CONTENT
+    // ========================================
+
+    .preview-content {
+      width: 100%;
+
+      height: 500px;
+
+      padding: 10px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      background: #f5f5f5;
+
+      box-sizing: border-box;
+
+      img {
+        max-width: 100%;
+
+        max-height: 100%;
+
+        display: block;
+
+        object-fit: contain;
+      }
+
+      iframe {
+        width: 100%;
+
+        height: 100%;
+
+        border: none;
+
+        background: white;
+      }
+    }
+
+    // ========================================
+    // EMPTY PREVIEW
+    // ========================================
+
+    .preview-empty {
+      min-height: 500px;
+
+      padding: 20px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      justify-content: center;
+
+      text-align: center;
+
+      color: #999;
+
+      box-sizing: border-box;
+
+      svg {
+        font-size: 55px;
+
+        margin-bottom: 15px;
+      }
+
+      p {
+        margin: 0;
+
+        font-size: 14px;
+
+        color: #888;
+      }
+    }
+  }
+
+  // ==========================================
+  // LOADING
+  // ==========================================
+
+  .document-loading {
+    width: 100%;
+
+    padding: 40px 20px;
+
+    background: white;
+
+    border-radius: 8px;
+
+    box-shadow: var(--shadow);
+
+    text-align: center;
+
+    color: #777;
+
+    font-size: 15px;
+
+    box-sizing: border-box;
+  }
+
+  // ==========================================
+  // NO DOCUMENTS
+  // ==========================================
+
+  .no-documents {
+    width: 100%;
+
+    padding: 40px 20px;
+
+    background: white;
+
+    border-radius: 8px;
+
+    box-shadow: var(--shadow);
+
+    text-align: center;
+
+    color: #777;
+
+    font-size: 15px;
+
+    box-sizing: border-box;
+  }
+}
+
+// =====================================================
+// 1200px
+// =====================================================
+
+@media only screen and (max-width: 1200px) {
+  .view-doc {
+    .document-preview-wrapper {
+      grid-template-columns: 1fr;
+    }
+
+    .preview-section {
+      position: relative;
+
+      top: 0;
+    }
+  }
+}
+
+// =====================================================
+// 1020px
+// =====================================================
+
+@media only screen and (max-width: 1020px) {
+  .view-doc {
+    .document-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+// =====================================================
+// 800px
+// =====================================================
+
+@media only screen and (max-width: 800px) {
+  .view-doc {
+    padding: 15px;
+
+    .document-list {
+      grid-template-columns: 1fr;
+    }
+
+    .preview-section {
+      min-height: 400px;
+
+      .preview-content {
+        height: 400px;
+      }
+
+      .preview-empty {
+        min-height: 400px;
+      }
+    }
+  }
+}
+
+// =====================================================
+// 500px
+// =====================================================
+
+@media only screen and (max-width: 500px) {
+  .view-doc {
+    padding: 10px;
+
+    gap: 20px;
+
+    h1 {
+      padding: 9px 10px;
+
+      font-size: 16px;
+    }
+
+    .document-list {
+      grid-template-columns: 1fr;
+
+      gap: 15px;
+    }
+
+    .document-card {
+      min-height: 170px;
+
+      padding: 25px 10px;
+
+      .pdf-icon {
+        font-size: 28px;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      .btn-parent {
+        width: 100%;
+
+        .pre,
+        .down {
+          padding: 6px 9px;
+
+          font-size: 12px;
+        }
+      }
+    }
+
+    .preview-section {
+      min-height: 350px;
+
+      .preview-header {
+        min-height: 50px;
+
+        padding: 8px 10px;
+
+        h2 {
+          font-size: 14px;
+        }
+
+        button {
+          padding: 4px 8px;
+
+          font-size: 12px;
+        }
+      }
+
+      .preview-content {
+        height: 350px;
+
+        padding: 5px;
+      }
+
+      .preview-empty {
+        min-height: 350px;
+
+        svg {
+          font-size: 45px;
+        }
+
+        p {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
