@@ -11,9 +11,8 @@ const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
 
 const EmpList = lazy(() => import("./Pages/EmpList/EmpList"));
 const AddEmployee = lazy(() => import("../src/Pages/AddEmployee/AddEmployee"));
-const OfficialNotes = lazy(
-  () => import("../src/Pages/OfficialNotes/OfficialNotes"),
-);
+
+const OfficialNotes = lazy(() => import("../src/Pages/OfficialNotes/OfficialNotes"));
 const SalaryDetails = lazy(
   () => import("../src/Pages/AddEmployee/SalaryDetails"),
 );
