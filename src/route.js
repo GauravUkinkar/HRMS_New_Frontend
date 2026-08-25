@@ -73,6 +73,9 @@ const IncrementLetter = lazy(() =>
 const ReleavingLetter = lazy(() =>
   import("./Pages/ReleavingLetter/ReleavingLetter")
 );
+const InternshipLetter = lazy(() =>
+  import("./Pages/InternshipLetter/Internshipletter")
+);
 
 const Empdashboard = lazy(() =>
   import("./Pages/Empdashboard/Empdashboard")
@@ -255,6 +258,12 @@ export const routes = [
     name: "ReleavingLetter",
     path: "/releavingLetter",
     comp: ReleavingLetter,
+    adminonly: true,
+  },
+    {
+    name: "InternshipLetter",
+    path: "/internshipLetter",
+    comp: InternshipLetter,
     adminonly: true,
   },
 

@@ -41,20 +41,21 @@ const Internshipletter = () => {
                   Nvm Infratech Pvt.Ltd
                 </MenuItem>
               </SelectInput>
+           
+              <Input label="Intern Name" name="intern name" required />
+              <Input label="Internship Position" name="Internship Position" required />
               <Input
-                label="Effective Date"
+                label="Internship Start Date"
                 type="date"
-                name="Effective date"
+                name="Internship Start date"
                 required
               />
-              <Input label="Employee Name" name="employee name" required />
-              <Input label="Previous CTC" name="Previous CTC" required />
-              <Input
-                label="Increment Percentage"
-                name="Increment Percentage"
+                 <Input
+                label="Internship End Date"
+                type="date"
+                name="Internship End date"
                 required
               />
-              <Input label="Revised CTC" name="Revised CTC" required />
 
               <Input label="Hr Manager Name" name="hr manager name" required />
               <button className="btn" type="submit">
@@ -72,7 +73,7 @@ const Internshipletter = () => {
                   </div>
                 </div>
                 <div className="heading">
-                  <h3>Increment Letter</h3>
+                  <h3>Internship Letter</h3>
                 </div>
                 <div className="name">
                   <p>Dear</p>
@@ -80,34 +81,22 @@ const Internshipletter = () => {
                 </div>
                 <div className="gap"></div>
                 <p>
-                  We are pleased to inform you that, in recognition of your
-                  continued hard work, dedication and valuable contributions to
-                  <strong>Pandoza Solutions Pvt. Ltd.</strong> , your
-                  compensation has been revised.
+               We are pleased to inform you that you have been selected for an internship as a <strong>Senior Software Developer</strong> at <strong>Pandoza Solutions Pvt. Ltd.</strong> , effective from <strong>25-08-2026</strong> to <strong></strong> 25-11-2026.
                 </p>
                 <div className="gap"></div>
                 <p>
-                  With effect from 01-03-19, your annual CTC has been revised
-                  from <strong>₹6,00,000 to ₹6,60,000,</strong> representing an
-                  increment of <strong>10%</strong>. The revised compensation
-                  will be applicable from the effective date mentioned above.
+                During your internship, you will have the opportunity to gain practical knowledge and hands-on experience related to your field of work. You will be expected to carry out the responsibilities assigned to you with dedication, professionalism, and sincerity.
                 </p>
                 <div className="gap"></div>
                 <p>
-                  All other terms and conditions of your employment remain
-                  unchanged.
+                 We believe that this internship will provide you with valuable exposure and help you develop your professional skills and knowledge.
                 </p>
                 <div className="gap"></div>
                 <p>
-                  We truly appreciate your performance and look forward to your
-                  continued contribution to the growth and success of
+                  We wish you a successful and rewarding internship with
                   <strong>Pandoza Solutions Pvt. Ltd.</strong>
                 </p>
-                <div className="gap"></div>
-                <p>
-                  Congratulations and best wishes for your future endeavors!
-                </p>
-
+            
                 <div className="gap"></div>
 
                 <div className="gap"></div>
