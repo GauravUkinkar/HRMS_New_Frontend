@@ -75,7 +75,7 @@ export const routes = [
   },
   {
     name: "OfficialNotes",
-    path: "/OfficialNotes",
+    path: "/officialNotes",
     comp: OfficialNotes,
     adminonly: true,
   },
