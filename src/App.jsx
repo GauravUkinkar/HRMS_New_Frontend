@@ -16,22 +16,22 @@ import LeaveApplication from "./Pages/LeaveApplication/LeaveApplication";
 
 
 function App() {
-  const {loader} = useContext(UserContext)
+  const { loader } = useContext(UserContext)
   return (
     <>
-    <ToastContainer/>
-   { loader && <Loader/>}
+      <ToastContainer />
+      {loader && <Loader />}
       <Routes>
-       
- <Route path="/LeaveApplication" element={<LeaveApplication />} />
-         <Route path="/login" element={<Login />} />
-         <Route path="/otpverification" element={<OtpVerification />} />
-         <Route path="/changepass" element={<ChangePass />} />
-         <Route path="/successpage" element={<SuccessPage />} />
-         <Route path="/forgot" element={<Forgot />} />
-        
-        {routes.map((item, index) =>(
-            <Route key={index} path={item.path} element={<AuthRoute  adminonly={item.adminonly}><item.comp /></AuthRoute>} />
+
+        <Route path="/LeaveApplication" element={<LeaveApplication />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/otpverification" element={<OtpVerification />} />
+        <Route path="/changepass" element={<ChangePass />} />
+        <Route path="/successpage" element={<SuccessPage />} />
+        <Route path="/forgot" element={<Forgot />} />
+
+        {routes.map((item, index) => (
+          <Route key={index} path={item.path} element={<AuthRoute adminonly={item.adminonly}><item.comp /></AuthRoute>} />
         ))}
       </Routes>
     </>
