@@ -25,10 +25,14 @@ const Login = () => {
       setLoader(true);
 
       const response = await api.post("AuthController/Login", values);
-      if (response.data.data.role === "ADMIN") {
-        navigate("/");
-      } else {
-        navigate("/Empdashboard");
+
+      if (response.status === 200) {
+        toast.success("Login Successfully");
+        localStorage.setItem("LoggedIn", "true");
+
+        await getEmpDetails();
+
+        navigate("/", { replace: true });
       }
     } catch (error) {
       console.log(error.response);
@@ -51,8 +55,14 @@ const Login = () => {
     }
   };
 
-  const { handleChange, handleSubmit, handleBlur, values, error, setError } =
-    UseForm(formObj, loginValidate, login);
+  const {
+    handleChange,
+    handleSubmit,
+    handleBlur,
+    values,
+    error,
+    setError,
+  } = UseForm(formObj, loginValidate, login);
 
   return (
     <div className="login-parent parent">
