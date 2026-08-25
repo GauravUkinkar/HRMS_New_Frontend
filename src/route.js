@@ -1,4 +1,5 @@
 import { lazy } from "react";
+
 import Profile from "./Pages/EmployeeProfile/Profile";
 import EditEmployee from "./Pages/AddEmployee/EditEmployee";
 import EditSalary from "./Pages/AddSalary/EditSalary";
@@ -6,61 +7,146 @@ import UserList from "./Pages/UserList/UserList";
 import LeaveManagement from "./Pages/LeaveManagement/LeaveManagement";
 import Leave_details from "./Pages/LeaveManagement/Leave_details";
 
-
-const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
-
-const EmpList = lazy(() => import("./Pages/EmpList/EmpList"));
-const AddEmployee = lazy(() => import("../src/Pages/AddEmployee/AddEmployee"));
-
-const OfficialNotes = lazy(() => import("../src/Pages/OfficialNotes/OfficialNotes"));
-const SalaryDetails = lazy(
-  () => import("../src/Pages/AddEmployee/SalaryDetails"),
+const Payslip = lazy(() =>
+  import("./Pages/Payslip/Payslip")
 );
 
-const UploadDoc = lazy(() => import("../src/Pages/UploadDoc/UploadDoc"));
-const Viewdoc = lazy(() => import("../src/Pages/Viewdoc/Viewdoc"));
-const Empviewdoc = lazy(() => import("../src/Pages/Empviewdoc/Empviewdoc"));
-const AdminDash = lazy(() => import("../src/Pages/AdminDash/AdminDash"));
-const Generatesalary = lazy(
-  () => import("../src/Pages/Generatesalary/Generatesalary"),
+const EmpList = lazy(() =>
+  import("./Pages/EmpList/EmpList")
 );
-const Attendance = lazy(() => import("./Pages/Attendence/Attendance"));
-const AddSalary = lazy(() => import("./Pages/AddSalary/AddSalary"));
-const SalaryManagement = lazy(
-  () => import("./Pages/SalaryManagement/SalaryManagement"),
+
+const AddEmployee = lazy(() =>
+  import("./Pages/AddEmployee/AddEmployee")
 );
-const OfferLetter = lazy(() => import("./Pages/OfferLetter/OfferLetter"));
-const InternshipLetter = lazy(() => import("./Pages/InternshipLetter/Internshipletter"));
 
-const PromotionLetter = lazy(() => import("./Pages/PromotionLetter/PromotionLetter"));
-
-const ExperienceLetter = lazy(() => import("./Pages/ExperienceLetter/ExperienceLetter"));
-const ReleavingLetter = lazy(() => import("./Pages/ReleavingLetter/ReleavingLetter"));
-
-
-const OfferLetterManagement = lazy(
-  () => import("./Pages/OfferLetterManagement/OfferLetterManagement"),
+const OfficialNotes = lazy(() =>
+  import("./Pages/OfficialNotes/OfficialNotes")
 );
-const IncrementLetter = lazy(
-  () => import("./Pages/IncrementLetter/IncrementLetter"),
+
+const SalaryDetails = lazy(() =>
+  import("./Pages/AddEmployee/SalaryDetails")
 );
-const Empdashboard = lazy(
-  () => import("../src/Pages/Empdashboard/Empdashboard"),
+
+const UploadDoc = lazy(() =>
+  import("./Pages/UploadDoc/UploadDoc")
+);
+
+const Viewdoc = lazy(() =>
+  import("./Pages/Viewdoc/Viewdoc")
+);
+
+const Empviewdoc = lazy(() =>
+  import("./Pages/Empviewdoc/Empviewdoc")
+);
+
+const AdminDash = lazy(() =>
+  import("./Pages/AdminDash/AdminDash")
+);
+
+const Generatesalary = lazy(() =>
+  import("./Pages/Generatesalary/Generatesalary")
+);
+
+const Attendance = lazy(() =>
+  import("./Pages/Attendence/Attendance")
+);
+
+const AddSalary = lazy(() =>
+  import("./Pages/AddSalary/AddSalary")
+);
+
+const SalaryManagement = lazy(() =>
+  import("./Pages/SalaryManagement/SalaryManagement")
+);
+
+const OfferLetter = lazy(() =>
+  import("./Pages/OfferLetter/OfferLetter")
+);
+
+const OfferLetterManagement = lazy(() =>
+  import("./Pages/OfferLetterManagement/OfferLetterManagement")
+);
+
+const IncrementLetter = lazy(() =>
+  import("./Pages/IncrementLetter/IncrementLetter")
+);
+
+const Empdashboard = lazy(() =>
+  import("./Pages/Empdashboard/Empdashboard")
 );
 
 export const routes = [
+  /* =====================================================
+     EMPLOYEE / COMMON
+  ===================================================== */
+
   {
     name: "All Employees",
     path: "/empList",
     comp: EmpList,
     adminonly: false,
+    employeeonly: false,
   },
+
+  {
+    name: "Empdashboard",
+    path: "/Empdashboard",
+    comp: Empdashboard,
+    adminonly: false,
+    employeeonly: true,
+  },
+
+  {
+    name: "Upload Documents",
+    path: "/uploadDoc",
+    comp: UploadDoc,
+    adminonly: false,
+    employeeonly: true,
+  },
+
+  {
+    name: "Viewdoc",
+    path: "/Viewdoc",
+    comp: Viewdoc,
+    adminonly: false,
+    employeeonly: true,
+  },
+
+  {
+    name: "Empviewdoc",
+    path: "/Empviewdoc",
+    comp: Empviewdoc,
+    adminonly: false,
+    employeeonly: true,
+  },
+
+  {
+    name: "LeaveManagement",
+    path: "/LeaveManagement",
+    comp: LeaveManagement,
+    adminonly: false,
+    employeeonly: true,
+  },
+
+  {
+    name: "Payslip",
+    path: "/Payslip",
+    comp: Payslip,
+    adminonly: false,
+    employeeonly: true,
+  },
+
+
+  /* =====================================================
+     ADMIN
+  ===================================================== */
 
   {
     name: "All Users",
     path: "/userlist",
     comp: UserList,
     adminonly: true,
+    employeeonly: false,
   },
 
   {
@@ -68,60 +154,47 @@ export const routes = [
     path: "/addEmployee",
     comp: AddEmployee,
     adminonly: true,
+    employeeonly: false,
   },
+
   {
     name: "Edit Employee",
     path: "/editEmployee/:employeeId",
     comp: EditEmployee,
     adminonly: true,
+    employeeonly: false,
   },
+
   {
     name: "Edit Salary",
     path: "/editSalary/:sId",
     comp: EditSalary,
     adminonly: true,
+    employeeonly: false,
   },
+
   {
     name: "OfficialNotes",
     path: "/officialNotes",
     comp: OfficialNotes,
     adminonly: true,
+    employeeonly: false,
   },
+
   {
     name: "SalaryDetails",
     path: "/salaryDetails",
     comp: SalaryDetails,
     adminonly: true,
-  },
-  {
-    name: "Empdashboard",
-    path: "/Empdashboard",
-    comp: Empdashboard,
-    adminonly: false,
+    employeeonly: false,
   },
 
-  {
-    name: "Upload Documents",
-    path: "/uploadDoc",
-    comp: UploadDoc,
-    adminonly: "false",
-  },
-  {
-    name: "Viewdoc",
-    path: "/Viewdoc",
-    comp: Viewdoc,
-    adminonly: false,
-  },
-  {
-    name: "Empviewdoc",
-    path: "/Empviewdoc",
-    comp: Empviewdoc,
-    adminonly: false,
-  },
   {
     name: "AdminDash",
     path: "/",
     comp: AdminDash,
+    adminonly: true,
+    employeeonly: false,
   },
 
   {
@@ -129,30 +202,23 @@ export const routes = [
     path: "/generatesalary",
     comp: Generatesalary,
     adminonly: true,
+    employeeonly: false,
   },
-  {
-    name: "LeaveManagement",
-    path: "/LeaveManagement",
-    comp: LeaveManagement,
-    adminonly: false,
-  },
+
   {
     name: "Attendance",
     path: "/attendance",
     comp: Attendance,
     adminonly: true,
+    employeeonly: false,
   },
-  {
-    name: "Payslip",
-    path: "/Payslip",
-    comp: Payslip,
-    adminonly: false,
-  },
+
   {
     name: "AddSalary",
     path: "/addSalary",
     comp: AddSalary,
     adminonly: true,
+    employeeonly: false,
   },
   
   {
@@ -160,42 +226,30 @@ export const routes = [
     path: "/salaryManagement",
     comp: SalaryManagement,
     adminonly: true,
+    employeeonly: false,
   },
+
   {
     name: "OfferLetter",
     path: "/offerLetter",
     comp: OfferLetter,
     adminonly: true,
-  },
-    {
-    name: "PromotionLetter",
-    path: "/promotionLetter",
-    comp: PromotionLetter,
-    adminonly: true,
-  },
-      {
-    name: "InternshipLetter",
-    path: "/internshipLetter",
-    comp: InternshipLetter,
-    adminonly: true,
-  },
-    {
-    name: "ExperienceLetter",
-    path: "/experienceLetter",
-    comp: ExperienceLetter,
-    adminonly: true,
+    employeeonly: false,
   },
   {
     name: "OfferLetterManagement",
     path: "/offerLettermanagement",
     comp: OfferLetterManagement,
     adminonly: true,
+    employeeonly: false,
   },
+
   {
     name: "IncrementLetter",
     path: "/incrementLetter",
     comp: IncrementLetter,
     adminonly: true,
+    employeeonly: false,
   },
     {
     name: "ReleavingLetter",
@@ -204,17 +258,19 @@ export const routes = [
     adminonly: true,
   },
 
-  // sunil Shelke
   {
     name: "EmployeeProfile",
     path: "/EmployeeProfile/:employeeId",
     comp: Profile,
     adminonly: true,
+    employeeonly: false,
   },
+
   {
     name: "EmployeeLeaves",
     path: "/EmployeeLeaves/:employeeId",
     comp: Leave_details,
     adminonly: true,
+    employeeonly: false,
   },
 ];
