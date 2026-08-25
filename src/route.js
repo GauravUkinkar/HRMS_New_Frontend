@@ -30,6 +30,10 @@ const SalaryManagement = lazy(
   () => import("./Pages/SalaryManagement/SalaryManagement"),
 );
 const OfferLetter = lazy(() => import("./Pages/OfferLetter/OfferLetter"));
+const InternshipLetter = lazy(() => import("./Pages/InternshipLetter/Internshipletter"));
+
+const PromotionLetter = lazy(() => import("./Pages/PromotionLetter/PromotionLetter"));
+
 const ExperienceLetter = lazy(() => import("./Pages/ExperienceLetter/ExperienceLetter"));
 const ReleavingLetter = lazy(() => import("./Pages/ReleavingLetter/ReleavingLetter"));
 
@@ -160,6 +164,18 @@ export const routes = [
     name: "OfferLetter",
     path: "/offerLetter",
     comp: OfferLetter,
+    adminonly: true,
+  },
+    {
+    name: "PromotionLetter",
+    path: "/promotionLetter",
+    comp: PromotionLetter,
+    adminonly: true,
+  },
+      {
+    name: "InternshipLetter",
+    path: "/internshipLetter",
+    comp: InternshipLetter,
     adminonly: true,
   },
     {
