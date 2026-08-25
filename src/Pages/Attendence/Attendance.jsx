@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from "react";
 import "./Attendance.scss";
 
@@ -8,11 +7,13 @@ import Table_Comp from "../../comp/table/Table";
 import { Dropdown } from "antd";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { SlCalender } from "react-icons/sl";
+import { FaPlus } from "react-icons/fa6";
 
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 import { UserContext } from "../../../Context";
+import { Link } from "react-router-dom";
 
 const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 
@@ -22,13 +23,12 @@ const Attendance = () => {
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
 
-  // Punch In edit
+  /* =========================================================
+     PUNCH IN EDIT
+  ========================================================= */
+
   const [activePunchIn, setActivePunchIn] = useState(null);
   const [newTime, setNewTime] = useState("");
-
-  // Punch Out edit
-  const [activePunchOut, setActivePunchOut] = useState(null);
-  const [newPunchOutTime, setNewPunchOutTime] = useState("");
 
   const today = new Date().toLocaleDateString("en-GB");
 
@@ -112,6 +112,7 @@ const Attendance = () => {
 
       if (response.status === 200) {
         toast.success("Marked Present Successfully");
+
         await getEmployeeData();
       }
     } catch (error) {
@@ -140,6 +141,7 @@ const Attendance = () => {
 
       if (response.status === 200) {
         toast.success("Marked Half Day Successfully");
+
         await getEmployeeData();
       }
     } catch (error) {
@@ -168,6 +170,7 @@ const Attendance = () => {
 
       if (response.status === 200) {
         toast.success("Marked Absent Successfully");
+
         await getEmployeeData();
       }
     } catch (error) {
@@ -215,45 +218,10 @@ const Attendance = () => {
   };
 
   /* =========================================================
-     REMOVE PUNCH OUT
-  ========================================================= */
-
-  const removePunchOut = async (employeeId) => {
-    try {
-      setLoader(true);
-
-      const response = await axios.get(
-        `${BASE_URL2}api/punch/clear/out/${employeeId}`
-      );
-
-      if (response.status === 200) {
-        toast.success("Punch Out Removed Successfully");
-
-        setActivePunchOut(null);
-        setNewPunchOutTime("");
-
-        await getEmployeeData();
-      }
-    } catch (error) {
-      console.error("Remove Punch Out Error:", error);
-
-      toast.error(
-        error?.response?.data?.message ||
-          "Unable to remove punch out"
-      );
-    } finally {
-      setLoader(false);
-    }
-  };
-
-  /* =========================================================
      CHANGE PUNCH IN TIME
   ========================================================= */
 
   const changePunchInTime = (record) => {
-    setActivePunchOut(null);
-    setNewPunchOutTime("");
-
     setActivePunchIn(record?.employeeId);
 
     if (
@@ -327,89 +295,6 @@ const Attendance = () => {
   };
 
   /* =========================================================
-     CHANGE PUNCH OUT TIME
-  ========================================================= */
-
-  const changePunchOutTime = (record) => {
-    setActivePunchIn(null);
-    setNewTime("");
-
-    setActivePunchOut(record?.employeeId);
-
-    if (
-      record?.punchOut &&
-      record.punchOut !== "Punch Out From Admin"
-    ) {
-      setNewPunchOutTime(
-        record.punchOut.slice(0, 5)
-      );
-    } else {
-      setNewPunchOutTime("");
-    }
-  };
-
-  /* =========================================================
-     UPDATE PUNCH OUT TIME
-  ========================================================= */
-
-  const updatePunchOutTime = async (employeeId) => {
-    if (!newPunchOutTime) {
-      toast.error("Please select punch out time");
-      return;
-    }
-
-    try {
-      setLoader(true);
-
-      const todayDate = new Date();
-
-      const [hours, minutes] =
-        newPunchOutTime.split(":");
-
-      const fullDate = new Date(
-        Date.UTC(
-          todayDate.getFullYear(),
-          todayDate.getMonth(),
-          todayDate.getDate(),
-          Number(hours),
-          Number(minutes),
-          0
-        )
-      );
-
-      const response = await axios.post(
-        `${BASE_URL2}api/punch/newtime/out/${employeeId}`,
-        {
-          punchOutTime: fullDate.toISOString(),
-        }
-      );
-
-      if (response.status === 200) {
-        toast.success(
-          "Punch Out Time Updated Successfully"
-        );
-
-        setActivePunchOut(null);
-        setNewPunchOutTime("");
-
-        await getEmployeeData();
-      }
-    } catch (error) {
-      console.error(
-        "Update Punch Out Error:",
-        error
-      );
-
-      toast.error(
-        error?.response?.data?.message ||
-          "Unable to update punch out time"
-      );
-    } finally {
-      setLoader(false);
-    }
-  };
-
-  /* =========================================================
      CALENDAR
   ========================================================= */
 
@@ -421,12 +306,38 @@ const Attendance = () => {
   };
 
   /* =========================================================
-     INITIAL LOAD
+     INITIAL API CALL
   ========================================================= */
 
   useEffect(() => {
     getEmployeeData();
   }, []);
+
+  /* =========================================================
+     DYNAMIC COUNTS
+  ========================================================= */
+
+  const totalEmployees = data.length;
+
+  const presentEmployees = data.filter((item) => {
+    const status = String(
+      item?.status || ""
+    ).toLowerCase();
+
+    return (
+      status === "present" ||
+      status === "in office" ||
+      status === "inoffice"
+    );
+  }).length;
+
+  const absentEmployees = data.filter((item) => {
+    const status = String(
+      item?.status || ""
+    ).toLowerCase();
+
+    return status === "absent";
+  }).length;
 
   /* =========================================================
      TABLE COLUMNS
@@ -457,7 +368,9 @@ const Attendance = () => {
       align: "center",
     },
 
-    /* ===================== IN TIME ===================== */
+    /* =====================================================
+       IN TIME
+    ===================================================== */
 
     {
       title: "In Time",
@@ -506,7 +419,10 @@ const Attendance = () => {
       },
     },
 
-    /* ===================== OUT TIME ===================== */
+    /* =====================================================
+       OUT TIME
+       READ ONLY
+    ===================================================== */
 
     {
       title: "Out Time",
@@ -514,146 +430,162 @@ const Attendance = () => {
       key: "punchOut",
       align: "center",
 
-      render: (_, record) => {
-        if (
-          activePunchOut === record?.employeeId
-        ) {
-          return (
-            <div className="change-time-wrapper">
-
-              <input
-                type="time"
-                value={newPunchOutTime}
-                onChange={(e) =>
-                  setNewPunchOutTime(
-                    e.target.value
-                  )
-                }
-                className="time-input"
-              />
-
-              <button
-                type="button"
-                className="save-time-btn"
-                onClick={() =>
-                  updatePunchOutTime(
-                    record?.employeeId
-                  )
-                }
-                disabled={loader}
-              >
-                {loader ? "Saving..." : "Save"}
-              </button>
-
-            </div>
-          );
-        }
-
-        return (
-          <span>
-            {record?.punchOut || "-"}
-          </span>
-        );
-      },
+      render: (_, record) => (
+        <span>
+          {record?.punchOut || "-"}
+        </span>
+      ),
     },
 
-    /* ===================== STATUS ===================== */
+    /* =====================================================
+       STATUS
+    ===================================================== */
 
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       align: "center",
+
+      render: (status) => {
+        const displayStatus =
+          String(status || "").toLowerCase() ===
+          "absent"
+            ? "IN Office"
+            : status || "IN Office";
+
+        return (
+          <span className="attendance-status">
+            {displayStatus}
+          </span>
+        );
+      },
     },
 
-    /* ===================== ACTION ===================== */
+    /* =====================================================
+       ACTION
+    ===================================================== */
 
-   {
-  title: "Action",
-  dataIndex: "Action",
-  key: "Action",
-  align: "center",
+    {
+      title: "Action",
+      dataIndex: "Action",
+      key: "Action",
+      align: "center",
 
-  render: (_, record) => {
-    const menuItems = [];
+      render: (_, record) => {
+        const menuItems = [];
 
-    // Remove Punch In
-    if (record?.punchIn) {
-      menuItems.push({
-        key: "1",
-        label: "Remove Punch In",
-        onClick: () =>
-          removePunchIn(record?.employeeId),
-      });
+        /* -----------------------------------------------
+           REMOVE PUNCH IN
+        ------------------------------------------------ */
 
-      // Change Punch In Time
-      menuItems.push({
-        key: "2",
-        label: "Change Punch In Time",
-        onClick: () =>
-          changePunchInTime(record),
-      });
-    }
+        if (record?.punchIn) {
+          menuItems.push({
+            key: "1",
+            label: "Remove Punch In",
 
-    // Mark Present
-    menuItems.push({
-      key: "3",
-      label: "Mark Present",
-      onClick: () =>
-        markPresent(record?.employeeId),
-    });
+            onClick: () =>
+              removePunchIn(
+                record?.employeeId
+              ),
+          });
 
-    // Mark Absent
-    menuItems.push({
-      key: "4",
-      label: "Mark Absent",
-      onClick: () =>
-        markAbsent(record?.employeeId),
-    });
+          /* -----------------------------------------------
+             CHANGE PUNCH IN TIME
+          ------------------------------------------------ */
 
-    // Mark Half Day
-    menuItems.push({
-      key: "5",
-      label: "Mark Half Day",
-      onClick: () =>
-        markHalfDay(record?.employeeId),
-    });
+          menuItems.push({
+            key: "2",
+            label: "Change Punch In Time",
 
-    return (
-      <div className="dropdown_parent">
+            onClick: () =>
+              changePunchInTime(record),
+          });
+        }
 
-        {/* THREE DOT MENU */}
-        <Dropdown
-          menu={{
-            items: menuItems,
-          }}
-          trigger={["click"]}
-          placement="bottomRight"
-        >
-          <button
-            type="button"
-            className="three-dot-btn"
-          >
-            <HiOutlineDotsHorizontal />
-          </button>
-        </Dropdown>
+        /* -----------------------------------------------
+           MARK PRESENT
+        ------------------------------------------------ */
 
-        {/* CALENDAR BUTTON */}
-        <button
-          type="button"
-          className="calendar-btn"
-          onClick={() =>
-            handleCalendar(record)
-          }
-        >
-          <SlCalender />
-        </button>
+        menuItems.push({
+          key: "3",
+          label: "Mark Present",
 
-      </div>
-    );
-  },
-},
+          onClick: () =>
+            markPresent(
+              record?.employeeId
+            ),
+        });
+
+        /* -----------------------------------------------
+           MARK ABSENT
+        ------------------------------------------------ */
+
+        menuItems.push({
+          key: "4",
+          label: "Mark Absent",
+
+          onClick: () =>
+            markAbsent(
+              record?.employeeId
+            ),
+        });
+
+        /* -----------------------------------------------
+           MARK HALF DAY
+        ------------------------------------------------ */
+
+        menuItems.push({
+          key: "5",
+          label: "Mark Half Day",
+
+          onClick: () =>
+            markHalfDay(
+              record?.employeeId
+            ),
+        });
+
+        return (
+          <div className="dropdown_parent">
+
+            {/* THREE DOT */}
+
+            <Dropdown
+              menu={{
+                items: menuItems,
+              }}
+              trigger={["click"]}
+              placement="bottomRight"
+            >
+              <button
+                type="button"
+                className="three-dot-btn"
+              >
+                <HiOutlineDotsHorizontal />
+              </button>
+            </Dropdown>
+
+            {/* CALENDAR */}
+
+            <button
+              type="button"
+              className="calendar-btn"
+              onClick={() =>
+                handleCalendar(record)
+              }
+            >
+              <SlCalender />
+            </button>
+
+          </div>
+        );
+      },
+    },
   ];
+
+  /* =========================================================
+     RETURN
+  ========================================================= */
 
   return (
     <MainPanel
@@ -669,18 +601,64 @@ const Attendance = () => {
       ]}
     >
 
-      <ToastContainer />
-
       <div className="top-parent">
 
         <h1>Today's Attendance</h1>
 
-        <div className="buttons">
+        <div className="btn-group">
 
-          <button className="btn">
-            <SlCalender />
-            <span>{today}</span>
-          </button>
+          {/* TOTAL EMPLOYEE */}
+
+          <div className="count">
+            Total Employee:
+            <span>
+              {totalEmployees}
+            </span>
+          </div>
+
+          {/* PRESENT EMPLOYEE */}
+
+          <div className="count">
+            Present Employee:
+            <span>
+              {presentEmployees}
+            </span>
+          </div>
+
+          {/* ABSENT EMPLOYEE */}
+
+          <div className="count">
+            Absent Employee:
+            <span>
+              {absentEmployees}
+            </span>
+          </div>
+
+          {/* ADD PREVIOUS ATTENDANCE */}
+
+          <Link
+            to="/"
+            className="attendance-link"
+          >
+            <span>
+              <FaPlus />
+            </span>
+
+            Add Previous Attendance
+          </Link>
+
+          {/* VIEW PREVIOUS ATTENDANCE */}
+
+          <Link
+            to="/"
+            className="attendance-link"
+          >
+            <span>
+              <FaPlus />
+            </span>
+
+            View Previous Attendance
+          </Link>
 
         </div>
 
@@ -697,4 +675,3 @@ const Attendance = () => {
 };
 
 export default Attendance;
-

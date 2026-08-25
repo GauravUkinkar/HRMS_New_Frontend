@@ -1,19 +1,118 @@
-
 .top-parent {
+  width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 20px 10px;
+  align-items: center;
 
-  .buttons {
+  padding: 20px 10px;
+  box-sizing: border-box;
+
+  h1 {
+    margin: 0;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    color: #000;
+
+    font-family:
+      Georgia,
+      "Times New Roman",
+      serif;
+  }
+}
+
+/* ==========================================
+   TOP BUTTON GROUP
+========================================== */
+
+.btn-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+}
+
+/* ==========================================
+   EMPLOYEE COUNT
+========================================== */
+
+.count {
+  min-width: 150px;
+  height: 38px;
+
+  padding: 0 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #008c9e;
+  border-radius: 5px;
+
+  background: #fff;
+
+  color: #008c9e;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  span {
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+/* ==========================================
+   PREVIOUS ATTENDANCE LINKS
+========================================== */
+
+.attendance-link {
+  height: 38px;
+
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  border-radius: 5px;
+
+  background: #008c9e;
+
+  color: #fff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  white-space: nowrap;
+
+  transition: 0.3s ease;
+
+  span {
     display: flex;
-    gap: 10px;
     align-items: center;
+    justify-content: center;
+
+    svg {
+      font-size: 16px;
+    }
   }
 
-  .btn {
-    display: flex;
-    gap: 5px;
-    align-items: center;
+  &:hover {
+    background: #007481;
+    color: #fff;
   }
 }
 
@@ -25,16 +124,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   gap: 5px;
 
   button {
     border: none;
+
     color: #fff;
+
     padding: 8px 18px;
+
     font-size: 14px;
     font-weight: 500;
+
     cursor: pointer;
+
     border-radius: 5px;
+
     transition: 0.3s ease;
   }
 
@@ -64,13 +170,25 @@
 }
 
 /* ==========================================
+   STATUS
+========================================== */
+
+.attendance-status {
+  font-size: 14px;
+  font-weight: 500;
+  color: #008c9e;
+}
+
+/* ==========================================
    ACTION COLUMN
 ========================================== */
 
 .dropdown_parent {
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   gap: 10px;
 
   .three-dot-btn {
@@ -81,6 +199,7 @@
     margin: 0;
 
     border: none;
+
     background: transparent;
 
     display: flex;
@@ -115,7 +234,9 @@
     margin: 0;
 
     border: 1px solid #d9d9d9;
+
     background: #fff;
+
     border-radius: 2px;
 
     display: flex;
@@ -144,12 +265,14 @@
 }
 
 /* ==========================================
-   CHANGE TIME
+   CHANGE PUNCH IN TIME
 ========================================== */
 
 .change-time-wrapper {
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
   justify-content: center;
 
@@ -164,11 +287,13 @@
     padding: 4px 8px;
 
     border: 1px solid #d9d9d9;
+
     border-radius: 6px;
 
     background: #fff;
 
     font-size: 13px;
+
     color: #555;
 
     outline: none;
@@ -189,12 +314,15 @@
     height: 40px;
 
     border: none;
+
     border-radius: 5px;
 
     background: #0808e8;
+
     color: #fff;
 
     font-size: 15px;
+
     font-weight: 500;
 
     cursor: pointer;
@@ -207,6 +335,7 @@
 
     &:disabled {
       opacity: 0.6;
+
       cursor: not-allowed;
     }
   }
@@ -219,18 +348,21 @@
 .ant-dropdown {
   .ant-dropdown-menu {
     min-width: 180px;
+
     padding: 6px 0;
 
     .ant-dropdown-menu-item {
       padding: 8px 12px;
 
       font-size: 14px;
+
       color: #555;
 
       transition: 0.2s ease;
 
       &:hover {
         background: #f5f5f5;
+
         color: #1890ff;
       }
     }
@@ -241,15 +373,55 @@
    RESPONSIVE
 ========================================== */
 
+@media (max-width: 1200px) {
+  .top-parent {
+    align-items: flex-start;
+
+    gap: 15px;
+  }
+
+  .btn-group {
+    flex-wrap: wrap;
+
+    justify-content: flex-end;
+  }
+
+  .count {
+    min-width: auto;
+  }
+}
+
 @media (max-width: 768px) {
   .top-parent {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
 
-    .buttons {
-      width: 100%;
-    }
+    align-items: flex-start;
+
+    gap: 15px;
+  }
+
+  .btn-group {
+    width: 100%;
+
+    justify-content: flex-start;
+
+    flex-wrap: wrap;
+  }
+
+  .count {
+    min-width: 145px;
+
+    height: 36px;
+
+    font-size: 13px;
+  }
+
+  .attendance-link {
+    height: 36px;
+
+    padding: 0 12px;
+
+    font-size: 13px;
   }
 
   .attendance-btns {
@@ -257,6 +429,7 @@
 
     button {
       padding: 6px 10px;
+
       font-size: 12px;
     }
   }
@@ -267,5 +440,28 @@
     .calendar-btn {
       width: 40px;
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .top-parent {
+    padding: 15px 5px;
+
+    h1 {
+      font-size: 24px;
+    }
+  }
+
+  .btn-group {
+    width: 100%;
+
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .count,
+  .attendance-link {
+    width: 100%;
   }
 }
