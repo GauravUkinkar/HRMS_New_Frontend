@@ -79,9 +79,6 @@ const Empdashboard = lazy(() =>
 );
 
 export const routes = [
-  /* =====================================================
-     EMPLOYEE / COMMON
-  ===================================================== */
 
   {
     name: "All Employees",
@@ -223,7 +220,7 @@ export const routes = [
     adminonly: true,
     employeeonly: false,
   },
-  
+
   {
     name: "SalaryManagement",
     path: "/salaryManagement",
@@ -254,7 +251,7 @@ export const routes = [
     adminonly: true,
     employeeonly: false,
   },
-    {
+  {
     name: "ReleavingLetter",
     path: "/releavingLetter",
     comp: ReleavingLetter,
