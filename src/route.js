@@ -70,6 +70,9 @@ const OfferLetterManagement = lazy(() =>
 const IncrementLetter = lazy(() =>
   import("./Pages/IncrementLetter/IncrementLetter")
 );
+const ReleavingLetter = lazy(() =>
+  import("./Pages/ReleavingLetter/ReleavingLetter")
+);
 
 const Empdashboard = lazy(() =>
   import("./Pages/Empdashboard/Empdashboard")
