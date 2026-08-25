@@ -31,7 +31,7 @@ function App() {
         <Route path="/forgot" element={<Forgot />} />
 
         {routes.map((item, index) => (
-          <Route key={index} path={item.path} element={<AuthRoute adminonly={item.adminonly}><item.comp /></AuthRoute>} />
+          <Route key={index} path={item.path} element={<AuthRoute adminonly={item.adminonly} employeeonly={item.employeeonly}><item.comp /></AuthRoute>} />
         ))}
       </Routes>
     </>
