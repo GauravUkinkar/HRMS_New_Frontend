@@ -154,6 +154,7 @@ export const routes = [
     comp: AddSalary,
     adminonly: true,
   },
+  
   {
     name: "SalaryManagement",
     path: "/salaryManagement",
