@@ -1,25 +1,31 @@
-.top-parent{
+
+.top-parent {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 10px;
+
+  .buttons {
     display: flex;
-    justify-content: space-between;
-    padding: 20px 10px;
-    .buttons{
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-    .btn{
-        display: flex;
-        gap: 5px;
-        align-items: center;
-    }
-    
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
 }
+
+/* ==========================================
+   ATTENDANCE BUTTONS
+========================================== */
+
 .attendance-btns {
   display: flex;
-  gap: 10px;
   align-items: center;
   justify-content: center;
-  gap:5px;
+  gap: 5px;
 
   button {
     border: none;
@@ -56,33 +62,210 @@
     }
   }
 }
-.action-btns {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 15px; // Gap between delete and edit icons
 
-  span {
-    cursor: pointer;
+/* ==========================================
+   ACTION COLUMN
+========================================== */
+
+.dropdown_parent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  .three-dot-btn {
+    width: 25px;
+    height: 32px;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+    background: transparent;
+
     display: flex;
     align-items: center;
     justify-content: center;
-  }
 
-  svg {
-    font-size: 22px; 
+    color: #1890ff;
+
+    cursor: pointer;
+
     transition: 0.3s ease;
+
+    svg {
+      font-size: 20px;
+    }
+
+    &:hover {
+      color: #1677ff;
+      transform: scale(1.1);
+    }
+
+    &:focus {
+      outline: none;
+    }
   }
 
-  span:first-child svg {
-    color: #e53935; 
+  .calendar-btn {
+    width: 46px;
+    height: 32px;
+
+    padding: 0;
+    margin: 0;
+
+    border: 1px solid #d9d9d9;
+    background: #fff;
+    border-radius: 2px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #333;
+
+    cursor: pointer;
+
+    transition: 0.3s ease;
+
+    svg {
+      font-size: 17px;
+    }
+
+    &:hover {
+      border-color: #1890ff;
+      color: #1890ff;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+/* ==========================================
+   CHANGE TIME
+========================================== */
+
+.change-time-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  min-width: 120px;
+
+  .time-input {
+    width: 76px;
+    height: 32px;
+
+    padding: 4px 8px;
+
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+
+    background: #fff;
+
+    font-size: 13px;
+    color: #555;
+
+    outline: none;
+
+    cursor: pointer;
+
+    &:focus {
+      border-color: #1890ff;
+
+      box-shadow:
+        0 0 0 2px
+        rgba(24, 144, 255, 0.1);
+    }
   }
 
-  span:last-child svg {
-    color: #1976d2; 
+  .save-time-btn {
+    width: 164px;
+    height: 40px;
+
+    border: none;
+    border-radius: 5px;
+
+    background: #0808e8;
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: 0.3s ease;
+
+    &:hover {
+      background: #0000c7;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ==========================================
+   ANT DESIGN DROPDOWN
+========================================== */
+
+.ant-dropdown {
+  .ant-dropdown-menu {
+    min-width: 180px;
+    padding: 6px 0;
+
+    .ant-dropdown-menu-item {
+      padding: 8px 12px;
+
+      font-size: 14px;
+      color: #555;
+
+      transition: 0.2s ease;
+
+      &:hover {
+        background: #f5f5f5;
+        color: #1890ff;
+      }
+    }
+  }
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+  .top-parent {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+
+    .buttons {
+      width: 100%;
+    }
   }
 
-  svg:hover {
-    transform: scale(1.1);
+  .attendance-btns {
+    flex-wrap: wrap;
+
+    button {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+  }
+
+  .dropdown_parent {
+    gap: 5px;
+
+    .calendar-btn {
+      width: 40px;
+    }
   }
 }
