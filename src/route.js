@@ -30,6 +30,10 @@ const SalaryManagement = lazy(
   () => import("./Pages/SalaryManagement/SalaryManagement"),
 );
 const OfferLetter = lazy(() => import("./Pages/OfferLetter/OfferLetter"));
+const ExperienceLetter = lazy(() => import("./Pages/ExperienceLetter/ExperienceLetter"));
+const ReleavingLetter = lazy(() => import("./Pages/ReleavingLetter/ReleavingLetter"));
+
+
 const OfferLetterManagement = lazy(
   () => import("./Pages/OfferLetterManagement/OfferLetterManagement"),
 );
@@ -158,6 +162,12 @@ export const routes = [
     comp: OfferLetter,
     adminonly: true,
   },
+    {
+    name: "ExperienceLetter",
+    path: "/experienceLetter",
+    comp: ExperienceLetter,
+    adminonly: true,
+  },
   {
     name: "OfferLetterManagement",
     path: "/offerLettermanagement",
@@ -168,6 +178,12 @@ export const routes = [
     name: "IncrementLetter",
     path: "/incrementLetter",
     comp: IncrementLetter,
+    adminonly: true,
+  },
+    {
+    name: "ReleavingLetter",
+    path: "/releavingLetter",
+    comp: ReleavingLetter,
     adminonly: true,
   },
 

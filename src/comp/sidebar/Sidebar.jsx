@@ -9,10 +9,17 @@ import { LuLogOut } from "react-icons/lu";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { LuCalendarClock } from "react-icons/lu";
-import { Link } from "react-router-dom";
+import { Link} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { LuSquareUser } from "react-icons/lu";
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+
+
+
 const Sidebar = ({ active, setActive, closeSidebar }) => {
+  const navigate = useNavigate();
 
   const [childIndex, setChildIndex] = useState(null);
 
@@ -129,6 +136,22 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
       link: "/officialNotes",
     },
   ];
+  const logout = async () => {
+  try{
+    const response = await axios.post(
+      `${BASE_URL}AuthController/logout`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    console.log("Logout:",response.data);
+    navigate("/login");
+  } catch (error){
+    console.error("Logout failed:",error);
+    navigate("/login");
+  }
+};
 
   // ==========================================
   // CLICK PARENT MENU
@@ -170,17 +193,6 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
 
     closeSidebar();
   };
-
-  // CLICK LOGOUT
-
-  const handleLogout = () => {
-
-    setChildIndex(null);
-
-    closeSidebar();
-  };
-
-
   return (
 
     <div
@@ -307,7 +319,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
       <Link
         className="logout"
         to="/login"
-        onClick={handleLogout}
+        onClick={logout}
       >
 
         <span>

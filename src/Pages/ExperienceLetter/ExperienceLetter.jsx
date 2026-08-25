@@ -1,30 +1,28 @@
 import React from "react";
-import "./IncrementLetter.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
-import Input from "../../comp/input/Input";
-import { MenuItem } from "@mui/material";
+import "./ExperienceLetter.scss";
 import SelectInput from "../../comp/selectInput/SelectInput";
+import { MenuItem } from "@mui/material";
+import Input from "../../comp/input/Input";
+import { FaGlobe, FaLocationDot, FaPhoneVolume } from "react-icons/fa6";
+import { Link } from "react-router-dom";
+import { IoIosMail } from "react-icons/io";
 import PanLogo from "../../assets/pan-watermark.webp";
 import logo_pan from "../../assets/offer-logo-pan.png";
 import right_corner from "../../assets/right-corner.png";
 import left_corner from "../../assets/left-corner.png";
-import { FaLocationDot } from "react-icons/fa6";
-import { Link } from "react-router-dom";
-import { FaPhoneVolume } from "react-icons/fa6";
-import { IoIosMail } from "react-icons/io";
-import { FaGlobe } from "react-icons/fa";
 
-const IncrementLetter = () => {
+const ExperienceLetter = () => {
   return (
     <>
       <MainPanel>
-        <div className="incrementletter-parent parent">
-          <div className="incrementletter-cont cont">
-            <div className="left-increment">
+        <div className="experienceletter-parent parent">
+          <div className="experienceletter-cont cont">
+            <div className="left-experience">
               <Input
-                label="Increament-Letter Date"
+                label="Experience-Letter Date"
                 type="date"
-                name="Increament-letter-date"
+                name="Experience-letter-date"
                 required
               />
               <SelectInput
@@ -43,29 +41,32 @@ const IncrementLetter = () => {
                   Nvm Infratech Pvt.Ltd
                 </MenuItem>
               </SelectInput>
-              <Input
-                label="Effective Date"
-                type="date"
-                name="Effective date"
-                required
-              />
+      
               <Input label="Employee Name" name="employee name" required />
-              <Input label="Previous CTC" name="Previous CTC" required />
-              <Input
-                label="Increment Percentage"
-                name="Increment Percentage"
+                      <Input
+                label="Designation"
+                name="Designation"
                 required
               />
-              <Input label="Revised CTC" name="Revised CTC" required />
-
+              <Input label="Joining Date" name="Joining Date" type="date" required />
+              <Input
+                label="Relieving Date"
+                name="Relieving Date"
+                type="date"
+                required
+              />
               <Input label="Hr Manager Name" name="hr manager name" required />
               <button className="btn" type="submit">
                 Submit
               </button>
             </div>
-            <div className="right-increment">
-              <div className="increment-pdf-page">
-                <img className="leftcorner" src={left_corner} alt="left-corner" />
+            <div className="right-experience">
+              <div className="experience-pdf-page">
+                <img
+                  className="leftcorner"
+                  src={left_corner}
+                  alt="left-corner"
+                />
                 <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
                 <div className="top">
                   <div className="date">Date:01-03-19</div>
@@ -74,7 +75,7 @@ const IncrementLetter = () => {
                   </div>
                 </div>
                 <div className="heading">
-                  <h3>Increment Letter</h3>
+                  <h3>Experience Letter</h3>
                 </div>
                 <div className="name">
                   <p>Dear</p>
@@ -82,22 +83,15 @@ const IncrementLetter = () => {
                 </div>
                 <div className="gap"></div>
                 <p>
-                  We are pleased to inform you that, in recognition of your
-                  continued hard work, dedication and valuable contributions to
-                  <strong>Pandoza Solutions Pvt. Ltd.</strong> , your
-                  compensation has been revised.
+                This is to certify that Kartik Hatte was employed with <strong>Pandoza Solutions Pvt. Ltd.</strong> as a Software Developer from <strong>01-03-2023</strong> to <strong>25-08-2026</strong>.
                 </p>
                 <div className="gap"></div>
                 <p>
-                  With effect from 01-03-19, your annual CTC has been revised
-                  from <strong>₹6,00,000 to ₹6,60,000,</strong> representing an
-                  increment of <strong>10%</strong>. The revised compensation
-                  will be applicable from the effective date mentioned above.
+                  During his tenure with the organization, he was responsible for carrying out his assigned duties and responsibilities efficiently and professionally.
                 </p>
                 <div className="gap"></div>
                 <p>
-                  All other terms and conditions of your employment remain
-                  unchanged.
+                  We found him to be sincere, hardworking, dedicated, and committed towards his work. His conduct and performance during his employment were satisfactory.
                 </p>
                 <div className="gap"></div>
                 <p>
@@ -107,7 +101,7 @@ const IncrementLetter = () => {
                 </p>
                 <div className="gap"></div>
                 <p>
-                  Congratulations and best wishes for your future endeavors!
+                  We wish him all the very best for his future endeavors.
                 </p>
 
                 <div className="gap"></div>
@@ -168,4 +162,4 @@ const IncrementLetter = () => {
   );
 };
 
-export default IncrementLetter;
+export default ExperienceLetter;
