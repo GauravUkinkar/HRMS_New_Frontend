@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./Empviewdoc.scss";
 
+import { UserContext } from "../../../Context";
+
 import { GrDocumentPdf } from "react-icons/gr";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlinePreview } from "react-icons/md";
@@ -10,10 +12,16 @@ import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
-// Logged-in employee ID
-const EMPLOYEE_ID = "PSPL1173";
-
 const Empviewdoc = () => {
+  // =====================================================
+  // GET LOGGED-IN USER FROM CONTEXT
+  // =====================================================
+
+  const { user } = useContext(UserContext);
+
+  // Logged-in employee ID
+  const employeeId = user?.employeeId;
+
   const [documents, setDocuments] = useState({});
   const [loadingDocuments, setLoadingDocuments] = useState(false);
 
@@ -26,22 +34,37 @@ const Empviewdoc = () => {
 
   const getEmployeeDocuments = async () => {
     try {
+      // Employee ID is required
+      if (!employeeId) {
+        console.log("Employee ID not available");
+        setDocuments({});
+        return;
+      }
+
       setLoadingDocuments(true);
 
       setDocuments({});
       setPreviewFile("");
       setPreviewName("");
 
-      console.log("Getting documents for Employee ID:", EMPLOYEE_ID);
+      console.log("Getting documents for Employee ID:", employeeId);
+
+      // =====================================================
+      // GET DOCUMENTS USING LOGGED-IN EMPLOYEE ID
+      // =====================================================
 
       const res = await axios.get(
-        `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${EMPLOYEE_ID}`,
+        `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`,
         {
           withCredentials: true,
         },
       );
 
       console.log("Employee Documents API Response:", res.data);
+
+      // =====================================================
+      // STORE DOCUMENTS
+      // =====================================================
 
       if (res.data?.status === "OK" && res.data?.data) {
         setDocuments(res.data.data);
@@ -60,12 +83,14 @@ const Empviewdoc = () => {
   };
 
   // =====================================================
-  // LOAD DOCUMENTS WHEN PAGE LOADS
+  // LOAD DOCUMENTS WHEN EMPLOYEE ID IS AVAILABLE
   // =====================================================
 
   useEffect(() => {
-    getEmployeeDocuments();
-  }, []);
+    if (employeeId) {
+      getEmployeeDocuments();
+    }
+  }, [employeeId]);
 
   // =====================================================
   // DOCUMENT LIST
@@ -141,6 +166,7 @@ const Empviewdoc = () => {
   const availableDocuments = documentList.filter((document, index, array) => {
     const file = documents?.[document.key];
 
+    // Don't show empty documents
     if (file === null || file === undefined || String(file).trim() === "") {
       return false;
     }
@@ -170,7 +196,7 @@ const Empviewdoc = () => {
   };
 
   // =====================================================
-  // PREVIEW
+  // PREVIEW DOCUMENT
   // =====================================================
 
   const handlePreview = (filePath, documentName) => {
@@ -188,7 +214,7 @@ const Empviewdoc = () => {
   };
 
   // =====================================================
-  // DOWNLOAD
+  // DOWNLOAD DOCUMENT
   // =====================================================
 
   const handleDownload = async (filePath, documentName) => {
@@ -270,38 +296,28 @@ const Empviewdoc = () => {
       ]}
     >
       <div className="view-doc">
-        {/* ================================
-            HEADER
-        ================================= */}
+        {/* HEADER */}
 
         <h1>My Documents</h1>
 
         <div className="view-doc-bottom">
-          {/* ================================
-              LOADING
-          ================================= */}
+          {/* LOADING */}
 
           {loadingDocuments && (
             <div className="document-loading">Loading Documents...</div>
           )}
 
-          {/* ================================
-              NO DOCUMENTS
-          ================================= */}
+          {/* NO DOCUMENTS */}
 
           {!loadingDocuments && availableDocuments.length === 0 && (
             <div className="no-documents">No documents uploaded.</div>
           )}
 
-          {/* ================================
-              DOCUMENTS
-          ================================= */}
+          {/* DOCUMENTS */}
 
           {!loadingDocuments && availableDocuments.length > 0 && (
             <div className="document-preview-wrapper">
-              {/* =================================
-                    DOCUMENT LIST
-                ================================= */}
+              {/* DOCUMENT LIST */}
 
               <div className="document-list">
                 {availableDocuments.map((document) => {
@@ -343,9 +359,7 @@ const Empviewdoc = () => {
                 })}
               </div>
 
-              {/* =================================
-                    PREVIEW SECTION
-                ================================= */}
+              {/* PREVIEW SECTION */}
 
               <div className="preview-section">
                 {previewFile ? (

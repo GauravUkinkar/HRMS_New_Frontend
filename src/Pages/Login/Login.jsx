@@ -55,14 +55,8 @@ const Login = () => {
     }
   };
 
-  const {
-    handleChange,
-    handleSubmit,
-    handleBlur,
-    values,
-    error,
-    setError,
-  } = UseForm(formObj, loginValidate, login);
+  const { handleChange, handleSubmit, handleBlur, values, error, setError } =
+    UseForm(formObj, loginValidate, login);
 
   return (
     <div className="login-parent parent">

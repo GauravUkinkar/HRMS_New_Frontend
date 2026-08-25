@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Empdashboard.scss";
 import { useNavigate } from "react-router-dom";
+import { api } from "../../api";
 import { IoDocumentTextSharp } from "react-icons/io5";
 import { FaBirthdayCake } from "react-icons/fa";
 import { FaCode } from "react-icons/fa";
 import { FaEllipsisV } from "react-icons/fa";
-import { FaClock } from "react-icons/fa";
 import { MdArrowForward } from "react-icons/md";
-import { FaPlus } from "react-icons/fa";
+
 import Calender from "../../comp/Calender/Calender";
+import { UserContext } from "../../../Context";
 
 // =====================================================
 // DUMMY ATTENDANCE DATA
-// Later this data will come from your API
 // =====================================================
 
 const attendanceData = {
@@ -51,6 +51,16 @@ const attendanceData = {
 const EmployeeDash = () => {
   const navigate = useNavigate();
 
+  // =====================================================
+  // GET LOGGED-IN USER FROM CONTEXT
+  // =====================================================
+
+  const { user } = useContext(UserContext);
+
+  // =====================================================
+  // LEAVE SUMMARY STATE
+  // =====================================================
+
   const [leaveSummary, setLeaveSummary] = useState({
     totalLeaves: 0,
     takenLeaves: 0,
@@ -58,31 +68,268 @@ const EmployeeDash = () => {
   });
 
   const [leaveLoading, setLeaveLoading] = useState(true);
-  const getLeaveSummary = async () => {
-    try {
-      setLeaveLoading(true);
 
-      const response = await fetch(
-        "YOUR_API_URL/api/EmployeeLeaveSummary?employeeId=123",
+  const [leaveError, setLeaveError] = useState("");
+
+  // =====================================================
+  // GET LEAVE RECORD BY EMPLOYEE ID
+  // =====================================================
+
+ const getLeaveSummary = async () => {
+  try {
+    setLeaveLoading(true);
+    setLeaveError("");
+
+    const employeeId = user?.employeeId;
+
+    console.log("Logged in user:", user);
+    console.log("Employee ID:", employeeId);
+
+    if (!employeeId) {
+      console.error("Employee ID not found");
+      setLeaveError("Employee ID not found");
+      return;
+    }
+
+    console.log(
+      "Getting leave records for employee:",
+      employeeId
+    );
+
+    // =====================================================
+    // CALL API USING YOUR EXISTING API INSTANCE
+    // =====================================================
+
+    const response = await api.get(
+      "/employee/getLeaveRecordbyEmployeeId",
+      {
+        params: {
+          employeeId: employeeId,
+        },
+      }
+    );
+
+    console.log("Leave API Response:", response);
+
+    console.log(
+      "Leave API Response Data:",
+      response?.data
+    );
+
+    // =====================================================
+    // GET API DATA
+    // =====================================================
+
+    const result = response?.data;
+
+    const leaveData = result?.data ?? result;
+
+    console.log("Leave Data:", leaveData);
+
+    // =====================================================
+    // IF API RETURNS SUMMARY OBJECT
+    // =====================================================
+
+    if (
+      !Array.isArray(leaveData) &&
+      leaveData &&
+      (
+        leaveData.totalLeaves !== undefined ||
+        leaveData.takenLeaves !== undefined ||
+        leaveData.remainingLeaves !== undefined
+      )
+    ) {
+      const totalLeaves = Number(
+        leaveData.totalLeaves ??
+        leaveData.totalLeave ??
+        leaveData.total ??
+        0
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch leave summary");
+      const takenLeaves = Number(
+        leaveData.takenLeaves ??
+        leaveData.takenLeave ??
+        leaveData.usedLeaves ??
+        leaveData.usedLeave ??
+        0
+      );
+
+      const remainingLeaves = Number(
+        leaveData.remainingLeaves ??
+        leaveData.remainingLeave ??
+        leaveData.balanceLeaves ??
+        leaveData.balance ??
+        totalLeaves - takenLeaves
+      );
+
+      setLeaveSummary({
+        totalLeaves,
+        takenLeaves,
+        remainingLeaves,
+      });
+
+      return;
+    }
+
+    // =====================================================
+    // IF API RETURNS ARRAY
+    // =====================================================
+
+    if (Array.isArray(leaveData)) {
+
+      console.log(
+        "Leave records received:",
+        leaveData
+      );
+
+      // ---------------------------------------------------
+      // APPROVED LEAVES
+      // ---------------------------------------------------
+
+      const approvedLeaves = leaveData.filter((leave) => {
+
+        const status = String(
+          leave?.status ??
+          leave?.leaveStatus ??
+          leave?.approvalStatus ??
+          ""
+        ).toLowerCase();
+
+        return (
+          status === "approved" ||
+          status === "approve" ||
+          status === "accepted"
+        );
+      });
+
+      console.log(
+        "Approved leaves:",
+        approvedLeaves
+      );
+
+      // ---------------------------------------------------
+      // TAKEN LEAVES
+      // ---------------------------------------------------
+
+      const takenLeaves = approvedLeaves.reduce(
+        (total, leave) => {
+
+          const days = Number(
+            leave?.numberOfDays ??
+            leave?.noOfDays ??
+            leave?.leaveDays ??
+            leave?.days ??
+            leave?.duration ??
+            1
+          );
+
+          return total + (days || 0);
+        },
+        0
+      );
+
+      // ---------------------------------------------------
+      // TOTAL LEAVES
+      // ---------------------------------------------------
+
+      let totalLeaves = 0;
+
+      if (leaveData.length > 0) {
+
+        const firstRecord = leaveData[0];
+
+        totalLeaves = Number(
+          firstRecord?.totalLeaves ??
+          firstRecord?.totalLeave ??
+          firstRecord?.allocatedLeaves ??
+          firstRecord?.allocatedLeave ??
+          firstRecord?.annualLeaves ??
+          firstRecord?.leaveBalance ??
+          0
+        );
       }
 
-      const result = await response.json();
+      // ---------------------------------------------------
+      // REMAINING LEAVES
+      // ---------------------------------------------------
 
-      setLeaveSummary(result.data);
-    } catch (error) {
-      console.error("Leave summary error:", error);
-    } finally {
-      setLeaveLoading(false);
+      const remainingLeaves =
+        totalLeaves > 0
+          ? Math.max(totalLeaves - takenLeaves, 0)
+          : 0;
+
+      console.log("Total Leaves:", totalLeaves);
+      console.log("Taken Leaves:", takenLeaves);
+      console.log(
+        "Remaining Leaves:",
+        remainingLeaves
+      );
+
+      setLeaveSummary({
+        totalLeaves,
+        takenLeaves,
+        remainingLeaves,
+      });
+
+      return;
     }
-  };
+
+    // =====================================================
+    // INVALID RESPONSE
+    // =====================================================
+
+    console.warn(
+      "Unexpected leave API response:",
+      result
+    );
+
+    setLeaveSummary({
+      totalLeaves: 0,
+      takenLeaves: 0,
+      remainingLeaves: 0,
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Leave API Error:",
+      error
+    );
+
+    console.error(
+      "Leave API Error Response:",
+      error?.response?.data
+    );
+
+    console.error(
+      "Leave API Error Status:",
+      error?.response?.status
+    );
+
+    setLeaveError(
+      "Unable to load leave data"
+    );
+
+    setLeaveSummary({
+      totalLeaves: 0,
+      takenLeaves: 0,
+      remainingLeaves: 0,
+    });
+
+  } finally {
+    setLeaveLoading(false);
+  }
+};
+
+  // =====================================================
+  // CALL API WHEN USER IS AVAILABLE
+  // =====================================================
 
   useEffect(() => {
-    getLeaveSummary();
-  }, []);
+    if (user?.employeeId) {
+      getLeaveSummary();
+    }
+  }, [user?.employeeId]);
 
   // =====================================================
   // HOURS LOGGED STATE
@@ -111,6 +358,26 @@ const EmployeeDash = () => {
 
   const totalHoursText = `${totalHours}h 00m`;
 
+  // =====================================================
+  // LEAVE PROGRESS
+  // =====================================================
+
+  const takenProgress =
+    leaveSummary.totalLeaves > 0
+      ? Math.min(
+          (leaveSummary.takenLeaves / leaveSummary.totalLeaves) * 360,
+          360,
+        )
+      : 0;
+
+  const remainingProgress =
+    leaveSummary.totalLeaves > 0
+      ? Math.min(
+          (leaveSummary.remainingLeaves / leaveSummary.totalLeaves) * 360,
+          360,
+        )
+      : 0;
+
   return (
     <>
       <MainPanel
@@ -121,9 +388,9 @@ const EmployeeDash = () => {
         ]}
       >
         <div className="empdash-parent">
-          {/* =================================
+          {/* =====================================================
               LEFT SECTION
-          ================================= */}
+          ===================================================== */}
 
           <div className="left">
             {/* DOCUMENTS */}
@@ -151,21 +418,17 @@ const EmployeeDash = () => {
               </button>
             </div>
 
-            {/* =================================
+            {/* =====================================================
                 HOURS LOGGED
-            ================================= */}
+            ===================================================== */}
 
             <div className="left2">
-              {/* HOURS HEADER */}
-
               <div className="top">
                 <div>
                   <h3>Hours Logged</h3>
 
                   <h2>{totalHoursText}</h2>
                 </div>
-
-                {/* PERIOD DROPDOWN */}
 
                 <select
                   value={selectedPeriod}
@@ -179,48 +442,21 @@ const EmployeeDash = () => {
                 </select>
               </div>
 
-              {/* =================================
-                  DYNAMIC HOURS CHART
-              ================================= */}
-
               <div
                 className={`hours-chart ${
                   selectedPeriod === "thisMonth" ? "month-chart" : ""
                 }`}
               >
                 {currentAttendance.map((item, index) => {
-                  /*
-                    Daily target = 9 hours
-
-                    9h = 100%
-                    8h = 88.8%
-                    7h = 77.7%
-                    6h = 66.6%
-                    etc.
-                  */
-
                   const barHeight = Math.min((item.hours / 9) * 100, 100);
 
-                  /*
-                    Check whether employee completed
-                    the required 9 hours.
-                  */
-
                   const completed = item.hours >= 9;
-
-                  /*
-                    Check whether employee was absent.
-                  */
 
                   const absent = item.hours === 0;
 
                   return (
                     <div className="chart-column" key={index}>
-                      {/* HOURS LABEL */}
-
                       <span>{String(item.hours).padStart(2, "0")}h</span>
-
-                      {/* BAR */}
 
                       <div className="bar-container">
                         <div
@@ -237,8 +473,6 @@ const EmployeeDash = () => {
                         />
                       </div>
 
-                      {/* DAY */}
-
                       <p>{item.day}</p>
                     </div>
                   );
@@ -246,38 +480,47 @@ const EmployeeDash = () => {
               </div>
             </div>
 
-            {/* INTERNAL NOTES */}
+            {/* =====================================================
+                NOTIFICATION
+            ===================================================== */}
 
             <div className="left3">
               <div className="top">
                 <h3>Notification</h3>
               </div>
+
               <div className="card">
                 <div className="heading">Pramotion Review</div>
+
                 <p>
-                  11 June 2026Discussed potential promotion in Q1based on
-                  consistent performance andleadership in the recentproject.
+                  11 June 2026 Discussed potential promotion in Q1 based on
+                  consistent performance and leadership in the recent project.
                 </p>
               </div>
+
               <div className="card">
                 <div className="heading">Employee Appreciation</div>
+
                 <p>
-                  7 May 2026Recognized by the team and CEO foroutstanding
-                  contribution in the clientworkshop and delivery timeline.
+                  7 May 2026 Recognized by the team and CEO for outstanding
+                  contribution in the client workshop and delivery timeline.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* =================================
+          {/* =====================================================
               MIDDLE SECTION
-          ================================= */}
+          ===================================================== */}
 
           <div className="middle">
-            {/* LEAVE SUMMARY */}
+            {/* =====================================================
+                LEAVE SUMMARY
+            ===================================================== */}
 
             <div className="middle1">
               {/* ALL LEAVES */}
+
               <div className="leave-card">
                 <h4>All Leaves</h4>
 
@@ -293,20 +536,14 @@ const EmployeeDash = () => {
               </div>
 
               {/* TAKEN LEAVES */}
+
               <div className="leave-card">
                 <h4>Taken Leaves</h4>
 
                 <div
                   className="circle taken-leaves"
                   style={{
-                    "--progress":
-                      leaveSummary.totalLeaves > 0
-                        ? `${
-                            (leaveSummary.takenLeaves /
-                              leaveSummary.totalLeaves) *
-                            360
-                          }deg`
-                        : "0deg",
+                    "--progress": `${takenProgress}deg`,
                   }}
                 >
                   <div>
@@ -320,20 +557,14 @@ const EmployeeDash = () => {
               </div>
 
               {/* REMAINING LEAVES */}
+
               <div className="leave-card">
                 <h4>Remaining Leaves</h4>
 
                 <div
                   className="circle remaining-leaves"
                   style={{
-                    "--progress":
-                      leaveSummary.totalLeaves > 0
-                        ? `${
-                            (leaveSummary.remainingLeaves /
-                              leaveSummary.totalLeaves) *
-                            360
-                          }deg`
-                        : "0deg",
+                    "--progress": `${remainingProgress}deg`,
                   }}
                 >
                   <div>
@@ -347,7 +578,9 @@ const EmployeeDash = () => {
               </div>
             </div>
 
-            {/* PERFORMANCE OVERVIEW */}
+            {/* =====================================================
+                PERFORMANCE OVERVIEW
+            ===================================================== */}
 
             <div className="middle2">
               <div className="performance-top">
@@ -435,7 +668,9 @@ const EmployeeDash = () => {
               </div>
             </div>
 
-            {/* RECENT CRM ENTRIES */}
+            {/* =====================================================
+                RECENT CRM ENTRIES
+            ===================================================== */}
 
             <div className="middle3">
               <div className="top">
@@ -486,9 +721,9 @@ const EmployeeDash = () => {
             </div>
           </div>
 
-          {/* =================================
+          {/* =====================================================
               RIGHT SECTION
-          ================================= */}
+          ===================================================== */}
 
           <div className="right">
             {/* ATTENDANCE */}
@@ -528,6 +763,7 @@ const EmployeeDash = () => {
             </div>
 
             {/* INTERNAL NOTES */}
+
             <div className="right3">
               <div className="top">
                 <h3>Internal Notes</h3>
