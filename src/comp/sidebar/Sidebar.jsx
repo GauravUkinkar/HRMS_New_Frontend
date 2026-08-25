@@ -126,7 +126,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
     {
       icon: <FiHome />,
       name: "Official Notes",
-      link: "/",
+      link: "/officialNotes",
     },
   ];
 
