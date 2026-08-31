@@ -70,6 +70,9 @@ const OfferLetterManagement = lazy(() =>
 const IncrementLetter = lazy(() =>
   import("./Pages/IncrementLetter/IncrementLetter")
 );
+const ExperienceLetter = lazy(() =>
+  import("./Pages/ExperienceLetter/experienceLetter")
+);
 const ReleavingLetter = lazy(() =>
   import("./Pages/ReleavingLetter/ReleavingLetter")
 );
@@ -267,6 +270,12 @@ export const routes = [
     name: "InternshipLetter",
     path: "/internshipLetter",
     comp: InternshipLetter,
+    adminonly: true,
+  },
+      {
+    name: "ExperienceLetter",
+    path: "/experienceLetter",
+    comp: ExperienceLetter,
     adminonly: true,
   },
       {

@@ -1,15 +1,122 @@
 import React from "react";
 import "./OfferLetter.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
-import { Link } from "react-router-dom";
-import { LuDownload } from "react-icons/lu";
 import PanLogo from "../../assets/pan-watermark.webp";
 import logo_pan from "../../assets/offer-logo-pan.png";
 import Input from "../../comp/input/Input";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useState } from "react";
 
 const OfferLetter = () => {
+  const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    issuedDate: new Date().toISOString().split("T")[0],
+    companyName: "",
+    employeeName: "",
+    designation: "",
+    department: "",
+    dateOfJoining: "",
+    hrManagerName: "",
+    salary: "",
+    gender: "",
+    employeeType: "",
+  });
+
+  const handleChange = (e) => {
+    const {name, value} = e.target;
+
+    setFormData((prev) =>({
+      ...prev,
+      [name]: value,
+    })); 
+  };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  console.log("SUBMIT BUTTON CLICKED");
+  console.log("FORM DATA:", formData);
+
+  try {
+    setLoading(true);
+
+    const payload = {
+      issuedDate: formData.issuedDate,
+      companyName: formData.companyName,
+      employeeName: formData.employeeName,
+      designation: formData.designation,
+      department: formData.department,
+      dateOfJoining: formData.dateOfJoining,
+      hrManagerName: formData.hrManagerName,
+      salary: Number(formData.salary),
+      gender: formData.gender,
+      employeeType: formData.employeeType,
+      documentName: "Offer Letter",
+    };
+
+    console.log("API URL:", `${BASE_URL}Admin/addOfficialLetter`);
+    console.log("API PAYLOAD:", payload);
+
+    const response = await axios.post(
+      `${BASE_URL}Admin/addOfficialLetter`,
+      payload,
+      {
+        withCredentials: true,
+      }
+    );
+
+    console.log("API RESPONSE:", response);
+
+    if (response.data?.status === "OK") {
+      toast.success(
+        response.data?.responseMessage ||
+          "Offer letter added successfully!"
+      );
+
+      setFormData({
+        issuedDate: new Date().toISOString().split("T")[0],
+        companyName: "",
+        employeeName: "",
+        designation: "",
+        department: "",
+        dateOfJoining: "",
+        hrManagerName: "",
+        salary: "",
+        gender: "",
+        employeeType: "",
+        documentName: "Offer Letter",
+
+      });
+    } else {
+      toast.error(
+        response.data?.responseMessage ||
+          "Failed to add offer letter"
+      );
+    }
+
+  } catch (error) {
+    console.error("API ERROR:", error);
+    console.error("API ERROR RESPONSE:", error.response);
+    console.error("API ERROR DATA:", error.response?.data);
+
+    toast.error(
+      error.response?.data?.responseMessage ||
+        error.response?.data?.message ||
+        "Something went wrong while adding offer letter"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
+ 
+  
   return (
     <>
       <MainPanel>
@@ -21,66 +128,125 @@ const OfferLetter = () => {
             </button>
           </div> */}
           <div className="offerletter-cont cont">
-            <div className="left-offer">
-              <Input
-                label="Offer-Letter Date"
-                type="date"
-                name="offer-letter-date"
-                required
-              />
-              <SelectInput
-                name="select company name"
-                label="Select Company Name"
-                required
-              >
-                <MenuItem value="The Indian Journey">
-                  The Indian Journey
-                </MenuItem>
-                <MenuItem value="Pandoza Solutions Pvt.Ltd.">
-                  Pandoza Solutions Pvt.Ltd.
-                </MenuItem>
-                <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
-                <MenuItem value="Nvm Infratech Pvt.Ltd">
-                  Nvm Infratech Pvt.Ltd
-                </MenuItem>
-              </SelectInput>
-              <Input
-                label="Joining Date"
-                type="date"
-                name="joining date"
-                required
-              />
-              <Input label="Employee Name" name="employee name" required />
-              <SelectInput
-              label="Gender"
-              name="gender"
-              required
-              >
-                <MenuItem value="Male">Male</MenuItem>
-                <MenuItem value="Female">Female</MenuItem>
-                <MenuItem value="Other">Other</MenuItem>
+            <form className="left-offer" onSubmit={handleSubmit}>
 
-              </SelectInput>
-              <Input label="Employee Designation" name="employee designation" required />
-                       <SelectInput
-              
-                    name="employee type"
-                    label="Employee Type"
-                    required
-                  >
-                    <MenuItem value="Full-time">Full-time</MenuItem>
-                    <MenuItem value="Part-time">Part-time</MenuItem>
-                    <MenuItem value="Freelance">Freelance</MenuItem>
-                    <MenuItem value="Freelance">Intern</MenuItem>
-                  </SelectInput>
-              <Input label="Salary" name="salary" required />
-              <Input label="Hr Manager Name" name="hr manager name" required />
-                       <button className="btn" type="submit">
-            Submit
-          </button>
+  <Input
+    label="Offer-Letter Date"
+    type="date"
+    name="issuedDate"
+    value={formData.issuedDate.split("T")[0]}
+    onChange={handleChange}
+    required
+  />
 
+  <SelectInput
+    name="companyName"
+    label="Select Company Name"
+    value={formData.companyName}
+    onChange={handleChange}
+    required
+  >
+    <MenuItem value="The Indian Journey">
+      The Indian Journey
+    </MenuItem>
 
-            </div>
+    <MenuItem value="Pandoza Solutions Pvt.Ltd.">
+      Pandoza Solutions Pvt.Ltd.
+    </MenuItem>
+
+    <MenuItem value="Akka Foundation">
+      Akka Foundation
+    </MenuItem>
+
+    <MenuItem value="Nvm Infratech Pvt.Ltd">
+      Nvm Infratech Pvt.Ltd
+    </MenuItem>
+  </SelectInput>
+
+  <Input
+    label="Joining Date"
+    type="date"
+    name="dateOfJoining"
+    value={formData.dateOfJoining}
+    onChange={handleChange}
+    required
+  />
+
+  <Input
+    label="Employee Name"
+    name="employeeName"
+    value={formData.employeeName}
+    onChange={handleChange}
+    required
+  />
+
+  <SelectInput
+    label="Gender"
+    name="gender"
+    value={formData.gender}
+    onChange={handleChange}
+    required
+  >
+    <MenuItem value="Male">Male</MenuItem>
+    <MenuItem value="Female">Female</MenuItem>
+    <MenuItem value="Other">Other</MenuItem>
+  </SelectInput>
+
+  <Input
+    label="Employee Designation"
+    name="designation"
+    value={formData.designation}
+    onChange={handleChange}
+    required
+  />
+
+  <Input
+    label="Department"
+    name="department"
+    value={formData.department}
+    onChange={handleChange}
+    required
+  />
+
+  <SelectInput
+    name="employeeType"
+    label="Employee Type"
+    value={formData.employeeType}
+    onChange={handleChange}
+    required
+  >
+    <MenuItem value="Full-time">Full-time</MenuItem>
+    <MenuItem value="Part-time">Part-time</MenuItem>
+    <MenuItem value="Freelance">Freelance</MenuItem>
+    <MenuItem value="Intern">Intern</MenuItem>
+  </SelectInput>
+
+  <Input
+    label="Salary"
+    type="number"
+    name="salary"
+    value={formData.salary}
+    onChange={handleChange}
+    required
+  />
+
+  <Input
+    label="Hr Manager Name"
+    name="hrManagerName"
+    value={formData.hrManagerName}
+    onChange={handleChange}
+    required
+  />
+
+  <button
+    className="btn"
+    type="submit"
+    disabled={loading}
+  >
+    {loading ? "Submitting..." : "Submit"}
+  </button>
+
+</form>
             <div className="right-offer">
               <div className="pages-wrapper">
                 <div className="offer-pdf-page">
