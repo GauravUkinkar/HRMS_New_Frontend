@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./Empviewdoc.scss";
-
 import { UserContext } from "../../../Context";
 
 import { GrDocumentPdf } from "react-icons/gr";
