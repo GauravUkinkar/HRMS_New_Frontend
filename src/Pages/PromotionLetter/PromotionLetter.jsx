@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./PromotionLetter.scss";
 import { FaGlobe, FaLocationDot, FaPhoneVolume } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoIosMail } from "react-icons/io";
 import Input from "../../comp/input/Input";
 import { MenuItem } from "@mui/material";
@@ -11,22 +11,114 @@ import PanLogo from "../../assets/pan-watermark.webp";
 import logo_pan from "../../assets/offer-logo-pan.png";
 import right_corner from "../../assets/right-corner.png";
 import left_corner from "../../assets/left-corner.png";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const PromotionLetter = () => {
+  const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    issuedDate: new Date().toISOString().split("T")[0],
+    companyName: "",
+    employeeName: "",
+    designation: "",
+    newDesignation: "",
+    startDate: "",
+    hrManagerName: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log("FORM DATA:", formData);
+
+    try {
+      setLoading(true);
+
+      const payload = {
+        issuedDate: formData.issuedDate,
+        companyName: formData.companyName,
+        employeeName: formData.employeeName,
+        designation: formData.designation,
+        newDesignation: formData.newDesignation,
+        startDate: formData.startDate,
+        hrManagerName: formData.hrManagerName,
+        documentName: "Promotion Letter",
+      };
+
+      console.log("API PAYLOAD:", payload);
+
+      const response = await axios.post(
+        `${BASE_URL}Admin/addOfficialLetter`,
+        payload,
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log("API RESPONSE:", response);
+
+      if (response.data?.status === "OK") {
+        toast.success("Promotion letter added successfully!");
+
+        setFormData({
+          issuedDate: new Date().toISOString().split("T")[0],
+          companyName: "",
+          employeeName: "",
+          designation: "",
+          newDesignation: "",
+          startDate: "",
+          hrManagerName: "",
+          documentName: "Promotion Letter",
+        });
+      } else {
+        toast.error(
+          response.data?.responseMessage || "Failed to add promotion letter",
+        );
+      }
+    } catch (error) {
+      console.error("API ERROR:", error);
+      console.error("API ERROR RESPONSE:", error.response);
+      console.error("API ERROR DATA:", error.response?.data);
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+          error.response?.data?.message ||
+          "Something went wrong while adding promotion letter",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <MainPanel>
         <div className="promotionletter-parent parent">
           <div className="promotionletter-cont cont">
-            <div className="left-promotion">
+            <form className="left-promotion" onSubmit={handleSubmit}>
               <Input
                 label="Promotion-Letter Date"
                 type="date"
-                name="Promotion-letter-date"
+                name="issuedDate"
+                value={formData.issuedDate.split("T")[0]}
+                onChange={handleChange}
                 required
               />
               <SelectInput
-                name="select company name"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleChange}
                 label="Select Company Name"
                 required
               >
@@ -42,24 +134,46 @@ const PromotionLetter = () => {
                 </MenuItem>
               </SelectInput>
 
-              <Input label="Employee Name" name="employee name" required />
               <Input
-                label="Previous Designation"
-                name="Previous Designation"
+                label="Employee Name"
+                name="employeeName"
+                value={formData.employeeName}
+                onChange={handleChange}
                 required
               />
-              <Input label="New Designation" name="New Designation" required />
+              <Input
+                label="Previous Designation"
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                required
+              />
+              <Input
+                label="New Designation"
+                name="newDesignation"
+                value={formData.newDesignation}
+                onChange={handleChange}
+                required
+              />
               <Input
                 label="Promotion Effective Date"
                 type="date"
-                name="Promotion Effective date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
                 required
               />
-              <Input label="Hr Manager Name" name="hr manager name" required />
-              <button className="btn" type="submit">
-                Submit
+              <Input
+                label="Hr Manager Name"
+                name="hrManagerName"
+                value={formData.hrManagerName}
+                onChange={handleChange}
+                required
+              />
+              <button className="btn" type="submit" disabled={loading}>
+                {loading ? "Submitting.." : "Submit"}
               </button>
-            </div>
+            </form>
             <div className="right-promotion">
               <div className="promotion-pdf-page">
                 <img

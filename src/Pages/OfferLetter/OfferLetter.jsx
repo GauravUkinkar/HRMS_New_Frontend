@@ -21,7 +21,7 @@ const OfferLetter = () => {
     employeeName: "",
     designation: "",
     department: "",
-    dateOfJoining: "",
+    startDate: "",
     hrManagerName: "",
     salary: "",
     gender: "",
@@ -52,7 +52,7 @@ const handleSubmit = async (e) => {
       employeeName: formData.employeeName,
       designation: formData.designation,
       department: formData.department,
-      dateOfJoining: formData.dateOfJoining,
+      startDate: formData.startDate,
       hrManagerName: formData.hrManagerName,
       salary: Number(formData.salary),
       gender: formData.gender,
@@ -85,7 +85,7 @@ const handleSubmit = async (e) => {
         employeeName: "",
         designation: "",
         department: "",
-        dateOfJoining: "",
+        startDate: "",
         hrManagerName: "",
         salary: "",
         gender: "",
@@ -166,8 +166,8 @@ const handleSubmit = async (e) => {
   <Input
     label="Joining Date"
     type="date"
-    name="dateOfJoining"
-    value={formData.dateOfJoining}
+    name="startDate"
+    value={formData.startDate}
     onChange={handleChange}
     required
   />
