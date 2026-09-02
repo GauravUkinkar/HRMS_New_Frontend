@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./IncrementLetter.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import Input from "../../comp/input/Input";
@@ -9,26 +9,121 @@ import logo_pan from "../../assets/offer-logo-pan.png";
 import right_corner from "../../assets/right-corner.png";
 import left_corner from "../../assets/left-corner.png";
 import { FaLocationDot } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaPhoneVolume } from "react-icons/fa6";
 import { IoIosMail } from "react-icons/io";
 import { FaGlobe } from "react-icons/fa";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const IncrementLetter = () => {
+  const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    issuedDate: new Date().toISOString().split("T")[0],
+    companyName: "",
+    employeeName: "",
+    effectiveDate: "",
+    hrManagerName: "",
+    salary: "",
+    incrementPercentage: "",
+    reviseCts: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log("FORM DATA:", formData);
+
+    try {
+      setLoading(true);
+
+      const payload = {
+        issuedDate: formData.issuedDate,
+        companyName: formData.companyName,
+        employeeName: formData.employeeName,
+        effectiveDate: formData.effectiveDate,
+        hrManagerName: formData.hrManagerName,
+        salary: Number(formData.salary),
+        incrementPercentage: formData.incrementPercentage,
+        reviseCts: formData.reviseCts,
+      };
+      console.log("API PAYLOAD:", payload);
+
+      const response = await axios.post(
+        `${BASE_URL}Admin/addIncreamentLetter`,
+        payload,
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log("API RESPONSE:", response);
+
+      if (response.data?.status === "OK") {
+        toast.success(
+          response.data?.responseMessage ||
+            "Increment letter added successfully!",
+        );
+
+        setFormData({
+          issuedDate: new Date().toISOString().split("T")[0],
+          companyName: "",
+          employeeName: "",
+          effectiveDate: "",
+          hrManagerName: "",
+          salary: "",
+          incrementPercentage: "",
+          reviseCts: "",
+        });
+      } else {
+        toast.error(
+          response.data?.responseMessage || "Failed to add increament letter",
+        );
+      }
+    } catch (error) {
+      console.error("API ERROR:", error);
+      console.error("API ERROR RESPONSE:", error.response);
+      console.error("API ERROR DATA:", error.response?.data);
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+          error.response?.data?.message ||
+          "Something went wrong while adding increament letter",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <MainPanel>
         <div className="incrementletter-parent parent">
           <div className="incrementletter-cont cont">
-            <div className="left-increment">
+            <form className="left-increment" onSubmit={handleSubmit}>
               <Input
                 label="Increament-Letter Date"
                 type="date"
-                name="Increament-letter-date"
+                name="issuedDate"
+                value={formData.issuedDate.split("T")[0]}
+                onChange={handleChange}
                 required
               />
               <SelectInput
-                name="select company name"
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleChange}
                 label="Select Company Name"
                 required
               >
@@ -46,26 +141,67 @@ const IncrementLetter = () => {
               <Input
                 label="Effective Date"
                 type="date"
-                name="Effective date"
+                name="effectiveDate"
+                value={formData.effectiveDate}
+                onChange={handleChange}
                 required
               />
-              <Input label="Employee Name" name="employee name" required />
+              <Input
+                label="Employee Name"
+                name="employeeName"
+                value={formData.employeeName}
+                onChange={handleChange}
+                required
+              />
+              <Input
+                label="Salary"
+                type="number"
+                name="salary"
+                value={formData.salary}
+                onChange={handleChange}
+                required
+              />
               <Input label="Previous CTC" name="Previous CTC" required />
               <Input
                 label="Increment Percentage"
-                name="Increment Percentage"
+                name="incrementPercentage"
+                value={formData.incrementPercentage}
+                onChange={handleChange}
                 required
               />
-              <Input label="Revised CTC" name="Revised CTC" required />
+              <Input
+                label="Employee Designation"
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                required
+              />
+              <Input
+                label="Revised CTC"
+                name="reviseCts"
+                value={formData.reviseCts}
+                onChange={handleChange}
+                required
+              />
 
-              <Input label="Hr Manager Name" name="hr manager name" required />
-              <button className="btn" type="submit">
-                Submit
+              <Input
+                label="Hr Manager Name"
+                name="hrManagerName"
+                value={formData.hrManagerName}
+                onChange={handleChange}
+                required
+              />
+              <button className="btn" type="submit" disabled={loading}>
+                {loading ? "Submitting..." :"Submit"}
               </button>
-            </div>
+            </form>
             <div className="right-increment">
               <div className="increment-pdf-page">
-                <img className="leftcorner" src={left_corner} alt="left-corner" />
+                <img
+                  className="leftcorner"
+                  src={left_corner}
+                  alt="left-corner"
+                />
                 <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
                 <div className="top">
                   <div className="date">Date:01-03-19</div>

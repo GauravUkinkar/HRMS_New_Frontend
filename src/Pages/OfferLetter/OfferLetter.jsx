@@ -29,94 +29,88 @@ const OfferLetter = () => {
   });
 
   const handleChange = (e) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
 
-    setFormData((prev) =>({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
-    })); 
+    }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  console.log("SUBMIT BUTTON CLICKED");
-  console.log("FORM DATA:", formData);
+    console.log("SUBMIT BUTTON CLICKED");
+    console.log("FORM DATA:", formData);
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const payload = {
-      issuedDate: formData.issuedDate,
-      companyName: formData.companyName,
-      employeeName: formData.employeeName,
-      designation: formData.designation,
-      department: formData.department,
-      startDate: formData.startDate,
-      hrManagerName: formData.hrManagerName,
-      salary: Number(formData.salary),
-      gender: formData.gender,
-      employeeType: formData.employeeType,
-      documentName: "Offer Letter",
-    };
-
-    console.log("API URL:", `${BASE_URL}Admin/addOfficialLetter`);
-    console.log("API PAYLOAD:", payload);
-
-    const response = await axios.post(
-      `${BASE_URL}Admin/addOfficialLetter`,
-      payload,
-      {
-        withCredentials: true,
-      }
-    );
-
-    console.log("API RESPONSE:", response);
-
-    if (response.data?.status === "OK") {
-      toast.success(
-        response.data?.responseMessage ||
-          "Offer letter added successfully!"
-      );
-
-      setFormData({
-        issuedDate: new Date().toISOString().split("T")[0],
-        companyName: "",
-        employeeName: "",
-        designation: "",
-        department: "",
-        startDate: "",
-        hrManagerName: "",
-        salary: "",
-        gender: "",
-        employeeType: "",
+      const payload = {
+        issuedDate: formData.issuedDate,
+        companyName: formData.companyName,
+        employeeName: formData.employeeName,
+        designation: formData.designation,
+        department: formData.department,
+        startDate: formData.startDate,
+        hrManagerName: formData.hrManagerName,
+        salary: Number(formData.salary),
+        gender: formData.gender,
+        employeeType: formData.employeeType,
         documentName: "Offer Letter",
+      };
 
-      });
-    } else {
-      toast.error(
-        response.data?.responseMessage ||
-          "Failed to add offer letter"
+      console.log("API URL:", `${BASE_URL}Admin/addOfficialLetter`);
+      console.log("API PAYLOAD:", payload);
+
+      const response = await axios.post(
+        `${BASE_URL}Admin/addOfficialLetter`,
+        payload,
+        {
+          withCredentials: true,
+        },
       );
+
+      console.log("API RESPONSE:", response);
+
+      if (response.data?.status === "OK") {
+        toast.success(
+          response.data?.responseMessage || "Offer letter added successfully!",
+        );
+
+        setFormData({
+          issuedDate: new Date().toISOString().split("T")[0],
+          companyName: "",
+          employeeName: "",
+          designation: "",
+          department: "",
+          startDate: "",
+          hrManagerName: "",
+          salary: "",
+          gender: "",
+          employeeType: "",
+          documentName: "Offer Letter",
+        });
+      } else {
+        toast.error(
+          response.data?.responseMessage || "Failed to add offer letter",
+        );
+      }
+    } catch (error) {
+      console.error("API ERROR:", error);
+      console.error("API ERROR RESPONSE:", error.response);
+      console.error("API ERROR DATA:", error.response?.data);
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+          error.response?.data?.message ||
+          "Something went wrong while adding offer letter",
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
-  } catch (error) {
-    console.error("API ERROR:", error);
-    console.error("API ERROR RESPONSE:", error.response);
-    console.error("API ERROR DATA:", error.response?.data);
-
-    toast.error(
-      error.response?.data?.responseMessage ||
-        error.response?.data?.message ||
-        "Something went wrong while adding offer letter"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-
- 
-  
   return (
     <>
       <MainPanel>
@@ -129,124 +123,116 @@ const handleSubmit = async (e) => {
           </div> */}
           <div className="offerletter-cont cont">
             <form className="left-offer" onSubmit={handleSubmit}>
+              <Input
+                label="Offer-Letter Date"
+                type="date"
+                name="issuedDate"
+                value={formData.issuedDate.split("T")[0]}
+                onChange={handleChange}
+                required
+              />
 
-  <Input
-    label="Offer-Letter Date"
-    type="date"
-    name="issuedDate"
-    value={formData.issuedDate.split("T")[0]}
-    onChange={handleChange}
-    required
-  />
+              <SelectInput
+                name="companyName"
+                label="Select Company Name"
+                value={formData.companyName}
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value="The Indian Journey">
+                  The Indian Journey
+                </MenuItem>
 
-  <SelectInput
-    name="companyName"
-    label="Select Company Name"
-    value={formData.companyName}
-    onChange={handleChange}
-    required
-  >
-    <MenuItem value="The Indian Journey">
-      The Indian Journey
-    </MenuItem>
+                <MenuItem value="Pandoza Solutions Pvt.Ltd.">
+                  Pandoza Solutions Pvt.Ltd.
+                </MenuItem>
 
-    <MenuItem value="Pandoza Solutions Pvt.Ltd.">
-      Pandoza Solutions Pvt.Ltd.
-    </MenuItem>
+                <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
 
-    <MenuItem value="Akka Foundation">
-      Akka Foundation
-    </MenuItem>
+                <MenuItem value="Nvm Infratech Pvt.Ltd">
+                  Nvm Infratech Pvt.Ltd
+                </MenuItem>
+              </SelectInput>
 
-    <MenuItem value="Nvm Infratech Pvt.Ltd">
-      Nvm Infratech Pvt.Ltd
-    </MenuItem>
-  </SelectInput>
+              <Input
+                label="Joining Date"
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                required
+              />
 
-  <Input
-    label="Joining Date"
-    type="date"
-    name="startDate"
-    value={formData.startDate}
-    onChange={handleChange}
-    required
-  />
+              <Input
+                label="Employee Name"
+                name="employeeName"
+                value={formData.employeeName}
+                onChange={handleChange}
+                required
+              />
 
-  <Input
-    label="Employee Name"
-    name="employeeName"
-    value={formData.employeeName}
-    onChange={handleChange}
-    required
-  />
+              <SelectInput
+                label="Gender"
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </SelectInput>
 
-  <SelectInput
-    label="Gender"
-    name="gender"
-    value={formData.gender}
-    onChange={handleChange}
-    required
-  >
-    <MenuItem value="Male">Male</MenuItem>
-    <MenuItem value="Female">Female</MenuItem>
-    <MenuItem value="Other">Other</MenuItem>
-  </SelectInput>
+              <Input
+                label="Employee Designation"
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                required
+              />
 
-  <Input
-    label="Employee Designation"
-    name="designation"
-    value={formData.designation}
-    onChange={handleChange}
-    required
-  />
+              <Input
+                label="Department"
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                required
+              />
 
-  <Input
-    label="Department"
-    name="department"
-    value={formData.department}
-    onChange={handleChange}
-    required
-  />
+              <SelectInput
+                name="employeeType"
+                label="Employee Type"
+                value={formData.employeeType}
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value="Full-time">Full-time</MenuItem>
+                <MenuItem value="Part-time">Part-time</MenuItem>
+                <MenuItem value="Freelance">Freelance</MenuItem>
+                <MenuItem value="Intern">Intern</MenuItem>
+              </SelectInput>
 
-  <SelectInput
-    name="employeeType"
-    label="Employee Type"
-    value={formData.employeeType}
-    onChange={handleChange}
-    required
-  >
-    <MenuItem value="Full-time">Full-time</MenuItem>
-    <MenuItem value="Part-time">Part-time</MenuItem>
-    <MenuItem value="Freelance">Freelance</MenuItem>
-    <MenuItem value="Intern">Intern</MenuItem>
-  </SelectInput>
+              <Input
+                label="Salary"
+                type="number"
+                name="salary"
+                value={formData.salary}
+                onChange={handleChange}
+                required
+              />
 
-  <Input
-    label="Salary"
-    type="number"
-    name="salary"
-    value={formData.salary}
-    onChange={handleChange}
-    required
-  />
+              <Input
+                label="Hr Manager Name"
+                name="hrManagerName"
+                value={formData.hrManagerName}
+                onChange={handleChange}
+                required
+              />
 
-  <Input
-    label="Hr Manager Name"
-    name="hrManagerName"
-    value={formData.hrManagerName}
-    onChange={handleChange}
-    required
-  />
-
-  <button
-    className="btn"
-    type="submit"
-    disabled={loading}
-  >
-    {loading ? "Submitting..." : "Submit"}
-  </button>
-
-</form>
+              <button className="btn" type="submit" disabled={loading}>
+                {loading ? "Submitting..." : "Submit"}
+              </button>
+            </form>
             <div className="right-offer">
               <div className="pages-wrapper">
                 <div className="offer-pdf-page">
@@ -722,23 +708,28 @@ const handleSubmit = async (e) => {
                     manual on the intranet.
                   </p>
                   <div className="gap"></div>
-                  <p> You are required to wear formal on your date of joining, which
-                  is:
-                  <br />
-                  <strong>* For Gentlemen</strong>: Formal full-sleeve shirts
-                  and trousers with a tie and polished formal shoes.
-                  <strong>* For Ladies</strong>: Western formals, salwar-kameez
-                  or formal saris with sandals.</p>
-                 
+                  <p>
+                    {" "}
+                    You are required to wear formal on your date of joining,
+                    which is:
+                    <br />
+                    <strong>* For Gentlemen</strong>: Formal full-sleeve shirts
+                    and trousers with a tie and polished formal shoes.
+                    <strong>* For Ladies</strong>: Western formals,
+                    salwar-kameez or formal saris with sandals.
+                  </p>
+
                   <div className="gap"></div>
                   <strong>10. Termination and resignation:</strong>
                   <div className="small-gap"></div>
                   <div className="a-point">
-                    <p> A.
-                    <strong>Termination :</strong>
-                    Pandoza Solutions Pvt. Ltd.reserves the right to terminate
-                    the services of an employee :</p>
-                   
+                    <p>
+                      {" "}
+                      A.
+                      <strong>Termination :</strong>
+                      Pandoza Solutions Pvt. Ltd.reserves the right to terminate
+                      the services of an employee :
+                    </p>
                   </div>
                   <div className="small-gap"></div>
                   <div className="subpoints">
@@ -779,17 +770,20 @@ const handleSubmit = async (e) => {
                   <div className="a-point">
                     <div className="gap"></div>
                     <div className="gap"></div>
-                    <p>B.
-                    <strong>Resignation :</strong>
-                    For resigning fromPandoza Solutions Pvt. Ltd., you are
-                    required to serve a 1 months’ notice period as per the
-                    policy of resignation after the completion of 1 year with
-                    the employment and as applicable at the time of departure.
-                    In case of a shortfall in the notice period, the relieving
-                    date shall be the prerogative of the company and shall be
-                    within the notice period. Further, the company reserves the
-                    right to recover an amount equivalent to the consolidated
-                    salary for the number of days of the shortfall.</p>
+                    <p>
+                      B.
+                      <strong>Resignation :</strong>
+                      For resigning fromPandoza Solutions Pvt. Ltd., you are
+                      required to serve a 1 months’ notice period as per the
+                      policy of resignation after the completion of 1 year with
+                      the employment and as applicable at the time of departure.
+                      In case of a shortfall in the notice period, the relieving
+                      date shall be the prerogative of the company and shall be
+                      within the notice period. Further, the company reserves
+                      the right to recover an amount equivalent to the
+                      consolidated salary for the number of days of the
+                      shortfall.
+                    </p>
                   </div>
                   <p className="footer">
                     214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014 | CONTACT: +91
