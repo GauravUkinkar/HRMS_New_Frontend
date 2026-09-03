@@ -117,7 +117,7 @@ export const routes = [
     name: "Viewdoc",
     path: "/Viewdoc",
     comp: Viewdoc,
-    adminonly: false,
+    adminonly: true,
     employeeonly: true,
   },
 
@@ -125,7 +125,7 @@ export const routes = [
     name: "Empviewdoc",
     path: "/Empviewdoc",
     comp: Empviewdoc,
-    adminonly: false,
+    adminonly: true,
     employeeonly: true,
   },
 
@@ -133,7 +133,7 @@ export const routes = [
     name: "LeaveManagement",
     path: "/LeaveManagement",
     comp: LeaveManagement,
-    adminonly: false,
+    adminonly: true,
     employeeonly: true,
   },
 
