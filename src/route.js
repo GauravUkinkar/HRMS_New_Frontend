@@ -118,7 +118,7 @@ export const routes = [
     path: "/Viewdoc",
     comp: Viewdoc,
     adminonly: true,
-    employeeonly: true,
+    employeeonly: false,
   },
 
   {
