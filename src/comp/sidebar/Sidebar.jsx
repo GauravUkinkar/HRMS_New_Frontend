@@ -221,7 +221,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
 
         <div className="navsection">
 
-          {visibleNavs.map((item, index) => (
+          {navs.map((item, index) => (
 
             <div className="nav_item" key={index}>
 
