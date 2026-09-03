@@ -2,10 +2,11 @@ import "./Sidebar.scss";
 
 import logo from "../../assets/logo.png";
 import logo2 from "../../assets/logopan.webp";
-import { IoDocuments } from "react-icons/io5";
+
 import { FiHome } from "react-icons/fi";
 import { BsPerson } from "react-icons/bs";
 import { LuLogOut } from "react-icons/lu";
+import { IoCloudUploadOutline } from "react-icons/io5";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { LuCalendarClock } from "react-icons/lu";
 import { Link} from "react-router-dom";
@@ -13,9 +14,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { LuSquareUser } from "react-icons/lu";
 import axios from "axios";
-import { MdPayments } from "react-icons/md";
-import { LuCalendarCheck } from "react-icons/lu";
-import { IoIosNotifications } from "react-icons/io";
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 
@@ -57,12 +55,10 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
         {
           name: "Upload Documents",
           link: "/uploadDoc",
-          employeeOnly: true,
         },
         {
           name: "View Documents",
-          link: "/Viewdoc",
-          adminOnly: true,
+          link: "/Viewdoc"
         }
       ]
     },
@@ -72,18 +68,22 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
       link: "/LeaveManagement",
     },
     {
-      icon: <MdPayments />,
+      icon: <IoCloudUploadOutline />,
       name: "Salary Management",
       link: "/salaryManagement",
     },
-
     {
-      icon: <IoDocuments />,
+      icon: <FiHome />,
+      name: "User Management",
+      link: "/",
+    },
+    {
+      icon: <BsPerson />,
       name: "Official Documents",
       children: [
         {
           name: "Generate Offer Letter",
-          link: "/offerLetter",
+          link: "/addEmployee",
         },
         {
           name: "Generate Joining Letter",
@@ -125,13 +125,13 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
     },
 
     {
-      icon: <LuCalendarCheck />,
+      icon: <FiHome />,
       name: "Attendance",
       link: "/attendance",
     },
 
     {
-      icon: <IoIosNotifications />,
+      icon: <FiHome />,
       name: "Official Notes",
       link: "/officialNotes",
     },
@@ -152,7 +152,6 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
     navigate("/login");
   }
 };
-
 
   // ==========================================
   // CLICK PARENT MENU
@@ -183,6 +182,10 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
     closeSidebar();
   };
 
+
+  // ==========================================
+  // CLICK CHILD
+  // ==========================================
 
   const handleChildClick = () => {
 
