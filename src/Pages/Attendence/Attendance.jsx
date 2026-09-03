@@ -1,93 +1,41 @@
-import React, {
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-
+import React, { useContext, useEffect, useState } from "react";
 import "./Attendance.scss";
-
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import Table_Comp from "../../comp/table/Table";
 
-import {
-  Dropdown,
-  Modal,
-  DatePicker,
-} from "antd";
-
+import { Dropdown, Modal, DatePicker } from "antd";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { SlCalender } from "react-icons/sl";
 import { FaPlus } from "react-icons/fa6";
-
 import axios from "axios";
 import { toast } from "react-toastify";
-
-import { UserContext } from "../../../Context";
+// import { UserContext } from "../../../Context";
 import { Link } from "react-router-dom";
-
 import dayjs from "dayjs";
 
-const BASE_URL =
-  import.meta.env.VITE_USER_BACKEND_URL;
-
-const BASE_URL2 =
-  import.meta.env.VITE_ATTENDANCE_URL;
+const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 
 const Attendance = () => {
-  // =========================================================
-  // PREVIOUS ATTENDANCE MODAL
-  // =========================================================
+  const [showAttendanceModal, setShowAttendanceModal] = useState(false);
+  const [previousAttendance, setPreviousAttendance] = useState({
+    employeeId: "", date: "", status: ""
+  });
+  const [previousAttendanceData, setPreviousAttendanceData] = useState([]);
+  const [attendanceHistoryLoading, setAttendanceHistoryLoading] = useState(false);
 
-  const [showAttendanceModal, setShowAttendanceModal] =
-    useState(false);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [allemployee, setAllEmployee] = useState([]);
 
-  const [previousAttendance, setPreviousAttendance] =
-    useState({
-      employeeId: "",
-      date: "",
-      status: "",
-    });
+  // const { user, employee } =
+  //   useContext(UserContext);
 
-  // =========================================================
-  // PREVIOUS ATTENDANCE API DATA
-  // =========================================================
+  const [data, setData] = useState([]);
+  const [loader, setLoader] = useState(false);
+  const [activePunchIn, setActivePunchIn] = useState(null);
+  const [newTime, setNewTime] = useState("");
 
-  const [previousAttendanceData, setPreviousAttendanceData] =
-    useState([]);
-
-  const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
-    useState(false);
-
-  // Controls Ant Design DatePicker
-  const [datePickerOpen, setDatePickerOpen] =
-    useState(false);
-
-  // =========================================================
-  // MAIN STATE
-  // =========================================================
-
-  const [allemployee, setAllEmployee] =
-    useState([]);
-
-  const { user, employee } =
-    useContext(UserContext);
-
-  const [data, setData] =
-    useState([]);
-
-  const [loader, setLoader] =
-    useState(false);
-
-  const [activePunchIn, setActivePunchIn] =
-    useState(null);
-
-  const [newTime, setNewTime] =
-    useState("");
-
-  // =========================================================
-  // OPEN ADD PREVIOUS ATTENDANCE
-  // =========================================================
-
+  // Button code for add previous attendance modal
   const handleAddPreviousAttendance = () => {
     setPreviousAttendance({
       employeeId: "",
@@ -96,33 +44,20 @@ const Attendance = () => {
     });
 
     setPreviousAttendanceData([]);
-
     setDatePickerOpen(false);
-
     setShowAttendanceModal(true);
   };
 
-  // =========================================================
-  // CLOSE ADD PREVIOUS ATTENDANCE
-  // =========================================================
-
   const handleCloseAttendanceModal = () => {
     setShowAttendanceModal(false);
-
     setDatePickerOpen(false);
-
     setPreviousAttendance({
       employeeId: "",
       date: "",
       status: "",
     });
-
     setPreviousAttendanceData([]);
   };
-
-  // =========================================================
-  // GET ALL EMPLOYEES
-  // =========================================================
 
   const getAllEmployee = async () => {
     try {
@@ -143,23 +78,8 @@ const Attendance = () => {
           empId:
             item?.data?.employeeId || "",
 
-          department:
-            item?.data?.department || "",
-
-          designation:
-            item?.data?.designation || "",
-
           email:
             item?.data?.email || "",
-
-          phone:
-            item?.data?.contactNumber || "",
-
-          dob:
-            item?.data?.dateOfBirth || "",
-
-          address:
-            item?.data?.currentAddress || "",
 
           status:
             item?.data?.employeeStatus || "",
@@ -183,108 +103,57 @@ const Attendance = () => {
     }
   };
 
-  // =========================================================
-  // GET TODAY ATTENDANCE
-  // =========================================================
-
+  // Todays Attendance API Call
   const getEmployeeData = async () => {
     try {
       setLoader(true);
+      const response = await axios.get(`${BASE_URL2}api/punch/details`);
 
-      const response = await axios.get(
-        `${BASE_URL2}api/punch/details`
-      );
-
-      const tableData =
-        response?.data?.data
-          ?.sort(
-            (a, b) =>
-              new Date(a?.punchIn || 0) -
-              new Date(b?.punchIn || 0)
-          )
-          .map(
-            (item, index) => ({
-              key:
-                item?.employeeId ||
-                index,
-
-              employeeId:
-                item?.employeeId || "",
-
-              employeeName:
-                item?.employeeName
-                  ?.toUpperCase() || "",
-
-              employeeDesignation:
-                item?.employeeDesignation ||
-                "",
-
-              punchIn:
-                item?.punchInByAdmin
-                  ? "Punch In From Admin"
-                  : item?.punchIn
-                  ? item.punchIn
-                      .split("T")[1]
-                      ?.replace(
-                        "Z",
-                        ""
-                      )
-                      .slice(
-                        0,
-                        8
-                      )
-                  : "",
-
-              punchOut:
-                item?.punchOutByAdmin
-                  ? "Punch Out From Admin"
-                  : item?.punchOut
-                  ? item.punchOut
-                      .split("T")[1]
-                      ?.replace(
-                        "Z",
-                        ""
-                      )
-                      .slice(
-                        0,
-                        8
-                      )
-                  : "",
-
-              status:
-                item?.status ||
-                "Absent",
-            })
-          ) || [];
+      const tableData = response?.data?.data?.sort(
+        (a, b) => new Date(a?.punchIn || 0) - new Date(b?.punchIn || 0)
+      ).map((item, index) => ({
+        key:
+          item?.employeeId ||
+          index,
+        employeeId:
+          item?.employeeId || "",
+        employeeName:
+          item?.employeeName
+            ?.toUpperCase() || "",
+        punchIn: item?.punchInByAdmin ? "Punch In From Admin" : item?.punchIn ? item.punchIn
+          .split("T")[1]?.replace("Z", "")
+          .slice(0, 8) : "",
+        punchOut:
+          item?.punchOutByAdmin
+            ? "Punch Out From Admin"
+            : item?.punchOut
+              ? item.punchOut
+                .split("T")[1]
+                ?.replace(
+                  "Z",
+                  ""
+                )
+                .slice(
+                  0,
+                  8
+                )
+              : "",
+        status: item?.status || "Absent"
+      })) || [];
 
       setData(tableData);
 
-      console.log(
-        "TODAY ATTENDANCE:",
-        tableData
-      );
+      console.log("TODAY ATTENDANCE:", tableData);
     } catch (error) {
-      console.error(
-        "Attendance API Error:",
-        error
-      );
-
-      toast.error(
-        error?.response?.data?.message ||
-          "Unable to load attendance"
-      );
-
+      console.error("Attendance API Error:", error);
+      toast.error(error?.response?.data?.message || "Unable to load attendance");
       setData([]);
     } finally {
       setLoader(false);
     }
   };
 
-  // =========================================================
   // GET PREVIOUS ATTENDANCE
-  //
-  // CALLED WHEN EMPLOYEE IS SELECTED
-  // =========================================================
 
   const getPreviousAttendance = async (
     employeeId
@@ -297,27 +166,13 @@ const Attendance = () => {
     try {
       setAttendanceHistoryLoading(true);
 
-      console.log(
-        "Selected Employee:",
-        employeeId
-      );
-
-      // -------------------------------------------------------
-      // DATE RANGE
-      // -------------------------------------------------------
-
+      console.log("Selected Employee:", employeeId);
       const today = dayjs();
 
-      const startDate =
-        `${today.year()}-01-01`;
+      const startDate =`${today.year()}-01-01`;
 
-      const endDate =
-        today.format(
-          "YYYY-MM-DD"
-        );
-
-      console.log(
-        "API REQUEST:",
+      const endDate = today.format("YYYY-MM-DD");
+      console.log("API REQUEST:",
         {
           employeeId,
           startDate,
@@ -325,12 +180,8 @@ const Attendance = () => {
         }
       );
 
-      // -------------------------------------------------------
       // API CALL
-      // -------------------------------------------------------
-
-      const response =
-        await axios.post(
+      const response = await axios.post(
           `${BASE_URL2}api/punch/attendance/${employeeId}`,
           {
             startDate: startDate,
@@ -417,7 +268,7 @@ const Attendance = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to load previous attendance"
+        "Unable to load previous attendance"
       );
     } finally {
       setAttendanceHistoryLoading(
@@ -564,7 +415,7 @@ const Attendance = () => {
       } else {
         throw new Error(
           response?.data?.message ||
-            "Unable to update previous attendance"
+          "Unable to update previous attendance"
         );
       }
     } catch (error) {
@@ -580,8 +431,8 @@ const Attendance = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          error?.message ||
-          "Unable to update previous attendance"
+        error?.message ||
+        "Unable to update previous attendance"
       );
     } finally {
       setAttendanceHistoryLoading(false);
@@ -621,7 +472,7 @@ const Attendance = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to mark present"
+        "Unable to mark present"
       );
     } finally {
       setLoader(false);
@@ -661,7 +512,7 @@ const Attendance = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to mark half day"
+        "Unable to mark half day"
       );
     } finally {
       setLoader(false);
@@ -701,7 +552,7 @@ const Attendance = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to mark absent"
+        "Unable to mark absent"
       );
     } finally {
       setLoader(false);
@@ -744,7 +595,7 @@ const Attendance = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to remove punch in"
+        "Unable to remove punch in"
       );
     } finally {
       setLoader(false);
@@ -765,7 +616,7 @@ const Attendance = () => {
     if (
       record?.punchIn &&
       record.punchIn !==
-        "Punch In From Admin"
+      "Punch In From Admin"
     ) {
       setNewTime(
         record.punchIn.slice(
@@ -854,7 +705,7 @@ const Attendance = () => {
         toast.error(
           error?.response?.data
             ?.message ||
-            "Unable to update punch in time"
+          "Unable to update punch in time"
         );
 
       } finally {
@@ -898,7 +749,7 @@ const Attendance = () => {
         const status =
           String(
             item?.status ||
-              ""
+            ""
           )
             .trim()
             .toLowerCase()
@@ -909,9 +760,9 @@ const Attendance = () => {
 
         return (
           status ===
-            "inoffice" ||
+          "inoffice" ||
           status ===
-            "present"
+          "present"
         );
       }
     ).length;
@@ -923,7 +774,7 @@ const Attendance = () => {
         const status =
           String(
             item?.status ||
-              ""
+            ""
           )
             .trim()
             .toLowerCase()
@@ -1071,35 +922,34 @@ const Attendance = () => {
     // EXISTING TABLE STATUS KEPT
     // =======================================================
 
-   {
-  title: "Status",
-  dataIndex: "status",
-  key: "status",
-  align: "center",
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
 
-  render: (status) => {
-    const normalizedStatus = String(status || "")
-      .trim()
-      .toUpperCase();
+      render: (status) => {
+        const normalizedStatus = String(status || "")
+          .trim()
+          .toUpperCase();
 
-    const displayStatus =
-      normalizedStatus === "ABSENT"
-        ? "IN Office"
-        : status || "IN Office";
+        const displayStatus =
+          normalizedStatus === "ABSENT"
+            ? "IN Office"
+            : status || "IN Office";
 
-    return (
-      <span
-        className={`attendance-status ${
-          normalizedStatus === "HALF_DAY"
-            ? "half-day-status"
-            : ""
-        }`}
-      >
-        {displayStatus}
-      </span>
-    );
-  },
-},
+        return (
+          <span
+            className={`attendance-status ${normalizedStatus === "HALF_DAY"
+              ? "half-day-status"
+              : ""
+              }`}
+          >
+            {displayStatus}
+          </span>
+        );
+      },
+    },
 
     // =======================================================
     // ACTION
@@ -1490,8 +1340,8 @@ const Attendance = () => {
               value={
                 previousAttendance.date
                   ? dayjs(
-                      previousAttendance.date
-                    )
+                    previousAttendance.date
+                  )
                   : null
               }
 
@@ -1530,8 +1380,8 @@ const Attendance = () => {
                 const existingStatus =
                   existingRecord?.status
                     ? String(existingRecord.status)
-                        .trim()
-                        .toUpperCase()
+                      .trim()
+                      .toUpperCase()
                     : "";
 
                 console.log(
@@ -1577,28 +1427,28 @@ const Attendance = () => {
 
                     {status ===
                       "FULL_DAY" && (
-                      <span className="attendance-dot full-day-dot">
-                        ●
-                      </span>
-                    )}
+                        <span className="attendance-dot full-day-dot">
+                          ●
+                        </span>
+                      )}
 
                     {/* HALF DAY */}
 
                     {status ===
                       "HALF_DAY" && (
-                      <span className="attendance-dot half-day-dot">
-                        ●
-                      </span>
-                    )}
+                        <span className="attendance-dot half-day-dot">
+                          ●
+                        </span>
+                      )}
 
                     {/* ABSENT */}
 
                     {status ===
                       "ABSENT" && (
-                      <span className="attendance-dot absent-day-dot">
-                        ●
-                      </span>
-                    )}
+                        <span className="attendance-dot absent-day-dot">
+                          ●
+                        </span>
+                      )}
 
                   </div>
                 );
