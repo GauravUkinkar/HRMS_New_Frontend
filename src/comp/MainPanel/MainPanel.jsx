@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect , useState } from "react";
 import { Link } from "react-router-dom";
 import "./MainPanel.scss";
 import Sidebar from "../sidebar/Sidebar";
 import { BsClockHistory } from "react-icons/bs";
 import { FaChevronDown } from "react-icons/fa6";
-
+import axios from "axios";
+const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 const MainPanel = ({
   children,
   title,
@@ -20,7 +21,33 @@ const MainPanel = ({
   const closeSidebar = () => {
     setActive(false);
   };
+  const [userDetails, setUserDetails] = useState(null);
 
+  const getLoggedInUser = async () => {
+    try {
+
+      const res = await axios.get(`${BASE_URL}/AuthController/getUserById`,
+        {
+          withCredentials: true,
+        }
+      );
+       const user = res?.data?.data;
+
+      if (user) {
+        setUserDetails(user);
+      }
+      console.log("response", res.data);
+      setUserName(res.data.userName);
+
+    }
+    catch (error) {
+      console.log("Error fetching logged-in user:", error);
+    }
+
+  }
+  useEffect(() => {
+    getLoggedInUser();
+  }, []);
   return (
     <div
       className="main_panel parent"
@@ -112,14 +139,30 @@ const MainPanel = ({
               onClick={() => setShowProfile(!showProfile)}
             >
 
-              <div className="user-avatar">
-                SS
-              </div>
+             <div className="user-avatar">
+  {(
+    userDetails?.employeeName ||
+    userDetails?.email ||
+    "U"
+  )
+    .split(" ")
+    .map((word) => word.charAt(0))
+    .join("")
+    .slice(0, 2)
+    .toUpperCase()}
+</div>
 
-              <div className="user-info">
-                <p>Davis Lewis</p>
-                <span>Admin</span>
-              </div>
+<div className="user-info">
+  <p>
+    {userDetails?.employeeName ||
+      userDetails?.email?.split("@")[0] ||
+      "User"}
+  </p>
+
+  <span>
+    {userDetails?.role || userDetails?.crmRole || "Employee"}
+  </span>
+</div>
 
               <div className="user-arrow">
                 <FaChevronDown />
