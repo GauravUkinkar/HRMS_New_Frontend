@@ -19,29 +19,8 @@ const AdminDash = () => {
       >
         <div className="admindash-parent">
           <div className="left">
+
             <div className="left1">
-              <h3>Documents</h3>
-              <div className="documents">
-                <IoDocumentTextSharp />
-                <h4>Aadhar Card</h4>
-              </div>
-              <div className="documents">
-                <IoDocumentTextSharp />
-                <h4>Pan Card</h4>
-              </div>
-              <div className="documents">
-                <IoDocumentTextSharp />
-                <h4>Degree Certificate</h4>
-              </div>
-              <button className="btn">View Documents</button>
-            </div>
-            <div className="left2">
-              <div className="heading">
-                <p>Total Hours Log-In</p>
-                <p>45h 00m </p>
-              </div>
-            </div>
-            <div className="left3">
               <div className="top">
                 <h3>Notification</h3>
                 <FaPlus />
@@ -63,9 +42,9 @@ const AdminDash = () => {
             </div>
           </div>
           <div className="middle">
-            <div className="middle1"></div>
+
             <div className="middle2"></div>
-            <div className="middle3">
+            <div className="middle2">
               <h3>Team Status Overview</h3>
               <div className="card-wrapper">
                 <div className="card">
