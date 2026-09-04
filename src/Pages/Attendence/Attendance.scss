@@ -1,7 +1,3 @@
-/* =========================================================
-   TOP SECTION
-========================================================= */
-
 .top-parent {
   width: 100%;
   display: flex;
@@ -16,10 +12,6 @@
     color: #000;
   }
 }
-
-/* =========================================================
-   BUTTON GROUP
-========================================================= */
 
 .btn-group {
   display: flex;
@@ -55,10 +47,6 @@
     }
   }
 }
-
-/* =========================================================
-   ATTENDANCE LINKS
-========================================================= */
 
 .attendance-link {
   height: 38px;
@@ -107,10 +95,6 @@
     outline: none;
   }
 }
-
-/* =========================================================
-   ATTENDANCE BUTTONS
-========================================================= */
 
 .attendance-btns {
   display: flex;
@@ -161,17 +145,11 @@
   }
 }
 
-/* =========================================================
-   STATUS
-========================================================= */
-
 .attendance-status {
   font-size: 14px;
   font-weight: 500;
   color: #008c9e;
 }
-
-/* HALF DAY = ORANGE */
 
 .attendance-status.half-day-status {
   color: #f57c00 !important;
@@ -183,10 +161,6 @@
 
   font-weight: 600;
 }
-
-/* =========================================================
-   ACTION COLUMN
-========================================================= */
 
 .dropdown_parent {
   display: flex;
@@ -211,7 +185,7 @@
     align-items: center;
     justify-content: center;
 
-    color: #1890ff;
+    color: #008c9e;
 
     cursor: pointer;
 
@@ -222,7 +196,7 @@
     }
 
     &:hover {
-      color: #1677ff;
+      color: #008c9e;
       transform: scale(1.1);
     }
 
@@ -259,8 +233,8 @@
     }
 
     &:hover {
-      border-color: #1890ff;
-      color: #1890ff;
+      border-color: #008c9e;
+      color: #008c9e;
     }
 
     &:focus {
@@ -268,10 +242,6 @@
     }
   }
 }
-
-/* =========================================================
-   CHANGE PUNCH IN TIME
-========================================================= */
 
 .change-time-wrapper {
   display: flex;
@@ -305,11 +275,9 @@
     cursor: pointer;
 
     &:focus {
-      border-color: #1890ff;
+      border-color: #008c9e;
 
-      box-shadow:
-        0 0 0 2px
-        rgba(24, 144, 255, 0.1);
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
     }
   }
 
@@ -343,10 +311,6 @@
   }
 }
 
-/* =========================================================
-   ANT DESIGN DROPDOWN
-========================================================= */
-
 .ant-dropdown {
   .ant-dropdown-menu {
     min-width: 180px;
@@ -365,15 +329,11 @@
       &:hover {
         background: #f5f5f5;
 
-        color: #1890ff;
+        color: #008c9e;
       }
     }
   }
 }
-
-/* =========================================================
-   PREVIOUS ATTENDANCE VIEW
-========================================================= */
 
 .previous-view-header {
   width: 100%;
@@ -386,10 +346,6 @@
 
   position: relative;
 }
-
-/* =========================================================
-   TOP BACK BUTTON
-========================================================= */
 
 .previous-view-back {
   border: none;
@@ -417,10 +373,6 @@
   }
 }
 
-/* =========================================================
-   PREVIOUS VIEW TITLE
-========================================================= */
-
 .previous-view-title {
   flex: 1;
 
@@ -432,20 +384,17 @@
 
   position: relative;
 
-  h1 {
-    margin: 0;
-
+  .empname {
     font-size: 30px;
-
     font-weight: 600;
-
     color: #292929;
+    span {
+      font-size: 20px;
+      font-weight: 500;
+      color: green;
+    }
   }
 }
-
-/* =========================================================
-   TODAY DATE
-========================================================= */
 
 .previous-today-date {
   position: absolute;
@@ -487,10 +436,6 @@
   }
 }
 
-/* =========================================================
-   PREVIOUS SEARCH BOX
-========================================================= */
-
 .previous-search-box {
   width: 100%;
 
@@ -510,112 +455,20 @@
 
   box-sizing: border-box;
 
-  box-shadow:
-    0 5px 20px
-    rgba(0, 0, 0, 0.08);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
 }
-
-/* =========================================================
-   DATE RANGE PICKER
-========================================================= */
 
 .previous-date-picker {
   flex: 1;
-
   max-width: 650px;
-
   height: 42px;
-
   border-radius: 5px;
-
   .ant-picker-input {
     input {
       font-size: 14px;
     }
   }
 }
-
-/* =========================================================
-   SEARCH ATTENDANCE BUTTON
-========================================================= */
-
-.previous-search-btn {
-  height: 42px;
-
-  min-width: 180px;
-
-  padding: 0 20px;
-
-  border: none;
-
-  border-radius: 5px;
-
-  background: #0618d9;
-
-  color: #fff;
-
-  font-size: 15px;
-
-  font-weight: 500;
-
-  cursor: pointer;
-
-  transition: 0.3s ease;
-
-  &:hover {
-    background: #0011b8;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-
-    cursor: not-allowed;
-  }
-
-  &:focus {
-    outline: none;
-  }
-}
-
-/* =========================================================
-   PREVIOUS BACK BUTTON
-========================================================= */
-
-.previous-back-btn {
-  height: 42px;
-
-  min-width: 80px;
-
-  padding: 0 20px;
-
-  border: none;
-
-  border-radius: 5px;
-
-  background: #0618d9;
-
-  color: #fff;
-
-  font-size: 15px;
-
-  font-weight: 500;
-
-  cursor: pointer;
-
-  transition: 0.3s ease;
-
-  &:hover {
-    background: #0011b8;
-  }
-
-  &:focus {
-    outline: none;
-  }
-}
-
-/* =========================================================
-   PREVIOUS ATTENDANCE FORM
-========================================================= */
 
 .previous-attendance-form {
   width: 100%;
@@ -648,17 +501,9 @@
   }
 }
 
-/* =========================================================
-   DATE PICKER
-========================================================= */
-
 .previous-attendance-datepicker {
   width: 100% !important;
 }
-
-/* =========================================================
-   SUBMIT ATTENDANCE
-========================================================= */
 
 .submit-attendance-btn {
   width: 100%;
@@ -692,10 +537,6 @@
   }
 }
 
-/* =========================================================
-   ATTENDANCE LOADING
-========================================================= */
-
 .attendance-loading {
   text-align: center;
 
@@ -705,10 +546,6 @@
 
   font-size: 14px;
 }
-
-/* =========================================================
-   CALENDAR DOTS
-========================================================= */
 
 .attendance-calendar-cell {
   position: relative;
@@ -744,30 +581,19 @@
   }
 }
 
-/* FULL DAY */
-
 .full-day-dot {
   color: #52c41a;
 }
-
-/* HALF DAY */
 
 .half-day-dot {
   color: #faad14;
 }
 
-/* ABSENT */
-
 .absent-day-dot {
   color: #ff4d4f;
 }
 
-/* =========================================================
-   RESPONSIVE - 1200
-========================================================= */
-
 @media (max-width: 1200px) {
-
   .top-parent {
     align-items: flex-start;
 
@@ -793,14 +619,7 @@
   }
 }
 
-/* =========================================================
-   RESPONSIVE - 768
-========================================================= */
-
 @media (max-width: 768px) {
-
-  /* TOP */
-
   .top-parent {
     flex-direction: column;
 
@@ -833,8 +652,6 @@
     font-size: 13px;
   }
 
-  /* ATTENDANCE BUTTONS */
-
   .attendance-btns {
     flex-wrap: wrap;
 
@@ -845,8 +662,6 @@
     }
   }
 
-  /* ACTION */
-
   .dropdown_parent {
     gap: 5px;
 
@@ -854,10 +669,6 @@
       width: 40px;
     }
   }
-
-  /* =======================================================
-     PREVIOUS VIEW
-  ======================================================= */
 
   .previous-view-header {
     flex-wrap: wrap;
@@ -899,12 +710,7 @@
   }
 }
 
-/* =========================================================
-   RESPONSIVE - 480
-========================================================= */
-
 @media (max-width: 480px) {
-
   .top-parent {
     padding: 15px 5px;
 
@@ -958,5 +764,338 @@
 
   .previous-search-box {
     padding: 15px;
+  }
+}
+
+.previous-attendance-search {
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.date-range-wrapper {
+  flex: 1;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-range-wrapper .ant-picker {
+  flex: 1;
+  height: 42px;
+  border-radius: 5px;
+  border: 1px solid #008c9e;
+}
+
+.date-range-wrapper .ant-picker-input input {
+  font-size: 14px;
+}
+
+.date-arrow {
+  font-size: 18px;
+  color: #777;
+  flex-shrink: 0;
+}
+
+.search-attendance-btn {
+  height: 42px;
+  min-width: 180px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 5px;
+  background: #008c9e;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.search-attendance-btn:hover {
+  background: #034b55;
+}
+
+.search-attendance-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.search-attendance-btn:focus {
+  outline: none;
+}
+
+@media (max-width: 1200px) {
+  .previous-attendance-search {
+    gap: 12px;
+  }
+
+  .search-attendance-btn {
+    min-width: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .previous-attendance-header {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .previous-attendance-header h1 {
+    order: 2;
+    width: 100%;
+    flex: none;
+    text-align: left;
+    font-size: 24px;
+  }
+
+  .previous-attendance-search {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .date-range-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .search-attendance-btn,
+  .previous-attendance-search .back-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .previous-attendance-header {
+    padding: 0 5px;
+  }
+
+  .previous-attendance-header h1 {
+    font-size: 22px;
+  }
+
+  .previous-attendance-search {
+    padding: 15px;
+  }
+
+  .date-range-wrapper {
+    height: auto;
+    flex-wrap: wrap;
+  }
+
+  .date-range-wrapper .ant-picker {
+    min-width: 0;
+    width: calc(50% - 10px);
+  }
+
+  .date-arrow {
+    font-size: 16px;
+  }
+}
+
+.employee-month-search {
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  box-sizing: border-box;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.employee-month-search .month-field,
+.employee-month-search .year-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.employee-month-search label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.employee-month-search select,
+.employee-month-search input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.employee-month-search select:focus,
+.employee-month-search input:focus {
+  border-color: #008c9e;
+  box-shadow: 0 0 0 2px rgba(0, 140, 158, 0.1);
+}
+
+.employee-month-search input {
+  appearance: textfield;
+}
+
+.employee-month-search input::-webkit-outer-spin-button,
+.employee-month-search input::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+@media (max-width: 768px) {
+  .employee-month-search {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .employee-month-search .month-field,
+  .employee-month-search .year-field {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .employee-month-search {
+    padding: 15px;
+  }
+
+  .employee-month-search select,
+  .employee-month-search input {
+    height: 40px;
+  }
+}
+
+.employee-checkbox-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.employee-select-button {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.employee-select-button:hover,
+.employee-select-button:focus {
+  border-color: #008c9e;
+}
+
+.employee-select-arrow {
+  font-size: 20px;
+  color: #555;
+  line-height: 5px;
+}
+
+.employee-dropdown-menu {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  box-shadow: var(--box-shadow);
+  z-index: 99999;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  .employee-option {
+    padding: 7px 12px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    width: 100%;
+
+    transition: var(--tran);
+    .employee-option-left {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 20px;
+      input {
+        height: 16px;
+      }
+      .employee-option-name {
+        color: #333;
+        font-size: 14px;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.employee-option:hover {
+  background: #f5f5f5;
+}
+
+.all-employee-option {
+  border-bottom: 1px solid #e8e8e8;
+  background: #fafafa;
+  font-weight: 600;
+  display: flex;
+  justify-content: flex-start !important;
+  gap: 20px;
+  input {
+    height: 16px !important;
+    width: fit-content !important;
+  }
+}
+.attendance-status.absent-status {
+  color: red !important;
+  background: #fff0f0;
+  padding: 5px 20px;
+  border-radius: 50px;
+}
+
+.attendance-status.half-day-status {
+  color: orange !important;
+}
+@media (max-width: 480px) {
+  .employee-dropdown-menu {
+    max-height: 240px;
+  }
+
+  .employee-option-list {
+    max-height: 190px;
+  }
+
+  .employee-option {
+    padding: 7px 10px;
+  }
+
+  .employee-option-name {
+    font-size: 13px;
+  }
+
+  .employee-option-id {
+    font-size: 10px;
   }
 }
