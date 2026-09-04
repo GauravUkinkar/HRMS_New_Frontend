@@ -11,60 +11,16 @@
     height: 100%;
     gap: 20px;
 
+
     .left1 {
-      height: 30%;
-      box-shadow: var(--shadow);
-      border-radius: 5px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      overflow-y: auto;
-
-      .documents {
-        display: flex;
-        gap: 20px;
-        align-items: center;
-
-        svg {
-          font-size: 30px;
-          color: var(--accent2);
-        }
-        h4 {
-          font-size: 16px;
-          color: var(--accent);
-        }
-      }
-    }
-    .left2 {
-      height: 40%;
-      box-shadow: var(--shadow);
-      border-radius: 5px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding: 10px;
-      overflow-y: auto;
-
-      .heading {
-        display: flex;
-        gap: 30px;
-        p {
-          color: var(--accent2);
-          span {
-            color: grey;
-          }
-        }
-      }
-    }
-    .left3 {
-      height: 30%;
+      height: 100%;
       box-shadow: var(--shadow);
       border-radius: 5px;
       display: flex;
       flex-direction: column;
       padding: 10px;
       gap: 16px;
+      background-color: white;
 
       .top {
         display: flex;
@@ -97,22 +53,21 @@
     height: 100%;
     gap: 20px;
 
+
     .middle1 {
-      height: 30%;
+      height: 50%;
       box-shadow: var(--shadow);
       border-radius: 5px;
+      background-color: white;
     }
     .middle2 {
       height: 50%;
       box-shadow: var(--shadow);
       border-radius: 5px;
-    }
-    .middle3 {
-      height: 20%;
-      box-shadow: var(--shadow);
-      border-radius: 5px;
       padding: 10px 20px;
       overflow-y: scroll;
+      background-color: white;
+
       .card-wrapper {
         display: flex;
         flex-wrap: wrap;

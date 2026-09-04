@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./ExperienceLetter.scss";
 import SelectInput from "../../comp/selectInput/SelectInput";
@@ -22,11 +22,113 @@ const ExperienceLetter = () => {
     issuedDate: new Date().toISOString().split("T")[0],
     companyName: "",
     employeeName: "",
+    employeeId: "",
     designation: "",
     startDate: "",
     endDate: "",
     hrManagerName: "",
   });
+  const [employee, setEmployee] = useState([]);
+  const [employeeLoading, setEmployeeLoading] = useState(false);
+
+  useEffect(() => {
+    const getEmployyesByCompany = async () => {
+      if (!formData.companyName) {
+        setEmployee([]);
+        return;
+      }
+      try {
+        setEmployeeLoading(true);
+
+        const response = await axios.get(
+          `${BASE_URL}Admin/GetAllEmployeeByCompanyName`,
+          {
+            params: {
+              companyName: formData.companyName,
+            },
+            withCredentials: true,
+          },
+        );
+
+        console.log("FULL API RESPONSE:", response.data);
+
+        if (response.data?.status === "OK") {
+          const employeeData = response.data?.data || [];
+
+          const employeeList = employeeData
+            .map((item) => item?.data || item)
+            .filter(Boolean);
+
+          console.log("EMPLOYEE LIST:", employeeList);
+          console.log(
+            "EMPLOYEE LIST JSON:",
+            JSON.stringify(employeeList, null, 2),
+          );
+          setEmployee(employeeList);
+        } else {
+          setEmployee([]);
+
+          toast.error(response.data?.responseMessage || "No Employees found");
+        }
+      } catch (error) {
+        console.error("Get Employees By Company Error:", error);
+        console.error("Status:", error.response?.status);
+        console.error("Response:", error.response?.data);
+
+        setEmployee([]);
+
+        toast.error(
+          error.response?.data?.responseMessage ||
+            error.resposne?.data?.message ||
+            "Unable to fetch employees",
+        );
+      } finally {
+        setEmployeeLoading(false);
+      }
+    };
+
+    getEmployyesByCompany();
+  }, [formData.companyName, BASE_URL]);
+  const handleEmployeeChange = (e) => {
+    const formatDateForInput = (dateString) => {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toISOString().split("T")[0];
+};
+    const employeeName = e.target.value;
+
+    const selectedEmployee = employee.find(
+      (employee) => employee.employeeName === employeeName,
+    );
+
+    console.log("Selected Employee:", selectedEmployee);
+
+    if (!selectedEmployee) {
+      setFormData((prev) => ({
+        ...prev,
+        employeeName: "",
+        employeeId: "",
+        designation: "",
+        startDate:"",
+      }));
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      employeeName: selectedEmployee.employeeName,
+      employeeId: selectedEmployee.employeeId,
+      designation: selectedEmployee.designation || "",
+      startDate: formatDateForInput(selectedEmployee.dateOfJoining) || "",
+    }));
+    
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,7 +180,7 @@ const ExperienceLetter = () => {
           endDate: "",
           startDate: "",
           hrManagerName: "",
-          documentName: "Offer Letter",
+          documentName: "Experience Letter",
         });
       } else {
         toast.error(response.data?.responseMessage || "Failed to add letter");
@@ -122,22 +224,40 @@ const ExperienceLetter = () => {
                 <MenuItem value="The Indian Journey">
                   The Indian Journey
                 </MenuItem>
-                <MenuItem value="Pandoza Solutions Pvt.Ltd.">
-                  Pandoza Solutions Pvt.Ltd.
+
+                <MenuItem value="Pandoza Solutions Pvt Ltd">
+                  Pandoza Solutions Pvt Ltd
                 </MenuItem>
+
                 <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
-                <MenuItem value="Nvm Infratech Pvt.Ltd">
-                  Nvm Infratech Pvt.Ltd
+
+                <MenuItem value="Nvm Infratech Pvt Ltd">
+                  Nvm Infratech Pvt Ltd
                 </MenuItem>
               </SelectInput>
 
-              <Input
+              <SelectInput
                 label="Employee Name"
                 name="employeeName"
                 value={formData.employeeName}
-                onChange={handleChange}
+                onChange={handleEmployeeChange}
                 required
-              />
+              >
+                {employeeLoading ? (
+                  <MenuItem disabled>Loading employees...</MenuItem>
+                ) : employee.length === 0 ? (
+                  <MenuItem disabled>No employees found</MenuItem>
+                ) : (
+                  employee.map((emp, index) => (
+                    <MenuItem
+                      key={emp.employeeId || emp.eid || index}
+                      value={emp.employeeName}
+                    >
+                      {emp.employeeName}
+                    </MenuItem>
+                  ))
+                )}
+              </SelectInput>
               <Input
                 label="Designation"
                 name="designation"
@@ -169,7 +289,7 @@ const ExperienceLetter = () => {
                 required
               />
               <button className="btn" type="submit" disabled={loading}>
-                {loading ?  "Submitting..." : "Submit"}
+                {loading ? "Submitting..." : "Submit"}
               </button>
             </form>
             <div className="right-experience">
