@@ -298,6 +298,13 @@ const EmpList = () => {
           columns={columns}
           dataSource={allemployee}
           bordered
+
+
+
+
+
+
+          
           scroll={{ x: "max-content" }}
           pagination={{
             pageSize: 5,

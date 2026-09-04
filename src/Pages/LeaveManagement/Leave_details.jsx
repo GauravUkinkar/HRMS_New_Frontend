@@ -48,7 +48,16 @@ const Leave_details = () => {
       console.log("Employee Response:", employeeData);
 
 
-        
+
+       
+
+       
+
+
+       
+       
+      
+         
 
       setImageError(false);
       setEmployee(employeeData);
