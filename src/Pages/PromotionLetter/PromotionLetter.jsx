@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./PromotionLetter.scss";
 import { FaGlobe, FaLocationDot, FaPhoneVolume } from "react-icons/fa6";
@@ -27,6 +27,89 @@ const PromotionLetter = () => {
     startDate: "",
     hrManagerName: "",
   });
+  const [employee, setEmployee] = useState([]);
+  const [employeeLoading, setEmployeeLoading] = useState(false);
+
+  useEffect(() => {
+    const getEmployeesByCompany = async () => {
+      if (!formData.companyName) {
+        setEmployee([]);
+        return;
+      }
+      try {
+        setEmployeeLoading(true);
+
+        const response = await axios.get(
+          `${BASE_URL}Admin/GetAllEmployeeByCompanyName`,
+          {
+            params: {
+              companyName: formData.companyName,
+            },
+            withCredentials: true,
+          },
+        );
+
+        console.log("FULL API RESPONSE:", response.data);
+
+        if (response.data?.status === "OK") {
+          const employeeData = response.data?.data || [];
+          const employeeList = employeeData
+            .map((item) => item?.data || item)
+            .filter(Boolean);
+
+          console.log("EMPLOYEE LIST:", employeeList);
+          console.log(
+            "EMPLOYEE LIST JSON:",
+            JSON.stringify(employeeList, null, 2),
+          );
+
+          setEmployee(employeeList);
+        } else {
+          setEmployee([]);
+
+          toast.error(response.data?.responseMessage || "No employees found");
+        }
+      } catch (error) {
+        console.error("Get Employees By Company Error:", error);
+        console.error("Status:", error.response?.status);
+        console.error("Response:", error.response?.data);
+
+        setEmployee([]);
+
+        toast.error(
+          error.response?.data?.responseMessage ||
+            error.response?.data?.message ||
+            "Unable to fetch employees",
+        );
+      } finally {
+        setEmployeeLoading(false);
+      }
+    };
+    getEmployeesByCompany();
+  }, [formData.companyName, BASE_URL]);
+
+  const handleEmployeeChange = (e) => {
+    const employeeName = e.target.value;
+
+    const selectedEmployee = employee.find(
+      (employee) => employee.employeeName === employeeName,
+    );
+    console.log("Selected Employee:", selectedEmployee);
+
+    if (!selectedEmployee) {
+      setFormData((prev) => ({
+        ...prev,
+        employeeName: "",
+        designation: "",
+      }));
+      return;
+    }
+    setFormData((prev) => ({
+      ...prev,
+      employeeName: selectedEmployee.employeeName,
+      designation: selectedEmployee.designation || "",
+    }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -125,22 +208,40 @@ const PromotionLetter = () => {
                 <MenuItem value="The Indian Journey">
                   The Indian Journey
                 </MenuItem>
-                <MenuItem value="Pandoza Solutions Pvt.Ltd.">
-                  Pandoza Solutions Pvt.Ltd.
+
+                <MenuItem value="Pandoza Solutions Pvt Ltd">
+                  Pandoza Solutions Pvt Ltd
                 </MenuItem>
+
                 <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
-                <MenuItem value="Nvm Infratech Pvt.Ltd">
-                  Nvm Infratech Pvt.Ltd
+
+                <MenuItem value="Nvm Infratech Pvt Ltd">
+                  Nvm Infratech Pvt Ltd
                 </MenuItem>
               </SelectInput>
 
-              <Input
-                label="Employee Name"
+              <SelectInput
                 name="employeeName"
                 value={formData.employeeName}
-                onChange={handleChange}
+                onChange={handleEmployeeChange}
+                label="Employee Name"
                 required
-              />
+              >
+                {employeeLoading ? (
+                  <MenuItem disabled>Loading employees...</MenuItem>
+                ) : employee.length > 0 ? (
+                  employee.map((emp, index) => (
+                    <MenuItem
+                      key={emp.employeeId || emp.uid || index}
+                      value={emp.employeeName}
+                    >
+                      {emp.employeeName}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>No employees found</MenuItem>
+                )}
+              </SelectInput>
               <Input
                 label="Previous Designation"
                 name="designation"
