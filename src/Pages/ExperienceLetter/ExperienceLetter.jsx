@@ -91,16 +91,16 @@ const ExperienceLetter = () => {
   }, [formData.companyName, BASE_URL]);
   const handleEmployeeChange = (e) => {
     const formatDateForInput = (dateString) => {
-  if (!dateString) return "";
+      if (!dateString) return "";
 
-  const date = new Date(dateString);
+      const date = new Date(dateString);
 
-  if (isNaN(date.getTime())) {
-    return "";
-  }
+      if (isNaN(date.getTime())) {
+        return "";
+      }
 
-  return date.toISOString().split("T")[0];
-};
+      return date.toISOString().split("T")[0];
+    };
     const employeeName = e.target.value;
 
     const selectedEmployee = employee.find(
@@ -115,7 +115,7 @@ const ExperienceLetter = () => {
         employeeName: "",
         employeeId: "",
         designation: "",
-        startDate:"",
+        startDate: "",
       }));
       return;
     }
@@ -127,7 +127,6 @@ const ExperienceLetter = () => {
       designation: selectedEmployee.designation || "",
       startDate: formatDateForInput(selectedEmployee.dateOfJoining) || "",
     }));
-    
   };
 
   const handleChange = (e) => {

@@ -37,67 +37,65 @@ const IncrementLetter = () => {
   const [employee, setEmployee] = useState([]);
   const [employeeLoading, setEmployeeLoading] = useState(false);
 
-useEffect(() => {
-  const getEmployeesByCompany = async () => {
-    if (!formData.companyName) {
-      setEmployee([]);
-      return;
-    }
+  useEffect(() => {
+    const getEmployeesByCompany = async () => {
+      if (!formData.companyName) {
+        setEmployee([]);
+        return;
+      }
 
-    try {
-      setEmployeeLoading(true);
+      try {
+        setEmployeeLoading(true);
 
-      const response = await axios.get(
-        `${BASE_URL}Admin/GetAllEmployeeByCompanyName`,
-        {
-          params: {
-            companyName: formData.companyName,
+        const response = await axios.get(
+          `${BASE_URL}Admin/GetAllEmployeeByCompanyName`,
+          {
+            params: {
+              companyName: formData.companyName,
+            },
+            withCredentials: true,
           },
-          withCredentials: true,
-        }
-      );
-
-      console.log("FULL API RESPONSE:", response.data);
-
-      if (response.data?.status === "OK") {
-        const employeeData = response.data?.data || [];
-        const employeeList = employeeData
-          .map((item) => item?.data || item)
-          .filter(Boolean);
-
-        console.log("EMPLOYEE LIST:", employeeList);
-        console.log(
-          "EMPLOYEE LIST JSON:",
-          JSON.stringify(employeeList, null, 2)
         );
 
-        setEmployee(employeeList);
-      } else {
+        console.log("FULL API RESPONSE:", response.data);
+
+        if (response.data?.status === "OK") {
+          const employeeData = response.data?.data || [];
+          const employeeList = employeeData
+            .map((item) => item?.data || item)
+            .filter(Boolean);
+
+          console.log("EMPLOYEE LIST:", employeeList);
+          console.log(
+            "EMPLOYEE LIST JSON:",
+            JSON.stringify(employeeList, null, 2),
+          );
+
+          setEmployee(employeeList);
+        } else {
+          setEmployee([]);
+
+          toast.error(response.data?.responseMessage || "No employees found");
+        }
+      } catch (error) {
+        console.error("Get Employees By Company Error:", error);
+        console.error("Status:", error.response?.status);
+        console.error("Response:", error.response?.data);
+
         setEmployee([]);
 
         toast.error(
-          response.data?.responseMessage || "No employees found"
+          error.response?.data?.responseMessage ||
+            error.response?.data?.message ||
+            "Unable to fetch employees",
         );
+      } finally {
+        setEmployeeLoading(false);
       }
-    } catch (error) {
-      console.error("Get Employees By Company Error:", error);
-      console.error("Status:", error.response?.status);
-      console.error("Response:", error.response?.data);
+    };
 
-      setEmployee([]);
-
-      toast.error(
-        error.response?.data?.responseMessage ||
-          error.response?.data?.message ||
-          "Unable to fetch employees"
-      );
-    } finally {
-      setEmployeeLoading(false);
-    }
-  };
-
-  getEmployeesByCompany();
-}, [formData.companyName, BASE_URL]);
+    getEmployeesByCompany();
+  }, [formData.companyName, BASE_URL]);
 
   const handleEmployeeChange = (e) => {
     const employeeName = e.target.value;
@@ -219,29 +217,27 @@ useEffect(() => {
                 onChange={handleChange}
                 required
               />
-<SelectInput
-  name="companyName"
-  value={formData.companyName}
-  onChange={handleChange}
-  label="Select Company Name"
-  required
->
-  <MenuItem value="The Indian Journey">
-    The Indian Journey
-  </MenuItem>
+              <SelectInput
+                name="companyName"
+                value={formData.companyName}
+                onChange={handleChange}
+                label="Select Company Name"
+                required
+              >
+                <MenuItem value="The Indian Journey">
+                  The Indian Journey
+                </MenuItem>
 
-  <MenuItem value="Pandoza Solutions Pvt Ltd">
-    Pandoza Solutions Pvt Ltd
-  </MenuItem>
+                <MenuItem value="Pandoza Solutions Pvt Ltd">
+                  Pandoza Solutions Pvt Ltd
+                </MenuItem>
 
-  <MenuItem value="Akka Foundation">
-    Akka Foundation
-  </MenuItem>
+                <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
 
-  <MenuItem value="Nvm Infratech Pvt Ltd">
-    Nvm Infratech Pvt Ltd
-  </MenuItem>
-</SelectInput>
+                <MenuItem value="Nvm Infratech Pvt Ltd">
+                  Nvm Infratech Pvt Ltd
+                </MenuItem>
+              </SelectInput>
               <Input
                 label="Effective Date"
                 type="date"
@@ -250,32 +246,28 @@ useEffect(() => {
                 onChange={handleChange}
                 required
               />
-<SelectInput
-  label="Employee Name"
-  name="employeeName"
-  value={formData.employeeName}
-  onChange={handleEmployeeChange}
-  required
->
-  {employeeLoading ? (
-    <MenuItem disabled>
-      Loading employees...
-    </MenuItem>
-  ) : employee.length === 0 ? (
-    <MenuItem disabled>
-      No employees found
-    </MenuItem>
-  ) : (
-    employee.map((emp, index) => (
-      <MenuItem
-        key={emp.employeeId || emp.eid || index}
-        value={emp.employeeName}
-      >
-        {emp.employeeName}
-      </MenuItem>
-    ))
-  )}
-</SelectInput>
+              <SelectInput
+                label="Employee Name"
+                name="employeeName"
+                value={formData.employeeName}
+                onChange={handleEmployeeChange}
+                required
+              >
+                {employeeLoading ? (
+                  <MenuItem disabled>Loading employees...</MenuItem>
+                ) : employee.length === 0 ? (
+                  <MenuItem disabled>No employees found</MenuItem>
+                ) : (
+                  employee.map((emp, index) => (
+                    <MenuItem
+                      key={emp.employeeId || emp.eid || index}
+                      value={emp.employeeName}
+                    >
+                      {emp.employeeName}
+                    </MenuItem>
+                  ))
+                )}
+              </SelectInput>
 
               <Input
                 label="Salary"
@@ -292,7 +284,6 @@ useEffect(() => {
                 value={formData.costtoCompany}
                 onChange={handleChange}
                 required
-           
               />
               <Input
                 label="Increment Percentage"
@@ -300,7 +291,6 @@ useEffect(() => {
                 value={formData.incrementPercentage}
                 onChange={handleChange}
                 required
-               
               />
               <Input
                 label="Employee Designation"
@@ -308,7 +298,6 @@ useEffect(() => {
                 value={formData.designation}
                 onChange={handleChange}
                 required
-               
               />
               <Input
                 label="Revised CTC"
