@@ -1,12 +1,179 @@
-.offerlettermanagement-cont{
+.offerlettermanagement {
+  padding: 24px;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+
+  .page-header {
     display: flex;
     justify-content: space-between;
-    padding: 20px 10px !important;
-  
-    .btn{
-        display: flex;
-        gap: 5px;
-        align-items: center;
+    align-items: center;
 
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
     }
+  }
+
+  .btn-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    .count {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0b8c951a;
+      border-radius: 5px;
+      font-size: 16px;
+      padding: 8px 16px;
+      color: #0b8b95;
+      gap: 5px;
+      font-weight: 700;
+      border: 1px solid #0b8b95;
+    }
+
+    a {
+      background: #0b8b95;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 5px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: 0.2s ease;
+
+      span {
+        display: flex;
+        align-items: center;
+      }
+
+      &:hover {
+        background: #0a7a85;
+      }
+    }
+  }
+
+  // Table rows
+  .table-row-light {
+    td {
+      background: #eafafa !important;
+    }
+  }
+
+  .table-row-dark {
+    td {
+      background: var(--white) !important;
+    }
+  }
+
+  .ant-table {
+    background: var(--white);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ant-table-thead > tr > th {
+    background: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+
+    .anticon {
+      color: #0b8b95;
+    }
+  }
+
+  // Employee avatar
+  .avatar {
+    background: #0b8b95;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  // Action icons
+  .view,
+  .edit,
+  .delete,
+  .date {
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s ease;
+  }
+
+  .view {
+    color: #6b7280;
+
+    &:hover {
+      color: #374151;
+    }
+  }
+
+  .edit,
+  .date {
+    color: #0b8b95;
+
+    &:hover {
+      color: #086f77;
+    }
+  }
+
+  .delete {
+    color: #ff4d4f;
+
+    &:hover {
+      color: #d9363e;
+    }
+  }
+
+  // Status / employee type tag
+  .ant-tag {
+    border-radius: 20px;
+    padding: 2px 12px;
+  }
+
+  // Pagination
+  .ant-pagination-item-active {
+    border-color: #0b8b95;
+
+    a {
+      color: #0b8b95;
+    }
+  }
+
+  .ant-pagination-item:hover {
+    border-color: #0b8b95;
+
+    a {
+      color: #0b8b95;
+    }
+  }
+
+  // Mobile
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+
+      h2 {
+        font-size: 24px;
+      }
+
+      .btn-group {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+
+        .count,
+        a {
+          font-size: 14px;
+          padding: 7px 12px;
+        }
+      }
+    }
+  }
 }

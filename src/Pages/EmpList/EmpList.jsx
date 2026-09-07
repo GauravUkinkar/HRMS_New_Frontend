@@ -275,7 +275,6 @@ const EmpList = () => {
   return (
     <MainPanel>
       <div className="emp-list">
-
         <div className="page-header">
           <h2>Employees</h2>
 

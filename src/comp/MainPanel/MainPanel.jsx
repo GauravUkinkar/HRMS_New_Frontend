@@ -1,4 +1,4 @@
-import { useEffect , useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./MainPanel.scss";
 import Sidebar from "../sidebar/Sidebar";
@@ -31,7 +31,7 @@ const MainPanel = ({
           withCredentials: true,
         }
       );
-       const user = res?.data?.data;
+      const user = res?.data?.data;
 
       if (user) {
         setUserDetails(user);
@@ -139,30 +139,30 @@ const MainPanel = ({
               onClick={() => setShowProfile(!showProfile)}
             >
 
-             <div className="user-avatar">
-  {(
-    userDetails?.employeeName ||
-    userDetails?.email ||
-    "U"
-  )
-    .split(" ")
-    .map((word) => word.charAt(0))
-    .join("")
-    .slice(0, 2)
-    .toUpperCase()}
-</div>
+              <div className="user-avatar">
+                {(
+                  userDetails?.employeeName ||
+                  userDetails?.email ||
+                  "U"
+                )
+                  .split(" ")
+                  .map((word) => word.charAt(0))
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </div>
 
-<div className="user-info">
-  <p>
-    {userDetails?.employeeName ||
-      userDetails?.email?.split("@")[0] ||
-      "User"}
-  </p>
+              <div className="user-info">
+                <p>
+                  {userDetails?.employeeName ||
+                    userDetails?.email?.split("@")[0] ||
+                    "User"}
+                </p>
 
-  <span>
-    {userDetails?.role || userDetails?.crmRole || "Employee"}
-  </span>
-</div>
+                <span>
+                  {userDetails?.role || userDetails?.crmRole || "Employee"}
+                </span>
+              </div>
 
               <div className="user-arrow">
                 <FaChevronDown />
