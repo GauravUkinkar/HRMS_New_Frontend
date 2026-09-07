@@ -4,7 +4,7 @@ import Profile from "./Pages/EmployeeProfile/Profile";
 import EditEmployee from "./Pages/AddEmployee/EditEmployee";
 import EditSalary from "./Pages/AddSalary/EditSalary";
 import UserList from "./Pages/UserList/UserList";
-import LeaveManagement from "./Pages/LeaveManagement/LeaveManagement";
+
 import Leave_details from "./Pages/LeaveManagement/Leave_details";
 
 const Payslip = lazy(() =>
@@ -13,6 +13,9 @@ const Payslip = lazy(() =>
 
 const EmpList = lazy(() =>
   import("./Pages/EmpList/EmpList")
+);
+const LeaveManagement = lazy(() =>
+  import("./Pages/LeaveManagement/LeaveManagement")
 );
 
 const AddEmployee = lazy(() =>
@@ -74,13 +77,16 @@ const ExperienceLetter = lazy(() =>
   import("./Pages/ExperienceLetter/ExperienceLetter")
 );
 const ReleavingLetter = lazy(() =>
-  import("./Pages/ReleavingLetter/ReleavingLetter")
+  import("./Pages/ReleavingLetter/releavingLetter")
 );
 const InternshipLetter = lazy(() =>
   import("./Pages/InternshipLetter/Internshipletter")
 );
 const PromotionLetter = lazy(() =>
   import("./Pages/PromotionLetter/PromotionLetter")
+);
+const TerminationLetter = lazy(() =>
+  import("./Pages/TerminationLetter/TerminationLetter")
 );
 
 const Empdashboard = lazy(() =>
@@ -131,7 +137,7 @@ export const routes = [
 
   {
     name: "LeaveManagement",
-    path: "/LeaveManagement",
+    path: "/leaveManagement",
     comp: LeaveManagement,
     adminonly: true,
     employeeonly: true,
@@ -282,6 +288,12 @@ export const routes = [
     name: "PromotionLetter",
     path: "/promotionLetter",
     comp: PromotionLetter,
+    adminonly: true,
+  },
+        {
+    name: "TerminationLetter",
+    path: "/terminationLetter",
+    comp: TerminationLetter,
     adminonly: true,
   },
 

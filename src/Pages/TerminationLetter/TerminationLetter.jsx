@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
-import "./ReleavingLetter.scss";
+import "./TerminationLetter.scss";
 import { FaGlobe, FaLocationDot, FaPhoneVolume } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { IoIosMail } from "react-icons/io";
@@ -14,7 +14,7 @@ import left_corner from "../../assets/left-corner.png";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const ReleavingLetter = () => {
+const TerminationLetter = () => {
   const navigate = useNavigate();
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
   const [loading, setLoading] = useState(false);
@@ -22,13 +22,12 @@ const ReleavingLetter = () => {
     issuedDate: new Date().toISOString().split("T")[0],
     companyName: "",
     employeeName: "",
-    designation: "",
-    dateOfJoining: "",
-    endDate: "",
+    employeeId: "",
+    effectiveDate: "",
     hrManagerName: "",
-    salary: "",
-    gender: "",
-    employeeType: "",
+    designation: "",
+    terminationType: "",
+    dateOfJoining: "",
   });
 
   const [employee, setEmployee] = useState([]);
@@ -40,6 +39,7 @@ const ReleavingLetter = () => {
         setEmployee([]);
         return;
       }
+
       try {
         setEmployeeLoading(true);
 
@@ -52,6 +52,7 @@ const ReleavingLetter = () => {
             withCredentials: true,
           },
         );
+
         console.log("FULL API RESPONSE:", response.data);
 
         if (response.data?.status === "OK") {
@@ -60,15 +61,15 @@ const ReleavingLetter = () => {
             .map((item) => item?.data || item)
             .filter(Boolean);
 
-          console.log("EMPOLYEE LIST:", employeeList);
+          console.log("EMPLOYEE LIST:", employeeList);
           console.log(
             "EMPLOYEE LIST JSON:",
             JSON.stringify(employeeList, null, 2),
           );
-
           setEmployee(employeeList);
         } else {
           setEmployee([]);
+
           toast.error(response.data?.responseMessage || "No employees found");
         }
       } catch (error) {
@@ -81,7 +82,7 @@ const ReleavingLetter = () => {
         toast.error(
           error.response?.data?.responseMessage ||
             error.response?.data?.message ||
-            "Unable to fetch employee",
+            "Unable to fetch employees",
         );
       } finally {
         setEmployeeLoading(false);
@@ -97,11 +98,14 @@ const ReleavingLetter = () => {
     const selectedEmployee = employee.find(
       (employee) => employee.employeeName === employeeName,
     );
+    console.log("Selected Employee:", selectedEmployee);
     if (!selectedEmployee) {
       setFormData((prev) => ({
         ...prev,
         employeeName: "",
+        employeeId: "",
         designation: "",
+        dateOfJoining: "",
       }));
       return;
     }
@@ -109,9 +113,12 @@ const ReleavingLetter = () => {
     setFormData((prev) => ({
       ...prev,
       employeeName: selectedEmployee.employeeName,
+      employeeId: selectedEmployee.employeeId,
       designation: selectedEmployee.designation || "",
+      dateOfJoining: selectedEmployee.dateOfJoining ||"",
     }));
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -120,9 +127,9 @@ const ReleavingLetter = () => {
       [name]: value,
     }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     console.log("FORM DATA:", formData);
 
     try {
@@ -132,16 +139,12 @@ const ReleavingLetter = () => {
         issuedDate: formData.issuedDate,
         companyName: formData.companyName,
         employeeName: formData.employeeName,
-        designation: formData.designation,
-        endDate: formData.endDate,
-        dateOfJoining: formData.dateOfJoining,
+        effectiveDate: formData.effectiveDate,
         hrManagerName: formData.hrManagerName,
-        salary: Number(formData.salary),
-        gender: formData.gender,
-        employeeType: formData.employeeType,
-        documentName: "Relieving Letter",
+        terminationType: formData.terminationType,
+        designation: formData.designation,
+        dateOfJoining: formData.dateOfJoining,
       };
-      console.log("API URL:", `${BASE_URL}Admin/addOfficialLetter`);
       console.log("API PAYLOAD:", payload);
 
       const response = await axios.post(
@@ -152,24 +155,27 @@ const ReleavingLetter = () => {
         },
       );
       console.log("API RESPONSE:", response);
+
       if (response.data?.status === "OK") {
-        toast.success("Releaving letter added successfully!");
+        toast.success(
+          
+            "Termination letter added successfully!",
+        );
+
         setFormData({
           issuedDate: new Date().toISOString().split("T")[0],
           companyName: "",
           employeeName: "",
-          designation: "",
-          endDate: "",
-          dateOfJoining: "",
+          employeeId: "",
+          effectiveDate: "",
           hrManagerName: "",
-          salary: "",
-          gender: "",
-          employeeType: "",
-          documentName: "Releaving Letter",
+          designation: "",
+          terminationType: "",
+          dateOfJoining: "",
         });
       } else {
         toast.error(
-          response.data?.responseMessage || "Failed to add Releaving letter",
+          response.data?.responseMessage || "Failed to add termination letter",
         );
       }
     } catch (error) {
@@ -180,7 +186,7 @@ const ReleavingLetter = () => {
       toast.error(
         error.response?.data?.responseMessage ||
           error.response?.data?.message ||
-          "Something went wrong while adding releaving letter",
+          "Something went wrong while adding termination letter",
       );
     } finally {
       setLoading(false);
@@ -189,11 +195,11 @@ const ReleavingLetter = () => {
   return (
     <>
       <MainPanel>
-        <div className="releavingletter-parent parent">
-          <div className="releavingletter-cont cont">
-            <form className="left-releaving" onSubmit={handleSubmit}>
+        <div className="terminationletter-parent parent">
+          <div className="terminationletter-cont cont">
+            <form className="left-termination" onSubmit={handleSubmit}>
               <Input
-                label="Releaving-Letter Date"
+                label="Termination-Letter Date"
                 type="date"
                 name="issuedDate"
                 value={formData.issuedDate.split("T")[0]}
@@ -231,42 +237,61 @@ const ReleavingLetter = () => {
               >
                 {employeeLoading ? (
                   <MenuItem disabled>Loading employees...</MenuItem>
-                ) : employee.length === 0 ?(
+                ) : employee.length === 0 ? (
                   <MenuItem disabled>No employees found</MenuItem>
-                ): (
-                  employee.map((emp, index) =>(
+                ) : (
+                  employee.map((emp, index) => (
                     <MenuItem
-                    key={emp.employeeId || emp.eid || index}
-                  value={emp.employeeName}>
-                    {emp.employeeName}
-                  </MenuItem>
+                      key={emp.employeeId || emp.eid || index}
+                      value={emp.employeeName}
+                    >
+                      {emp.employeeName}
+                    </MenuItem>
                   ))
-                ) }
+                )}
               </SelectInput>
 
               <Input
-                label="Designation"
+                label="Date of Joining"
+                name="startDate"
+              
+                value={formData.dateOfJoining}
+                onChange={handleChange}
+                required
+              />
+
+              <Input
+                label="Employee Designation"
                 name="designation"
                 value={formData.designation}
                 onChange={handleChange}
                 required
               />
-              <Input
-                label="Joining Date"
-                name="dateOfJoining"
-                value={formData.dateOfJoining}
+
+              <SelectInput
+                label="Reason for Termination"
+                name="terminationType"
+                value={formData.terminationType}
                 onChange={handleChange}
+                required
+              >
+                <MenuItem value="Performance Issues">Performance Issues</MenuItem>
+                <MenuItem value="Misconduct">Misconduct</MenuItem>
+                <MenuItem value="Policy Violation">Policy Violation</MenuItem>
+                <MenuItem value="Redundancy">Redundancy</MenuItem>
+                <MenuItem value="Absenteeism">Absenteeism</MenuItem>
+                <MenuItem value="Contract Completion">Contract Completion</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </SelectInput>
+              <Input
+                label="Effective Date"
                 type="date"
+                name="effectiveDate"
+                value={formData.effectiveDate}
+                onChange={handleChange}
                 required
               />
-              <Input
-                label="Relieving Date"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                type="date"
-                required
-              />
+
               <Input
                 label="Hr Manager Name"
                 name="hrManagerName"
@@ -278,8 +303,8 @@ const ReleavingLetter = () => {
                 {loading ? "Submitting..." : "Submit"}
               </button>
             </form>
-            <div className="right-releaving">
-              <div className="releaving-pdf-page">
+            <div className="right-termination">
+              <div className="termination-pdf-page">
                 <img
                   className="leftcorner"
                   src={left_corner}
@@ -287,54 +312,87 @@ const ReleavingLetter = () => {
                 />
                 <img className="pan-water-mark" src={PanLogo} alt="PanLogo" />
                 <div className="top">
-                  <div className="date">Date:01-03-19</div>
+                  <div className="date">{formData.issuedDate || "DD-MM-YYYY"}</div>
                   <div className="logo">
                     <img src={logo_pan} alt="OfferLogoPan" />
                   </div>
                 </div>
                 <div className="heading">
-                  <h3>Releaving Letter</h3>
+                  <h3>Termination Letter</h3>
                 </div>
+
                 <div className="name">
                   <p>Dear</p>
-                  <h4>KARTIK HATTE</h4>
+                  <h4>{formData.employeeName || "EMPLOYEE NAME"}</h4>
                 </div>
-                <div className="gap"></div>
-                <p>
-                  This is to certify that Kartik Hatte was employed with{" "}
-                  <strong>Pandoza Solutions Pvt. Ltd.</strong> as a Software
-                  Developer from <strong>01-03-2023</strong> to{" "}
-                  <strong>25-08-2026</strong>.
-                </p>
-                <div className="gap"></div>
-                <p>
-                  We hereby confirm that he has been relieved from his duties
-                  with the organization with effect from{" "}
-                  <strong>25-08-2026</strong>, after completing all the required
-                  formalities and handing over his responsibilities
-                </p>
-                <div className="gap"></div>
-                <p>
-                  During his tenure with the organization, his conduct and
-                  performance were found to be satisfactory.
-                </p>
-                <div className="gap"></div>
-                <p>
-                  We appreciate his contributions to the organization and wish
-                  him all the very best in his future endeavors.
-                </p>
-                <div className="gap"></div>
 
                 <div className="gap"></div>
+
+                <p>
+                  This letter is to formally inform you that your employment
+                  with <strong>{formData.companyName || "Company Name"}</strong>{" "}
+                  is being terminated effective{" "}
+                  <strong>{formData.effectiveDate || "DD-MM-YYYY"}</strong>.
+                </p>
+
+                <div className="gap"></div>
+
+                <p>
+                  We regret to inform you that this decision has been made due
+                  to{" "}
+                  <strong>
+                    {formData.terminationReason ||
+                      "the circumstances communicated to you"}
+                  </strong>
+                  . After careful consideration and review of the circumstances,
+                  the company has decided to discontinue your employment with
+                  the organization.
+                </p>
+
+                <div className="gap"></div>
+
+                <p>
+                  You are required to complete the necessary handover of your
+                  responsibilities, company property, documents, and other
+                  assets entrusted to you on or before your last working day.
+                </p>
+
+                <div className="gap"></div>
+
+                <p>
+                  Your final settlement, including any applicable salary,
+                  benefits, and other dues, will be processed in accordance with
+                  the company's policies and applicable terms of employment.
+                </p>
+
+                <div className="gap"></div>
+
+                <p>
+                  We request you to cooperate with the HR and management team
+                  during the exit and handover process to ensure a smooth
+                  transition.
+                </p>
+
+                <div className="gap"></div>
+
+                <p>
+                  We thank you for your contributions during your tenure with{" "}
+                  <strong>{formData.companyName || "Company Name"}</strong> and
+                  wish you the very best in your future endeavors.
+                </p>
+
+                <div className="gap"></div>
+
                 <p>Thanking you,</p>
                 <p>Sincerely</p>
-                <h4>For Pandoza Solutions Pvt. Ltd.. </h4>
+
+                <h4>For {formData.companyName || "Company Name"}</h4>
+
                 <div className="gap"></div>
                 <div className="gap"></div>
-                <div className="gap"></div>
-                <div className="gap"></div>
-                <p>Hr Admin & Finance</p>
-                <p>Gaurav Ukinkar</p>
+
+                <p>HR Admin & Finance</p>
+                <p>{formData.hrManagerName || "HR Manager Name"}</p>
 
                 <div className="footer">
                   <Link className="left">
@@ -381,4 +439,4 @@ const ReleavingLetter = () => {
   );
 };
 
-export default ReleavingLetter;
+export default TerminationLetter;
