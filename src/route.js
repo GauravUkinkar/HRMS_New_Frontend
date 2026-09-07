@@ -140,7 +140,7 @@ export const routes = [
     path: "/leaveManagement",
     comp: LeaveManagement,
     adminonly: true,
-    employeeonly: true,
+    employeeonly: false,
   },
 
   {
