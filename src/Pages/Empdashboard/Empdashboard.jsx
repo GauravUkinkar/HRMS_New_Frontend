@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Empdashboard.scss";
 import { useNavigate } from "react-router-dom";
@@ -11,59 +11,288 @@ import Calender from "../../comp/Calender/Calender";
 import { UserContext } from "../../../Context";
 import axios from "axios";
 
-// =====================================================
-// DUMMY ATTENDANCE DATA
-// Later this data will come from your API
-// =====================================================
-
-const attendanceData = {
-  thisWeek: [
-    { day: "M", hours: 8 },
-    { day: "T", hours: 7 },
-    { day: "W", hours: 7 },
-    { day: "T", hours: 9 },
-    { day: "F", hours: 7 },
-    { day: "S", hours: 8 },
-    { day: "S", hours: 0 },
-  ],
-
-  lastWeek: [
-    { day: "M", hours: 9 },
-    { day: "T", hours: 8 },
-    { day: "W", hours: 9 },
-    { day: "T", hours: 6 },
-    { day: "F", hours: 9 },
-    { day: "S", hours: 7 },
-    { day: "S", hours: 0 },
-  ],
-
-  thisMonth: [
-    { day: "M", hours: 8.2 },
-    { day: "T", hours: 7.8 },
-    { day: "W", hours: 8.5 },
-    { day: "T", hours: 8.1 },
-    { day: "F", hours: 7.6 },
-    { day: "S", hours: 6.5 },
-    { day: "S", hours: 2.0 },
-  ],
-};
-
 const salaryApi = axios.create({
   baseURL: "https://salaryservicetest.pandozasolutions.com",
 });
 
 const EmployeeDash = () => {
-  const navigate = useNavigate();
-
-  // =====================================================
-  // GET LOGGED-IN EMPLOYEE FROM USER CONTEXT
-  // =====================================================
-
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+  const [documents, setDocuments] = useState([]);
+  const [documentsLoading, setDucumentsLoading] = useState(true);
+  const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+  const ATTENDANCE_BASE_URL = "https://192.168.1.212:6006/api";
 
-  // =====================================================
-  // LEAVE SUMMARY STATE
-  // =====================================================
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [attendanceLoading, setAttendanceLoading] = useState(true);
+
+  const [selectedPeriod, setSelectedPeriod] = useState("thisWeek");
+  const [notifications, setNotifications] = useState([]);
+  const [notificationLoading, setNotificationLoading] = useState(true);
+  const [birthdays, setBirthdays] = useState([]);
+const [birthdayLoading, setBirthdayLoading] = useState(true);
+
+  useEffect(() => {
+    const getDocuments = async () => {
+      try {
+        setDucumentsLoading(true);
+
+        const employeeId = user?.employeeId;
+
+        if (!employeeId) {
+          console.error("Employee ID not found");
+          setDocuments([]);
+          return;
+        }
+
+        console.log("Documents Employee ID:", employeeId);
+
+        const response = await axios.get(
+          `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`,
+          {
+            withCredentials: true,
+          },
+        );
+
+        console.log("Documents API Response:", response.data);
+
+        const data = response?.data?.data || {};
+
+        const allowedDocuments = [
+          "adharCard",
+          "panCard",
+          "experianceLetter",
+          "certificate",
+          "salarySlip1",
+          "salarySlip2",
+          "salarySlip3",
+          "bankStatement",
+          "relievingLetter",
+          "tenthCertificate",
+          "twelfthCertificate",
+          "degreeCertificate",
+          "latestEducationCertificateOrDegree",
+          "diplomaCertificate",
+        ];
+
+        const documentList = allowedDocuments
+          .filter((key) => data[key])
+          .map((key) => ({
+            documentName: key,
+            fileUrl: data[key],
+          }));
+
+        setDocuments(documentList);
+
+        console.log("Document List:", documentList);
+      } catch (error) {
+        console.error("Documents API Error:", {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          url: error.config?.url,
+        });
+
+        setDocuments([]);
+      } finally {
+        setDucumentsLoading(false);
+      }
+    };
+
+    if (user) {
+      getDocuments();
+    }
+  }, [user, BASE_URL]);
+
+  useEffect(() => {
+    const getAttendance = async () => {
+      try {
+        setAttendanceLoading(true);
+
+        const employeeId =
+          user?.employeeId || user?.employeeID || user?.empId || user?.id;
+
+        if (!employeeId) {
+          console.error("Employee ID not found");
+          setAttendanceData([]);
+          return;
+        }
+
+        console.log("Attendance Employee ID:", employeeId);
+
+        const response = await axios.post(
+          `${ATTENDANCE_BASE_URL}/punch/attendance/${employeeId}`,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
+
+        console.log("Attendance API Response:", response.data);
+
+        const data = response?.data?.data || [];
+
+        setAttendanceData(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error(
+          "Attendance API Error:",
+          error.response?.status,
+          error.response?.data || error.message,
+        );
+
+        setAttendanceData([]);
+      } finally {
+        setAttendanceLoading(false);
+      }
+    };
+
+    if (user) {
+      getAttendance();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const getNotifications = async () => {
+      try {
+        setNotificationLoading(true);
+
+        const response = await axios.get(`${BASE_URL}Notification/my`, {
+          withCredentials: true,
+        });
+
+        console.log("Notification API Response:", response.data);
+
+        const data = response?.data || [];
+
+        setNotifications(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Notification API Error:", {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message,
+          url: error.config?.url,
+        });
+
+        setNotifications([]);
+      } finally {
+        setNotificationLoading(false);
+      }
+    };
+    if (user) {
+      getNotifications();
+    }
+  }, [user, BASE_URL]);
+
+  useEffect(() => {
+    const getBirthdays = async () => {
+    try {
+      setBirthdayLoading(true);
+
+      const today = new Date();
+
+      const date = `${today.getFullYear()}-${String(
+        today.getMonth() + 1
+      ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+      const response = await axios.get(
+        `${BASE_URL}AuthController/birthdays`,
+        {
+          params: {
+            date : date,
+          },
+          withCredentials: true,
+        }
+      );
+      console.log("Birthday API Response:", response.data);
+
+      const data = response?.data?.data || response?.data || [];
+
+      setBirthdays(Array.isArray(data) ? data: []);
+    } catch (error) {
+      console.error("Birthday API Error:", {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+        url: error.config?.url,
+      });
+      setBirthdays([]);
+    } finally {
+      setBirthdayLoading(false);
+    }
+  };
+  if (user) {
+    getBirthdays();
+  }
+  },[user, BASE_URL]);
+
+  const getWeekRange = (weekType) => {
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    const day = today.getDay();
+
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday);
+
+    if (weekType === "lastWeek") {
+      monday.setDate(monday.getDate() - 7);
+    }
+
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    return {
+      monday,
+      sunday,
+    };
+  };
+
+  const getWeekDays = (weekType) => {
+    const { monday } = getWeekRange(weekType);
+
+    const days = [];
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + i);
+
+      days.push(date);
+    }
+
+    return days;
+  };
+
+  const weekDays = getWeekDays(selectedPeriod);
+
+  const currentAttendance = weekDays.map((day) => {
+    const dateString = day.toISOString().split("T")[0];
+
+    const attendance = attendanceData.find((item) => {
+      return item.date?.split("T")[0] === dateString;
+    });
+
+    return {
+      date: dateString,
+      workedMinutes: attendance ? Number(attendance.workedMinutes) || 0 : 0,
+    };
+  });
+
+  const totalMinutes = currentAttendance.reduce(
+    (total, item) => total + Number(item.workedMinutes || 0),
+    0,
+  );
+
+  const totalHours = Math.floor(totalMinutes / 60);
+
+  const remainingMinutes = totalMinutes % 60;
+
+  const totalHoursText = `${totalHours}h ${String(remainingMinutes).padStart(
+    2,
+    "0",
+  )}m`;
 
   const [leaveSummary, setLeaveSummary] = useState({
     employeeId: "",
@@ -74,11 +303,6 @@ const EmployeeDash = () => {
   });
 
   const [leaveLoading, setLeaveLoading] = useState(true);
-
-  // =====================================================
-  // GET LEAVE SUMMARY
-  // =====================================================
-
   const getLeaveSummary = async () => {
     try {
       setLeaveLoading(true);
@@ -127,46 +351,11 @@ const EmployeeDash = () => {
       setLeaveLoading(false);
     }
   };
-  // =====================================================
-  // CALL LEAVE API WHEN USER IS AVAILABLE
-  // =====================================================
-
   useEffect(() => {
     if (user) {
       getLeaveSummary();
     }
   }, [user]);
-
-  // =====================================================
-  // HOURS LOGGED STATE
-  // =====================================================
-
-  const [selectedPeriod, setSelectedPeriod] = useState("thisWeek");
-
-  // =====================================================
-  // GET CURRENT ATTENDANCE DATA
-  // =====================================================
-
-  const currentAttendance = attendanceData[selectedPeriod];
-
-  // =====================================================
-  // CALCULATE TOTAL HOURS
-  // =====================================================
-
-  const totalHours = currentAttendance.reduce(
-    (total, item) => total + item.hours,
-    0,
-  );
-
-  // =====================================================
-  // FORMAT TOTAL HOURS
-  // =====================================================
-
-  const totalHoursText = `${totalHours}h 00m`;
-
-  // =====================================================
-  // LEAVE PROGRESS CALCULATION
-  // =====================================================
 
   const takenLeaveProgress =
     leaveSummary.paidLeaves > 0
@@ -188,46 +377,38 @@ const EmployeeDash = () => {
         ]}
       >
         <div className="empdash-parent">
-          {/* =================================
-              LEFT SECTION
-          ================================= */}
-
           <div className="left">
-            {/* DOCUMENTS */}
-
             <div className="left1">
-              <h3>Documents</h3>
+              <h3>List of Documents</h3>
 
-              <div className="documents">
-                <IoDocumentTextSharp />
-                <h4>Aadhar Card</h4>
-              </div>
+              {documentsLoading ? (
+                <p>Loading documents...</p>
+              ) : documents.length > 0 ? (
+                documents.slice(0, 3).map((document, index) => (
+                  <div className="documents" key={index}>
+                    <IoDocumentTextSharp className="document-icon" />
 
-              <div className="documents">
-                <IoDocumentTextSharp />
-                <h4>Pan Card</h4>
-              </div>
-
-              <div className="documents">
-                <IoDocumentTextSharp />
-                <h4>Degree Certificate</h4>
-              </div>
+                    <h4>
+                      {document.documentName
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())}
+                    </h4>
+                  </div>
+                ))
+              ) : (
+                <p>No documents found</p>
+              )}
 
               <button className="btn" onClick={() => navigate("/Empviewdoc")}>
                 View Documents
               </button>
             </div>
-
-            {/* =================================
-                HOURS LOGGED
-            ================================= */}
-
             <div className="left2">
               <div className="top">
                 <div>
                   <h3>Hours Logged</h3>
 
-                  <h2>{totalHoursText}</h2>
+                  <h2>{attendanceLoading ? "Loading..." : totalHoursText}</h2>
                 </div>
 
                 <select
@@ -237,101 +418,92 @@ const EmployeeDash = () => {
                   <option value="thisWeek">This Week</option>
 
                   <option value="lastWeek">Last Week</option>
-
-                  <option value="thisMonth">This Month</option>
                 </select>
               </div>
 
-              {/* =================================
-                  DYNAMIC HOURS CHART
-              ================================= */}
+              <div className="hours-chart">
+                {attendanceLoading ? (
+                  <p>Loading attendance...</p>
+                ) : (
+                  currentAttendance.map((item) => {
+                    const workedMinutes = Number(item.workedMinutes) || 0;
 
-              <div
-                className={`hours-chart ${
-                  selectedPeriod === "thisMonth" ? "month-chart" : ""
-                }`}
-              >
-                {currentAttendance.map((item, index) => {
-                  const barHeight = Math.min((item.hours / 9) * 100, 100);
+                    const hours = Math.floor(workedMinutes / 60);
 
-                  const completed = item.hours >= 9;
+                    const minutes = workedMinutes % 60;
 
-                  const absent = item.hours === 0;
+                    const barHeight = Math.min(
+                      (workedMinutes / 540) * 100,
+                      100,
+                    );
 
-                  return (
-                    <div className="chart-column" key={index}>
-                      <span>{String(item.hours).padStart(2, "0")}h</span>
+                    const completed = workedMinutes >= 540;
 
-                      <div className="bar-container">
-                        <div
-                          className={`bar ${
-                            absent
-                              ? "absent"
-                              : completed
-                                ? "completed"
-                                : "incomplete"
-                          }`}
-                          style={{
-                            height: `${barHeight}%`,
-                          }}
-                        />
+                    const absent = workedMinutes === 0;
+
+                    const date = new Date(`${item.date}T00:00:00`);
+
+                    return (
+                      <div className="chart-column" key={item.date}>
+                        <span>
+                          {hours}h {String(minutes).padStart(2, "0")}m
+                        </span>
+
+                        <div className="bar-container">
+                          <div
+                            className={`bar ${
+                              absent
+                                ? "absent"
+                                : completed
+                                  ? "completed"
+                                  : "incomplete"
+                            }`}
+                            style={{
+                              height: `${barHeight}%`,
+                            }}
+                          />
+                        </div>
+
+                        <p>
+                          {date.toLocaleDateString("en-US", {
+                            weekday: "short",
+                          })}
+                        </p>
                       </div>
-
-                      <p>{item.day}</p>
-                    </div>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             </div>
-
-            {/* NOTIFICATION */}
-
             <div className="left3">
               <div className="top">
                 <h3>Notification</h3>
               </div>
 
-              <div className="card">
-                <div className="heading">Pramotion Review</div>
+              {notificationLoading ? (
+                <p>Loading notifications...</p>
+              ) : notifications.length > 0 ? (
+                notifications.slice(0, 2).map((notification) => (
+                  <div className="card" key={notification.id}>
+                    <div className="heading">{notification.title}</div>
 
-                <p>
-                  11 June 2026 Discussed potential promotion in Q1 based on
-                  consistent performance and leadership in the recent project.
-                </p>
-              </div>
-
-              <div className="card">
-                <div className="heading">Employee Appreciation</div>
-
-                <p>
-                  7 May 2026 Recognized by the team and CEO for outstanding
-                  contribution in the client workshop and delivery timeline.
-                </p>
-              </div>
+                    <p>{notification.message}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No notifications found</p>
+              )}
             </div>
           </div>
-
-          {/* =================================
-              MIDDLE SECTION
-          ================================= */}
-
           <div className="middle">
-            {/* =================================
-                LEAVE SUMMARY
-            ================================= */}
-
             <div className="middle1">
-              {/* ALL LEAVES */}
-
               <div className="leave-card">
                 <h4>All Leaves</h4>
-
                 <div className="circle all-leaves">
                   <div>
                     <strong>
                       {leaveLoading ? "..." : leaveSummary.paidLeaves}
                     </strong>
-
                     <span>Days</span>
                   </div>
                 </div>
@@ -379,11 +551,6 @@ const EmployeeDash = () => {
                 </div>
               </div>
             </div>
-
-            {/* =================================
-                PERFORMANCE OVERVIEW
-            ================================= */}
-
             <div className="middle2">
               <div className="performance-top">
                 <div>
@@ -527,9 +694,7 @@ const EmployeeDash = () => {
             </div>
           </div>
 
-          {/* =================================
-              RIGHT SECTION
-          ================================= */}
+
 
           <div className="right">
             {/* ATTENDANCE */}
@@ -540,33 +705,77 @@ const EmployeeDash = () => {
 
             {/* BIRTHDAYS */}
 
-            <div className="right2">
-              <div className="top">
-                <h3>Birthdays This Month</h3>
+        <div className="right2">
+  <div className="top">
+    <h3>Birthdays This Month</h3>
 
-                <FaBirthdayCake />
-              </div>
+    <FaBirthdayCake />
+  </div>
 
-              <div className="card">
-                <div className="name">
-                  <div className="user-avatar">AM</div>
+  {birthdayLoading ? (
+    <p>Loading birthdays...</p>
+  ) : birthdays.length > 0 ? (
+    birthdays.slice(0, 3).map((birthday, index) => {
+      const employeeName =
+        birthday.employeeName ||
+        birthday.name ||
+        birthday.fullName ||
+        "Employee";
 
-                  <div className="user-info">
-                    <p>Ava Martinez</p>
+      const designation =
+        birthday.designation ||
+        birthday.jobTitle ||
+        "Employee";
 
-                    <span>Product Designer</span>
-                  </div>
-                </div>
+      const birthdayDate =
+        birthday.dateOfBirth ||
+        birthday.birthDate ||
+        birthday.dob;
 
-                <div className="date">
-                  <FaBirthdayCake />
+      const initials = employeeName
+        .split(" ")
+        .map((name) => name[0])
+        .join("")
+        .substring(0, 2)
+        .toUpperCase();
 
-                  <p>June 5</p>
-                </div>
-              </div>
-
-              <button className="birthday-btn">View Birthdays</button>
+      return (
+        <div className="card" key={birthday.id || index}>
+          <div className="name">
+            <div className="user-avatar">
+              {initials}
             </div>
+
+            <div className="user-info">
+              <p>{employeeName}</p>
+
+              <span>{designation}</span>
+            </div>
+          </div>
+
+          <div className="date">
+            <FaBirthdayCake />
+
+            <p>
+              {birthdayDate
+                ? new Date(birthdayDate).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })
+                : "Birthday"}
+            </p>
+          </div>
+        </div>
+      );
+    })
+  ) : (
+    <p>No birthdays this month</p>
+  )}
+
+  <button className="birthday-btn">
+    View Birthdays
+  </button>
+</div>
 
             {/* INTERNAL NOTES */}
 
