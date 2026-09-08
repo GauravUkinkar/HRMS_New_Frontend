@@ -24,7 +24,13 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      overflow-y: auto;
+    
+      background-color: white;
+      justify-content: space-between;
+      p{
+        display: flex;
+        justify-content: center;
+      }
 
       h3 {
         color: var(--accent);
@@ -65,6 +71,7 @@
       flex-direction: column;
       gap: 16px;
       padding: 10px;
+      background-color: white;
       overflow: hidden;
 
       .top {
@@ -204,6 +211,7 @@
       padding: 10px;
       gap: 16px;
       overflow-y: auto;
+      background-color: white;
 
       .top {
         display: flex;
@@ -230,9 +238,7 @@
     }
   }
 
-  /* =================================
-     MIDDLE SECTION
-  ================================= */
+
 
   .middle {
     width: 50%;
@@ -250,7 +256,7 @@
         width: 33.33%;
         box-shadow: var(--shadow);
         border-radius: 5px;
-
+        background-color: white;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -548,6 +554,12 @@
       gap: 20px;
       display: flex;
       flex-direction: column;
+      background-color: white;
+      justify-content: space-between;
+      p{
+        display: flex;
+        justify-content: center;
+      }
 
       .top {
         display: flex;
