@@ -141,8 +141,8 @@ const Sidebar = ({
       adminOnly: true,
       children: [
         {
-          name: "Generate Offer Letter",
-          link: "/offerLetter",
+          name: "Offer Letters",
+          link: "/offerLettermanagement",
         },
         {
           name: "Generate Joining Letter",
@@ -355,8 +355,8 @@ const Sidebar = ({
               const visibleChildren =
                 item.children
                   ? item.children.filter(
-                      canShowChild
-                    )
+                    canShowChild
+                  )
                   : [];
 
               if (

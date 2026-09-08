@@ -66,6 +66,90 @@ const companyConfig = {
   },
 };
 
+const InternshipOfferLetter = ({
+  formData,
+  selectedCompany,
+  formatDate,
+}) => {
+  const pronoun =
+    formData.gender === "Male"
+      ? { possessive: "his", reflexive: "him" }
+      : formData.gender === "Female"
+        ? { possessive: "her", reflexive: "her" }
+        : { possessive: "their", reflexive: "them" };
+
+  return (
+   <div className="page-wrapper">
+
+     <div className="internship-pdf-page">
+      <img
+        className="pan-water-mark"
+        src={selectedCompany.watermark}
+        alt="Company Watermark"
+      />
+
+      <div className="internship-header">
+        <div className="internship-logo">
+          <img
+            src={selectedCompany.logo}
+            alt={formData.companyName || "Company Logo"}
+          />
+        </div>
+      </div>
+
+      <div className="internship-heading">
+        <h3>To Whom It May Concern</h3>
+        <h3>Internship Offer Letter</h3>
+      </div>
+
+      <div className="internship-content">
+        <p>Dear,</p>
+
+        <p>{formData.employeeName || "Employee Name"}</p>
+
+        <p>
+          We are pleased to offer {formData.employeeName || "Employee Name"} an
+          internship position at {formData.companyName || "Company Name"}
+          commencing from <strong>{formatDate(formData.dateOfjoining)}</strong>
+          for a duration of three (3) months.
+        </p>
+
+        <p>
+          During the internship period, {formData.employeeName || "Employee Name"}
+          will be entitled to a monthly stipend of{" "}
+          <strong>{Number(formData.salary || 0).toLocaleString("en-IN")}</strong>,
+          which will be calculated based on the number of working days attended.
+          Please note that <strong>no paid leave will be granted</strong> during
+          the internship period.
+        </p>
+
+        <p>
+          This internship is intended to provide practical exposure and
+          professional development in the relevant domain. Furthermore, {pronoun.possessive}{" "}
+          performance will be closely monitored and evaluated throughout the
+          internship. Based on {pronoun.possessive} overall performance and
+          conduct, a decision regarding {pronoun.possessive} confirmation as a
+          permanent employee may be made at the end of the internship.
+        </p>
+
+        <p>
+          We welcome {formData.employeeName || "Employee Name"} to our team and
+          look forward to a productive and rewarding association.
+        </p>
+
+        <p>For any further details, feel free to contact us.</p>
+
+        <div className="internship-signature">
+          <p>{formData.hrManagerName || "HR Manager"}</p>
+          <p>HR &amp; Admin Manager</p>
+          <p>{formData.companyName || "Company Name"}</p>
+        </div>
+      </div>
+    </div>
+</div>
+  );
+};
+
 const OfferLetter = () => {
   const navigate = useNavigate();
 
@@ -415,6 +499,15 @@ const OfferLetter = () => {
 
             <div className="right-offer">
               <div className="pages-wrapper">
+
+                {formData.employeeType === "Intern" ? (
+                  <InternshipOfferLetter
+                    formData={formData}
+                    selectedCompany={selectedCompany}
+                    formatDate={formatDate}
+                  />
+                ) : (
+                  <>
                 <div className="offer-pdf-page">
 
                   <img
@@ -1966,7 +2059,10 @@ const OfferLetter = () => {
 
                 </div>
 
-              </div>
+              
+                  </>
+                )}
+</div>
 
             </div>
 

@@ -7,7 +7,7 @@ import {
   MdDelete,
   MdVisibility,
   MdVisibilityOff,
-} from "react-icons/md";    
+} from "react-icons/md";
 import { ImCross } from "react-icons/im";
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -52,7 +52,6 @@ const OfficialNotes = () => {
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState(null);
-  const [noteDate, setNoteDate] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const [noteCreatedAt, setNoteCreatedAt] = useState("");
 
@@ -150,7 +149,6 @@ const OfficialNotes = () => {
   const getAllEmployees = async () => {
     try {
       setEmployeeLoading(true);
-
       setEmployeeError("");
 
       const res = await axios.get(`${BASE_URL}Admin/GetAllEmployee`, {
@@ -210,7 +208,6 @@ const OfficialNotes = () => {
     setIsEditing(false);
     setEditingNoteId(null);
 
-    setNoteDate("");
     setNoteContent("");
     setNoteCreatedAt("");
 
@@ -230,7 +227,6 @@ const OfficialNotes = () => {
     setIsEditing(false);
     setEditingNoteId(null);
 
-    setNoteDate("");
     setNoteContent("");
     setNoteCreatedAt("");
 
@@ -347,15 +343,6 @@ const OfficialNotes = () => {
 
       setNoteContent(selectedNote.discription || "");
 
-      const indiaDate = new Date(selectedNote.createdAt).toLocaleDateString(
-        "en-CA",
-        {
-          timeZone: "Asia/Kolkata",
-        },
-      );
-
-      setNoteDate(indiaDate);
-
       setSelectedEmployees([]);
       setIsEmployeeDropdownOpen(false);
 
@@ -426,51 +413,59 @@ const OfficialNotes = () => {
 
   const handleSubmitNote = async () => {
     try {
-      // --------------------------------------------------------
+      // ========================================================
       // VALIDATION
-      // --------------------------------------------------------
+      // ========================================================
 
       if (!noteContent || noteContent.trim() === "") {
         alert("Please enter a note.");
         return;
       }
 
-      if (!noteDate) {
-        alert("Please select a date.");
-        return;
-      }
-
-      // --------------------------------------------------------
-      // ADD NEW NOTE
-      // --------------------------------------------------------
+      // ========================================================
+      // ADD NEW OFFICIAL NOTE
+      // NEW API:
+      // POST /Notification/Admin/create
+      // ========================================================
 
       if (!isEditing) {
-        const selectedDate = new Date(
-          `${noteDate}T${new Date().toTimeString().slice(0, 8)}`,
-        );
+        /*
+         * If no employee is selected, treat it as
+         * "All Employees".
+         *
+         * Otherwise send only selected employee IDs.
+         */
+        const recipientUids =
+          selectedEmployees.length > 0
+            ? selectedEmployees
+            : employees.map((employee) => employee.employeeId);
 
-        const noteData = {
-          notesId: 0,
-          discription: noteContent,
-          createdAt: selectedDate.toISOString(),
+        if (recipientUids.length === 0) {
+          alert("No employees available.");
+          return;
+        }
 
-          // Add this when backend supports employee selection:
-          // employeeIds: selectedEmployees,
+        const notificationData = {
+          recipientUids: recipientUids,
+          title: "Official Note",
+          message: noteContent,
+          type: "Official_Note",
+          referenceId: 0,
         };
 
-        console.log("ADD OFFICIAL NOTE REQUEST:", noteData);
+        console.log("CREATE OFFICIAL NOTE REQUEST:", notificationData);
 
         const res = await axios.post(
-          `${BASE_URL}Admin/addOfficialNotes`,
-          noteData,
+          `${BASE_URL}Notification/Admin/create`,
+          notificationData,
           {
             withCredentials: true,
           },
         );
 
-        console.log("ADD OFFICIAL NOTE RESPONSE:", res.data);
+        console.log("CREATE OFFICIAL NOTE RESPONSE:", res.data);
 
-        alert("Official note added successfully.");
+        alert("Official note sent successfully.");
 
         handleCloseNote();
 
@@ -479,9 +474,9 @@ const OfficialNotes = () => {
         return;
       }
 
-      // --------------------------------------------------------
-      // VALIDATE UPDATE DATA
-      // --------------------------------------------------------
+      // ========================================================
+      // UPDATE EXISTING NOTE
+      // ========================================================
 
       if (!editingNoteId) {
         alert("Note ID is missing.");
@@ -492,10 +487,6 @@ const OfficialNotes = () => {
         alert("Created date is missing.");
         return;
       }
-
-      // --------------------------------------------------------
-      // UPDATE EXISTING NOTE
-      // --------------------------------------------------------
 
       const updateData = {
         notesId: editingNoteId,
@@ -610,19 +601,6 @@ const OfficialNotes = () => {
               {/* MODAL BODY */}
 
               <div className="note-modal-body">
-                {/* DATE */}
-
-                <div className="note-form-group">
-                  <label htmlFor="note-date">Date</label>
-
-                  <input
-                    id="note-date"
-                    type="date"
-                    value={noteDate}
-                    onChange={(event) => setNoteDate(event.target.value)}
-                  />
-                </div>
-
                 {/* SEND TO */}
 
                 <div className="note-form-group">
@@ -721,10 +699,10 @@ const OfficialNotes = () => {
                   </div>
                 </div>
 
-                {/* NOTE */}
+                {/* MESSAGE */}
 
                 <div className="note-form-group">
-                  <label>Note</label>
+                  <label>Message</label>
 
                   <div className="ckeditor-wrapper">
                     <CKEditor
@@ -735,7 +713,6 @@ const OfficialNotes = () => {
                       }}
                       config={{
                         placeholder: "Enter official note...",
-
                         toolbar: [
                           "heading",
                           "|",
