@@ -17,6 +17,7 @@ import { LuBell, LuCheck } from "react-icons/lu";
 import { LuCake, LuSend } from "react-icons/lu";
 import axios from "axios";
 const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
+const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 const BASE_URL3 = import.meta.env.VITE_TEAM_URL;
 const AdminDash = () => {
   const quotes = [
@@ -226,24 +227,6 @@ const AdminDash = () => {
     },
   ];
 
-  const leaveData = [
-    {
-      name: "Pending",
-      value: 12,
-      color: "#ffc52b",
-    },
-    {
-      name: "Approved",
-      value: 24,
-      color: "#42cfa5",
-    },
-    {
-      name: "Rejected",
-      value: 3,
-      color: "#ff424c",
-    },
-  ];
-
   // Select a random quote when the dashboard loads
   const [quote] = useState(() => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -416,58 +399,105 @@ const AdminDash = () => {
   const hourAngle = (hours % 12) * 30 + minutes * 0.5;
 
   //API INTEGRATION FOR FIRST BOX - TODAY ATTENDANCE DATA TOTALEMP/PRESENT/ABSENT/HALFDAY
-const [today, setToday] = useState({});
-const getTodaydata = async () => {
-  try {
-    // Get today's date in YYYY-MM-DD format
-    const currentDate = new Date().toISOString().split("T")[0];
-    const res = await axios.get(
-      `${BASE_URL2}api/punch/work-session/summary?date=${currentDate}`
-    );
+  const [today, setToday] = useState({});
+  const getTodaydata = async () => {
+    try {
+      // Get today's date in YYYY-MM-DD format
+      const currentDate = new Date().toISOString().split("T")[0];
+      const res = await axios.get(
+        `${BASE_URL2}api/punch/work-session/summary?date=${currentDate}`
+      );
 
-    console.log("TODAY SUMMARY:", res.data);
+      console.log("TODAY SUMMARY:", res.data);
 
-    setToday(res?.data || {});
+      setToday(res?.data || {});
 
-  } catch (error) {
-    console.log("Today Summary API Error:", error);
-  }
-};
+    } catch (error) {
+      console.log("Today Summary API Error:", error);
+    }
+  };
   const dashboardCards = [
-  {
-    id: 1,
-    title: "Total Employees",
-    value: today?.totalEmployees || 0,
-    icon: <FaUsersLine />,
-    iconColor: "#2563eb",
-    iconBg: "#eff6ff",
-  },
-  {
-    id: 2,
-    title: "Present Today",
-    value: today?.["In-office"] || 0,
-    icon: <HiUsers />,
-    iconColor: "#16a34a",
-    iconBg: "#f0fdf4",
-  },
-  {
-    id: 3,
-    title: "Absent Today",
-    value: today?.absent || 0,
-    icon: <FaUsersSlash />,
-    iconColor: "#dc2626",
-    iconBg: "#fef2f2",
-  },
-  {
-    id: 4,
-    title: "Half Day Exists",
-    value: today?.halfday || 0,
-    icon: <PiUserSwitchFill />,
-    iconColor: "#f59e0b",
-    iconBg: "#fffbeb",
-  },
-];
+    {
+      id: 1,
+      title: "Total Employees",
+      value: today?.totalEmployees || 0,
+      icon: <FaUsersLine />,
+      iconColor: "#2563eb",
+      iconBg: "#eff6ff",
+    },
+    {
+      id: 2,
+      title: "Present Today",
+      value: today?.["In-office"] || 0,
+      icon: <HiUsers />,
+      iconColor: "#16a34a",
+      iconBg: "#f0fdf4",
+    },
+    {
+      id: 3,
+      title: "Absent Today",
+      value: today?.absent || 0,
+      icon: <FaUsersSlash />,
+      iconColor: "#dc2626",
+      iconBg: "#fef2f2",
+    },
+    {
+      id: 4,
+      title: "Half Day Exists",
+      value: today?.halfday || 0,
+      icon: <PiUserSwitchFill />,
+      iconColor: "#f59e0b",
+      iconBg: "#fffbeb",
+    },
+  ];
 
+
+  //API INTEGRATION FOR LEAVES MANAGEMENT 
+  const [leave, setLeave] = useState([]);
+  const getAllLeaves = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}admin/getAllLeaves`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("GETALLLEAVES", response.data);
+
+      setLeave(response?.data?.data || []);
+
+    } catch (error) {
+      console.log("Get All Leaves Error:", error);
+      setLeave([]);
+    }
+  };
+  const leaveData = [
+    {
+      name: "Pending",
+      value: leave.filter(
+        (item) =>
+          item?.approved?.toLowerCase() === "pending"
+      ).length,
+      color: "#ffc52b",
+    },
+    {
+      name: "Approved",
+      value: leave.filter(
+        (item) =>
+          item?.approved?.toLowerCase() === "approved"
+      ).length,
+      color: "#42cfa5",
+    },
+    {
+      name: "Rejected",
+      value: leave.filter(
+        (item) =>
+          item?.approved?.toLowerCase() === "rejected"
+      ).length,
+      color: "#ff424c",
+    },
+  ];
   // api integration with TODAY ATTENDANCE box 
   const [loader, setLoader] = useState(false);
   const [data, setData] = useState([]);
@@ -543,6 +573,7 @@ const getTodaydata = async () => {
   };
   useEffect(() => {
     getEmployeeData();
+    getAllLeaves();
     getallteam();
     getTodaydata();
   }, []);
