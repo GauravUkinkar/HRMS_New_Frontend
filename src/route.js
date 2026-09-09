@@ -126,16 +126,14 @@ export const routes = [
     name: "Viewdoc",
     path: "/Viewdoc",
     comp: Viewdoc,
-    adminonly: true,
-    employeeonly: false,
+
   },
 
   {
     name: "Empviewdoc",
     path: "/Empviewdoc",
     comp: Empviewdoc,
-    adminonly: true,
-    employeeonly: true,
+
   },
 
   {
