@@ -399,6 +399,15 @@
                 font-size: 16px;
               }
             }
+            .heading{
+              display: flex;
+              flex-direction: column;
+              font-weight:700;
+              span{
+                font-size:12px;
+                font-weight:100;
+              }
+            }
           }
 
           .team-members {

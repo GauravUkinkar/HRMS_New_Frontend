@@ -278,45 +278,6 @@ const AdminDash = () => {
     },
   ];
 
-
-
-  const teamStatus = [
-    {
-      id: 1,
-      name: "Development",
-      members: 48,
-      percentage: 92,
-      color: "#3182ed",
-    },
-    {
-      id: 2,
-      name: "Marketing",
-      members: 32,
-      percentage: 87,
-      color: "#e83d9b",
-    },
-    {
-      id: 3,
-      name: "HR",
-      members: 18,
-      percentage: 100,
-      color: "#43c98d",
-    },
-    {
-      id: 4,
-      name: "Finance",
-      members: 24,
-      percentage: 83,
-      color: "#8b5cf6",
-    },
-    {
-      id: 5,
-      name: "Operations",
-      members: 28,
-      percentage: 89,
-      color: "#f5a623",
-    },
-  ];
   // Select a random quote when the dashboard loads
   const [quote] = useState(() => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -870,31 +831,46 @@ const AdminDash = () => {
                 </div>
 
                 <div className="team-list">
-                  {team.map((item) => (
-                    <div className="team-row" key={item.id}>
+                  {team.map((item, index) => {
+                    const teamColors = [
+                      "#3182ed",
+                      "#e83d9b",
+                      "#43c98d",
+                      "#8b5cf6",
+                      "#f5a623",
+                    ];
 
-                      <div className="team-left">
+                    const color = teamColors[index % teamColors.length];
 
-                        <div
-                          className="team-icon"
-                          style={{
-                            backgroundColor: "#3182ed20",
-                            color: "#3182ed",
-                          }}
-                        >
-                          <LuUsers />
+                    return (
+                      <div className="team-row" key={item.id}>
+
+                        <div className="team-left">
+
+                          <div
+                            className="team-icon"
+                            style={{
+                              backgroundColor: `${color}20`,
+                              color: color,
+                            }}
+                          >
+                            <LuUsers />
+                          </div>
+                          <div className="heading">
+
+                            {item.name || "N/A"}
+                            <span>TL: {item.manegerName}</span>
+                          </div>
+
                         </div>
 
-                        <span>{item.name || "N/A"}</span>
+                        <div className="team-members">
+                          {item.memberCount || 0} Members
+                        </div>
 
                       </div>
-
-                      <div className="team-members">
-                        {item.memberCount || 0} Members
-                      </div>
-
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
               </div>
