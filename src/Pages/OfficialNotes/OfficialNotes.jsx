@@ -163,7 +163,7 @@ const OfficialNotes = () => {
       const formattedEmployees = Array.isArray(res.data)
         ? res.data.map((item, index) => ({
             key: index + 1,
-            employeeId: item?.data?.employeeId,
+            employeeId: item?.data?.uid,
             employeeName: item?.data?.employeeName,
             department: item?.data?.department,
             designation: item?.data?.designation,
@@ -463,14 +463,14 @@ const OfficialNotes = () => {
          * send the note to all employees.
          */
 
-        const recipientUIds =
+        const recipientUids =
           selectedEmployees.length > 0
             ? selectedEmployees
             : employees
                 .map((employee) => employee.employeeId)
                 .filter(Boolean);
 
-        if (recipientUIds.length === 0) {
+        if (recipientUids.length === 0) {
           alert("No employees available.");
           return;
         }
@@ -478,7 +478,7 @@ const OfficialNotes = () => {
         // IMPORTANT:
         // Property names exactly match Swagger API.
         const notificationData = {
-          recipientUIds: selectedEmployees,
+          recipientUids: selectedEmployees,
           title: noteTitle.trim(),
           message: noteContent,
           type: "Official_Note",
@@ -495,9 +495,6 @@ const OfficialNotes = () => {
           notificationData,
           {
             withCredentials: true,
-            headers: {
-              "Content-Type": "application/json",
-            },
           }
         );
 
