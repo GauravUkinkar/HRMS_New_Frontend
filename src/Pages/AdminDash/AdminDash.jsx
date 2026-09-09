@@ -10,11 +10,14 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { LuChartNoAxesCombined } from "react-icons/lu";
 import { LuListChecks } from "react-icons/lu";
 import { LuUsers } from "react-icons/lu";
-import { Avatar, Space, Table, Tag } from "antd";
+import { Table, Tag } from "antd";
 // import { FaQuoteLeft } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { LuBell, LuCheck } from "react-icons/lu";
 import { LuCake, LuSend } from "react-icons/lu";
+import axios from "axios";
+const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
+const BASE_URL3 = import.meta.env.VITE_TEAM_URL;
 const AdminDash = () => {
   const quotes = [
     "Great teams build great organizations.",
@@ -33,41 +36,7 @@ const AdminDash = () => {
     "Strong teams create strong organizations.",
     "Success grows when people grow together.",
   ];
-  const dashboardCards = [
-    {
-      id: 1,
-      title: "Total Employees",
-      value: 40,
-      icon: <FaUsersLine />,
-      iconColor: "#2563eb",
-      iconBg: "#eff6ff",
-    },
-    {
-      id: 2,
-      title: "Present Today",
-      value: 32,
-      icon: <HiUsers />,
-      iconColor: "#16a34a",
-      iconBg: "#f0fdf4",
-    },
-    {
-      id: 3,
-      title: "Absent Today",
-      value: 5,
-      icon: <FaUsersSlash />,
-      iconColor: "#dc2626",
-      iconBg: "#fef2f2",
 
-    },
-    {
-      id: 4,
-      title: "Half Day Exists",
-      value: 5,
-      icon: <PiUserSwitchFill />,
-      iconColor: "#f59e0b",
-      iconBg: "#fffbeb",
-    },
-  ];
   const attendanceData = [
     {
       date: "1 Sep",
@@ -275,78 +244,6 @@ const AdminDash = () => {
     },
   ];
 
-  const recentEmployees = [
-    {
-      id: 1,
-      empId: "EMP001",
-      name: "Amit Patil",
-      designation: "Software Developer",
-      punchIn: "09:12 AM",
-      status: "Present",
-    },
-    {
-      id: 2,
-      empId: "EMP002",
-      name: "Sneha Shah",
-      designation: "HR Executive",
-      punchIn: "09:05 AM",
-      status: "Present",
-    },
-    {
-      id: 3,
-      empId: "EMP003",
-      name: "Rahul More",
-      designation: "UI/UX Designer",
-      punchIn: "09:35 AM",
-      status: "Late",
-    },
-    {
-      id: 4,
-      empId: "EMP004",
-      name: "Pooja Deshmukh",
-      designation: "Accountant",
-      punchIn: "--",
-      status: "Absent",
-    },
-  ];
-
-  const teamStatus = [
-    {
-      id: 1,
-      name: "Development",
-      members: 48,
-      percentage: 92,
-      color: "#3182ed",
-    },
-    {
-      id: 2,
-      name: "Marketing",
-      members: 32,
-      percentage: 87,
-      color: "#e83d9b",
-    },
-    {
-      id: 3,
-      name: "HR",
-      members: 18,
-      percentage: 100,
-      color: "#43c98d",
-    },
-    {
-      id: 4,
-      name: "Finance",
-      members: 24,
-      percentage: 83,
-      color: "#8b5cf6",
-    },
-    {
-      id: 5,
-      name: "Operations",
-      members: 28,
-      percentage: 89,
-      color: "#f5a623",
-    },
-  ];
   // Select a random quote when the dashboard loads
   const [quote] = useState(() => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -357,75 +254,84 @@ const AdminDash = () => {
   const recentEmployeeColumns = [
     {
       title: "Employee ID",
-      dataIndex: "empId",
-      key: "empId",
-      width: 100,
+      dataIndex: "employeeId",
+      key: "employeeId",
+      width: 110,
     },
 
     {
       title: "Employee Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "employeeName",
+      key: "employeeName",
       width: 170,
 
-      render: (_, record) => {
-        const name = record.name || "N/A";
-
-        const nameParts = name.trim().split(" ");
-
-        const initials =
-          nameParts.length > 1
-            ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`
-            : nameParts[0][0];
-
-        return (
-          <Space>
-            <Avatar className="dashboard-avatar">
-              {initials.toUpperCase()}
-            </Avatar>
-
-            <span className="employee-name-text">
-              {name}
-            </span>
-          </Space>
-        );
-      },
-    },
-
-    {
-      title: "Designation",
-      dataIndex: "designation",
-      key: "designation",
-      width: 180,
+      render: (name) => (
+        <span className="employee-name-text">
+          {name || "N/A"}
+        </span>
+      ),
     },
 
     {
       title: "Punch In Time",
       dataIndex: "punchIn",
       key: "punchIn",
-      width: 120,
+      width: 130,
+
+      render: (time) => time || "--",
+    },
+
+    {
+      title: "Punch Out Time",
+      dataIndex: "punchOut",
+      key: "punchOut",
+      width: 130,
+
+      render: (time) => time || "--",
     },
 
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      width: 100,
+      width: 110,
 
       render: (status) => {
+        const normalizedStatus = String(status || "")
+          .trim()
+          .toLowerCase()
+          .replace(/[-_]/g, " ");
+
         let color = "default";
 
-        if (status === "Present") {
+        // GREEN
+        if (
+          normalizedStatus === "in office" ||
+          normalizedStatus === "inprogress" ||
+          normalizedStatus === "in progress" ||
+          normalizedStatus === "present"
+        ) {
           color = "success";
-        } else if (status === "Late") {
-          color = "warning";
-        } else if (status === "Absent") {
+        }
+
+        // RED
+        else if (
+          normalizedStatus === "absent"
+        ) {
           color = "error";
+        }
+
+        // ORANGE
+        else if (
+          normalizedStatus === "half day" ||
+          normalizedStatus === "halfday"
+        ) {
+          color = "warning";
         }
 
         return (
           <Tag color={color}>
-            {status}
+            {status || "N/A"}
           </Tag>
         );
       },
@@ -508,6 +414,140 @@ const AdminDash = () => {
   const secondAngle = seconds * 6;
   const minuteAngle = minutes * 6 + seconds * 0.1;
   const hourAngle = (hours % 12) * 30 + minutes * 0.5;
+
+  //API INTEGRATION FOR FIRST BOX - TODAY ATTENDANCE DATA TOTALEMP/PRESENT/ABSENT/HALFDAY
+const [today, setToday] = useState({});
+const getTodaydata = async () => {
+  try {
+    // Get today's date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split("T")[0];
+    const res = await axios.get(
+      `${BASE_URL2}api/punch/work-session/summary?date=${currentDate}`
+    );
+
+    console.log("TODAY SUMMARY:", res.data);
+
+    setToday(res?.data || {});
+
+  } catch (error) {
+    console.log("Today Summary API Error:", error);
+  }
+};
+  const dashboardCards = [
+  {
+    id: 1,
+    title: "Total Employees",
+    value: today?.totalEmployees || 0,
+    icon: <FaUsersLine />,
+    iconColor: "#2563eb",
+    iconBg: "#eff6ff",
+  },
+  {
+    id: 2,
+    title: "Present Today",
+    value: today?.["In-office"] || 0,
+    icon: <HiUsers />,
+    iconColor: "#16a34a",
+    iconBg: "#f0fdf4",
+  },
+  {
+    id: 3,
+    title: "Absent Today",
+    value: today?.absent || 0,
+    icon: <FaUsersSlash />,
+    iconColor: "#dc2626",
+    iconBg: "#fef2f2",
+  },
+  {
+    id: 4,
+    title: "Half Day Exists",
+    value: today?.halfday || 0,
+    icon: <PiUserSwitchFill />,
+    iconColor: "#f59e0b",
+    iconBg: "#fffbeb",
+  },
+];
+
+  // api integration with TODAY ATTENDANCE box 
+  const [loader, setLoader] = useState(false);
+  const [data, setData] = useState([]);
+  const getEmployeeData = async () => {
+    try {
+      setLoader(true);
+      const response = await axios.get(`${BASE_URL2}api/punch/details`);
+
+      const tableData = response?.data?.data?.sort(
+        (a, b) => new Date(a?.punchIn || 0) - new Date(b?.punchIn || 0)
+      ).map((item, index) => ({
+        key:
+          item?.employeeId ||
+          index,
+        employeeId:
+          item?.employeeId || "",
+        employeeName:
+          item?.employeeName
+            ?.toUpperCase() || "",
+        punchIn: item?.punchInByAdmin ? "Punch In From Admin" : item?.punchIn ? item.punchIn
+          .split("T")[1]?.replace("Z", "")
+          .slice(0, 8) : "",
+        punchOut:
+          item?.punchOutByAdmin
+            ? "Punch Out From Admin"
+            : item?.punchOut
+              ? item.punchOut
+                .split("T")[1]
+                ?.replace(
+                  "Z",
+                  ""
+                )
+                .slice(
+                  0,
+                  8
+                )
+              : "",
+        status: item?.status || "In-office"
+      })) || [];
+
+      setData(tableData);
+
+      console.log("TODAY ATTENDANCE:", tableData);
+    } catch (error) {
+      console.error("Attendance API Error:", error);
+      toast.error(error?.response?.data?.message || "Unable to load attendance");
+      setData([]);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+
+  // API INTEGRATION FOR GET TEAM DATA
+  const [team, setTeam] = useState([]);
+  const getallteam = async () => {
+    try {
+      const res = await axios.get(
+        `${BASE_URL3}Pandoza_Admin/Admin/Team/getAllTeams`
+      );
+
+      console.log("TEAM API RESPONSE:", res.data);
+
+      const teamData = res?.data
+        ?.filter((item) => item?.data)
+        ?.map((item) => item.data);
+      console.log("TEAM DATA:", teamData);
+      setTeam(teamData || []);
+    } catch (error) {
+      console.error("Team API Error:", error);
+      setTeam([]);
+    }
+  };
+  useEffect(() => {
+    getEmployeeData();
+    getallteam();
+    getTodaydata();
+  }, []);
+
+
   return (
     <>
       <MainPanel
@@ -762,7 +802,7 @@ const AdminDash = () => {
                 <div className="box4-heading">
                   <div className="heading-title">
                     <LuUsers />
-                    <span>Recent Employees</span>
+                    <span>Today's Attendance</span>
                   </div>
 
                   <Link to="/attendance" className="view-all">
@@ -773,8 +813,9 @@ const AdminDash = () => {
                 <div className="employee-table">
                   <Table
                     columns={recentEmployeeColumns}
-                    dataSource={recentEmployees}
-                    rowKey="id"
+                    dataSource={data}
+                    loading={loader}
+                    rowKey="key"
                     bordered={false}
                     size="small"
                     rowClassName={(_, index) =>
@@ -804,31 +845,46 @@ const AdminDash = () => {
                 </div>
 
                 <div className="team-list">
-                  {teamStatus.map((team) => (
-                    <div className="team-row" key={team.id}>
-                      <div className="team-left">
-                        <div className="team-icon"
-                          style={{
-                            backgroundColor:
-                              `${team.color}20`,
-                            color: team.color,
-                          }}
-                        >
-                          <LuUsers />
+                  {team.map((item, index) => {
+                    const teamColors = [
+                      "#3182ed",
+                      "#e83d9b",
+                      "#43c98d",
+                      "#8b5cf6",
+                      "#f5a623",
+                    ];
+
+                    const color = teamColors[index % teamColors.length];
+
+                    return (
+                      <div className="team-row" key={item.id}>
+
+                        <div className="team-left">
+
+                          <div
+                            className="team-icon"
+                            style={{
+                              backgroundColor: `${color}20`,
+                              color: color,
+                            }}
+                          >
+                            <LuUsers />
+                          </div>
+                          <div className="heading">
+
+                            {item.name || "N/A"}
+                            <span>TL: {item.manegerName}</span>
+                          </div>
 
                         </div>
-                        <span>{team.name}</span>
+
+                        <div className="team-members">
+                          {item.memberCount || 0} Members
+                        </div>
+
                       </div>
-
-                      <div className="team-members">
-                        {team.members} Members
-                      </div>
-
-
-
-                    </div>
-                  ))}
-
+                    );
+                  })}
                 </div>
 
               </div>

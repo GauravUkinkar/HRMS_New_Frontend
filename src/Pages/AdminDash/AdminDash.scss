@@ -297,6 +297,19 @@
 
       .box4-left {
         width: 60%;
+        .employee-table {
+          .ant-table {
+            font-size: 12px;
+          }
+
+          .ant-table-thead > tr > th {
+            font-size: 12px;
+          }
+
+          .ant-table-tbody > tr > td {
+            font-size: 12px;
+          }
+        }
       }
 
       .box4-right {
@@ -386,6 +399,15 @@
                 font-size: 16px;
               }
             }
+            .heading{
+              display: flex;
+              flex-direction: column;
+              font-weight:700;
+              span{
+                font-size:12px;
+                font-weight:100;
+              }
+            }
           }
 
           .team-members {
@@ -414,7 +436,7 @@
       background: white;
       border-radius: 5px;
       box-shadow: var(--shadow);
-      padding:10px;
+      padding: 10px;
       .clock {
         position: relative;
         width: 120px;
