@@ -20,40 +20,47 @@ const Login = () => {
   const { getEmpDetails, setLoader } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const login = async () => {
-    try {
-      setLoader(true);
+const login = async () => {
+  try {
+    setLoader(true);
 
-      const response = await api.post("AuthController/Login", values);
+    const response = await api.post("AuthController/Login", values);
 
-      if (response.status === 200) {
-        toast.success("Login Successfully");
-        localStorage.setItem("LoggedIn", "true");
+    if (response.status === 200) {
+      toast.success("Login Successfully");
 
-        await getEmpDetails();
+      const userData = response.data.data;
 
-        navigate("/", { replace: true });
-      }
-    } catch (error) {
-      console.log(error.response);
+      localStorage.setItem("LoggedIn", "true");
+      localStorage.setItem("email", userData.email);
+      localStorage.setItem("token", userData.token);
+      localStorage.setItem("uid", userData.uid);
+      localStorage.setItem("role", userData.role);
 
-      const errormessage = error.response?.data;
+      await getEmpDetails();
 
-      if (errormessage?.password) {
-        setError((prev) => ({
-          ...prev,
-          password: errormessage.password,
-        }));
-        toast.error(errormessage.password);
-      }
-
-      if (errormessage?.responseMessage) {
-        toast.error(errormessage.responseMessage);
-      }
-    } finally {
-      setLoader(false);
+      navigate("/", { replace: true });
     }
-  };
+  } catch (error) {
+    console.log(error.response);
+
+    const errormessage = error.response?.data;
+
+    if (errormessage?.password) {
+      setError((prev) => ({
+        ...prev,
+        password: errormessage.password,
+      }));
+      toast.error(errormessage.password);
+    }
+
+    if (errormessage?.responseMessage) {
+      toast.error(errormessage.responseMessage);
+    }
+  } finally {
+    setLoader(false);
+  }
+};
 
   const { handleChange, handleSubmit, handleBlur, values, error, setError } =
     UseForm(formObj, loginValidate, login);

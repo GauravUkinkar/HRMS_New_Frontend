@@ -1,371 +1,1018 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Empdashboard.scss";
-import { useNavigate } from "react-router-dom";
-import { IoDocumentTextSharp } from "react-icons/io5";
-import { FaBirthdayCake } from "react-icons/fa";
-import { FaCode } from "react-icons/fa";
-import { FaEllipsisV } from "react-icons/fa";
-import { MdArrowForward } from "react-icons/md";
-import Calender from "../../comp/Calender/Calender";
-import { UserContext } from "../../../Context";
-import axios from "axios";
 
-const salaryApi = axios.create({
-  baseURL: "https://salaryservicetest.pandozasolutions.com",
-});
+// import { IoDocumentTextSharp } from "react-icons/io5";
+// import { FaBirthdayCake } from "react-icons/fa";
+// import { FaCode } from "react-icons/fa";
+// import { MdArrowForward } from "react-icons/md";
+// import Calender from "../../comp/Calender/Calender";
+// import { UserContext } from "../../../Context";
+import axios from "axios";
+import { FaQuoteLeft } from "react-icons/fa";
+import { FaUsersLine } from "react-icons/fa6";
+import { HiUsers } from "react-icons/hi2";
+import { FaUsersSlash } from "react-icons/fa6";
+import { PiUserSwitchFill } from "react-icons/pi";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { LuChartNoAxesCombined } from "react-icons/lu";
+import { LuListChecks } from "react-icons/lu";
+import { LuUsers } from "react-icons/lu";
+import { Table, Tag } from "antd";
+
+import { Link } from "react-router-dom";
+import { LuBell, LuCheck } from "react-icons/lu";
+import { LuCake, LuSend } from "react-icons/lu";
+import { toast } from "react-toastify";
+const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
+const BASE_URL1 = import.meta.env.VITE_SALARY_BACKEND_URL;
+
+// const salaryApi = axios.create({
+//   baseURL: "https://salaryservicetest.pandozasolutions.com",
+// });
 
 const EmployeeDash = () => {
-  const { user } = useContext(UserContext);
-  const navigate = useNavigate();
-  const [documents, setDocuments] = useState([]);
-  const [documentsLoading, setDucumentsLoading] = useState(true);
-  const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
-  const ATTENDANCE_BASE_URL = "https://192.168.1.212:6006/api";
+    const quotes = [
+    "Great teams build great organizations.",
+    "Success is the result of teamwork and dedication.",
+    "Coming together is a beginning, staying together is progress, working together is success.",
+    "A great employee is not just an asset, but the strength of an organization.",
+    "Alone we can do so little; together we can do so much.",
+    "The strength of the team is each individual member. The strength of each member is the team.",
+    "People are the heart of every successful organization.",
+    "Leadership is about making others better as a result of your presence.",
+    "Teamwork makes the dream work.",
+    "Great things in business are never done by one person. They are done by a team.",
+    "A motivated team can achieve extraordinary results.",
+    "The best investment an organization can make is in its people.",
+    "When people work together, incredible things happen.",
+    "Strong teams create strong organizations.",
+    "Success grows when people grow together.",
+  ];
 
-  const [attendanceData, setAttendanceData] = useState([]);
-  const [attendanceLoading, setAttendanceLoading] = useState(true);
+      const attendanceData = [
+    {
+      date: "1 Sep",
+      present: 215,
+      absent: 18,
+      halfDay: 22,
+    },
+    {
+      date: "2 Sep",
+      present: 210,
+      absent: 16,
+      halfDay: 18,
+    },
+    {
+      date: "3 Sep",
+      present: 212,
+      absent: 14,
+      halfDay: 20,
+    },
+    {
+      date: "4 Sep",
+      present: 200,
+      absent: 25,
+      halfDay: 30,
+    },
+    {
+      date: "5 Sep",
+      present: 185,
+      absent: 17,
+      halfDay: 15,
+    },
+    {
+      date: "6 Sep",
+      present: 140,
+      absent: 18,
+      halfDay: 16,
+    },
+    {
+      date: "7 Sep",
+      present: 155,
+      absent: 17,
+      halfDay: 18,
+    },
+    {
+      date: "8 Sep",
+      present: 165,
+      absent: 15,
+      halfDay: 17,
+    },
+    {
+      date: "9 Sep",
+      present: 172,
+      absent: 13,
+      halfDay: 15,
+    },
+    {
+      date: "10 Sep",
+      present: 180,
+      absent: 12,
+      halfDay: 14,
+    },
+    {
+      date: "11 Sep",
+      present: 190,
+      absent: 10,
+      halfDay: 12,
+    },
+    {
+      date: "12 Sep",
+      present: 182,
+      absent: 14,
+      halfDay: 16,
+    },
+    {
+      date: "13 Sep",
+      present: 145,
+      absent: 20,
+      halfDay: 18,
+    },
+    {
+      date: "14 Sep",
+      present: 158,
+      absent: 17,
+      halfDay: 19,
+    },
+    {
+      date: "15 Sep",
+      present: 175,
+      absent: 15,
+      halfDay: 14,
+    },
+    {
+      date: "16 Sep",
+      present: 188,
+      absent: 11,
+      halfDay: 13,
+    },
+    {
+      date: "17 Sep",
+      present: 195,
+      absent: 9,
+      halfDay: 11,
+    },
+    {
+      date: "18 Sep",
+      present: 202,
+      absent: 12,
+      halfDay: 10,
+    },
+    {
+      date: "19 Sep",
+      present: 180,
+      absent: 16,
+      halfDay: 15,
+    },
+    {
+      date: "20 Sep",
+      present: 142,
+      absent: 21,
+      halfDay: 17,
+    },
+    {
+      date: "21 Sep",
+      present: 160,
+      absent: 18,
+      halfDay: 16,
+    },
+    {
+      date: "22 Sep",
+      present: 178,
+      absent: 14,
+      halfDay: 13,
+    },
+    {
+      date: "23 Sep",
+      present: 185,
+      absent: 12,
+      halfDay: 15,
+    },
+    {
+      date: "24 Sep",
+      present: 198,
+      absent: 10,
+      halfDay: 12,
+    },
+    {
+      date: "25 Sep",
+      present: 205,
+      absent: 8,
+      halfDay: 10,
+    },
+    {
+      date: "26 Sep",
+      present: 180,
+      absent: 15,
+      halfDay: 14,
+    },
+    {
+      date: "27 Sep",
+      present: 148,
+      absent: 19,
+      halfDay: 18,
+    },
+    {
+      date: "28 Sep",
+      present: 165,
+      absent: 16,
+      halfDay: 15,
+    },
+    {
+      date: "29 Sep",
+      present: 190,
+      absent: 11,
+      halfDay: 12,
+    },
+    {
+      date: "30 Sep",
+      present: 200,
+      absent: 9,
+      halfDay: 11,
+    },
+    {
+      date: "31 Sep",
+      present: 195,
+      absent: 10,
+      halfDay: 13,
+    },
+  ];
 
-  const [selectedPeriod, setSelectedPeriod] = useState("thisWeek");
-  const [notifications, setNotifications] = useState([]);
-  const [notificationLoading, setNotificationLoading] = useState(true);
-  const [birthdays, setBirthdays] = useState([]);
-const [birthdayLoading, setBirthdayLoading] = useState(true);
+    const recentEmployeeColumns = [
+      {
+        title: "Employee ID",
+        dataIndex: "employeeId",
+        key: "employeeId",
+        width: 110,
+      },
+  
+      {
+        title: "Employee Name",
+        dataIndex: "employeeName",
+        key: "employeeName",
+        width: 170,
+  
+        render: (name) => (
+          <span className="employee-name-text">
+            {name || "N/A"}
+          </span>
+        ),
+      },
+  
+      {
+        title: "Punch In Time",
+        dataIndex: "punchIn",
+        key: "punchIn",
+        width: 130,
+  
+        render: (time) => time || "--",
+      },
+  
+      {
+        title: "Punch Out Time",
+        dataIndex: "punchOut",
+        key: "punchOut",
+        width: 130,
+  
+        render: (time) => time || "--",
+      },
+  
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        width: 110,
+  
+        render: (status) => {
+          const normalizedStatus = String(status || "")
+            .trim()
+            .toLowerCase()
+            .replace(/[-_]/g, " ");
+  
+          let color = "default";
+  
+          // GREEN
+          if (
+            normalizedStatus === "in office" ||
+            normalizedStatus === "inprogress" ||
+            normalizedStatus === "in progress" ||
+            normalizedStatus === "present"
+          ) {
+            color = "success";
+          }
+  
+          // RED
+          else if (
+            normalizedStatus === "absent"
+          ) {
+            color = "error";
+          }
+  
+          // ORANGE
+          else if (
+            normalizedStatus === "half day" ||
+            normalizedStatus === "halfday"
+          ) {
+            color = "warning";
+          }
+  
+          return (
+            <Tag color={color}>
+              {status || "N/A"}
+            </Tag>
+          );
+        },
+      },
+    ];
+    const notifications = [
+      {
+        id: 1,
+        title: "Promotion Review",
+        description:
+          "Discussed potential promotion based on consistent performance and leadership in the recent project.",
+        date: "11 June 2026",
+      },
+      {
+        id: 2,
+        title: "Employee Appreciation",
+        description:
+          "Recognized by the team and CEO for outstanding contribution in the client workshop and delivery timeline.",
+        date: "7 May 2026",
+      },
+      {
+        id: 3,
+        title: "Leave Request",
+        description:
+          "A new leave request has been submitted and is waiting for your approval.",
+        date: "5 May 2026",
+      },
+      {
+        id: 4,
+        title: "New Employee",
+        description:
+          "A new employee has been added to the Development department.",
+        date: "2 May 2026",
+      },
+    ];
+    const birthdayEmployees = [
+      {
+        id: 1,
+        name: "Davis Lewis",
+        designation: "Accountant",
+        birthday: "01 Sep 2026",
+        month: 8,
+      },
+      {
+        id: 2,
+        name: "Sneha Patil",
+        designation: "HR Executive",
+        birthday: "05 Sep 2026",
+        month: 8,
+      },
+      {
+        id: 3,
+        name: "Rahul Kulkarni",
+        designation: "Software Developer",
+        birthday: "12 Sep 2026",
+        month: 8,
+      },
+      {
+        id: 4,
+        name: "Anjali Pawar",
+        designation: "Marketing Executive",
+        birthday: "18 Sep 2026",
+        month: 8,
+      },
+    ];
+    const [quote] = useState(() => {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    return quotes[randomIndex];
+  });
+    const [currentTime, setCurrentTime] = useState(new Date());
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setCurrentTime(new Date());
+      }, 1000);
+  
+      return () => clearInterval(timer);
+    }, []);
+   const seconds = currentTime.getSeconds();
+  const minutes = currentTime.getMinutes();
+  const hours = currentTime.getHours();
 
-  useEffect(() => {
-    const getDocuments = async () => {
-      try {
-        setDucumentsLoading(true);
+  const secondAngle = seconds * 6;
+  const minuteAngle = minutes * 6 + seconds * 0.1;
+  const hourAngle = (hours % 12) * 30 + minutes * 0.5;
+  const [today, setToday] = useState({});
+const getTodaydata = async () => {
+  try {
+    // Get today's date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split("T")[0];
+    const res = await axios.get(
+      `${BASE_URL2}api/punch/work-session/summary?date=${currentDate}`
+    );
 
-        const employeeId = user?.employeeId;
+    console.log("TODAY SUMMARY:", res.data);
 
-        if (!employeeId) {
-          console.error("Employee ID not found");
-          setDocuments([]);
-          return;
-        }
+    setToday(res?.data || {});
 
-        console.log("Documents Employee ID:", employeeId);
+  } catch (error) {
+    console.log("Today Summary API Error:", error);
+  }
+};
+  const dashboardCards = [
+  {
+    id: 1,
+    title: "Total Employees",
+    value: today?.totalEmployees || 0,
+    icon: <FaUsersLine />,
+    iconColor: "#2563eb",
+    iconBg: "#eff6ff",
+  },
+  {
+    id: 2,
+    title: "Present Today",
+    value: today?.["In-office"] || 0,
+    icon: <HiUsers />,
+    iconColor: "#16a34a",
+    iconBg: "#f0fdf4",
+  },
+  {
+    id: 3,
+    title: "Absent Today",
+    value: today?.absent || 0,
+    icon: <FaUsersSlash />,
+    iconColor: "#dc2626",
+    iconBg: "#fef2f2",
+  },
+  {
+    id: 4,
+    title: "Half Day Exists",
+    value: today?.halfday || 0,
+    icon: <PiUserSwitchFill />,
+    iconColor: "#f59e0b",
+    iconBg: "#fffbeb",
+  },
+];
 
-        const response = await axios.get(
-          `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`,
-          {
-            withCredentials: true,
-          },
-        );
 
-        console.log("Documents API Response:", response.data);
 
-        const data = response?.data?.data || {};
-
-        const allowedDocuments = [
-          "adharCard",
-          "panCard",
-          "experianceLetter",
-          "certificate",
-          "salarySlip1",
-          "salarySlip2",
-          "salarySlip3",
-          "bankStatement",
-          "relievingLetter",
-          "tenthCertificate",
-          "twelfthCertificate",
-          "degreeCertificate",
-          "latestEducationCertificateOrDegree",
-          "diplomaCertificate",
-        ];
-
-        const documentList = allowedDocuments
-          .filter((key) => data[key])
-          .map((key) => ({
-            documentName: key,
-            fileUrl: data[key],
-          }));
-
-        setDocuments(documentList);
-
-        console.log("Document List:", documentList);
-      } catch (error) {
-        console.error("Documents API Error:", {
-          status: error.response?.status,
-          data: error.response?.data,
-          message: error.message,
-          url: error.config?.url,
-        });
-
-        setDocuments([]);
-      } finally {
-        setDucumentsLoading(false);
-      }
-    };
-
-    if (user) {
-      getDocuments();
-    }
-  }, [user, BASE_URL]);
-
-  useEffect(() => {
-    const getAttendance = async () => {
-      try {
-        setAttendanceLoading(true);
-
-        const employeeId =
-          user?.employeeId || user?.employeeID || user?.empId || user?.id;
-
-        if (!employeeId) {
-          console.error("Employee ID not found");
-          setAttendanceData([]);
-          return;
-        }
-
-        console.log("Attendance Employee ID:", employeeId);
-
-        const response = await axios.post(
-          `${ATTENDANCE_BASE_URL}/punch/attendance/${employeeId}`,
-          {},
-          {
-            withCredentials: true,
-          },
-        );
-
-        console.log("Attendance API Response:", response.data);
-
-        const data = response?.data?.data || [];
-
-        setAttendanceData(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error(
-          "Attendance API Error:",
-          error.response?.status,
-          error.response?.data || error.message,
-        );
-
-        setAttendanceData([]);
-      } finally {
-        setAttendanceLoading(false);
-      }
-    };
-
-    if (user) {
-      getAttendance();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    const getNotifications = async () => {
-      try {
-        setNotificationLoading(true);
-
-        const response = await axios.get(`${BASE_URL}Notification/my`, {
-          withCredentials: true,
-        });
-
-        console.log("Notification API Response:", response.data);
-
-        const data = response?.data || [];
-
-        setNotifications(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Notification API Error:", {
-          status: error.response?.status,
-          data: error.response?.data,
-          message: error.message,
-          url: error.config?.url,
-        });
-
-        setNotifications([]);
-      } finally {
-        setNotificationLoading(false);
-      }
-    };
-    if (user) {
-      getNotifications();
-    }
-  }, [user, BASE_URL]);
-
-  useEffect(() => {
-    const getBirthdays = async () => {
+  // api integration with TODAY ATTENDANCE box 
+  const [loader, setLoader] = useState(false);
+  const [data, setData] = useState([]);
+  const getEmployeeData = async () => {
     try {
-      setBirthdayLoading(true);
+      setLoader(true);
+      const response = await axios.get(`${BASE_URL2}api/punch/details`);
 
-      const today = new Date();
+      const tableData = response?.data?.data?.sort(
+        (a, b) => new Date(a?.punchIn || 0) - new Date(b?.punchIn || 0)
+      ).map((item, index) => ({
+        key:
+          item?.employeeId ||
+          index,
+        employeeId:
+          item?.employeeId || "",
+        employeeName:
+          item?.employeeName
+            ?.toUpperCase() || "",
+        punchIn: item?.punchInByAdmin ? "Punch In From Admin" : item?.punchIn ? item.punchIn
+          .split("T")[1]?.replace("Z", "")
+          .slice(0, 8) : "",
+        punchOut:
+          item?.punchOutByAdmin
+            ? "Punch Out From Admin"
+            : item?.punchOut
+              ? item.punchOut
+                .split("T")[1]
+                ?.replace(
+                  "Z",
+                  ""
+                )
+                .slice(
+                  0,
+                  8
+                )
+              : "",
+        status: item?.status || "In-office"
+      })) || [];
 
-      const date = `${today.getFullYear()}-${String(
-        today.getMonth() + 1
-      ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      setData(tableData);
+
+      console.log("TODAY ATTENDANCE:", tableData);
+    } catch (error) {
+      console.error("Attendance API Error:", error);
+      toast.error(error?.response?.data?.message || "Unable to load attendance");
+      setData([]);
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  const [leaveRecords, setLeaveRecords] = useState([]);
+  const [leaveLoader, setLeaveLoader] = useState(false);
+
+  const getAllLeaveRecords = async () => {
+    try{
+      setLeaveLoader(true);
 
       const response = await axios.get(
-        `${BASE_URL}AuthController/birthdays`,
+        `${BASE_URL1}admin/getAllLeaveRecords`,
         {
-          params: {
-            date : date,
-          },
-          withCredentials: true,
-        }
-      );
-      console.log("Birthday API Response:", response.data);
-
-      const data = response?.data?.data || response?.data || [];
-
-      setBirthdays(Array.isArray(data) ? data: []);
-    } catch (error) {
-      console.error("Birthday API Error:", {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message,
-        url: error.config?.url,
-      });
-      setBirthdays([]);
-    } finally {
-      setBirthdayLoading(false);
-    }
-  };
-  if (user) {
-    getBirthdays();
-  }
-  },[user, BASE_URL]);
-
-  const getWeekRange = (weekType) => {
-    const today = new Date();
-
-    today.setHours(0, 0, 0, 0);
-
-    const day = today.getDay();
-
-    const diffToMonday = day === 0 ? -6 : 1 - day;
-
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + diffToMonday);
-
-    if (weekType === "lastWeek") {
-      monday.setDate(monday.getDate() - 7);
-    }
-
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-
-    return {
-      monday,
-      sunday,
-    };
-  };
-
-  const getWeekDays = (weekType) => {
-    const { monday } = getWeekRange(weekType);
-
-    const days = [];
-
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + i);
-
-      days.push(date);
-    }
-
-    return days;
-  };
-
-  const weekDays = getWeekDays(selectedPeriod);
-
-  const currentAttendance = weekDays.map((day) => {
-    const dateString = day.toISOString().split("T")[0];
-
-    const attendance = attendanceData.find((item) => {
-      return item.date?.split("T")[0] === dateString;
-    });
-
-    return {
-      date: dateString,
-      workedMinutes: attendance ? Number(attendance.workedMinutes) || 0 : 0,
-    };
-  });
-
-  const totalMinutes = currentAttendance.reduce(
-    (total, item) => total + Number(item.workedMinutes || 0),
-    0,
-  );
-
-  const totalHours = Math.floor(totalMinutes / 60);
-
-  const remainingMinutes = totalMinutes % 60;
-
-  const totalHoursText = `${totalHours}h ${String(remainingMinutes).padStart(
-    2,
-    "0",
-  )}m`;
-
-  const [leaveSummary, setLeaveSummary] = useState({
-    employeeId: "",
-    paidLeaves: 0,
-    usedLeaves: 0,
-    remainingLeaves: 0,
-    employeeName: "",
-  });
-
-  const [leaveLoading, setLeaveLoading] = useState(true);
-  const getLeaveSummary = async () => {
-    try {
-      setLeaveLoading(true);
-
-      const employeeId =
-        user?.employeeId || user?.employeeID || user?.empId || user?.id;
-
-      if (!employeeId) {
-        console.error("Employee ID not found");
-        return;
-      }
-
-      console.log("Logged-in Employee ID:", employeeId);
-
-      const response = await salaryApi.get(
-        `/employee/getLeaveRecordbyEmployeeId`,
-        {
-          params: {
-            employeeId: employeeId,
-          },
-
-          withCredentials: true,
+          withCredentials:true,
         },
       );
-
       console.log("Leave API Response:", response.data);
+      const records = Array.isArray(response?.data)
+      ? response.data
+      .map((item) => item?.data)
+      .filter(Boolean)
+      : [];
+      console.log("Leave Records:", records);
 
-      const data = response?.data?.data;
-
-      if (data) {
-        setLeaveSummary({
-          employeeId: data.employeeId || employeeId,
-          paidLeaves: Number(data.paidLeaves) || 0,
-          usedLeaves: Number(data.usedLeaves) || 0,
-          remainingLeaves: Number(data.remainingLeaves) || 0,
-          employeeName: data.employeeName || "",
-        });
-      }
+      setLeaveRecords(records);
     } catch (error) {
-      console.error(
-        "Leave summary error:",
-        error.response?.status,
-        error.response?.data || error.message,
-      );
+      console.error("Leave API Error:", error);
+      setLeaveRecords([]);
     } finally {
-      setLeaveLoading(false);
+      setLeaveLoader(false);
     }
-  };
-  useEffect(() => {
-    if (user) {
-      getLeaveSummary();
-    }
-  }, [user]);
+  }
 
-  const takenLeaveProgress =
-    leaveSummary.paidLeaves > 0
-      ? (leaveSummary.usedLeaves / leaveSummary.paidLeaves) * 360
-      : 0;
+  
+ 
+    useEffect(() => {
+      getEmployeeData();
+     getAllLeaveRecords();
+      getTodaydata();
+    }, []);
+    const totalPaidLeaves = leaveRecords.reduce(
+  (total, employee) => total + Number(employee?.paidLeaves || 0),
+  0
+);
+const totalUsedLeaves = leaveRecords.reduce(
+  (total, employee) => total + Number(employee?.usedLeaves || 0),
+  0
+);
+const totalRemainingLeaves = leaveRecords.reduce(
+  (total, employee) => total + Number(employee?.remainingLeaves || 0),
+  0
+);
+  const leaveData = [
+    {
+      name: "Remaining",
+      value: totalRemainingLeaves,
+      color: "#ffc52b",
+    },
+    {
+      name: "Paid Leaves",
+      value: totalPaidLeaves,
+      color: "#42cfa5",
+    },
+    {
+      name: "Leaves Taken",
+      value: totalUsedLeaves,
+      color: "#ff424c",
+    },
+  ];
+//   const { user } = useContext(UserContext);
+//   const navigate = useNavigate();
+//   const [documents, setDocuments] = useState([]);
+//   const [documentsLoading, setDucumentsLoading] = useState(true);
+//   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+//   const ATTENDANCE_BASE_URL = "https://192.168.1.212:6006/api";
 
-  const remainingLeaveProgress =
-    leaveSummary.paidLeaves > 0
-      ? (leaveSummary.remainingLeaves / leaveSummary.paidLeaves) * 360
-      : 0;
+//   const [attendanceData, setAttendanceData] = useState([]);
+//   const [attendanceLoading, setAttendanceLoading] = useState(true);
+
+//   const [selectedPeriod, setSelectedPeriod] = useState("thisWeek");
+//   const [notifications, setNotifications] = useState([]);
+//   const [notificationLoading, setNotificationLoading] = useState(true);
+//   const [birthdays, setBirthdays] = useState([]);
+//   const [birthdayLoading, setBirthdayLoading] = useState(true);
+//   const [punchDetails, setPunchDetails] = useState([]);
+//   const [loadingPunchDetails, setLoadingPunchdetails] = useState(true);
+// const [tasks, setTasks] = useState([]);
+// const [loadingTasks, setLoadingTasks] = useState(false);
+
+// useEffect(() => {
+//   const fetchTasks = async () => {
+//     try {
+//       setLoadingTasks(true);
+
+//       const username = localStorage.getItem("email");
+
+//       if (!username) {
+//         console.error("Logged-in email not found");
+//         setTasks([]);
+//         return;
+//       }
+
+//       console.log("Logged-in email:", username);
+
+//       const response = await axios.get(
+//         "https://internaltomcat.diwise.in/Pandoza_Admin/Team/getTaskByUserName",
+//         {
+//           params: {
+//             UserName: username,
+//           },
+//         }
+//       );
+
+//       console.log("Task API Response:", response.data);
+
+//       const taskData = response.data
+//         .map((item) => item.data)
+//         .filter(Boolean);
+
+//       const latestTasks = taskData
+//         .sort(
+//           (a, b) =>
+//             new Date(b.createdDate) - new Date(a.createdDate)
+//         )
+//         .slice(0, 4);
+
+//       setTasks(latestTasks);
+//     } catch (error) {
+//       console.error("Error fetching tasks:", error);
+//       setTasks([]);
+//     } finally {
+//       setLoadingTasks(false);
+//     }
+//   };
+
+//   fetchTasks();
+// }, []);
+
+//   useEffect(() => {
+//     const fetchPunchDetails = async () => {
+//       try {
+//         const response = await axios.get(
+//           `${ATTENDANCE_BASE_URL}/punch/details`,
+//         );
+//         console.log("Punch Details:", response.data);
+
+//         setPunchDetails(
+//           Array.isArray(response.data)
+//             ? response.data
+//             : response.data?.data || [],
+//         );
+//       } catch (error) {
+//         console.error("Error fetching punch details:", error);
+//       } finally {
+//         setLoadingPunchdetails(false);
+//       }
+//     };
+//     fetchPunchDetails();
+//   }, []);
+
+//   useEffect(() => {
+//     const getDocuments = async () => {
+//       try {
+//         setDucumentsLoading(true);
+
+//         const employeeId = user?.employeeId;
+
+//         if (!employeeId) {
+//           console.error("Employee ID not found");
+//           setDocuments([]);
+//           return;
+//         }
+
+//         console.log("Documents Employee ID:", employeeId);
+
+//         const response = await axios.get(
+//           `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`,
+//           {
+//             withCredentials: true,
+//           },
+//         );
+
+//         console.log("Documents API Response:", response.data);
+
+//         const data = response?.data?.data || {};
+
+//         const allowedDocuments = [
+//           "adharCard",
+//           "panCard",
+//           "experianceLetter",
+//           "certificate",
+//           "salarySlip1",
+//           "salarySlip2",
+//           "salarySlip3",
+//           "bankStatement",
+//           "relievingLetter",
+//           "tenthCertificate",
+//           "twelfthCertificate",
+//           "degreeCertificate",
+//           "latestEducationCertificateOrDegree",
+//           "diplomaCertificate",
+//         ];
+
+//         const documentList = allowedDocuments
+//           .filter((key) => data[key])
+//           .map((key) => ({
+//             documentName: key,
+//             fileUrl: data[key],
+//           }));
+
+//         setDocuments(documentList);
+
+//         console.log("Document List:", documentList);
+//       } catch (error) {
+//         console.error("Documents API Error:", {
+//           status: error.response?.status,
+//           data: error.response?.data,
+//           message: error.message,
+//           url: error.config?.url,
+//         });
+
+//         setDocuments([]);
+//       } finally {
+//         setDucumentsLoading(false);
+//       }
+//     };
+
+//     if (user) {
+//       getDocuments();
+//     }
+//   }, [user, BASE_URL]);
+
+//   useEffect(() => {
+//     const getAttendance = async () => {
+//       try {
+//         setAttendanceLoading(true);
+
+//         const employeeId =
+//           user?.employeeId || user?.employeeID || user?.empId || user?.id;
+
+//         if (!employeeId) {
+//           console.error("Employee ID not found");
+//           setAttendanceData([]);
+//           return;
+//         }
+
+//         console.log("Attendance Employee ID:", employeeId);
+
+//         const response = await axios.post(
+//           `${ATTENDANCE_BASE_URL}/punch/attendance/${employeeId}`,
+//           {},
+//           {
+//             withCredentials: true,
+//           },
+//         );
+
+//         console.log("Attendance API Response:", response.data);
+
+//         const data = response?.data?.data || [];
+
+//         setAttendanceData(Array.isArray(data) ? data : []);
+//       } catch (error) {
+//         console.error(
+//           "Attendance API Error:",
+//           error.response?.status,
+//           error.response?.data || error.message,
+//         );
+
+//         setAttendanceData([]);
+//       } finally {
+//         setAttendanceLoading(false);
+//       }
+//     };
+
+//     if (user) {
+//       getAttendance();
+//     }
+//   }, [user]);
+
+//   useEffect(() => {
+//     const getNotifications = async () => {
+//       try {
+//         setNotificationLoading(true);
+
+//         const response = await axios.get(`${BASE_URL}Notification/my`, {
+//           withCredentials: true,
+//         });
+
+//         console.log("Notification API Response:", response.data);
+
+//         const data = response?.data || [];
+
+//         setNotifications(Array.isArray(data) ? data : []);
+//       } catch (error) {
+//         console.error("Notification API Error:", {
+//           status: error.response?.status,
+//           data: error.response?.data,
+//           message: error.message,
+//           url: error.config?.url,
+//         });
+
+//         setNotifications([]);
+//       } finally {
+//         setNotificationLoading(false);
+//       }
+//     };
+//     if (user) {
+//       getNotifications();
+//     }
+//   }, [user, BASE_URL]);
+
+//   useEffect(() => {
+//     const getBirthdays = async () => {
+//       try {
+//         setBirthdayLoading(true);
+
+//         const today = new Date();
+
+//         const date = `${today.getFullYear()}-${String(
+//           today.getMonth() + 1,
+//         ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+//         const response = await axios.get(
+//           `${BASE_URL}AuthController/birthdays`,
+//           {
+//             params: {
+//               date: date,
+//             },
+//             withCredentials: true,
+//           },
+//         );
+//         console.log("Birthday API Response:", response.data);
+
+//         const data = response?.data?.data || response?.data || [];
+
+//         setBirthdays(Array.isArray(data) ? data : []);
+//       } catch (error) {
+//         console.error("Birthday API Error:", {
+//           status: error.response?.status,
+//           data: error.response?.data,
+//           message: error.message,
+//           url: error.config?.url,
+//         });
+//         setBirthdays([]);
+//       } finally {
+//         setBirthdayLoading(false);
+//       }
+//     };
+//     if (user) {
+//       getBirthdays();
+//     }
+//   }, [user, BASE_URL]);
+
+//   const getWeekRange = (weekType) => {
+//     const today = new Date();
+
+//     today.setHours(0, 0, 0, 0);
+
+//     const day = today.getDay();
+
+//     const diffToMonday = day === 0 ? -6 : 1 - day;
+
+//     const monday = new Date(today);
+//     monday.setDate(today.getDate() + diffToMonday);
+
+//     if (weekType === "lastWeek") {
+//       monday.setDate(monday.getDate() - 7);
+//     }
+
+//     const sunday = new Date(monday);
+//     sunday.setDate(monday.getDate() + 6);
+
+//     return {
+//       monday,
+//       sunday,
+//     };
+//   };
+
+//   const getWeekDays = (weekType) => {
+//     const { monday } = getWeekRange(weekType);
+
+//     const days = [];
+
+//     for (let i = 0; i < 7; i++) {
+//       const date = new Date(monday);
+//       date.setDate(monday.getDate() + i);
+
+//       days.push(date);
+//     }
+
+//     return days;
+//   };
+
+//   const weekDays = getWeekDays(selectedPeriod);
+
+//   const currentAttendance = weekDays.map((day) => {
+//     const dateString = day.toISOString().split("T")[0];
+
+//     const attendance = attendanceData.find((item) => {
+//       return item.date?.split("T")[0] === dateString;
+//     });
+
+//     return {
+//       date: dateString,
+//       workedMinutes: attendance ? Number(attendance.workedMinutes) || 0 : 0,
+//     };
+//   });
+
+//   const totalMinutes = currentAttendance.reduce(
+//     (total, item) => total + Number(item.workedMinutes || 0),
+//     0,
+//   );
+
+//   const totalHours = Math.floor(totalMinutes / 60);
+
+//   const remainingMinutes = totalMinutes % 60;
+
+//   const totalHoursText = `${totalHours}h ${String(remainingMinutes).padStart(
+//     2,
+//     "0",
+//   )}m`;
+
+//   const [leaveSummary, setLeaveSummary] = useState({
+//     employeeId: "",
+//     paidLeaves: 0,
+//     usedLeaves: 0,
+//     remainingLeaves: 0,
+//     employeeName: "",
+//   });
+
+//   const [leaveLoading, setLeaveLoading] = useState(true);
+//   const getLeaveSummary = async () => {
+//     try {
+//       setLeaveLoading(true);
+
+//       const employeeId =
+//         user?.employeeId || user?.employeeID || user?.empId || user?.id;
+
+//       if (!employeeId) {
+//         console.error("Employee ID not found");
+//         return;
+//       }
+
+//       console.log("Logged-in Employee ID:", employeeId);
+
+//       const response = await salaryApi.get(
+//         `/employee/getLeaveRecordbyEmployeeId`,
+//         {
+//           params: {
+//             employeeId: employeeId,
+//           },
+
+//           withCredentials: true,
+//         },
+//       );
+
+//       console.log("Leave API Response:", response.data);
+
+//       const data = response?.data?.data;
+
+//       if (data) {
+//         setLeaveSummary({
+//           employeeId: data.employeeId || employeeId,
+//           paidLeaves: Number(data.paidLeaves) || 0,
+//           usedLeaves: Number(data.usedLeaves) || 0,
+//           remainingLeaves: Number(data.remainingLeaves) || 0,
+//           employeeName: data.employeeName || "",
+//         });
+//       }
+//     } catch (error) {
+//       console.error(
+//         "Leave summary error:",
+//         error.response?.status,
+//         error.response?.data || error.message,
+//       );
+//     } finally {
+//       setLeaveLoading(false);
+//     }
+//   };
+//   useEffect(() => {
+//     if (user) {
+//       getLeaveSummary();
+//     }
+//   }, [user]);
+
+//   const takenLeaveProgress =
+//     leaveSummary.paidLeaves > 0
+//       ? (leaveSummary.usedLeaves / leaveSummary.paidLeaves) * 360
+//       : 0;
+
+//   const remainingLeaveProgress =
+//     leaveSummary.paidLeaves > 0
+//       ? (leaveSummary.remainingLeaves / leaveSummary.paidLeaves) * 360
+//       : 0;
+// const formatTime = (dateString) => {
+//   if (!dateString) return "-";
+
+//   const date = new Date(dateString);
+
+//   return date.toLocaleTimeString("en-IN", {
+//     hour: "2-digit",
+//     minute: "2-digit",
+//     hour12: true,
+//     timeZone: "UTC",
+//   });
+// };
 
   return (
     <>
@@ -376,440 +1023,534 @@ const [birthdayLoading, setBirthdayLoading] = useState(true);
           { label: "Employee Dashboard" },
         ]}
       >
-        <div className="empdash-parent">
-          <div className="left">
-            <div className="left1">
-              <h3>List of Documents</h3>
-
-              {documentsLoading ? (
-                <p>Loading documents...</p>
-              ) : documents.length > 0 ? (
-                documents.slice(0, 3).map((document, index) => (
-                  <div className="documents" key={index}>
-                    <IoDocumentTextSharp className="document-icon" />
-
-                    <h4>
-                      {document.documentName
-                        .replace(/([A-Z])/g, " $1")
-                        .replace(/^./, (str) => str.toUpperCase())}
-                    </h4>
-                  </div>
-                ))
-              ) : (
-                <p>No documents found</p>
-              )}
-
-              <button className="btn" onClick={() => navigate("/Empviewdoc")}>
-                View Documents
-              </button>
-            </div>
-            <div className="left2">
-              <div className="top">
-                <div>
-                  <h3>Hours Logged</h3>
-
-                  <h2>{attendanceLoading ? "Loading..." : totalHoursText}</h2>
-                </div>
-
-                <select
-                  value={selectedPeriod}
-                  onChange={(e) => setSelectedPeriod(e.target.value)}
-                >
-                  <option value="thisWeek">This Week</option>
-
-                  <option value="lastWeek">Last Week</option>
-                </select>
-              </div>
-
-              <div className="hours-chart">
-                {attendanceLoading ? (
-                  <p>Loading attendance...</p>
-                ) : (
-                  currentAttendance.map((item) => {
-                    const workedMinutes = Number(item.workedMinutes) || 0;
-
-                    const hours = Math.floor(workedMinutes / 60);
-
-                    const minutes = workedMinutes % 60;
-
-                    const barHeight = Math.min(
-                      (workedMinutes / 540) * 100,
-                      100,
-                    );
-
-                    const completed = workedMinutes >= 540;
-
-                    const absent = workedMinutes === 0;
-
-                    const date = new Date(`${item.date}T00:00:00`);
-
-                    return (
-                      <div className="chart-column" key={item.date}>
+             <div className="admindash-parent">
+                  <div className="left-side">
+                    {/* Welcome + Quote */}
+                    <div className="box1">
+                      <div className="welcome-text">
+                        <h2>
+                          Good Morning, Admin! 👋
+                        </h2>
+        
                         <span>
-                          {hours}h {String(minutes).padStart(2, "0")}m
+                          Here's what's happening with your organization today.
                         </span>
+                      </div>
+        
+                      <div className="quote">
+                        <div className="quote-icon">
+                          <FaQuoteLeft />
+                        </div>
+        
+                        <div className="quote-text">
+                          <p>{quote}</p>
+                        </div>
+                      </div>
+                    </div>
+        
+                    {/* card for starting  */}
+            <div className="box2">
+              {dashboardCards.map((card) => (
+                <div className="card" key={card.id}>
 
-                        <div className="bar-container">
-                          <div
-                            className={`bar ${
-                              absent
-                                ? "absent"
-                                : completed
-                                  ? "completed"
-                                  : "incomplete"
-                            }`}
-                            style={{
-                              height: `${barHeight}%`,
+                  <div
+                    className="card-icon"
+                    style={{
+                      color: card.iconColor,
+                      backgroundColor: card.iconBg,
+                    }}
+                  >
+                    {card.icon}
+                  </div>
+
+                  <div className="card-content">
+                    <div className="card-title">
+                      {card.title}
+                    </div>
+
+                    <p>{card.value}</p>
+                  </div>
+
+                </div>
+              ))}
+            </div>
+        
+                    {/* // Attendance and Leave Management */}
+                    <div className="box3">
+        
+                      <div className="box3-left">
+                        <div className="heading">
+                          <div className="icon">
+                            <LuChartNoAxesCombined />
+                            <span>Attendance Overview</span>
+                          </div>
+        
+                          <select className="month-select">
+                            <option value="2026-09">
+                              September 2026
+                            </option>
+        
+                            <option value="2026-08">
+                              August 2026
+                            </option>
+        
+                            <option value="2026-07">
+                              July 2026
+                            </option>
+                          </select>
+        
+                        </div>
+        
+                        <div className="attendance-chart">
+        
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                              data={attendanceData}
+                              margin={{
+                                top: 10,
+                                right: 10,
+                                left: -15,
+                                bottom: 5,
+                              }}
+                              barGap={2}
+                            >
+        
+                              <CartesianGrid
+                                strokeDasharray="0"
+                                vertical={false}
+                              />
+        
+                              <XAxis
+                                dataKey="date"
+                                tick={{
+                                  fontSize: 10,
+                                }}
+                                axisLine={false}
+                                tickLine={false}
+                              />
+        
+                              <YAxis
+                                tick={{
+                                  fontSize: 10,
+                                }}
+                                axisLine={false}
+                                tickLine={false}
+                              />
+        
+                              <Tooltip />
+        
+                              <Bar
+                                dataKey="present"
+                                fill="#20ad9b"
+                                radius={[2, 2, 0, 0]}
+                                barSize={8}
+                              />
+        
+                              <Bar
+                                dataKey="absent"
+                                fill="#ff3b3bdd"
+                                radius={[2, 2, 0, 0]}
+                                barSize={8}
+                              />
+        
+                              <Bar
+                                dataKey="halfDay"
+                                fill="#ffc62b9c"
+                                radius={[2, 2, 0, 0]}
+                                barSize={8}
+                              />
+        
+                            </BarChart>
+                          </ResponsiveContainer>
+        
+                        </div>
+        
+                        <div className="chart-legend">
+        
+                          <div className="legend-item">
+                            <span className="dot present"></span>
+                            Present
+                          </div>
+        
+                          <div className="legend-item">
+                            <span className="dot absent"></span>
+                            Absent
+                          </div>
+        
+                          <div className="legend-item">
+                            <span className="dot half-day"></span>
+                            Half Day
+                          </div>
+        
+                        </div>
+        
+                      </div>
+        
+                      <div className="box3-right">
+                        <div className="leave-header">
+                          <div className="leave-title">
+                            <LuListChecks />
+                            <span>Leave Management</span>
+                          </div>
+        
+                          <select className="month-select">
+                            <option>September 2026</option>
+                            <option>August 2026</option>
+                            <option>July 2026</option>
+                          </select>
+                        </div>
+        
+                        <div className="leave-content">
+        
+                          <div className="leave-chart">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <PieChart>
+                                <Pie
+                                  data={leaveData}
+                                  dataKey="value"
+                                  nameKey="name"
+                                  cx="50%"
+                                  cy="50%"
+                                  innerRadius={45}
+                                  outerRadius={68}
+                                  startAngle={90}
+                                  endAngle={-270}
+                                >
+                                  {leaveData.map((item) => (
+                                    <Cell
+                                      key={item.name}
+                                      fill={item.color}
+                                    />
+                                  ))}
+                                </Pie>
+        
+                                <Tooltip />
+                              </PieChart>
+                            </ResponsiveContainer>
+        
+                            <div className="chart-center">
+                              <strong>
+                                {totalPaidLeaves}
+                              </strong>
+                              <span>Total Leaves</span>
+                            </div>
+                          </div>
+        
+                          <div className="leave-legend">
+                            {leaveData.map((item) => (
+                              <div className="legend-row" key={item.name}>
+                                <div className="legend-left">
+                                  <span
+                                    className="legend-dot"
+                                    style={{
+                                      backgroundColor: item.color,
+                                    }}
+                                  ></span>
+        
+                                  <span>{item.name}</span>
+                                </div>
+        
+                                <strong>{item.value}</strong>
+                              </div>
+                            ))}
+                          </div>
+        
+                        </div>
+                      </div>
+        
+                    </div>
+        
+                    <div className="box4">
+        
+                      {/* Recent Employees */}
+                      <div className="box4-left">
+        
+                        <div className="box4-heading">
+                          <div className="heading-title">
+                            <LuUsers />
+                            <span>Today's Attendance</span>
+                          </div>
+        
+                          <Link to="/attendance" className="view-all">
+                            View All →
+                          </Link>
+                        </div>
+        
+                        <div className="employee-table">
+                          <Table
+                            columns={recentEmployeeColumns}
+                            dataSource={data}
+                            loading={loader}
+                            rowKey="key"
+                            bordered={false}
+                            size="small"
+                            rowClassName={(_, index) =>
+                              index % 2 === 0
+                                ? "table-row-light"
+                                : "table-row-dark"
+                            }
+                            pagination={{
+                              pageSize: 5,
+                              showSizeChanger: false,
+                              showQuickJumper: false,
+                              position: ["bottomRight"],
                             }}
                           />
                         </div>
-
-                        <p>
-                          {date.toLocaleDateString("en-US", {
-                            weekday: "short",
-                          })}
-                        </p>
+        
                       </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-            <div className="left3">
-              <div className="top">
-                <h3>Notification</h3>
-              </div>
-
-              {notificationLoading ? (
-                <p>Loading notifications...</p>
-              ) : notifications.length > 0 ? (
-                notifications.slice(0, 2).map((notification) => (
-                  <div className="card" key={notification.id}>
-                    <div className="heading">{notification.title}</div>
-
-                    <p>{notification.message}</p>
+        
+        
+                      {/* Team Status */}
+                      <div className="box4-right">
+                        {/* <div className="box4-heading">
+                          <div className="heading-title">
+                            <LuUsers />
+                            <span>Team Status</span>
+                          </div>
+                        </div>
+        
+                        <div className="team-list">
+                          {team.map((item, index) => {
+                            const teamColors = [
+                              "#3182ed",
+                              "#e83d9b",
+                              "#43c98d",
+                              "#8b5cf6",
+                              "#f5a623",
+                            ];
+        
+                            const color = teamColors[index % teamColors.length];
+        
+                            return (
+                              <div className="team-row" key={item.id}>
+        
+                                <div className="team-left">
+        
+                                  <div
+                                    className="team-icon"
+                                    style={{
+                                      backgroundColor: `${color}20`,
+                                      color: color,
+                                    }}
+                                  >
+                                    <LuUsers />
+                                  </div>
+                                  <div className="heading">
+        
+                                    {item.name || "N/A"}
+                                    <span>TL: {item.manegerName}</span>
+                                  </div>
+        
+                                </div>
+        
+                                <div className="team-members">
+                                  {item.memberCount || 0} Members
+                                </div>
+        
+                              </div>
+                            );
+                          })}
+                        </div> */}
+        
+                      </div>
+        
+                    </div>
                   </div>
-                ))
-              ) : (
-                <p>No notifications found</p>
-              )}
-            </div>
-          </div>
-          <div className="middle">
-            <div className="middle1">
-              <div className="leave-card">
-                <h4>All Leaves</h4>
-                <div className="circle all-leaves">
-                  <div>
-                    <strong>
-                      {leaveLoading ? "..." : leaveSummary.paidLeaves}
-                    </strong>
-                    <span>Days</span>
+        
+                  <div className="right-side">
+                    <div className="top-box1">
+                      <div className="clock">
+                        {/* Clock Numbers */}
+                        {Array.from({ length: 12 }, (_, index) => {
+                          const number = index + 1;
+        
+                          // Convert angle to radians
+                          const angle = (number * 30 - 90) * (Math.PI / 180);
+        
+                          // Distance from center
+                          const radius = 52;
+        
+                          const x = Math.cos(angle) * radius;
+                          const y = Math.sin(angle) * radius;
+        
+                          return (
+                            <span
+                              key={number}
+                              className="clock-number"
+                              style={{
+                                left: `calc(50% + ${x}px)`,
+                                top: `calc(50% + ${y}px)`,
+                              }}
+                            >
+                              {number}
+                            </span>
+                          );
+                        })}
+        
+                        {/* Hour Hand */}
+                        <div
+                          className="hour-hand"
+                          style={{
+                            transform: `rotate(${hourAngle}deg)`,
+                          }}
+                        ></div>
+        
+                        {/* Minute Hand */}
+                        <div
+                          className="minute-hand"
+                          style={{
+                            transform: `rotate(${minuteAngle}deg)`,
+                          }}
+                        ></div>
+        
+                        {/* Second Hand */}
+                        <div
+                          className="second-hand"
+                          style={{
+                            transform: `rotate(${secondAngle}deg)`,
+                          }}
+                        ></div>
+        
+                        {/* Center */}
+                        <div className="clock-center"></div>
+        
+                      </div>
+        
+                    </div>
+        
+                    <div className="middle-box2">
+                      <div className="notification-header">
+        
+                        <div className="notification-title">
+                          <LuBell />
+                          <span>Notifications</span>
+                        </div>
+        
+                        <span className="notification-count">
+                          {notifications.length}
+                        </span>
+        
+                      </div>
+        
+        
+                      <div className="notification-list">
+        
+                        {notifications.map((notification) => (
+        
+                          <div
+                            className="notification-item"
+                            key={notification.id}
+                          >
+        
+                            {/* Check Icon */}
+                            <div className="notification-icon">
+                              <LuCheck />
+                            </div>
+        
+        
+                            {/* Content */}
+                            <div className="notification-content">
+        
+                              <h4>
+                                {notification.title}
+                              </h4>
+        
+                              <p>
+                                {notification.description}
+                              </p>
+        
+                              <span className="notification-date">
+                                {notification.date}
+                              </span>
+        
+                            </div>
+        
+                          </div>
+        
+                        ))}
+        
+                      </div>
+        
+                    </div>
+        
+        
+                    <div className="last-box3">
+        
+                      {/* Header */}
+                      <div className="birthday-header">
+        
+                        <div className="birthday-title">
+                          <LuCake />
+                          <span>Birthdays This Month</span>
+                        </div>
+        
+                      </div>
+        
+        
+                      {/* Birthday List */}
+                      <div className="birthday-list">
+        
+                        {birthdayEmployees.map((employee) => (
+        
+                          <div
+                            className="birthday-item"
+                            key={employee.id}
+                          >
+        
+                            {/* Employee Avatar */}
+                            <div className="birthday-avatar">
+                              {employee.name
+                                .split(" ")
+                                .map((word) => word[0])
+                                .join("")
+                                .toUpperCase()}
+                            </div>
+        
+        
+                            {/* Employee Information */}
+                            <div className="birthday-info">
+        
+                              <h4>
+                                {employee.name}
+                              </h4>
+        
+                              <p>
+                                {employee.designation}
+                              </p>
+        
+                            </div>
+        
+        
+                            {/* Birthday Date */}
+                            <div className="birthday-date">
+                              {employee.birthday}
+                            </div>
+        
+        
+                            {/* Wish Button */}
+                            <button
+                              className="wish-button"
+                              onClick={() => {
+                                console.log(
+                                  `Wishing ${employee.name} Happy Birthday!`
+                                );
+                              }}
+                            >
+                              <LuSend />
+                              Wish
+                            </button>
+        
+                          </div>
+        
+                        ))}
+        
+                      </div>
+        
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              {/* TAKEN LEAVES */}
-
-              <div className="leave-card">
-                <h4>Taken Leaves</h4>
-
-                <div
-                  className="circle taken-leaves"
-                  style={{
-                    "--progress": `${takenLeaveProgress}deg`,
-                  }}
-                >
-                  <div>
-                    <strong>
-                      {leaveLoading ? "..." : leaveSummary.usedLeaves}
-                    </strong>
-
-                    <span>Days</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* REMAINING LEAVES */}
-
-              <div className="leave-card">
-                <h4>Remaining Leaves</h4>
-
-                <div
-                  className="circle remaining-leaves"
-                  style={{
-                    "--progress": `${remainingLeaveProgress}deg`,
-                  }}
-                >
-                  <div>
-                    <strong>
-                      {leaveLoading ? "..." : leaveSummary.remainingLeaves}
-                    </strong>
-
-                    <span>Days</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="middle2">
-              <div className="performance-top">
-                <div>
-                  <h3>Performance Overview</h3>
-
-                  <div className="performance-score">
-                    <h2>86.75%</h2>
-
-                    <span>↑ 5.4%</span>
-                  </div>
-                </div>
-
-                <div className="performance-right">
-                  <p>vs last month</p>
-
-                  <div>
-                    <span>This Cycle</span>
-
-                    <strong>86.75%</strong>
-                  </div>
-                </div>
-
-                <MdArrowForward />
-              </div>
-
-              <div className="performance-chart">
-                <div className="chart-labels">
-                  <span>100%</span>
-                  <span>75%</span>
-                  <span>50%</span>
-                  <span>25%</span>
-                  <span>0%</span>
-                </div>
-
-                <div className="chart-area">
-                  <div className="chart-line">
-                    <svg viewBox="0 0 700 220" preserveAspectRatio="none">
-                      <path
-                        d="
-                          M0 80
-                          C45 75, 55 72, 95 68
-                          C135 62, 150 45, 195 50
-                          C235 55, 250 48, 290 65
-                          C330 82, 350 95, 395 105
-                          C430 113, 455 105, 490 98
-                          C530 90, 555 95, 590 82
-                          C625 68, 650 60, 700 58
-                        "
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3"
-                      />
-
-                      <path
-                        d="
-                          M0 80
-                          C45 75, 55 72, 95 68
-                          C135 62, 150 45, 195 50
-                          C235 55, 250 48, 290 65
-                          C330 82, 350 95, 395 105
-                          C430 113, 455 105, 490 98
-                          C530 90, 555 95, 590 82
-                          C625 68, 650 60, 700 58
-                          L700 220
-                          L0 220 Z
-                        "
-                        fill="currentColor"
-                        opacity="0.12"
-                      />
-                    </svg>
-                  </div>
-
-                  <div className="months">
-                    <span>Jan</span>
-                    <span>Feb</span>
-                    <span>Mar</span>
-                    <span>Apr</span>
-                    <span>May</span>
-                    <span>Jun</span>
-                    <span>Jul</span>
-                    <span>Aug</span>
-                    <span>Sep</span>
-                    <span>Oct</span>
-                    <span>Nov</span>
-                    <span>Dec</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* =================================
-                RECENT CRM ENTRIES
-            ================================= */}
-
-            <div className="middle3">
-              <div className="top">
-                <h3>Recent CRM Entries</h3>
-
-                <a href="#view-all">View all</a>
-              </div>
-
-              <div className="crm-card">
-                <div className="crm-icon">
-                  <FaCode />
-                </div>
-
-                <div className="crm-content">
-                  <h4>E-commerce Website Redesign</h4>
-
-                  <p>
-                    <strong>Role:</strong> Frontend Developer
-                  </p>
-
-                  <p>Redesigning product listing and filters component.</p>
-
-                  <p>API integration in progress.</p>
-                </div>
-
-                <div className="status progress">In Progress</div>
-              </div>
-
-              <div className="crm-card">
-                <div className="crm-icon bug">
-                  <FaCode />
-                </div>
-
-                <div className="crm-content">
-                  <h4>Bug Fix Sprint - Payment Module</h4>
-
-                  <p>
-                    <strong>Role:</strong> Full Stack Developer
-                  </p>
-
-                  <p>Investigating issue with payment gateway timeout.</p>
-
-                  <p>Fix and testing in progress.</p>
-                </div>
-
-                <div className="status paused">Paused</div>
-              </div>
-            </div>
-          </div>
-
-
-
-          <div className="right">
-            {/* ATTENDANCE */}
-
-            <div className="right1">
-              <Calender />
-            </div>
-
-            {/* BIRTHDAYS */}
-
-        <div className="right2">
-  <div className="top">
-    <h3>Birthdays This Month</h3>
-
-    <FaBirthdayCake />
-  </div>
-
-  {birthdayLoading ? (
-    <p>Loading birthdays...</p>
-  ) : birthdays.length > 0 ? (
-    birthdays.slice(0, 3).map((birthday, index) => {
-      const employeeName =
-        birthday.employeeName ||
-        birthday.name ||
-        birthday.fullName ||
-        "Employee";
-
-      const designation =
-        birthday.designation ||
-        birthday.jobTitle ||
-        "Employee";
-
-      const birthdayDate =
-        birthday.dateOfBirth ||
-        birthday.birthDate ||
-        birthday.dob;
-
-      const initials = employeeName
-        .split(" ")
-        .map((name) => name[0])
-        .join("")
-        .substring(0, 2)
-        .toUpperCase();
-
-      return (
-        <div className="card" key={birthday.id || index}>
-          <div className="name">
-            <div className="user-avatar">
-              {initials}
-            </div>
-
-            <div className="user-info">
-              <p>{employeeName}</p>
-
-              <span>{designation}</span>
-            </div>
-          </div>
-
-          <div className="date">
-            <FaBirthdayCake />
-
-            <p>
-              {birthdayDate
-                ? new Date(birthdayDate).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })
-                : "Birthday"}
-            </p>
-          </div>
-        </div>
-      );
-    })
-  ) : (
-    <p>No birthdays this month</p>
-  )}
-
-  <button className="birthday-btn">
-    View Birthdays
-  </button>
-</div>
-
-            {/* INTERNAL NOTES */}
-
-            <div className="right3">
-              <div className="top">
-                <h3>Internal Notes</h3>
-
-                <FaEllipsisV />
-              </div>
-
-              <div className="card">
-                <div className="heading">Promotion Review</div>
-
-                <p>11 November 2024</p>
-
-                <p>
-                  Discussed potential promotion in Q1 based on consistent
-                  performance and leadership in the recent project.
-                </p>
-              </div>
-
-              <div className="card">
-                <div className="heading">Employee Appreciation</div>
-
-                <p>7 October 2024</p>
-
-                <p>
-                  Recognized by the team and CEO for outstanding contribution in
-                  the client workshop and delivery timeline.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+    
       </MainPanel>
     </>
   );

@@ -343,11 +343,77 @@
   // TABLE FOOTER
   // ==========================================================
 
-  .notes-footer {
-    color: #6b7280;
+ // ==========================================================
+// NOTES FOOTER
+// ==========================================================
 
-    font-size: 13px;
-  }
+.notes-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0 5px;
+}
+
+.notes-count {
+  font-size: 13px;
+  color: #334155;
+}
+
+// ==========================================================
+// PAGINATION
+// ==========================================================
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pagination-btn,
+.pagination-number {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+
+  border: 1px solid #dbe4ea;
+  border-radius: 6px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-size: 13px;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.pagination-number {
+  padding: 0;
+}
+
+.pagination-btn:hover:not(:disabled),
+.pagination-number:hover {
+  border-color: #4c9aa5;
+  color: #4c9aa5;
+}
+
+.pagination-number.active {
+  background: #4c9aa5;
+  border-color: #4c9aa5;
+  color: #ffffff;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 
   // ==========================================================
   // TABLE MESSAGES
@@ -834,6 +900,9 @@
     }
   }
 }
+
+
+
 
 // ============================================================
 // RESPONSIVE DESIGN
