@@ -793,7 +793,7 @@
 //     }
 //   }
 // }
-.admindash-parent {
+.employeedash-parent {
   width: 100%;
   height: 100%;
   display: flex;
@@ -895,86 +895,151 @@
       gap: 20px;
       width: 100%;
 
-      .box3-left {
-        width: 100%;
-        background: #fff;
-        border-radius: 5px;
-        padding: 20px;
-        box-shadow: var(--shadow);
-        gap: 20px;
+   .box3-left {
+  width: 100%;
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+  border: 1px solid #f0f1f5;
+
+  // =========================
+  // CALENDAR HEADER
+  // =========================
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f0f1f5;
+
+    .calendar-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .calendar-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 11px;
+
         display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        .heading {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          .icon {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            svg {
-              font-size: 24px;
-            }
-            span {
-              font-size: 18px;
-              font-weight: 700;
-            }
-          }
-          .month-select {
-            border: 1px solid #077c87;
-            background: #fff;
-            border-radius: 5px;
-            padding: 8px 30px 8px 12px;
-            font-size: 14px;
-            color: #374151;
-            cursor: pointer;
-            outline: none;
-            &:focus {
-              border-color: #20ad9b;
-            }
-          }
-        }
+        align-items: center;
+        justify-content: center;
 
-        .attendance-chart {
-          width: 100%;
-          height: 220px;
-        }
+        background: linear-gradient(
+          135deg,
+          #20ad9b,
+          #077c87
+        );
 
-        .chart-legend {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 20px;
-          .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            color: var(--accent);
-            font-weight: 600;
-          }
+        box-shadow: 0 5px 12px rgba(32, 173, 155, 0.2);
 
-          .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-
-            &.present {
-              background: #20ad9b;
-            }
-
-            &.absent {
-              background: #ff3b3bdd;
-            }
-
-            &.half-day {
-              background: #ffc62b9c;
-            }
-          }
+        svg {
+          font-size: 20px;
+          color: #fff;
         }
       }
+
+      h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+        color: #20242c;
+      }
+
+      p {
+        margin: 3px 0 0;
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // =========================
+  // CALENDAR
+  // =========================
+  .calendar-body {
+    width: 100%;
+    background: #fafbfc;
+    border-radius: 12px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #f1f2f4;
+
+    display: flex;
+    justify-content: center;
+
+    // If your Calender component has width
+    // restrictions, this helps it fit nicely.
+    > * {
+      width: 100%;
+    }
+  }
+
+  // =========================
+  // LEGEND
+  // =========================
+  .chart-legend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 2px;
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+
+      padding: 7px 12px;
+      border-radius: 20px;
+
+      background: #f8f9fb;
+      border: 1px solid #eeeeee;
+
+      font-size: 12px;
+      color: #555b66;
+      font-weight: 600;
+
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+      }
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      position: relative;
+
+      &.present {
+        background: #20ad9b;
+        box-shadow: 0 0 0 3px rgba(32, 173, 155, 0.12);
+      }
+
+      &.absent {
+        background: #ff3b3b;
+        box-shadow: 0 0 0 3px rgba(255, 59, 59, 0.1);
+      }
+
+      &.half-day {
+        background: #ffc62b;
+        box-shadow: 0 0 0 3px rgba(255, 198, 43, 0.12);
+      }
+    }
+  }
+}
       .box3-right {
         width: 50%;
         background: #fff;
@@ -986,6 +1051,24 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
+                  .view-all {
+          border: none;
+          background: transparent;
+          color: #003a42;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          text-decoration: none;
+          transition: var(--trans);
+          background: rgba(0, 142, 137, 0.082);
+          padding: 5px 20px;
+          border-radius: 5px;
+          border: 1px solid #003a42;
+          &:hover {
+            background: #003a42;
+            color: white;
+          }
+        }
 
           .leave-title {
             display: flex;
