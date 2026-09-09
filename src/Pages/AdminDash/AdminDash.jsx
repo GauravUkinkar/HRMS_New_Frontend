@@ -38,194 +38,7 @@ const AdminDash = () => {
     "Success grows when people grow together.",
   ];
 
-  const attendanceData = [
-    {
-      date: "1 Sep",
-      present: 215,
-      absent: 18,
-      halfDay: 22,
-    },
-    {
-      date: "2 Sep",
-      present: 210,
-      absent: 16,
-      halfDay: 18,
-    },
-    {
-      date: "3 Sep",
-      present: 212,
-      absent: 14,
-      halfDay: 20,
-    },
-    {
-      date: "4 Sep",
-      present: 200,
-      absent: 25,
-      halfDay: 30,
-    },
-    {
-      date: "5 Sep",
-      present: 185,
-      absent: 17,
-      halfDay: 15,
-    },
-    {
-      date: "6 Sep",
-      present: 140,
-      absent: 18,
-      halfDay: 16,
-    },
-    {
-      date: "7 Sep",
-      present: 155,
-      absent: 17,
-      halfDay: 18,
-    },
-    {
-      date: "8 Sep",
-      present: 165,
-      absent: 15,
-      halfDay: 17,
-    },
-    {
-      date: "9 Sep",
-      present: 172,
-      absent: 13,
-      halfDay: 15,
-    },
-    {
-      date: "10 Sep",
-      present: 180,
-      absent: 12,
-      halfDay: 14,
-    },
-    {
-      date: "11 Sep",
-      present: 190,
-      absent: 10,
-      halfDay: 12,
-    },
-    {
-      date: "12 Sep",
-      present: 182,
-      absent: 14,
-      halfDay: 16,
-    },
-    {
-      date: "13 Sep",
-      present: 145,
-      absent: 20,
-      halfDay: 18,
-    },
-    {
-      date: "14 Sep",
-      present: 158,
-      absent: 17,
-      halfDay: 19,
-    },
-    {
-      date: "15 Sep",
-      present: 175,
-      absent: 15,
-      halfDay: 14,
-    },
-    {
-      date: "16 Sep",
-      present: 188,
-      absent: 11,
-      halfDay: 13,
-    },
-    {
-      date: "17 Sep",
-      present: 195,
-      absent: 9,
-      halfDay: 11,
-    },
-    {
-      date: "18 Sep",
-      present: 202,
-      absent: 12,
-      halfDay: 10,
-    },
-    {
-      date: "19 Sep",
-      present: 180,
-      absent: 16,
-      halfDay: 15,
-    },
-    {
-      date: "20 Sep",
-      present: 142,
-      absent: 21,
-      halfDay: 17,
-    },
-    {
-      date: "21 Sep",
-      present: 160,
-      absent: 18,
-      halfDay: 16,
-    },
-    {
-      date: "22 Sep",
-      present: 178,
-      absent: 14,
-      halfDay: 13,
-    },
-    {
-      date: "23 Sep",
-      present: 185,
-      absent: 12,
-      halfDay: 15,
-    },
-    {
-      date: "24 Sep",
-      present: 198,
-      absent: 10,
-      halfDay: 12,
-    },
-    {
-      date: "25 Sep",
-      present: 205,
-      absent: 8,
-      halfDay: 10,
-    },
-    {
-      date: "26 Sep",
-      present: 180,
-      absent: 15,
-      halfDay: 14,
-    },
-    {
-      date: "27 Sep",
-      present: 148,
-      absent: 19,
-      halfDay: 18,
-    },
-    {
-      date: "28 Sep",
-      present: 165,
-      absent: 16,
-      halfDay: 15,
-    },
-    {
-      date: "29 Sep",
-      present: 190,
-      absent: 11,
-      halfDay: 12,
-    },
-    {
-      date: "30 Sep",
-      present: 200,
-      absent: 9,
-      halfDay: 11,
-    },
-    {
-      date: "31 Sep",
-      present: 195,
-      absent: 10,
-      halfDay: 13,
-    },
-  ];
+
 
   // Select a random quote when the dashboard loads
   const [quote] = useState(() => {
@@ -427,7 +240,7 @@ const AdminDash = () => {
     },
     {
       id: 2,
-      title: "Present Today",
+      title: "Punch In Today",
       value: today?.["In-office"] || 0,
       icon: <HiUsers />,
       iconColor: "#16a34a",
@@ -435,7 +248,7 @@ const AdminDash = () => {
     },
     {
       id: 3,
-      title: "Absent Today",
+      title: "Not Punch In Today",
       value: today?.absent || 0,
       icon: <FaUsersSlash />,
       iconColor: "#dc2626",
@@ -498,6 +311,43 @@ const AdminDash = () => {
       color: "#ff424c",
     },
   ];
+
+  //monthwise attendance data present, absent, halfday and total
+  const currentDate = new Date();
+  const [selectedMonth, setSelectedMonth] = useState(
+    String(currentDate.getMonth() + 1).padStart(2, "0")
+  );
+  const [selectedYear, setSelectedYear] = useState(
+    String(currentDate.getFullYear())
+  );
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [attendanceLoader, setAttendanceLoader] = useState(false);
+  const months = [
+    { value: "01", label: "January" },
+    { value: "02", label: "February" },
+    { value: "03", label: "March" },
+    { value: "04", label: "April" },
+    { value: "05", label: "May" },
+    { value: "06", label: "June" },
+    { value: "07", label: "July" },
+    { value: "08", label: "August" },
+    { value: "09", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
+  const years = [];
+
+  for (
+    let year = currentDate.getFullYear();
+    year >= currentDate.getFullYear() - 5;
+    year--
+  ) {
+    years.push(String(year));
+  }
+
+
+
   // api integration with TODAY ATTENDANCE box 
   const [loader, setLoader] = useState(false);
   const [data, setData] = useState([]);
@@ -549,6 +399,113 @@ const AdminDash = () => {
       setLoader(false);
     }
   };
+  const getMonthlyAttendance = async (month, year) => {
+    try {
+      setAttendanceLoader(true);
+
+      // First day of selected month
+      const startDate = `${year}-${month}-01`;
+
+      // Last day of selected month
+      const lastDay = new Date(
+        Number(year),
+        Number(month),
+        0
+      ).getDate();
+
+      const endDate = `${year}-${month}-${String(lastDay).padStart(2, "0")}`;
+
+      console.log("START DATE:", startDate);
+      console.log("END DATE:", endDate);
+
+      const response = await axios.get(
+        `${BASE_URL2}api/punch/getPreviousAttendence?startDate=${startDate}&endDate=${endDate}`
+      );
+
+      console.log("ATTENDANCE API:", response.data);
+
+      const records = response?.data?.data || [];
+
+      // Create every day of selected month
+      const days = [];
+
+      for (let day = 1; day <= lastDay; day++) {
+        const formattedDay = String(day).padStart(2, "0");
+
+        days.push({
+          date: `${day} ${new Date(
+            Number(year),
+            Number(month) - 1,
+            day
+          ).toLocaleString("en-US", {
+            month: "short",
+          })}`,
+
+          fullDate: `${year}-${month}-${formattedDay}`,
+
+          present: 0,
+          absent: 0,
+          halfDay: 0,
+        });
+      }
+
+      // Count attendance
+      records.forEach((item) => {
+        if (!item?.punchIn) return;
+
+        const attendanceDate = item.punchIn.split("T")[0];
+
+        const dayData = days.find(
+          (day) => day.fullDate === attendanceDate
+        );
+
+        if (!dayData) return;
+
+        const status = String(item?.status || "")
+          .trim()
+          .toLowerCase()
+          .replace(/[-_]/g, " ");
+
+        // If punch-in exists but status is null/empty
+        // count it as Present
+        if (!item?.status && item?.punchIn) {
+          dayData.present += 1;
+        }
+
+        // Present
+        else if (
+          status === "full day" ||
+          status === "present" ||
+          status === "in office" ||
+          status === "in progress"
+        ) {
+          dayData.present += 1;
+        }
+
+        // Absent
+        else if (status === "absent") {
+          dayData.absent += 1;
+        }
+
+        // Half Day
+        else if (status === "half day") {
+          dayData.halfDay += 1;
+        }
+      });
+
+      console.log("GRAPH DATA:", days);
+
+      setAttendanceData(days);
+
+    } catch (error) {
+      console.log("Attendance API Error:", error);
+      setAttendanceData([]);
+    } finally {
+      setAttendanceLoader(false);
+    }
+  };
+
+
 
 
   // API INTEGRATION FOR GET TEAM DATA
@@ -576,6 +533,10 @@ const AdminDash = () => {
     getAllLeaves();
     getallteam();
     getTodaydata();
+    getMonthlyAttendance(
+      selectedMonth,
+      selectedYear
+    );
   }, []);
 
 
@@ -643,6 +604,8 @@ const AdminDash = () => {
             {/* // Attendance and Leave Management */}
             <div className="box3">
 
+
+              {/* //montly data show on graph wise count only 31 days in this  */}
               <div className="box3-left">
                 <div className="heading">
                   <div className="icon">
@@ -650,19 +613,60 @@ const AdminDash = () => {
                     <span>Attendance Overview</span>
                   </div>
 
-                  <select className="month-select">
-                    <option value="2026-09">
-                      September 2026
-                    </option>
+                  <div className="attendance-filters">
 
-                    <option value="2026-08">
-                      August 2026
-                    </option>
+                    {/* MONTH */}
+                    <select
+                      className="month-select"
+                      value={selectedMonth}
+                      onChange={(e) => {
+                        const month = e.target.value;
 
-                    <option value="2026-07">
-                      July 2026
-                    </option>
-                  </select>
+                        setSelectedMonth(month);
+
+                        getMonthlyAttendance(
+                          month,
+                          selectedYear
+                        );
+                      }}
+                    >
+                      {months.map((month) => (
+                        <option
+                          key={month.value}
+                          value={month.value}
+                        >
+                          {month.label}
+                        </option>
+                      ))}
+                    </select>
+
+
+                    {/* YEAR */}
+                    <select
+                      className="month-select"
+                      value={selectedYear}
+                      onChange={(e) => {
+                        const year = e.target.value;
+
+                        setSelectedYear(year);
+
+                        getMonthlyAttendance(
+                          selectedMonth,
+                          year
+                        );
+                      }}
+                    >
+                      {years.map((year) => (
+                        <option
+                          key={year}
+                          value={year}
+                        >
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+
+                  </div>
 
                 </div>
 
@@ -758,11 +762,7 @@ const AdminDash = () => {
                     <span>Leave Requests</span>
                   </div>
 
-                  <select className="month-select">
-                    <option>September 2026</option>
-                    <option>August 2026</option>
-                    <option>July 2026</option>
-                  </select>
+
                 </div>
 
                 <div className="leave-content">
