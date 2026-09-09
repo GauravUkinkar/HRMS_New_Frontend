@@ -36,41 +36,7 @@ const AdminDash = () => {
     "Strong teams create strong organizations.",
     "Success grows when people grow together.",
   ];
-  const dashboardCards = [
-    {
-      id: 1,
-      title: "Total Employees",
-      value: 40,
-      icon: <FaUsersLine />,
-      iconColor: "#2563eb",
-      iconBg: "#eff6ff",
-    },
-    {
-      id: 2,
-      title: "Present Today",
-      value: 32,
-      icon: <HiUsers />,
-      iconColor: "#16a34a",
-      iconBg: "#f0fdf4",
-    },
-    {
-      id: 3,
-      title: "Absent Today",
-      value: 5,
-      icon: <FaUsersSlash />,
-      iconColor: "#dc2626",
-      iconBg: "#fef2f2",
 
-    },
-    {
-      id: 4,
-      title: "Half Day Exists",
-      value: 5,
-      icon: <PiUserSwitchFill />,
-      iconColor: "#f59e0b",
-      iconBg: "#fffbeb",
-    },
-  ];
   const attendanceData = [
     {
       date: "1 Sep",
@@ -449,7 +415,58 @@ const AdminDash = () => {
   const minuteAngle = minutes * 6 + seconds * 0.1;
   const hourAngle = (hours % 12) * 30 + minutes * 0.5;
 
+  //API INTEGRATION FOR FIRST BOX - TODAY ATTENDANCE DATA TOTALEMP/PRESENT/ABSENT/HALFDAY
+const [today, setToday] = useState({});
+const getTodaydata = async () => {
+  try {
+    // Get today's date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split("T")[0];
+    const res = await axios.get(
+      `${BASE_URL2}api/punch/work-session/summary?date=${currentDate}`
+    );
 
+    console.log("TODAY SUMMARY:", res.data);
+
+    setToday(res?.data || {});
+
+  } catch (error) {
+    console.log("Today Summary API Error:", error);
+  }
+};
+  const dashboardCards = [
+  {
+    id: 1,
+    title: "Total Employees",
+    value: today?.totalEmployees || 0,
+    icon: <FaUsersLine />,
+    iconColor: "#2563eb",
+    iconBg: "#eff6ff",
+  },
+  {
+    id: 2,
+    title: "Present Today",
+    value: today?.["In-office"] || 0,
+    icon: <HiUsers />,
+    iconColor: "#16a34a",
+    iconBg: "#f0fdf4",
+  },
+  {
+    id: 3,
+    title: "Absent Today",
+    value: today?.absent || 0,
+    icon: <FaUsersSlash />,
+    iconColor: "#dc2626",
+    iconBg: "#fef2f2",
+  },
+  {
+    id: 4,
+    title: "Half Day Exists",
+    value: today?.halfday || 0,
+    icon: <PiUserSwitchFill />,
+    iconColor: "#f59e0b",
+    iconBg: "#fffbeb",
+  },
+];
 
   // api integration with TODAY ATTENDANCE box 
   const [loader, setLoader] = useState(false);
@@ -506,7 +523,6 @@ const AdminDash = () => {
 
   // API INTEGRATION FOR GET TEAM DATA
   const [team, setTeam] = useState([]);
-
   const getallteam = async () => {
     try {
       const res = await axios.get(
@@ -518,11 +534,8 @@ const AdminDash = () => {
       const teamData = res?.data
         ?.filter((item) => item?.data)
         ?.map((item) => item.data);
-
       console.log("TEAM DATA:", teamData);
-
       setTeam(teamData || []);
-
     } catch (error) {
       console.error("Team API Error:", error);
       setTeam([]);
@@ -531,6 +544,7 @@ const AdminDash = () => {
   useEffect(() => {
     getEmployeeData();
     getallteam();
+    getTodaydata();
   }, []);
 
 
