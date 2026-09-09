@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import { LuBell, LuCheck } from "react-icons/lu";
 import { LuCake, LuSend } from "react-icons/lu";
 import axios from "axios";
+const BASE_URL_USER = import.meta.env.VITE_USER_BACKEND_URL;
 const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 const BASE_URL3 = import.meta.env.VITE_TEAM_URL;
@@ -133,36 +134,7 @@ const AdminDash = () => {
       },
     },
   ];
-  const notifications = [
-    {
-      id: 1,
-      title: "Promotion Review",
-      description:
-        "Discussed potential promotion based on consistent performance and leadership in the recent project.",
-      date: "11 June 2026",
-    },
-    {
-      id: 2,
-      title: "Employee Appreciation",
-      description:
-        "Recognized by the team and CEO for outstanding contribution in the client workshop and delivery timeline.",
-      date: "7 May 2026",
-    },
-    {
-      id: 3,
-      title: "Leave Request",
-      description:
-        "A new leave request has been submitted and is waiting for your approval.",
-      date: "5 May 2026",
-    },
-    {
-      id: 4,
-      title: "New Employee",
-      description:
-        "A new employee has been added to the Development department.",
-      date: "2 May 2026",
-    },
-  ];
+
   const birthdayEmployees = [
     {
       id: 1,
@@ -528,15 +500,174 @@ const AdminDash = () => {
       setTeam([]);
     }
   };
+
+
+  //get all NOTIFICATION API INTEGRATION 
+  const [notifications, setNotifications] = useState([]);
+  const [notificationLoader, setNotificationLoader] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notificationCountLoader, setNotificationCountLoader] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState([]);
+  const [showUnread, setShowUnread] = useState(false);
+
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
+
+  const displayedNotifications = showUnread
+    ? unreadNotifications
+    : notifications;
+
+  const stripHtml = (html = "") => {
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
+    return temp.textContent || temp.innerText || "";
+  };
+
+  const getNotificationPreview = (message = "") => {
+    const plainText = stripHtml(message).replace(/\s+/g, " ").trim();
+
+    return plainText.length > 80
+      ? `${plainText.substring(0, 80)}...`
+      : plainText;
+  };
+
+  const handleNotificationClick = async (notification) => {
+    // Open popup
+    setSelectedNotification(notification);
+    setShowNotificationModal(true);
+
+    // Mark as read only if unread
+    if (!notification?.isRead) {
+      await markNotificationAsRead(notification.id);
+    }
+  };
+
+  const getNotifications = async () => {
+    try {
+      setNotificationLoader(true);
+
+      const response = await axios.get(
+        `${BASE_URL_USER}Notification/AdminNotifications`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("NOTIFICATION API RESPONSE:", response.data);
+
+      setNotifications(response?.data || []);
+    } catch (error) {
+      console.error("Notification API Error:", error);
+      setNotifications([]);
+    } finally {
+      setNotificationLoader(false);
+    }
+  };
+
+  const getNotificationCount = async () => {
+    try {
+      setNotificationCountLoader(true);
+
+      const response = await axios.get(
+        `${BASE_URL_USER}Notification/my/count`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("NOTIFICATION COUNT:", response.data);
+
+      setNotificationCount(Number(response?.data) || 0);
+
+    } catch (error) {
+      console.error("Notification Count API Error:", error);
+      setNotificationCount(0);
+    } finally {
+      setNotificationCountLoader(false);
+    }
+  };
+
+  //load unread all notification 
+
+  const getUnreadNotifications = async () => {
+    try {
+      setNotificationLoader(true);
+
+      const response = await axios.get(
+        `${BASE_URL_USER}Notification/my/unread`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("UNREAD NOTIFICATIONS:", response.data);
+
+      setUnreadNotifications(response?.data || []);
+      setShowUnread(true);
+
+    } catch (error) {
+      console.error("Unread Notification API Error:", error);
+      setUnreadNotifications([]);
+    } finally {
+      setNotificationLoader(false);
+    }
+  };
+
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      await axios.put(
+        `${BASE_URL_USER}Notification/${notificationId}/read`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("Notification marked as read:", notificationId);
+
+      // Remove it from unread list immediately
+      setUnreadNotifications((prev) =>
+        prev.filter((notification) => notification.id !== notificationId)
+      );
+
+      // Decrease unread count
+      setNotificationCount((prev) => Math.max(0, prev - 1));
+
+    } catch (error) {
+      console.error("Mark Notification Read API Error:", error);
+    }
+  };
+
+  //Birthday Wish API Integration
+  const [birthday, setBirthday] = useState();
+  const getMonthBirthday = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL_USER}AuthController/birthdays?month=jan`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res.data, "jlkfdskjdfsjkldsfkjlkjlfdsklklfdkjlsd")
+      setBirthday(res.data);
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
   useEffect(() => {
     getEmployeeData();
     getAllLeaves();
     getallteam();
     getTodaydata();
+
     getMonthlyAttendance(
       selectedMonth,
       selectedYear
     );
+
+    getNotifications();
+    getNotificationCount();
+    getMonthBirthday();
   }, []);
 
 
@@ -986,56 +1117,143 @@ const AdminDash = () => {
 
             <div className="middle-box2">
               <div className="notification-header">
-
                 <div className="notification-title">
-                  <LuBell />
+
                   <span>Notifications</span>
                 </div>
 
-                <span className="notification-count">
-                  {notifications.length}
-                </span>
+                <div className="notification-count"
+                  onClick={() => {
+                    getUnreadNotifications();
+                    setShowUnread(true);
+                  }}
+                >
+                  <LuBell />
+
+                  <span className="count">
+                    {notificationCount}
+                  </span>
+                </div>
+
 
               </div>
 
 
               <div className="notification-list">
 
-                {notifications.map((notification) => (
+                {notificationLoader ? (
 
-                  <div
-                    className="notification-item"
-                    key={notification.id}
-                  >
-
-                    {/* Check Icon */}
-                    <div className="notification-icon">
-                      <LuCheck />
-                    </div>
-
-
-                    {/* Content */}
-                    <div className="notification-content">
-
-                      <h4>
-                        {notification.title}
-                      </h4>
-
-                      <p>
-                        {notification.description}
-                      </p>
-
-                      <span className="notification-date">
-                        {notification.date}
-                      </span>
-
-                    </div>
-
+                  <div className="notification-loading">
+                    Loading notifications...
                   </div>
 
-                ))}
+                ) : displayedNotifications.length === 0 ? (
+
+                  <div className="notification-empty">
+                    {showUnread
+                      ? "No unread notifications"
+                      : "No notifications"}
+                  </div>
+
+                ) : (
+
+                  displayedNotifications.map((notification) => (
+
+                    <div
+                      className={`notification-item ${notification?.isRead ? "read" : "unread"
+                        }`}
+                      key={notification.id}
+                      onClick={() => handleNotificationClick(notification)}
+                    >
+
+                      {/* Check Icon */}
+                      <div className="notification-icon">
+                        <LuCheck />
+                      </div>
+
+                      {/* Notification Content */}
+                      <div className="notification-content">
+
+                        <h4>
+                          {notification?.title || "Notification"}
+                        </h4>
+
+                        <p>
+                          {getNotificationPreview(notification?.message)}
+                        </p>
+
+                        <span className="notification-date">
+                          {notification?.createdAt
+                            ? new Date(
+                              notification.createdAt
+                            ).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                            : "--"}
+                        </span>
+
+                      </div>
+
+                      {/* Show dot only for unread */}
+                      {!notification?.isRead && (
+                        <span className="notification-dot"></span>
+                      )}
+
+                    </div>
+
+                  ))
+
+                )}
 
               </div>
+              {showNotificationModal && selectedNotification && (
+                <div
+                  className="notification-modal-overlay"
+                  onClick={() => setShowNotificationModal(false)}
+                >
+                  <div
+                    className="notification-modal"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="notification-modal-header">
+                      <h3>
+                        {selectedNotification?.title || "Notification"}
+                      </h3>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowNotificationModal(false)}
+                      >
+                        ×
+                      </button>
+                    </div>
+
+                    <div className="notification-modal-body">
+                      <p className="notification-modal-date">
+                        {selectedNotification?.createdAt
+                          ? new Date(
+                            selectedNotification.createdAt
+                          ).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                          : "--"}
+                      </p>
+
+                      <div className="notification-full-message">
+                        {stripHtml(selectedNotification?.message || "")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
             </div>
 
