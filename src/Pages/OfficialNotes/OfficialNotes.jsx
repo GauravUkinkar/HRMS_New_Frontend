@@ -53,6 +53,8 @@ const OfficialNotes = () => {
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState(null);
+
+  const [noteTitle, setNoteTitle] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const [noteCreatedAt, setNoteCreatedAt] = useState("");
 
@@ -63,31 +65,26 @@ const OfficialNotes = () => {
   const [expandedNoteId, setExpandedNoteId] = useState(null);
 
   // ==========================================================
-  // HELPER FUNCTION - REMOVE HTML
+  // REMOVE HTML
   // ==========================================================
 
   const stripHtml = (html) => {
-    if (!html) {
-      return "";
-    }
+    if (!html) return "";
 
     const element = document.createElement("div");
-
     element.innerHTML = html;
 
     return element.textContent || element.innerText || "";
   };
 
   // ==========================================================
-  // HELPER FUNCTION - SHORT NOTE
+  // SHORT NOTE
   // ==========================================================
 
   const getShortNote = (html, wordLimit = 5) => {
     const text = stripHtml(html).trim();
 
-    if (!text) {
-      return "";
-    }
+    if (!text) return "";
 
     const words = text.split(/\s+/);
 
@@ -116,16 +113,16 @@ const OfficialNotes = () => {
 
       console.log("GET ALL OFFICIAL NOTES RESPONSE:", res.data);
 
-      const notes = res.data.map((item, index) => ({
-        key: index + 1,
-        notesId: item?.data?.notesId,
-        discription: item?.data?.discription,
-        createdAt: item?.data?.createdAt,
-      }));
+      const formattedNotes = Array.isArray(res.data)
+        ? res.data.map((item, index) => ({
+            key: index + 1,
+            notesId: item?.data?.notesId,
+            discription: item?.data?.discription,
+            createdAt: item?.data?.createdAt,
+          }))
+        : [];
 
-      console.log("FORMATTED OFFICIAL NOTES:", notes);
-
-      setNotes(notes);
+      setNotes(formattedNotes);
     } catch (error) {
       console.error("Get All Official Notes API Error:", error);
 
@@ -163,21 +160,21 @@ const OfficialNotes = () => {
 
       console.log("GET ALL EMPLOYEES RESPONSE:", res.data);
 
-      const employees = res.data.map((item, index) => ({
-        key: index + 1,
-        employeeId: item?.data?.employeeId,
-        employeeName: item?.data?.employeeName,
-        department: item?.data?.department,
-        designation: item?.data?.designation,
-        email: item?.data?.email,
-        contactNumber: item?.data?.contactNumber,
-      }));
+      const formattedEmployees = Array.isArray(res.data)
+        ? res.data.map((item, index) => ({
+            key: index + 1,
+            employeeId: item?.data?.employeeId,
+            employeeName: item?.data?.employeeName,
+            department: item?.data?.department,
+            designation: item?.data?.designation,
+            email: item?.data?.email,
+            contactNumber: item?.data?.contactNumber,
+          }))
+        : [];
 
-      console.log("FORMATTED EMPLOYEES:", employees);
+      setEmployees(formattedEmployees);
 
-      setEmployees(employees);
-
-      if (employees.length === 0) {
+      if (formattedEmployees.length === 0) {
         setEmployeeError("No employees found.");
       }
     } catch (error) {
@@ -200,7 +197,7 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // LOAD INITIAL DATA
+  // INITIAL LOAD
   // ==========================================================
 
   useEffect(() => {
@@ -216,6 +213,7 @@ const OfficialNotes = () => {
     setIsEditing(false);
     setEditingNoteId(null);
 
+    setNoteTitle("");
     setNoteContent("");
     setNoteCreatedAt("");
 
@@ -226,7 +224,7 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // CLOSE NOTE MODAL
+  // CLOSE MODAL
   // ==========================================================
 
   const handleCloseNote = () => {
@@ -235,6 +233,7 @@ const OfficialNotes = () => {
     setIsEditing(false);
     setEditingNoteId(null);
 
+    setNoteTitle("");
     setNoteContent("");
     setNoteCreatedAt("");
 
@@ -251,14 +250,14 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // SELECT / DESELECT ALL EMPLOYEES
+  // SELECT / DESELECT ALL
   // ==========================================================
 
   const handleSelectAllEmployees = (checked) => {
     if (checked) {
-      const allEmployeeIds = employees.map(
-        (employee) => employee.employeeId
-      );
+      const allEmployeeIds = employees
+        .map((employee) => employee.employeeId)
+        .filter(Boolean);
 
       setSelectedEmployees(allEmployeeIds);
     } else {
@@ -267,7 +266,7 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // SELECT / DESELECT ONE EMPLOYEE
+  // SELECT / DESELECT EMPLOYEE
   // ==========================================================
 
   const handleEmployeeSelection = (employeeId, checked) => {
@@ -287,7 +286,7 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // VIEW / HIDE FULL NOTE
+  // VIEW / HIDE NOTE
   // ==========================================================
 
   const handleToggleNote = (noteId) => {
@@ -297,7 +296,7 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // CHECK WHETHER NOTE CAN BE EDITED
+  // CHECK EDIT ALLOWED
   // ==========================================================
 
   const isEditAllowed = (note) => {
@@ -323,7 +322,7 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // GET NOTE BY ID AND OPEN EDIT MODAL
+  // GET NOTE BY ID + EDIT
   // ==========================================================
 
   const handleEdit = async (note) => {
@@ -331,7 +330,6 @@ const OfficialNotes = () => {
       alert(
         "This note can only be edited on the day it was created."
       );
-
       return;
     }
 
@@ -353,11 +351,10 @@ const OfficialNotes = () => {
       }
 
       setIsEditing(true);
-
       setEditingNoteId(selectedNote.notesId);
-
       setNoteCreatedAt(selectedNote.createdAt);
 
+      setNoteTitle("");
       setNoteContent(selectedNote.discription || "");
 
       setSelectedEmployees([]);
@@ -373,7 +370,9 @@ const OfficialNotes = () => {
       if (error.response?.status === 401) {
         alert("Authentication required.");
       } else if (error.response?.status === 403) {
-        alert("You are not authorized to view this note.");
+        alert(
+          "You are not authorized to view this note."
+        );
       } else if (error.response?.status === 404) {
         alert("Note not found.");
       } else {
@@ -383,7 +382,7 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // DELETE OFFICIAL NOTE
+  // DELETE NOTE
   // ==========================================================
 
   const handleDelete = async (note) => {
@@ -396,16 +395,11 @@ const OfficialNotes = () => {
     }
 
     try {
-      const res = await axios.delete(
+      await axios.delete(
         `${BASE_URL}Admin/deleteOfficialNotes?OfficialNotesId=${note.notesId}`,
         {
           withCredentials: true,
         }
-      );
-
-      console.log(
-        "DELETE OFFICIAL NOTE RESPONSE:",
-        res.data
       );
 
       alert("Official note deleted successfully.");
@@ -436,14 +430,19 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // ADD / UPDATE OFFICIAL NOTE
+  // ADD / UPDATE NOTE
   // ==========================================================
 
   const handleSubmitNote = async () => {
     try {
-      // ========================================================
+      // --------------------------------------------------------
       // VALIDATION
-      // ========================================================
+      // --------------------------------------------------------
+
+      if (!noteTitle || noteTitle.trim() === "") {
+        alert("Please enter a title.");
+        return;
+      }
 
       if (!noteContent || noteContent.trim() === "") {
         alert("Please enter a note.");
@@ -451,33 +450,36 @@ const OfficialNotes = () => {
       }
 
       // ========================================================
-      // ADD NEW OFFICIAL NOTE
-      // NEW API:
+      // ADD NEW NOTE
       // POST /Notification/Admin/create
       // ========================================================
 
       if (!isEditing) {
         /*
-         * If no employee is selected, treat it as
-         * "All Employees".
+         * If employees are selected:
+         * send selected employee IDs.
          *
-         * Otherwise send only selected employee IDs.
+         * If no employee is selected:
+         * send the note to all employees.
          */
-        const recipientUids =
+
+        const recipientUIds =
           selectedEmployees.length > 0
             ? selectedEmployees
-            : employees.map(
-                (employee) => employee.uid
-              );
+            : employees
+                .map((employee) => employee.employeeId)
+                .filter(Boolean);
 
-        if (recipientUids.length === 0) {
+        if (recipientUIds.length === 0) {
           alert("No employees available.");
           return;
         }
 
+        // IMPORTANT:
+        // Property names exactly match Swagger API.
         const notificationData = {
-          recipientUids: recipientUids,
-          title: "Official Note",
+          recipientUIds: selectedEmployees,
+          title: noteTitle.trim(),
           message: noteContent,
           type: "Official_Note",
           referenceId: 0,
@@ -493,6 +495,9 @@ const OfficialNotes = () => {
           notificationData,
           {
             withCredentials: true,
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
 
@@ -535,17 +540,15 @@ const OfficialNotes = () => {
         updateData
       );
 
-      const res = await axios.put(
+      await axios.put(
         `${BASE_URL}Admin/updateOfficialNotes`,
         updateData,
         {
           withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      );
-
-      console.log(
-        "UPDATE OFFICIAL NOTE RESPONSE:",
-        res.data
       );
 
       alert("Official note updated successfully.");
@@ -556,7 +559,13 @@ const OfficialNotes = () => {
     } catch (error) {
       console.error("Official Note API Error:", error);
 
-      if (error.response?.status === 401) {
+      if (error.response?.status === 400) {
+        alert(
+          error.response?.data?.message ||
+            error.response?.data ||
+            "Invalid request."
+        );
+      } else if (error.response?.status === 401) {
         alert("Authentication required.");
       } else if (error.response?.status === 403) {
         alert(
@@ -566,7 +575,8 @@ const OfficialNotes = () => {
         alert("Note not found.");
       } else {
         alert(
-          error.response?.data ||
+          error.response?.data?.message ||
+            error.response?.data ||
             error.message ||
             "Failed to save official note."
         );
@@ -624,7 +634,14 @@ const OfficialNotes = () => {
         ================================================== */}
 
         {showNoteModal && (
-          <div className="note-modal-overlay">
+          <div
+            className="note-modal-overlay"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) {
+                handleCloseNote();
+              }
+            }}
+          >
             <div className="note-modal">
 
               {/* MODAL HEADER */}
@@ -652,89 +669,88 @@ const OfficialNotes = () => {
 
                 {/* SEND TO */}
 
-                <div className="note-form-group">
-                  <label>Send To</label>
+                {!isEditing && (
+                  <div className="note-form-group">
+                    <label>Send To</label>
 
-                  <div className="employee-dropdown">
+                    <div className="employee-dropdown">
 
-                    {/* DROPDOWN HEADER */}
+                      {/* DROPDOWN HEADER */}
 
-                    <div
-                      className="employee-dropdown-header"
-                      onClick={handleEmployeeDropdown}
-                    >
-                      <span>
-                        {selectedEmployees.length === 0
-                          ? "All Employees"
-                          : selectedEmployees.length === 1
+                      <button
+                        type="button"
+                        className="employee-dropdown-header"
+                        onClick={handleEmployeeDropdown}
+                      >
+                        <span>
+                          {selectedEmployees.length === 0
+                            ? "All Employees"
+                            : selectedEmployees.length === 1
                             ? "1 Employee Selected"
                             : `${selectedEmployees.length} Employees Selected`}
-                      </span>
+                        </span>
 
-                      <span className="dropdown-arrow">
-                        {isEmployeeDropdownOpen
-                          ? "⌃"
-                          : "⌄"}
-                      </span>
-                    </div>
+                        <span className="dropdown-arrow">
+                          {isEmployeeDropdownOpen
+                            ? "⌃"
+                            : "⌄"}
+                        </span>
+                      </button>
 
-                    {/* DROPDOWN OPTIONS */}
+                      {/* DROPDOWN MENU */}
 
-                    {isEmployeeDropdownOpen && (
-                      <div className="employee-dropdown-menu">
+                      {isEmployeeDropdownOpen && (
+                        <div className="employee-dropdown-menu">
 
-                        {/* LOADING */}
+                          {/* LOADING */}
 
-                        {employeeLoading && (
-                          <div className="employee-loading">
-                            Loading employees...
-                          </div>
-                        )}
-
-                        {/* ERROR */}
-
-                        {!employeeLoading &&
-                          employeeError && (
-                            <div className="employee-error">
-                              {employeeError}
+                          {employeeLoading && (
+                            <div className="employee-loading">
+                              Loading employees...
                             </div>
                           )}
 
-                        {/* EMPLOYEE LIST */}
+                          {/* ERROR */}
 
-                        {!employeeLoading &&
-                          !employeeError &&
-                          employees.length > 0 && (
-                            <>
-                              {/* ALL EMPLOYEES */}
+                          {!employeeLoading &&
+                            employeeError && (
+                              <div className="employee-error">
+                                {employeeError}
+                              </div>
+                            )}
 
-                              <label className="employee-option">
-                                <input
-                                  type="checkbox"
-                                  checked={
-                                    selectedEmployees.length ===
-                                    employees.length
-                                  }
-                                  onChange={(event) =>
-                                    handleSelectAllEmployees(
-                                      event.target.checked
-                                    )
-                                  }
-                                />
+                          {/* EMPLOYEES */}
 
-                                <span>
-                                  All Employees
-                                </span>
-                              </label>
+                          {!employeeLoading &&
+                            !employeeError &&
+                            employees.length > 0 && (
+                              <>
+                                {/* ALL EMPLOYEES */}
 
-                              {/* INDIVIDUAL EMPLOYEES */}
-
-                              {employees.map(
-                                (employee) => (
-                                  <label
-                                    key={
-                                      employee.employeeId
+                                <label className="employee-option">
+                                  <input
+                                    type="checkbox"
+                                    checked={
+                                      selectedEmployees.length ===
+                                      employees.length
                                     }
+                                    onChange={(event) =>
+                                      handleSelectAllEmployees(
+                                        event.target.checked
+                                      )
+                                    }
+                                  />
+
+                                  <span>
+                                    All Employees
+                                  </span>
+                                </label>
+
+                                {/* INDIVIDUAL EMPLOYEES */}
+
+                                {employees.map((employee) => (
+                                  <label
+                                    key={employee.employeeId}
                                     className="employee-option"
                                   >
                                     <input
@@ -751,18 +767,43 @@ const OfficialNotes = () => {
                                     />
 
                                     <span>
-                                      {
-                                        employee.employeeName
-                                      }
+                                      {employee.employeeName}
                                     </span>
                                   </label>
-                                )
-                              )}
-                            </>
-                          )}
-                      </div>
-                    )}
+                                ))}
+                              </>
+                            )}
+                        </div>
+                      )}
+                    </div>
                   </div>
+                )}
+
+                {/* TITLE */}
+
+                <div className="note-form-group">
+                  <label htmlFor="note-title">
+                    Title
+                  </label>
+
+                  <input
+                    id="note-title"
+                    type="text"
+                    className="note-title-input"
+                    placeholder="Enter notification title..."
+                    value={noteTitle}
+                    onChange={(event) =>
+                      setNoteTitle(event.target.value)
+                    }
+                    disabled={isEditing}
+                  />
+
+                  {isEditing && (
+                    <small className="edit-title-info">
+                      Title cannot be changed because the update
+                      API does not return a title field.
+                    </small>
+                  )}
                 </div>
 
                 {/* MESSAGE */}
@@ -775,9 +816,7 @@ const OfficialNotes = () => {
                       editor={ClassicEditor}
                       data={noteContent}
                       onChange={(event, editor) => {
-                        setNoteContent(
-                          editor.getData()
-                        );
+                        setNoteContent(editor.getData());
                       }}
                       config={{
                         placeholder:
@@ -802,13 +841,11 @@ const OfficialNotes = () => {
                     />
                   </div>
                 </div>
-
               </div>
 
               {/* MODAL FOOTER */}
 
               <div className="note-modal-footer">
-
                 <button
                   type="button"
                   className="cancel-note-btn"
@@ -826,9 +863,7 @@ const OfficialNotes = () => {
                     ? "Update Note"
                     : "Submit Note"}
                 </button>
-
               </div>
-
             </div>
           </div>
         )}
@@ -920,8 +955,7 @@ const OfficialNotes = () => {
                           : ""
                       }
                     >
-
-                      {/* SR. NO. */}
+                      {/* SERIAL */}
 
                       <td className="sr-column">
                         <span className="sr-number">
@@ -933,9 +967,7 @@ const OfficialNotes = () => {
 
                       <td className="date-column">
                         <span className="note-date">
-                          {formatDate(
-                            note.createdAt
-                          )}
+                          {formatDate(note.createdAt)}
                         </span>
                       </td>
 
@@ -1032,7 +1064,6 @@ const OfficialNotes = () => {
 
                         </div>
                       </td>
-
                     </tr>
                   );
                 })}
@@ -1041,9 +1072,7 @@ const OfficialNotes = () => {
           </table>
         </div>
 
-        {/* ==================================================
-            TABLE FOOTER
-        ================================================== */}
+        {/* FOOTER */}
 
         <div className="notes-footer">
           Showing 1 to {notes.length} of{" "}
