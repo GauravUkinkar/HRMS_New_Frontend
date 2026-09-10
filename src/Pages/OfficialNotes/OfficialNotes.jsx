@@ -174,8 +174,9 @@ const OfficialNotes = () => {
           groupedNotifications[groupKey] = {
             key: Object.keys(groupedNotifications).length + 1,
 
-            // First notification ID
             notesId: item?.id,
+
+            notificationIds: [],
 
             title: item?.title || "",
 
@@ -536,8 +537,8 @@ const OfficialNotes = () => {
     }
   };
 
-  // ==========================================================
   // DELETE NOTE
+  // DELETE /Notification/deleteNotification/{notificationId}
   // ==========================================================
 
   const handleDelete = async (note) => {
@@ -551,30 +552,50 @@ const OfficialNotes = () => {
 
     try {
       await axios.delete(
-        `${BASE_URL}Admin/deleteOfficialNotes?OfficialNotesId=${note.notesId}`,
+        `${BASE_URL}Notification/deleteNotification/${note.notesId}`,
         {
           withCredentials: true,
         },
       );
 
-      alert("Official note deleted successfully.");
+      // Remove deleted note from UI immediately
+      setNotes((previousNotes) =>
+        previousNotes.filter((item) => item.notesId !== note.notesId),
+      );
 
+      // Close expanded note
       if (expandedNoteId === note.notesId) {
         setExpandedNoteId(null);
       }
 
-      await getOfficialNotes();
+      // Keep pagination correct
+      setCurrentPage((previousPage) => {
+        const remainingNotes = notes.length - 1;
+        const newTotalPages = Math.max(
+          1,
+          Math.ceil(remainingNotes / NOTES_PER_PAGE),
+        );
+
+        return Math.min(previousPage, newTotalPages);
+      });
+
+      // alert("Official note deleted successfully.");
     } catch (error) {
-      console.error("Delete Official Note API Error:", error);
+      console.error("Delete Notification API Error:", error);
 
       if (error.response?.status === 401) {
         alert("Authentication required.");
       } else if (error.response?.status === 403) {
-        alert("You are not authorized to delete this note.");
+        alert("You are not authorized to delete this notification.");
       } else if (error.response?.status === 404) {
-        alert("Note not found.");
+        alert("Notification not found.");
       } else {
-        alert("Failed to delete official note.");
+        alert(
+          error.response?.data?.message ||
+            error.response?.data ||
+            error.message ||
+            "Failed to delete official note.",
+        );
       }
     }
   };
@@ -1134,66 +1155,62 @@ const OfficialNotes = () => {
           </table>
         </div>
 
-       {/* FOOTER */}
+        {/* FOOTER */}
 
-<div className="notes-footer">
+        <div className="notes-footer">
+          <div className="notes-count">
+            {notes.length === 0
+              ? "Showing 0 to 0 of 0 notes"
+              : `Showing ${startIndex + 1} to ${Math.min(
+                  endIndex,
+                  notes.length,
+                )} of ${notes.length} notes`}
+          </div>
 
-  <div className="notes-count">
-    {notes.length === 0
-      ? "Showing 0 to 0 of 0 notes"
-      : `Showing ${startIndex + 1} to ${Math.min(
-          endIndex,
-          notes.length
-        )} of ${notes.length} notes`}
-  </div>
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                type="button"
+                className="pagination-btn"
+                disabled={currentPage === 1}
+                onClick={() =>
+                  setCurrentPage((previousPage) => previousPage - 1)
+                }
+              >
+                Previous
+              </button>
 
-  {totalPages > 1 && (
-    <div className="pagination">
+              <div className="pagination-pages">
+                {Array.from(
+                  { length: totalPages },
+                  (_, index) => index + 1,
+                ).map((page) => (
+                  <button
+                    key={page}
+                    type="button"
+                    className={`pagination-number ${
+                      currentPage === page ? "active" : ""
+                    }`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
 
-      <button
-        type="button"
-        className="pagination-btn"
-        disabled={currentPage === 1}
-        onClick={() =>
-          setCurrentPage((previousPage) => previousPage - 1)
-        }
-      >
-        Previous
-      </button>
-
-      <div className="pagination-pages">
-        {Array.from(
-          { length: totalPages },
-          (_, index) => index + 1
-        ).map((page) => (
-          <button
-            key={page}
-            type="button"
-            className={`pagination-number ${
-              currentPage === page ? "active" : ""
-            }`}
-            onClick={() => setCurrentPage(page)}
-          >
-            {page}
-          </button>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        className="pagination-btn"
-        disabled={currentPage === totalPages}
-        onClick={() =>
-          setCurrentPage((previousPage) => previousPage + 1)
-        }
-      >
-        Next
-      </button>
-
-    </div>
-  )}
-
-</div>
+              <button
+                type="button"
+                className="pagination-btn"
+                disabled={currentPage === totalPages}
+                onClick={() =>
+                  setCurrentPage((previousPage) => previousPage + 1)
+                }
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </MainPanel>
   );
