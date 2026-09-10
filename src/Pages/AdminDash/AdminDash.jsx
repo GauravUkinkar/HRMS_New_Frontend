@@ -508,12 +508,40 @@ const AdminDash = () => {
   const [notificationCount, setNotificationCount] = useState(0);
   const [notificationCountLoader, setNotificationCountLoader] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState([]);
-
   const [showUnread, setShowUnread] = useState(false);
+
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   const displayedNotifications = showUnread
     ? unreadNotifications
     : notifications;
+
+  const stripHtml = (html = "") => {
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
+    return temp.textContent || temp.innerText || "";
+  };
+
+  const getNotificationPreview = (message = "") => {
+    const plainText = stripHtml(message).replace(/\s+/g, " ").trim();
+
+    return plainText.length > 80
+      ? `${plainText.substring(0, 80)}...`
+      : plainText;
+  };
+
+  const handleNotificationClick = async (notification) => {
+    // Open popup
+    setSelectedNotification(notification);
+    setShowNotificationModal(true);
+
+    // Mark as read only if unread
+    if (!notification?.isRead) {
+      await markNotificationAsRead(notification.id);
+    }
+  };
+
   const getNotifications = async () => {
     try {
       setNotificationLoader(true);
@@ -610,6 +638,22 @@ const AdminDash = () => {
     }
   };
 
+  //Birthday Wish API Integration
+  const [birthday, setBirthday] = useState();
+  const getMonthBirthday = async () => {
+    try {
+      const res = await axios.get(`${BASE_URL_USER}AuthController/birthdays?month=jan`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res.data, "jlkfdskjdfsjkldsfkjlkjlfdsklklfdkjlsd")
+      setBirthday(res.data);
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
   useEffect(() => {
     getEmployeeData();
     getAllLeaves();
@@ -623,6 +667,7 @@ const AdminDash = () => {
 
     getNotifications();
     getNotificationCount();
+    getMonthBirthday();
   }, []);
 
 
@@ -1118,11 +1163,7 @@ const AdminDash = () => {
                       className={`notification-item ${notification?.isRead ? "read" : "unread"
                         }`}
                       key={notification.id}
-                      onClick={() => {
-                        if (!notification?.isRead) {
-                          markNotificationAsRead(notification.id);
-                        }
-                      }}
+                      onClick={() => handleNotificationClick(notification)}
                     >
 
                       {/* Check Icon */}
@@ -1138,7 +1179,7 @@ const AdminDash = () => {
                         </h4>
 
                         <p>
-                          {notification?.message || ""}
+                          {getNotificationPreview(notification?.message)}
                         </p>
 
                         <span className="notification-date">
@@ -1169,6 +1210,50 @@ const AdminDash = () => {
                 )}
 
               </div>
+              {showNotificationModal && selectedNotification && (
+                <div
+                  className="notification-modal-overlay"
+                  onClick={() => setShowNotificationModal(false)}
+                >
+                  <div
+                    className="notification-modal"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="notification-modal-header">
+                      <h3>
+                        {selectedNotification?.title || "Notification"}
+                      </h3>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowNotificationModal(false)}
+                      >
+                        ×
+                      </button>
+                    </div>
+
+                    <div className="notification-modal-body">
+                      <p className="notification-modal-date">
+                        {selectedNotification?.createdAt
+                          ? new Date(
+                            selectedNotification.createdAt
+                          ).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                          : "--"}
+                      </p>
+
+                      <div className="notification-full-message">
+                        {stripHtml(selectedNotification?.message || "")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
             </div>
 

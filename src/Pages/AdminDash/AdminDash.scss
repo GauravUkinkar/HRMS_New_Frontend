@@ -596,6 +596,71 @@
 
         padding-right: 4px;
       }
+      .notification-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.notification-modal {
+  width: 100%;
+  max-width: 550px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.notification-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #eee;
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #172033;
+  }
+
+  button {
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #777;
+
+    &:hover {
+      color: #000;
+    }
+  }
+}
+
+.notification-modal-body {
+  padding: 20px;
+}
+
+.notification-modal-date {
+  margin: 0 0 15px;
+  font-size: 12px;
+  color: #888;
+}
+
+.notification-full-message {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #444;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 
       // =========================
       // ITEM
