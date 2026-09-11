@@ -1055,7 +1055,7 @@ const EmployeeDash = () => {
                   <span>Leave Management</span>
                 </div>
 
-                <Link to="/attendance" className="view-all">
+                <Link to="/leaveApplication" className="view-all">
                   Apply Leave
                 </Link>
               </div>
