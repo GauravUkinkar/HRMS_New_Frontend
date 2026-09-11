@@ -1,13 +1,79 @@
-.MuiDateCalendar-root{
-    width: 100% !important;
-    height: 100% !important;
-    margin: 0 !important;
+.MuiDateCalendar-root {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
 }
 
-.MuiDayCalendar-header{
-    gap: 20px;
+.MuiDayCalendar-header {
+  gap: 20px;
 }
 
-.MuiDayCalendar-weekContainer{
-    gap: 20px;
+.MuiDayCalendar-weekContainer {
+  gap: 20px;
+}
+
+.custom-calendar-day {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Present */
+.custom-calendar-day.attendance-present {
+  background: #20ad9b;
+  color: #fff;
+}
+
+.custom-calendar-day.attendance-present:hover {
+  background: #20ad9b;
+}
+
+/* Half Day */
+.custom-calendar-day.attendance-half-day {
+  background: #ffc62b;
+  color: #fff;
+}
+
+.custom-calendar-day.attendance-half-day:hover {
+  background: #ffc62b;
+}
+
+/* Absent */
+.custom-calendar-day.attendance-absent {
+  background: #ff3b3b;
+  color: #fff;
+}
+
+.custom-calendar-day.attendance-absent:hover {
+  background: #ff3b3b;
+}
+
+/* TODAY */
+.custom-calendar-day.today-date {
+  border: 3px solid #4d89f8;
+  font-weight: 700;
+}
+
+/* Today without attendance */
+.custom-calendar-day.today-date:not(
+    .attendance-present,
+    .attendance-half-day,
+    .attendance-absent
+  ) {
+  background: #4d89f8;
+  color: #fff;
+}
+
+/* Outside current month */
+.custom-calendar-day.outside-month {
+  opacity: 0.35;
 }
