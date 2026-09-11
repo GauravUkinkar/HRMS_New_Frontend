@@ -515,7 +515,11 @@ const AdminDash = () => {
 
   const displayedNotifications = showUnread
     ? unreadNotifications
-    : notifications;
+    : [...notifications].sort((a, b) => {
+      // Unread first
+      if (a.isRead === b.isRead) return 0;
+      return a.isRead ? 1 : -1;
+    });
 
   const stripHtml = (html = "") => {
     const temp = document.createElement("div");
@@ -547,7 +551,7 @@ const AdminDash = () => {
       setNotificationLoader(true);
 
       const response = await axios.get(
-        `${BASE_URL_USER}Notification/AdminNotifications`,
+        `${BASE_URL_USER}Notification/getMyNotifications`,
         {
           withCredentials: true,
         }
@@ -569,7 +573,7 @@ const AdminDash = () => {
       setNotificationCountLoader(true);
 
       const response = await axios.get(
-        `${BASE_URL_USER}Notification/my/count`,
+        `${BASE_URL_USER}Notification/my/UnreadCount`,
         {
           withCredentials: true,
         }
@@ -594,7 +598,7 @@ const AdminDash = () => {
       setNotificationLoader(true);
 
       const response = await axios.get(
-        `${BASE_URL_USER}Notification/my/unread`,
+        `${BASE_URL_USER}Notification/my/UnreadNotifications`,
         {
           withCredentials: true,
         }
@@ -616,7 +620,7 @@ const AdminDash = () => {
   const markNotificationAsRead = async (notificationId) => {
     try {
       await axios.put(
-        `${BASE_URL_USER}Notification/${notificationId}/read`,
+        `${BASE_URL_USER}Notification/${notificationId}/markAsRead`,
         {},
         {
           withCredentials: true,
@@ -639,21 +643,36 @@ const AdminDash = () => {
   };
 
   //Birthday Wish API Integration
-  const [birthday, setBirthday] = useState();
+  // Birthday API Integration
+  const [birthday, setBirthday] = useState([]);
+  const [birthdayLoader, setBirthdayLoader] = useState(false);
+
   const getMonthBirthday = async () => {
     try {
-      const res = await axios.get(`${BASE_URL_USER}AuthController/birthdays?month=jan`,
+      setBirthdayLoader(true);
+
+      const currentMonth = new Date()
+        .toLocaleString("en-US", { month: "short" })
+        .toLowerCase();
+
+      const res = await axios.get(
+        `${BASE_URL_USER}AuthController/birthdays?month=${currentMonth}`,
         {
           withCredentials: true,
         }
       );
-      console.log(res.data, "jlkfdskjdfsjkldsfkjlkjlfdsklklfdkjlsd")
-      setBirthday(res.data);
-    } catch (error) {
-      console.log(error);
 
+      console.log("MONTH BIRTHDAY API:", res.data);
+
+      setBirthday(res?.data?.data || []);
+
+    } catch (error) {
+      console.error("Birthday API Error:", error);
+      setBirthday([]);
+    } finally {
+      setBirthdayLoader(false);
     }
-  }
+  };
   useEffect(() => {
     getEmployeeData();
     getAllLeaves();
@@ -980,6 +999,7 @@ const AdminDash = () => {
                     rowKey="key"
                     bordered={false}
                     size="small"
+                    scroll={{ x: "max-content" }}
                     rowClassName={(_, index) =>
                       index % 2 === 0
                         ? "table-row-light"
@@ -1117,12 +1137,19 @@ const AdminDash = () => {
 
             <div className="middle-box2">
               <div className="notification-header">
-                <div className="notification-title">
-
+                <div
+                  className="notification-title"
+                  onClick={() => {
+                    setShowUnread(false);
+                    getNotifications();
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
                   <span>Notifications</span>
                 </div>
 
-                <div className="notification-count"
+                <div
+                  className="notification-count"
                   onClick={() => {
                     getUnreadNotifications();
                     setShowUnread(true);
@@ -1274,59 +1301,68 @@ const AdminDash = () => {
               {/* Birthday List */}
               <div className="birthday-list">
 
-                {birthdayEmployees.map((employee) => (
+                {birthdayLoader ? (
 
-                  <div
-                    className="birthday-item"
-                    key={employee.id}
-                  >
-
-                    {/* Employee Avatar */}
-                    <div className="birthday-avatar">
-                      {employee.name
-                        .split(" ")
-                        .map((word) => word[0])
-                        .join("")
-                        .toUpperCase()}
-                    </div>
-
-
-                    {/* Employee Information */}
-                    <div className="birthday-info">
-
-                      <h4>
-                        {employee.name}
-                      </h4>
-
-                      <p>
-                        {employee.designation}
-                      </p>
-
-                    </div>
-
-
-                    {/* Birthday Date */}
-                    <div className="birthday-date">
-                      {employee.birthday}
-                    </div>
-
-
-                    {/* Wish Button */}
-                    <button
-                      className="wish-button"
-                      onClick={() => {
-                        console.log(
-                          `Wishing ${employee.name} Happy Birthday!`
-                        );
-                      }}
-                    >
-                      <LuSend />
-                      Wish
-                    </button>
-
+                  <div className="birthday-loading">
+                    Loading birthdays...
                   </div>
 
-                ))}
+                ) : birthday.length === 0 ? (
+
+                  <div className="birthday-empty">
+                    No birthdays this month
+                  </div>
+
+                ) : (
+
+                  birthday.map((employee, index) => (
+
+                    <div
+                      className="birthday-item"
+                      key={index}
+                    >
+
+                      {/* Employee Avatar */}
+                      <div className="birthday-avatar">
+                        {(employee?.employeeName || "N/A")
+                          .split(" ")
+                          .map((word) => word[0])
+                          .join("")
+                          .toUpperCase()}
+                      </div>
+
+                      {/* Employee Information */}
+                      <div className="birthday-info">
+
+                        <h4>
+                          {employee?.employeeName || "N/A"}
+                        </h4>
+
+                      </div>
+
+                      {/* Birthday Date */}
+                      <div className="birthday-date">
+                        {employee?.date || "--"}
+                      </div>
+
+                      {/* Wish Button */}
+                      <button
+                        className="wish-button"
+                        onClick={() => {
+                          console.log(
+                            `Wishing ${employee?.employeeName} Happy Birthday!`
+                          );
+                        }}
+                      >
+                        <LuSend />
+                        Wish
+                      </button>
+
+                    </div>
+
+                  ))
+
+                )}
 
               </div>
 
