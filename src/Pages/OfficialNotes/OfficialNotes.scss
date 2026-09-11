@@ -470,18 +470,15 @@
 
   .close-btn {
     position: absolute;
-
     top: 50%;
     right: 16px;
-
     width: 32px;
     height: 32px;
-
     display: flex;
     align-items: center;
     justify-content: center;
 
-    transform: translateY(-50%);
+    // transform: translateY(-50%);
 
     border: none;
     border-radius: 5px;
@@ -493,14 +490,14 @@
 
     cursor: pointer;
 
-    &:hover {
-      background: #f3f4f6 !important;
-      color: #111827 !important;
-    }
+    // &:hover {
+    //   background: #f3f4f6 !important;
+    //   color: #111827 !important;
+    // }
 
-    svg {
-      font-size: 17px;
-    }
+    // svg {
+    //   font-size: 17px;
+    // }
   }
 
   // ==========================================================
@@ -874,6 +871,11 @@
 // NOTE DETAILS VIEW POPUP
 // ============================================================
 
+// ============================================================
+// NOTE DETAILS VIEW POPUP
+// LIGHT TEAL DESIGN
+// ============================================================
+
 .note-details-modal-overlay {
   position: fixed;
   inset: 0;
@@ -884,124 +886,134 @@
   align-items: center;
   justify-content: center;
 
-  padding: 20px;
+  padding: 24px;
 
-  background: rgba(0, 0, 0, 0.68);
+  // Light overlay instead of black
+  background: rgba(235, 245, 247, 0.72);
 
   backdrop-filter: blur(2px);
 }
 
 // ============================================================
-// POPUP
+// MAIN POPUP
 // ============================================================
 
 .note-details-modal {
   width: 100%;
-  max-width: 640px;
+  max-width: 1060px;
 
-  max-height: 88vh;
+  max-height: 90vh;
 
   display: flex;
   flex-direction: column;
 
   overflow: hidden;
 
-  background: #111111;
-  color: #ffffff;
+  background: #ffffff;
 
-  border: 1px solid #e8e8e8;
-  border-radius: 2px;
+  color: #173447;
+
+  border: 2px solid #b5e7ea;
+
+  border-radius: 7px;
 
   box-shadow:
-    0 22px 55px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.04);
+    0 10px 30px rgba(44, 101, 115, 0.12),
+    0 2px 8px rgba(44, 101, 115, 0.06);
 
   font-family: inherit;
 }
 
 // ============================================================
-// POPUP HEADER
+// HEADER
 // ============================================================
 
 .note-details-modal-header {
-  min-height: 48px;
+  min-height: 68px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 12px 0 16px;
+  padding: 0 24px;
 
-  border-bottom: 1px solid #8d8d8d;
+  background: #eaf8f8;
 
-  background: #151515;
+  border-bottom: 2px solid #d3eff0;
 
   h2 {
     margin: 0;
 
-    color: #ffffff;
+    color: #173447;
 
-    font-size: 13px;
+    font-size: 28px;
     font-weight: 700;
 
-    letter-spacing: 0.1px;
+    line-height: 1.2;
   }
 }
 
 // ============================================================
-// TOP RIGHT X BUTTON
+// HEADER CLOSE X
 // ============================================================
 
 .note-details-close-icon {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
 
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
 
   padding: 0;
 
   border: none;
-  border-radius: 2px;
+  border-radius: 5px;
 
   background: transparent;
 
-  color: #ffffff;
+  color: #173447;
 
   font-family: Arial, sans-serif;
 
-  font-size: 17px;
+  font-size: 22px;
   font-weight: 400;
 
   line-height: 1;
 
   cursor: pointer;
 
+  transition: all 0.2s ease;
+
   &:hover {
-    background: #292929;
+    background: #d9f1f2;
+    color: #006f78;
   }
 }
 
 // ============================================================
-// POPUP BODY
+// BODY
 // ============================================================
 
 .note-details-modal-body {
   flex: 1;
 
-  padding: 14px 16px 8px;
+  min-height: 0;
+
+  padding: 24px 26px;
 
   overflow-y: auto;
 
   display: flex;
   flex-direction: column;
 
-  gap: 22px;
+  gap: 26px;
+
+  background: #ffffff;
 
   scrollbar-width: thin;
 
-  scrollbar-color: #666 #111111;
+  scrollbar-color: #a8dfe2 #ffffff;
 }
 
 // ============================================================
@@ -1019,25 +1031,23 @@
 .note-details-label {
   margin-bottom: 8px;
 
-  color: #ffffff;
+  color: #5f8299;
 
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
 
-  line-height: 1.2;
+  line-height: 1.25;
 
-  letter-spacing: 0.4px;
+  letter-spacing: 0;
 
   text-transform: uppercase;
 }
 
-// Posted On should not be uppercase
+// Posted on should NOT be uppercase
 
 .posted-field {
   .note-details-label {
     text-transform: none;
-
-    letter-spacing: 0;
   }
 }
 
@@ -1046,10 +1056,10 @@
 // ============================================================
 
 .note-details-value {
-  color: #ffffff;
+  color: #173447;
 
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 21px;
+  font-weight: 500;
 
   line-height: 1.5;
 }
@@ -1059,10 +1069,10 @@
 // ============================================================
 
 .note-details-title-value {
-  color: #ffffff;
+  color: #173447;
 
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 500;
 
   line-height: 1.5;
 
@@ -1074,23 +1084,23 @@
 // ============================================================
 
 .note-details-message {
-  min-height: 68px;
+  min-height: 116px;
 
-  max-height: 220px;
+  max-height: 260px;
 
   overflow-y: auto;
 
-  padding: 12px;
+  padding: 20px;
 
-  border: 1px solid #ffffff;
+  border: 2px solid #b5e7ea;
 
-  border-radius: 0;
+  border-radius: 7px;
 
-  background: #111111;
+  background: #eefafa;
 
-  color: #ffffff;
+  color: #173447;
 
-  font-size: 12px;
+  font-size: 18px;
 
   font-weight: 500;
 
@@ -1100,10 +1110,10 @@
 
   scrollbar-width: thin;
 
-  scrollbar-color: #777 #111111;
+  scrollbar-color: #9ed8dc #eefafa;
 
   p {
-    margin: 0 0 8px;
+    margin: 0 0 10px;
 
     &:last-child {
       margin-bottom: 0;
@@ -1112,23 +1122,23 @@
 
   ul,
   ol {
-    margin: 0 0 8px;
+    margin: 0 0 10px;
 
-    padding-left: 20px;
+    padding-left: 22px;
   }
 
   a {
-    color: #ffffff;
+    color: #007982;
 
     text-decoration: underline;
   }
 
   blockquote {
-    margin: 8px 0;
+    margin: 10px 0;
 
-    padding-left: 10px;
+    padding-left: 12px;
 
-    border-left: 2px solid #ffffff;
+    border-left: 3px solid #9ddfe2;
   }
 }
 
@@ -1137,16 +1147,16 @@
 // ============================================================
 
 .note-details-recipients {
-  min-height: 30px;
+  min-height: 44px;
 
   display: flex;
   align-items: center;
 
   flex-wrap: wrap;
 
-  gap: 6px;
+  gap: 8px;
 
-  color: #ffffff;
+  color: #173447;
 }
 
 // ============================================================
@@ -1157,20 +1167,21 @@
   display: inline-flex;
 
   align-items: center;
+  justify-content: center;
 
-  min-height: 24px;
+  min-height: 44px;
 
-  padding: 3px 7px;
+  padding: 6px 22px;
 
-  border: 1px solid #ffffff;
+  border: 1px solid #c6ecee;
 
-  border-radius: 1px;
+  border-radius: 12px;
 
-  background: #151515;
+  background: #e5f7f7;
 
-  color: #ffffff;
+  color: #087782;
 
-  font-size: 12px;
+  font-size: 18px;
 
   font-weight: 600;
 
@@ -1182,19 +1193,23 @@
 // ============================================================
 
 .note-recipient-more {
-  color: #ffffff;
+  display: inline-flex;
 
-  font-size: 12px;
+  align-items: center;
+
+  color: #087782;
+
+  font-size: 18px;
 
   font-weight: 700;
 }
 
 // ============================================================
-// POPUP FOOTER
+// FOOTER
 // ============================================================
 
 .note-details-modal-footer {
-  min-height: 48px;
+  min-height: 84px;
 
   display: flex;
 
@@ -1202,11 +1217,11 @@
 
   justify-content: flex-end;
 
-  padding: 8px 16px;
+  padding: 14px 26px;
 
-  border-top: 1px solid #8d8d8d;
+  border-top: 2px solid #d3eff0;
 
-  background: #151515;
+  background: #ffffff;
 }
 
 // ============================================================
@@ -1214,24 +1229,112 @@
 // ============================================================
 
 .note-details-close-btn {
-  padding: 5px 8px;
+  min-width: 124px;
+  min-height: 52px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 22px;
 
   border: none;
 
-  background: transparent;
+  border-radius: 12px;
 
-  color: #ffffff;
+  background: #dff5f5;
+
+  color: #007782;
 
   font-family: inherit;
 
-  font-size: 12px;
+  font-size: 18px;
 
-  font-weight: 700;
+  font-weight: 600;
 
   cursor: pointer;
 
+  transition: all 0.2s ease;
+
   &:hover {
-    text-decoration: underline;
+    background: #cceff0;
+
+    color: #00666e;
+  }
+}
+
+// ============================================================
+// RESPONSIVE
+// ============================================================
+
+@media (max-width: 768px) {
+
+  .note-details-modal-overlay {
+    padding: 12px;
+  }
+
+  .note-details-modal {
+    max-height: 94vh;
+
+    border-radius: 7px;
+  }
+
+  .note-details-modal-header {
+    min-height: 58px;
+
+    padding: 0 16px;
+
+    h2 {
+      font-size: 22px;
+    }
+  }
+
+  .note-details-modal-body {
+    padding: 20px 16px;
+
+    gap: 22px;
+  }
+
+  .note-details-label {
+    font-size: 15px;
+  }
+
+  .note-details-value {
+    font-size: 17px;
+  }
+
+  .note-details-title-value {
+    font-size: 17px;
+  }
+
+  .note-details-message {
+    min-height: 100px;
+
+    padding: 15px;
+
+    font-size: 16px;
+  }
+
+  .note-recipient-chip {
+    min-height: 38px;
+
+    padding: 5px 14px;
+
+    font-size: 15px;
+  }
+
+  .note-details-modal-footer {
+    min-height: 70px;
+
+    padding: 10px 16px;
+  }
+
+  .note-details-close-btn {
+    min-width: 100px;
+    min-height: 44px;
+
+    font-size: 16px;
   }
 }
 
