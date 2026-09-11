@@ -3,6 +3,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 import { FaPlus } from "react-icons/fa";
 import {
   MdEdit,
@@ -71,10 +72,17 @@ const OfficialNotes = () => {
   const [noteCreatedAt, setNoteCreatedAt] = useState("");
 
   // ==========================================================
-  // NOTE VIEW STATE
-  // ==========================================================
+// NOTE VIEW STATE
+// ==========================================================
 
-  const [expandedNoteId, setExpandedNoteId] = useState(null);
+const [expandedNoteId, setExpandedNoteId] = useState(null);
+
+// ==========================================================
+// NOTE DETAILS POPUP STATE
+// ==========================================================
+
+const [showNoteDetailsModal, setShowNoteDetailsModal] = useState(false);
+const [selectedNote, setSelectedNote] = useState(null);
 
   // ==========================================================
   // REMOVE HTML
@@ -489,14 +497,16 @@ setNotes(formattedNotes);
     }
   };
 
-  // ==========================================================
-  // VIEW / HIDE NOTE
-  // ==========================================================
+ const handleToggleNote = (note) => {
+  setSelectedNote(note);
+  setShowNoteDetailsModal(true);
+  setExpandedNoteId(null);
+};
 
-  const handleToggleNote = (noteId) => {
-    setExpandedNoteId((previousId) => (previousId === noteId ? null : noteId));
-  };
-
+const handleCloseNoteDetails = () => {
+  setShowNoteDetailsModal(false);
+  setSelectedNote(null);
+};
   // ==========================================================
   // CHECK EDIT ALLOWED
   // ==========================================================
@@ -1561,7 +1571,7 @@ await getOfficialNotes();
                             className={`action-btn view-btn ${
                               isExpanded ? "active" : ""
                             }`}
-                            onClick={() => handleToggleNote(note.notesId)}
+                            onClick={() => handleToggleNote(note)}
                             title={
                               isExpanded ? "Close Full Note" : "View Full Note"
                             }
@@ -1681,6 +1691,164 @@ await getOfficialNotes();
           )}
         </div>
       </div>
+
+
+      {/* ==================================================
+    NOTE DETAILS POPUP
+================================================== */}
+
+{showNoteDetailsModal && selectedNote && (
+  <div
+    className="note-details-modal-overlay"
+    onClick={handleCloseNoteDetails}
+  >
+    <div
+      className="note-details-modal"
+      onClick={(event) => event.stopPropagation()}
+    >
+      {/* ==================================================
+          POPUP HEADER
+      ================================================== */}
+
+      <div className="note-details-modal-header">
+        <h2>Note Details</h2>
+
+        <button
+          type="button"
+          className="note-details-close-icon"
+          onClick={handleCloseNoteDetails}
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* ==================================================
+          POPUP BODY
+      ================================================== */}
+
+      <div className="note-details-modal-body">
+
+        {/* POSTED ON */}
+
+        <div className="note-details-field posted-field">
+          <div className="note-details-label">
+            Posted on
+          </div>
+
+          <div className="note-details-value">
+            {formatDate(selectedNote.createdAt)}
+          </div>
+        </div>
+
+        {/* TITLE */}
+
+        <div className="note-details-field">
+          <div className="note-details-label">
+            TITLE
+          </div>
+
+          <div className="note-details-title-value">
+            {selectedNote.title || "-"}
+          </div>
+        </div>
+
+        {/* MESSAGE */}
+
+        <div className="note-details-field">
+          <div className="note-details-label">
+            MESSAGE
+          </div>
+
+          <div
+            className="note-details-message"
+            dangerouslySetInnerHTML={{
+              __html: selectedNote.discription || "",
+            }}
+          />
+        </div>
+
+        {/* SEND TO */}
+
+        <div className="note-details-field">
+          <div className="note-details-label">
+            SEND TO
+          </div>
+
+          <div className="note-details-recipients">
+            {(() => {
+              const recipientIds = selectedNote.recipientUids || [];
+
+              if (recipientIds.length === 0) {
+                return (
+                  <span className="note-recipient-chip">
+                    No recipients
+                  </span>
+                );
+              }
+
+              const recipientNames = recipientIds.map(
+                (recipientId) => {
+                  const employee = employees.find(
+                    (item) =>
+                      String(item.employeeId) ===
+                      String(recipientId),
+                  );
+
+                  return (
+                    employee?.employeeName ||
+                    `Employee ${recipientId}`
+                  );
+                },
+              );
+
+              const visibleRecipients =
+                recipientNames.slice(0, 3);
+
+              const remainingCount =
+                recipientNames.length - visibleRecipients.length;
+
+              return (
+                <>
+                  {visibleRecipients.map(
+                    (name, index) => (
+                      <span
+                        key={`${name}-${index}`}
+                        className="note-recipient-chip"
+                      >
+                        {name}
+                      </span>
+                    ),
+                  )}
+
+                  {remainingCount > 0 && (
+                    <span className="note-recipient-more">
+                      +{remainingCount}
+                    </span>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      </div>
+
+      {/* ==================================================
+          POPUP FOOTER
+      ================================================== */}
+
+      <div className="note-details-modal-footer">
+        <button
+          type="button"
+          className="note-details-close-btn"
+          onClick={handleCloseNoteDetails}
+        >
+          [ Close ]
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </MainPanel>
   );
 };
