@@ -369,21 +369,34 @@ const EmployeeDash = () => {
     if (!notification?.isRead) {
       await markNotificationAsRead(notification.id);
     }
+    setShowUnread(false);
   };
 
   const getNotifications = async () => {
     try {
       setNotificationLoader(true);
 
-      const response = await axios.get(`${BASE_URL_USER}Notification/my`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${BASE_URL_USER}Notification/getMyNotifications`,
+        {
+          withCredentials: true,
+        },
+      );
 
       console.log("NOTIFICATION API RESPONSE:", response.data);
 
-      setNotifications(response?.data || []);
+      const notificationData = Array.isArray(response.data)
+        ? response.data.map((item) => item?.data).filter(Boolean)
+        : [];
+
+      console.log("NOTIFICATION DATA:", notificationData);
+
+      setNotifications(notificationData);
     } catch (error) {
       console.error("Notification API Error:", error);
+      console.error("Status:", error?.response?.status);
+      console.error("Response:", error?.response?.data);
+
       setNotifications([]);
     } finally {
       setNotificationLoader(false);
@@ -395,7 +408,7 @@ const EmployeeDash = () => {
       setNotificationCountLoader(true);
 
       const response = await axios.get(
-        `${BASE_URL_USER}Notification/my/count`,
+        `${BASE_URL_USER}Notification/my/UnreadCount`,
         {
           withCredentials: true,
         },
@@ -419,18 +432,27 @@ const EmployeeDash = () => {
       setNotificationLoader(true);
 
       const response = await axios.get(
-        `${BASE_URL_USER}Notification/my/unread`,
+        `${BASE_URL_USER}Notification/my/UnreadNotifications`,
         {
           withCredentials: true,
         },
       );
 
-      console.log("UNREAD NOTIFICATIONS:", response.data);
+      console.log("UNREAD NOTIFICATIONS API RESPONSE:", response.data);
 
-      setUnreadNotifications(response?.data || []);
+      const notificationData = Array.isArray(response.data)
+        ? response.data.map((item) => item?.data).filter(Boolean)
+        : [];
+
+      console.log("UNREAD NOTIFICATION DATA:", notificationData);
+
+      setUnreadNotifications(notificationData);
       setShowUnread(true);
     } catch (error) {
       console.error("Unread Notification API Error:", error);
+      console.error("Status:", error?.response?.status);
+      console.error("Response:", error?.response?.data);
+
       setUnreadNotifications([]);
     } finally {
       setNotificationLoader(false);
@@ -440,7 +462,7 @@ const EmployeeDash = () => {
   const markNotificationAsRead = async (notificationId) => {
     try {
       await axios.put(
-        `${BASE_URL_USER}Notification/${notificationId}/read`,
+        `${BASE_URL_USER}Notification/${notificationId}/markAsRead`,
         {},
         {
           withCredentials: true,
@@ -449,16 +471,12 @@ const EmployeeDash = () => {
 
       console.log("Notification marked as read:", notificationId);
 
-      // Remove it from unread list
+      // Remove from unread notifications
       setUnreadNotifications((prev) =>
         prev.filter((notification) => notification.id !== notificationId),
       );
 
-      // Decrease count ONLY because this notification
-      // was unread when it was clicked
-      setNotificationCount((prev) => Math.max(0, prev - 1));
-
-      // Also update the notification in the main list
+      // Update notification in all notifications
       setNotifications((prev) =>
         prev.map((notification) =>
           notification.id === notificationId
@@ -466,6 +484,9 @@ const EmployeeDash = () => {
             : notification,
         ),
       );
+
+      // Decrease unread count
+      setNotificationCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
       console.error("Mark Notification Read API Error:", error);
     }
@@ -658,7 +679,7 @@ const EmployeeDash = () => {
                     <span>Today's Attendance</span>
                   </div>
 
-                  <Link to="/attendance" className="view-all">
+                  <Link to="/empAttendance" className="view-all">
                     View All →
                   </Link>
                 </div>
@@ -747,9 +768,7 @@ const EmployeeDash = () => {
                   <div class="buttons">
                     <button className="btn1">Punch Out</button>
                     <button className="btn1">LogIn to CRM</button>
-
                   </div>
-                  
                 </div>
               </div>
             </div>
@@ -763,7 +782,7 @@ const EmployeeDash = () => {
                     <span>CRM Entries</span>
                   </div>
 
-                  <Link to="/crm" className="view-all">
+                  <Link to="https://newcrm.diwise.in/" className="view-all">
                     View All →
                   </Link>
                 </div>
@@ -930,7 +949,14 @@ const EmployeeDash = () => {
               <div className="box4-right">
                 <div className="notification-header">
                   <div className="notification-title">
-                    <span>Notifications</span>
+                    <span
+                      onClick={() => {
+                        setShowUnread(false);
+                        getNotifications();
+                      }}
+                    >
+                      Notifications
+                    </span>
                   </div>
 
                   <div
@@ -1143,6 +1169,10 @@ const EmployeeDash = () => {
                 <div className="legend-item">
                   <span className="dot half-day"></span>
                   <span>Half Day</span>
+                </div>
+                <div className="legend-item">
+                  <span className="dot today"></span>
+                  <span>Today</span>
                 </div>
               </div>
             </div>

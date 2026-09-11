@@ -956,125 +956,126 @@
         align-items: center;
         flex-direction: column;
         gap: 10px;
-        .left {
+        .left{
           width: 50%;
           .clock {
-            position: relative;
-            width: 180px;
-            height: 180px;
-            border: 2px solid #077c87;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border: 2px solid #077c87;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-            /* Numbers */
-            .clock-number {
-              position: absolute;
-              left: 40%;
-              top: 40%;
-              width: 20px;
-              height: 20px;
-              margin-left: -10px;
-              margin-top: -10px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              color: #077c87;
-              font-size: 16px;
-              font-weight: 600;
-              transform-origin: 10px 10px;
-            }
+  /* Numbers */
+  .clock-number {
+    position: absolute;
+    left: 40%;
+    top: 40%;
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #077c87;
+    font-size: 16px;
+    font-weight: 600;
+    transform-origin: 10px 10px;
+  }
 
-            /* Hour hand */
-            .hour-hand {
-              position: absolute;
+  /* Hour hand */
+  .hour-hand {
+    position: absolute;
 
-              width: 5px;
-              height: 55px;
+    width: 5px;
+    height: 55px;
 
-              background: #077c87;
+    background: #077c87;
 
-              bottom: 50%;
-              left: calc(50% - 2.5px);
+    bottom: 50%;
+    left: calc(50% - 2.5px);
 
-              transform-origin: bottom;
-              transform: rotate(145deg);
+    transform-origin: bottom;
+    transform: rotate(145deg);
 
-              border-radius: 5px;
-            }
+    border-radius: 5px;
+  }
 
-            /* Minute hand */
-            .minute-hand {
-              position: absolute;
+  /* Minute hand */
+  .minute-hand {
+    position: absolute;
 
-              width: 3px;
-              height: 72px;
+    width: 3px;
+    height: 72px;
 
-              background: #077c87;
+    background: #077c87;
 
-              bottom: 50%;
-              left: calc(50% - 1.5px);
+    bottom: 50%;
+    left: calc(50% - 1.5px);
 
-              transform-origin: bottom;
-              transform: rotate(290deg);
+    transform-origin: bottom;
+    transform: rotate(290deg);
 
-              border-radius: 5px;
-            }
+    border-radius: 5px;
+  }
 
-            /* Second hand */
-            .second-hand {
-              position: absolute;
+  /* Second hand */
+  .second-hand {
+    position: absolute;
 
-              width: 2px;
-              height: 78px;
+    width: 2px;
+    height: 78px;
 
-              background: #5de0ef;
+    background: #5de0ef;
 
-              bottom: 50%;
-              left: 50%;
+    bottom: 50%;
+    left: 50%;
 
-              transform-origin: bottom;
-              transform: rotate(215deg);
-            }
+    transform-origin: bottom;
+    transform: rotate(215deg);
+  }
 
-            /* Center */
-            .clock-center {
-              position: absolute;
+  /* Center */
+  .clock-center {
+    position: absolute;
 
-              width: 12px;
-              height: 12px;
+    width: 12px;
+    height: 12px;
 
-              background: #077c87;
-              border-radius: 50%;
+    background: #077c87;
+    border-radius: 50%;
 
-              z-index: 5;
-            }
-          }
+    z-index: 5;
+  }
+}
         }
-        .right {
+        .right{
           display: flex;
           flex-direction: column;
           text-align: center;
-          gap: 14px;
-          background-color: #e4f6f7;
+          gap: 14px;background-color: #E4F6F7;
           width: 100%;
           padding: 10px;
           border: 1px solid var(--accent2);
           align-items: center;
           border-radius: 5px;
-          h3 {
-            background-color: #6ecacf;
+          h3{
+            background-color: white;
+            color: var(--accent);
             width: fit-content;
             padding: 10px;
             border-radius: 5px;
             border: 1px solid var(--accent2);
+            
           }
-          .buttons {
+          .buttons{
             display: flex;
             gap: 20px;
             // padding-top: 20px;
-            .btn1 {
+            .btn1{
               background-color: var(--accent2);
               color: white;
               padding: 10px 5px;
@@ -1083,13 +1084,14 @@
               border-radius: 5px;
               font-size: 14px;
               font-weight: 540;
-              &:hover {
+              &:hover{
                 transform: translateY(-5px);
                 transition: var(--trans);
               }
             }
           }
         }
+
       }
     }
 
@@ -1282,6 +1284,7 @@
               font-size: 17px;
               font-weight: 700;
               color: #172033;
+              cursor: pointer;
             }
           }
 
@@ -1300,6 +1303,7 @@
               padding: 5px;
               position: relative;
               z-index: 1;
+              cursor: pointer;
             }
 
             .count {
@@ -1307,7 +1311,7 @@
               top: -2px;
               right: -2px;
               z-index: 2;
-
+cursor: pointer;
               min-width: 16px;
               height: 16px;
               padding: 0 4px;
@@ -1408,58 +1412,83 @@
         // ITEM
         // =========================
 
-        .notification-item {
-          display: flex;
-          gap: 10px;
+.notification-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  background: #f7f9fa;
+  border-radius: 7px;
+  transition: all 0.2s ease;
+  cursor: pointer;
 
-          padding: 10px;
+  // READ notification
+  &.read {
+    background: #ffffff;
 
-          background: #f7f9fa;
+    &:hover {
+      background: #caedf0;
+    }
+  }
 
-          border-radius: 7px;
+  // UNREAD notification
+  &.unread {
+    background: #e5e7eb;
+    border-left: 3px solid var(--accent2);
 
-          transition: 0.2s ease;
+    &:hover {
+      background: #d1d5db;
+    }
+  }
 
-          &:hover {
-            background: #eef8f9;
-          }
+  .notification-icon {
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #077c87;
+    color: #fff;
 
-          .notification-icon {
-            width: 25px;
-            height: 25px;
+    svg {
+      font-size: 14px;
+    }
+  }
 
-            flex-shrink: 0;
+  .notification-content {
+    flex: 1;
+    min-width: 0;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+    h4 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #172033;
+    }
 
-            border-radius: 50%;
+    p {
+      margin: 3px 0;
+      font-size: 10px;
+      line-height: 1.4;
+      color: #64748b;
+    }
 
-            background: #077c87;
-            color: #fff;
-            svg {
-              font-size: 14px;
-            }
-          }
-          .notification-content {
-            h4 {
-              font-size: 13px;
-              font-weight: 600;
-              color: #172033;
-            }
-            p {
-              font-size: 10px;
-              line-height: 1.4;
-              color: #64748b;
-            }
+    .notification-date {
+      font-size: 9px;
+      color: #94a3b8;
+    }
+  }
 
-            .notification-date {
-              font-size: 9px;
-              color: #94a3b8;
-            }
-          }
-        }
+  .notification-dot {
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    margin-top: 5px;
+    border-radius: 50%;
+    background:var(--accent2);
+  }
+}
         .notification-list::-webkit-scrollbar {
           width: 4px;
         }
@@ -1479,485 +1508,497 @@
   }
 
   //main right side data is here
-  .right-side {
-    width: 20%;
-    height: 100%;
+.right-side {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  min-height: 0;
+
+  // =========================
+  // LEAVE MANAGEMENT
+  // =========================
+  .top-box1 {
+    width: 100%;
+    height: 250px;
+    flex-shrink: 0;
+    padding: 15px;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    min-width: 0;
-    min-height: 0;
+    overflow: hidden;
 
-    // =========================
-    // LEAVE MANAGEMENT
-    // =========================
-    .top-box1 {
+    .leave-header {
       width: 100%;
-      height: 250px;
-      flex-shrink: 0;
-      padding: 15px;
-      box-sizing: border-box;
-      background: #fff;
-      border-radius: 5px;
-      box-shadow: var(--shadow);
+      height: 40px;
       display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      align-items: center;
+      justify-content: space-between;
 
-      .leave-header {
-        width: 100%;
-        height: 40px;
+      .leave-title {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 10px;
 
-        .leave-title {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-
-          svg {
-            font-size: 20px;
-            color: #003a42;
-          }
-
-          span {
-            font-size: 17px;
-            font-weight: 700;
-            color: #222;
-            white-space: nowrap;
-          }
+        svg {
+          font-size: 20px;
+          color: #003a42;
         }
 
-        .view-all {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 5px 18px;
-          border: 1px solid #003a42;
-          border-radius: 5px;
-          background: rgba(0, 142, 137, 0.08);
-          color: #003a42;
-          font-size: 13px;
-          font-weight: 600;
-          text-decoration: none;
-          cursor: pointer;
-          transition: 0.2s ease;
-          &:hover {
-            background: #003a42;
-            color: #fff;
-          }
+        span {
+          font-size: 17px;
+          font-weight: 700;
+          color: #222;
+          white-space: nowrap;
         }
       }
 
-      .leave-content {
-        width: 100%;
+      .view-all {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        .leave-chart {
-          position: relative;
-          width: 55%;
-          height: 190px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          .chart-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-
-            strong {
-              font-size: 24px;
-
-              color: #222;
-            }
-
-            span {
-              margin-top: 5px;
-
-              font-size: 10px;
-              color: #777;
-            }
-          }
+        justify-content: center;
+        padding: 5px 18px;
+        border: 1px solid #003a42;
+        border-radius: 5px;
+        background: rgba(0, 142, 137, 0.08);
+        color: #003a42;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+        &:hover {
+          background: #003a42;
+          color: #fff;
         }
+      }
+    }
 
-        .leave-legend {
-          width: 45%;
-          box-sizing: border-box;
+    .leave-content {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .leave-chart {
+        position: relative;
+        width: 55%;
+        height: 190px;
+display: flex;
+        align-items: center;
+        justify-content: center;
 
+        .chart-center {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
           display: flex;
           flex-direction: column;
-          gap: 16px;
-
-          .legend-row {
-            width: 100%;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            font-size: 12px;
-            color: #333;
-
-            .legend-left {
-              display: flex;
-              align-items: center;
-              gap: 7px;
-
-              min-width: 0;
-
-              span:last-child {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-              }
-            }
-
-            .legend-dot {
-              width: 12px;
-              height: 12px;
-              min-width: 12px;
-
-              border-radius: 50%;
-            }
-
-            strong {
-              margin-left: 8px;
-              font-size: 13px;
-              color: #222;
-            }
-          }
-        }
-      }
-    }
-
-    .middle-box2 {
-      width: 100%;
-      height: 430px;
-      flex-shrink: 0;
-
-      padding: 20px;
-      box-sizing: border-box;
-
-      background: #fff;
-      border-radius: 5px;
-      box-shadow: var(--shadow);
-
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-
-      .calendar-header {
-        width: 100%;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        padding-bottom: 14px;
-
-        border-bottom: 1px solid #f0f1f5;
-
-        .calendar-title {
-          display: flex;
           align-items: center;
-          gap: 12px;
+          justify-content: center;
+          pointer-events: none;
 
-          .calendar-icon {
-            width: 42px;
-            height: 42px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            border-radius: 11px;
-
-            background: linear-gradient(135deg, #20ad9b, #077c87);
-
-            box-shadow: 0 5px 12px rgba(32, 173, 155, 0.2);
-
-            svg {
-              font-size: 20px;
-              color: #fff;
-            }
-          }
-
-          h3 {
-            margin: 0;
-
-            font-size: 17px;
-            font-weight: 700;
-            color: #20242c;
-          }
-
-          p {
-            margin: 3px 0 0;
-
-            font-size: 11px;
-            color: #9ca3af;
-            font-weight: 500;
-          }
-        }
-      }
-
-      .calendar-body {
-        width: 100%;
-        background: #fafbfc;
-        border-radius: 12px;
-        border: 1px solid #f1f2f4;
-        padding: 10px;
-        box-sizing: border-box;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        > * {
-          width: 100%;
-          max-width: 100%;
-        }
-      }
-
-      .chart-legend {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        padding-top: 10px;
-
-        .legend-item {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 10px;
-          border-radius: 20px;
-          background: #f8f9fb;
-          border: 1px solid #eeeeee;
-          font-size: 11px;
-          color: #555b66;
-          font-weight: 600;
-        }
-
-        .dot {
-          width: 9px;
-          height: 9px;
-          border-radius: 50%;
-          display: inline-block;
-
-          &.present {
-            background: #20ad9b;
-          }
-
-          &.absent {
-            background: #ff3b3b;
-          }
-
-          &.half-day {
-            background: #ffc62b;
-          }
-        }
-      }
-    }
-
-    .last-box3 {
-      width: 100%;
-      min-height: 250px;
-
-      padding: 15px;
-      box-sizing: border-box;
-
-      background: #fff;
-
-      border-radius: 5px;
-      box-shadow: var(--shadow);
-
-      display: flex;
-      flex-direction: column;
-
-      overflow: hidden;
-
-      .birthday-header {
-        width: 100%;
-
-        flex-shrink: 0;
-
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        padding-bottom: 12px;
-
-        border-bottom: 1px solid #edf0f2;
-
-        .birthday-title {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-
-          svg {
-            font-size: 19px;
-            color: #077c87;
+          strong {
+            font-size: 24px;
+          
+            color: #222;
           }
 
           span {
-            font-size: 16px;
-            font-weight: 700;
-            color: #172033;
-            white-space: nowrap;
+            margin-top: 5px;
+
+            font-size: 10px;
+            color: #777;
+
+         
           }
         }
       }
 
-      .birthday-list {
-        width: 100%;
-
-        flex: 1;
-        min-height: 0;
+      .leave-legend {
+        width: 45%;
+        box-sizing: border-box;
 
         display: flex;
         flex-direction: column;
+        gap: 16px;
 
-        gap: 8px;
+        .legend-row {
+          width: 100%;
 
-        margin-top: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
 
-        overflow-y: auto;
-        overflow-x: hidden;
+          font-size: 12px;
+          color: #333;
+
+          .legend-left {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            min-width: 0;
+
+            span:last-child {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+
+          .legend-dot {
+            width: 12px;
+            height: 12px;
+            min-width: 12px;
+
+            border-radius: 50%;
+          }
+
+          strong {
+            margin-left: 8px;
+            font-size: 13px;
+            color: #222;
+          }
+        }
       }
+    }
+  }
 
-      .birthday-item {
-        width: 100%;
-        box-sizing: border-box;
 
+  .middle-box2 {
+    width: 100%;
+    height: 430px;
+    flex-shrink: 0;
+
+    padding: 20px;
+    box-sizing: border-box;
+
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .calendar-header {
+      width: 100%;
+     
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding-bottom: 14px;
+
+      border-bottom: 1px solid #f0f1f5;
+
+      .calendar-title {
         display: flex;
         align-items: center;
+        gap: 12px;
 
-        gap: 10px;
-
-        padding: 8px;
-
-        border-radius: 7px;
-
-        background: #f8fafb;
-
-        flex-shrink: 0;
-
-        transition: 0.2s ease;
-
-        &:hover {
-          background: #eef8f9;
-        }
-
-        .birthday-avatar {
-          width: 35px;
-          height: 35px;
-
-          flex-shrink: 0;
-
+        .calendar-icon {
+          width: 42px;
+          height: 42px;
           display: flex;
           align-items: center;
           justify-content: center;
 
-          border-radius: 50%;
+          border-radius: 11px;
 
-          background: #e8f7f8;
-          color: #077c87;
+          background: linear-gradient(
+            135deg,
+            #20ad9b,
+            #077c87
+          );
 
-          font-size: 10px;
+          box-shadow: 0 5px 12px rgba(32, 173, 155, 0.2);
+
+          svg {
+            font-size: 20px;
+            color: #fff;
+          }
+        }
+
+        h3 {
+          margin: 0;
+
+          font-size: 17px;
           font-weight: 700;
+          color: #20242c;
         }
 
-        .birthday-info {
-          flex: 1;
-          min-width: 0;
+        p {
+          margin: 3px 0 0;
 
-          h4 {
-            margin: 0;
+          font-size: 11px;
+          color: #9ca3af;
+          font-weight: 500;
+        }
+      }
+    }
 
-            font-size: 12px;
-            font-weight: 600;
-            color: #172033;
+    .calendar-body {
+      width: 100%; 
+      background: #fafbfc;
+      border-radius: 12px;
+      border: 1px solid #f1f2f4;
+      padding: 10px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      > * {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
 
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
+    .chart-legend {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+     gap: 6px;
+      flex-wrap: wrap;
+      padding-top: 10px;
 
-          p {
-            margin: 3px 0 0;
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        background: #f8f9fb;
+        border: 1px solid #eeeeee;
+        font-size: 11px;
+        color: #555b66;
+        font-weight: 600;
+      }
 
-            font-size: 9px;
-            color: #64748b;
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        display: inline-block;
 
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
+        &.present {
+          background: #20ad9b;
         }
 
-        .birthday-date {
-          flex-shrink: 0;
+        &.absent {
+          background: #ff3b3b;
+        }
+
+        &.half-day {
+          background: #ffc62b;
+        }
+        &.today{
+          background: #4D89F8;
+        }
+      }
+    }
+  }
+
+
+  .last-box3 {
+    width: 100%;
+    min-height: 250px;
+
+    padding: 15px;
+    box-sizing: border-box;
+
+    background: #fff;
+
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    .birthday-header {
+      width: 100%;
+
+      flex-shrink: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding-bottom: 12px;
+
+      border-bottom: 1px solid #edf0f2;
+
+      .birthday-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        svg {
+          font-size: 19px;
+          color: #077c87;
+        }
+
+        span {
+          font-size: 16px;
+          font-weight: 700;
+          color: #172033;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .birthday-list {
+      width: 100%;
+
+      flex: 1;
+      min-height: 0;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 8px;
+
+      margin-top: 10px;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .birthday-item {
+      width: 100%;
+      box-sizing: border-box;
+
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+
+      padding: 8px;
+
+      border-radius: 7px;
+
+      background: #f8fafb;
+
+      flex-shrink: 0;
+
+      transition: 0.2s ease;
+
+      &:hover {
+        background: #eef8f9;
+      }
+
+      .birthday-avatar {
+        width: 35px;
+        height: 35px;
+
+        flex-shrink: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+
+        background: #e8f7f8;
+        color: #077c87;
+
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .birthday-info {
+        flex: 1;
+        min-width: 0;
+
+        h4 {
+          margin: 0;
+
+          font-size: 12px;
+          font-weight: 600;
+          color: #172033;
+
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        p {
+          margin: 3px 0 0;
 
           font-size: 9px;
           color: #64748b;
 
           white-space: nowrap;
-        }
-
-        .wish-button {
-          flex-shrink: 0;
-
-          display: flex;
-          align-items: center;
-          gap: 4px;
-
-          border: none;
-
-          padding: 6px 8px;
-
-          border-radius: 5px;
-
-          background: #077c87;
-          color: #fff;
-
-          font-size: 9px;
-          font-weight: 500;
-
-          cursor: pointer;
-
-          transition: 0.2s ease;
-
-          svg {
-            font-size: 11px;
-          }
-
-          &:hover {
-            background: #056771;
-          }
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
 
-      .birthday-list::-webkit-scrollbar {
-        width: 3px;
+      .birthday-date {
+        flex-shrink: 0;
+
+        font-size: 9px;
+        color: #64748b;
+
+        white-space: nowrap;
       }
 
-      .birthday-list::-webkit-scrollbar-track {
-        background: transparent;
-      }
+      .wish-button {
+        flex-shrink: 0;
 
-      .birthday-list::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        border: none;
+
+        padding: 6px 8px;
+
+        border-radius: 5px;
+
+        background: #077c87;
+        color: #fff;
+
+        font-size: 9px;
+        font-weight: 500;
+
+        cursor: pointer;
+
+        transition: 0.2s ease;
+
+        svg {
+          font-size: 11px;
+        }
+
+        &:hover {
+          background: #056771;
+        }
       }
     }
+
+    .birthday-list::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .birthday-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .birthday-list::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
   }
+}
 }

@@ -7,6 +7,7 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
+  border-radius: 5px;
 
   .heading {
     width: 100%;
@@ -23,8 +24,6 @@
     align-items: stretch;
     gap: 25px;
 
-
-
     .leave-content {
       width: 40%;
       min-width: 250px;
@@ -34,46 +33,45 @@
       justify-content: center;
       gap: 25px;
 
-.leave-chart {
-  position: relative;
+      .leave-chart {
+        position: relative;
 
-  width: 220px;
-  min-width: 220px;
-  height: 220px;
+        width: 220px;
+        min-width: 220px;
+        height: 220px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-  .chart-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+        .chart-center {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
 
-    pointer-events: none;
-    text-align: center;
+          pointer-events: none;
+          text-align: center;
 
-    strong {
-      font-size: 28px;
-      line-height: 1;
-      color: #222;
-    }
+          strong {
+            font-size: 28px;
+            line-height: 1;
+            color: #222;
+          }
 
-    span {
-      margin-top: 6px;
-      font-size: 11px;
-      color: #777;
-      white-space: nowrap;
-    }
-  }
-}
-
+          span {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #777;
+            white-space: nowrap;
+          }
+        }
+      }
 
       .leave-legend {
         display: flex;
@@ -115,8 +113,6 @@
       }
     }
 
-
-
     .leave-form {
       width: 60%;
       min-width: 0;
@@ -140,7 +136,7 @@
         font-size: 18px;
         font-weight: 500;
 
-        border-radius: 10px 10px 0 0;
+        border-radius: 5px 5px 0 0;
       }
 
       .form-body {
@@ -150,17 +146,16 @@
         flex-direction: column;
         gap: 10px;
         .no-paid-leave {
-  margin-top: -2px;
-  font-size: 12px;
-  color: #ff424c;
-  font-weight: 500;
+          margin-top: -2px;
+          font-size: 12px;
+          color: #ff424c;
+          font-weight: 500;
 
-  span {
-    font-weight: 700;
-    margin-right: 3px;
-  }
-}
-        
+          span {
+            font-weight: 700;
+            margin-right: 3px;
+          }
+        }
 
         label {
           font-weight: 500;

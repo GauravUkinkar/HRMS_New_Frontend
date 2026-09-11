@@ -53,6 +53,9 @@ const Generatesalary = lazy(() =>
 const Attendance = lazy(() =>
   import("./Pages/Attendence/Attendance")
 );
+const EmpAttendance = lazy(() =>
+  import("./Pages/EmpAttendance/EmpAttendance")
+);
 
 const AddSalary = lazy(() =>
   import("./Pages/AddSalary/AddSalary")
@@ -236,6 +239,12 @@ export const routes = [
     comp: Attendance,
     adminonly: true,
     employeeonly: false,
+  },
+    {
+    name: "EmpAttendance",
+    path: "/empattendance",
+    comp: EmpAttendance,
+    employeeonly: true,
   },
 
   {

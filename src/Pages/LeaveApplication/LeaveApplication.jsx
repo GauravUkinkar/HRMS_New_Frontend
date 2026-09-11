@@ -184,7 +184,7 @@ const handleLeaveSubmit = async (e) => {
     <MainPanel>
       <div className="leave-container">
         <div className="heading">
-          <h1>Leave application</h1>
+          <h1>Leave Management</h1>
         </div>
         <div className="bottom">
           <div className="leave-content">
@@ -244,7 +244,7 @@ const handleLeaveSubmit = async (e) => {
           </div>
 
           <div className="leave-form">
-            <div className="form-header">Leave Application</div>
+            <div className="form-header">Apply Leave</div>
 
 <form className="form-body" onSubmit={handleLeaveSubmit}>
   <label>Enter Leave Days</label>
