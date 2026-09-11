@@ -117,9 +117,12 @@ const OfficialNotes = () => {
       setNotesLoading(true);
       setNotesError("");
 
-      const res = await axios.get(`${BASE_URL}Notification/getAdminNotifications`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${BASE_URL}Notification/getAdminNotifications`,
+        {
+          withCredentials: true,
+        },
+      );
 
       console.log("GET ADMIN NOTIFICATIONS RESPONSE:", res.data);
 
@@ -516,7 +519,7 @@ const OfficialNotes = () => {
 
   const handleEdit = async (note) => {
     if (!isEditAllowed(note)) {
-     toast.warning("This note can only be edited on the day it was created.");
+      toast.warning("This note can only be edited on the day it was created.");
       return;
     }
 
@@ -537,7 +540,7 @@ const OfficialNotes = () => {
       const selectedNotification = res.data?.data;
 
       if (!selectedNotification) {
-       toast.error("Notification not found.");
+        toast.error("Notification not found.");
         return;
       }
 
@@ -598,7 +601,7 @@ const OfficialNotes = () => {
       if (error.response?.status === 401) {
         toast.error("Authentication required.");
       } else if (error.response?.status === 403) {
-       toast.error("You are not authorized to view this notification.");
+        toast.error("You are not authorized to view this notification.");
       } else if (error.response?.status === 404) {
         toast.error("Notification not found.");
       } else {
@@ -923,9 +926,13 @@ const OfficialNotes = () => {
           updateData,
         );
 
-        return axios.put(`${BASE_URL}Notification/updateNotification `, updateData, {
-          withCredentials: true,
-        });
+        return axios.put(
+          `${BASE_URL}Notification/updateNotification `,
+          updateData,
+          {
+            withCredentials: true,
+          },
+        );
       });
 
       // ========================================================
