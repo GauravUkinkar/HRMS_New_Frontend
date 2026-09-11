@@ -999,6 +999,7 @@ const AdminDash = () => {
                     rowKey="key"
                     bordered={false}
                     size="small"
+                    scroll={{ x: "max-content" }}
                     rowClassName={(_, index) =>
                       index % 2 === 0
                         ? "table-row-light"

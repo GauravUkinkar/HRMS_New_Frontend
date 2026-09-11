@@ -952,3 +952,31 @@
     }
   }
 }
+@media only screen and (max-width: 1000px) {
+  .admindash-parent {
+    flex-direction: column;
+    .left-side,
+    .right-side {
+      width: 100%;
+    }
+  }
+}
+
+@media only screen and (max-width: 850px) {
+  .admindash-parent {
+    .left-side {
+      .box3 {
+        flex-direction: column;
+        .box3-right {
+          width: 100%;
+        }
+      }
+      .box4{
+        flex-direction: column;
+        .box4-left, .box4-right{
+          width:100%;
+        }
+      }
+    }
+  }
+}
