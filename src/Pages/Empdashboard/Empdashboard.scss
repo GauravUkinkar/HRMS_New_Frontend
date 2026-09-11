@@ -7,7 +7,6 @@
 //   display: flex;
 //   flex-direction: column;
 
-
 //   /* =================================
 //      LEFT SECTION
 //   ================================= */
@@ -18,7 +17,6 @@
 //     flex-direction: column;
 //     height: 100%;
 //     gap: 20px;
-    
 
 //     .left1 {
 //       height: 30%;
@@ -28,7 +26,7 @@
 //       display: flex;
 //       flex-direction: column;
 //       gap: 16px;
-    
+
 //       background-color: white;
 //       justify-content: space-between;
 //       p{
@@ -241,8 +239,6 @@
 //       }
 //     }
 //   }
-
-
 
 //   .middle {
 //     width: 50%;
@@ -789,7 +785,6 @@
 //      .right {
 //       grid-template-columns: 1fr ;
 
-     
 //     }
 //   }
 // }
@@ -895,267 +890,207 @@
       gap: 20px;
       width: 100%;
 
-   .box3-left {
-  width: 100%;
-  background: #fff;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  box-sizing: border-box;
-  border: 1px solid #f0f1f5;
-
-  // =========================
-  // CALENDAR HEADER
-  // =========================
-  .calendar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 14px;
-    border-bottom: 1px solid #f0f1f5;
-
-    .calendar-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-
-      .calendar-icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 11px;
-
+      .box3-left {
+        width: 100%;
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: var(--shadow);
         display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
+        gap: 16px;
+        box-sizing: border-box;
+        border: 1px solid #f0f1f5;
+        .box4-heading {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 12px;
 
-        background: linear-gradient(
-          135deg,
-          #20ad9b,
-          #077c87
-        );
+          .heading-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
 
-        box-shadow: 0 5px 12px rgba(32, 173, 155, 0.2);
+            svg {
+              font-size: 20px;
+            }
 
-        svg {
-          font-size: 20px;
-          color: #fff;
+            span {
+              font-size: 16px;
+              font-weight: 700;
+            }
+          }
+
+          .view-all {
+            border: none;
+            background: transparent;
+            color: #003a42;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--trans);
+            background: rgba(0, 142, 137, 0.082);
+            padding: 5px 20px;
+            border-radius: 5px;
+            border: 1px solid #003a42;
+            &:hover {
+              background: #003a42;
+              color: white;
+            }
+          }
         }
+
+        // =========================
+        // CALENDAR HEADER
+        // =========================
       }
-
-      h3 {
-        margin: 0;
-        font-size: 17px;
-        font-weight: 700;
-        color: #20242c;
-      }
-
-      p {
-        margin: 3px 0 0;
-        font-size: 11px;
-        color: #9ca3af;
-        font-weight: 500;
-      }
-    }
-  }
-
-  // =========================
-  // CALENDAR
-  // =========================
-  .calendar-body {
-    width: 100%;
-    background: #fafbfc;
-    border-radius: 12px;
-    padding: 10px;
-    box-sizing: border-box;
-    border: 1px solid #f1f2f4;
-
-    display: flex;
-    justify-content: center;
-
-    // If your Calender component has width
-    // restrictions, this helps it fit nicely.
-    > * {
-      width: 100%;
-    }
-  }
-
-  // =========================
-  // LEGEND
-  // =========================
-  .chart-legend {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    padding-top: 2px;
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-
-      padding: 7px 12px;
-      border-radius: 20px;
-
-      background: #f8f9fb;
-      border: 1px solid #eeeeee;
-
-      font-size: 12px;
-      color: #555b66;
-      font-weight: 600;
-
-      transition: all 0.2s ease;
-
-      &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
-      }
-    }
-
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      display: inline-block;
-      position: relative;
-
-      &.present {
-        background: #20ad9b;
-        box-shadow: 0 0 0 3px rgba(32, 173, 155, 0.12);
-      }
-
-      &.absent {
-        background: #ff3b3b;
-        box-shadow: 0 0 0 3px rgba(255, 59, 59, 0.1);
-      }
-
-      &.half-day {
-        background: #ffc62b;
-        box-shadow: 0 0 0 3px rgba(255, 198, 43, 0.12);
-      }
-    }
-  }
-}
       .box3-right {
         width: 50%;
         background: #fff;
         border-radius: 5px;
         padding: 20px;
         box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 10px;
+        .left{
+          width: 50%;
+          .clock {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border: 2px solid #077c87;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-        .leave-header {
+  /* Numbers */
+  .clock-number {
+    position: absolute;
+    left: 40%;
+    top: 40%;
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #077c87;
+    font-size: 16px;
+    font-weight: 600;
+    transform-origin: 10px 10px;
+  }
+
+  /* Hour hand */
+  .hour-hand {
+    position: absolute;
+
+    width: 5px;
+    height: 55px;
+
+    background: #077c87;
+
+    bottom: 50%;
+    left: calc(50% - 2.5px);
+
+    transform-origin: bottom;
+    transform: rotate(145deg);
+
+    border-radius: 5px;
+  }
+
+  /* Minute hand */
+  .minute-hand {
+    position: absolute;
+
+    width: 3px;
+    height: 72px;
+
+    background: #077c87;
+
+    bottom: 50%;
+    left: calc(50% - 1.5px);
+
+    transform-origin: bottom;
+    transform: rotate(290deg);
+
+    border-radius: 5px;
+  }
+
+  /* Second hand */
+  .second-hand {
+    position: absolute;
+
+    width: 2px;
+    height: 78px;
+
+    background: #5de0ef;
+
+    bottom: 50%;
+    left: 50%;
+
+    transform-origin: bottom;
+    transform: rotate(215deg);
+  }
+
+  /* Center */
+  .clock-center {
+    position: absolute;
+
+    width: 12px;
+    height: 12px;
+
+    background: #077c87;
+    border-radius: 50%;
+
+    z-index: 5;
+  }
+}
+        }
+        .right{
           display: flex;
+          flex-direction: column;
+          text-align: center;
+          gap: 14px;background-color: #E4F6F7;
+          width: 100%;
+          padding: 10px;
+          border: 1px solid var(--accent2);
           align-items: center;
-          justify-content: space-between;
-                  .view-all {
-          border: none;
-          background: transparent;
-          color: #003a42;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          text-decoration: none;
-          transition: var(--trans);
-          background: rgba(0, 142, 137, 0.082);
-          padding: 5px 20px;
           border-radius: 5px;
-          border: 1px solid #003a42;
-          &:hover {
-            background: #003a42;
-            color: white;
-          }
-        }
-
-          .leave-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            span {
-              font-size: 18px;
-              font-weight: 700;
-            }
-          }
-
-          .month-select {
-            border: 1px solid #077c87;
+          h3{
+            background-color: #6ecacf;
+            width: fit-content;
+            padding: 10px;
             border-radius: 5px;
-            padding: 7px 10px;
-            background: #fff;
-            font-size: 14px;
-            outline: none;
-            cursor: pointer;
+            border: 1px solid var(--accent2);
+            
           }
-        }
-
-        .leave-content {
-          height: calc(100% - 30px);
-
-          display: flex;
-          align-items: center;
-
-          .leave-chart {
-            position: relative;
-            width: 55%;
-            height: 180px;
-
-            .chart-center {
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              pointer-events: none;
-
-              strong {
-                font-size: 24px;
-                line-height: 1;
-              }
-
-              span {
-                margin-top: 5px;
-                font-size: 10px;
-                color: #777;
-                white-space: nowrap;
-              }
-            }
-          }
-
-          .leave-legend {
-            width: 45%;
-
+          .buttons{
             display: flex;
-            flex-direction: column;
-            gap: 18px;
-
-            .legend-row {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-
-              font-size: 13px;
-
-              .legend-left {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-              }
-
-              .legend-dot {
-                width: 14px;
-                height: 14px;
-                border-radius: 50%;
+            gap: 20px;
+            // padding-top: 20px;
+            .btn1{
+              background-color: var(--accent2);
+              color: white;
+              padding: 10px 5px;
+              cursor: pointer;
+              border: none;
+              border-radius: 5px;
+              font-size: 14px;
+              font-weight: 540;
+              &:hover{
+                transform: translateY(-5px);
+                transition: var(--trans);
               }
             }
           }
         }
+
       }
     }
 
@@ -1169,54 +1104,20 @@
       .box4-right {
         background: #fff;
         border-radius: 12px;
-        padding: 16px;
+        padding: 0;
         box-shadow: var(--shadow);
       }
 
-      .box4-left {
-        width: 60%;
-        .employee-table {
-          .ant-table {
-            font-size: 12px;
-          }
-
-          .ant-table-thead > tr > th {
-            font-size: 12px;
-          }
-
-          .ant-table-tbody > tr > td {
-            font-size: 12px;
-          }
-        }
+      .crm-section {
+        width: 100%;
+        min-width: 0;
       }
 
-      .box4-right {
-        width: 40%;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .box4-heading {
+      .crm-heading {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 12px;
-
-        .heading-title {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-
-          svg {
-            font-size: 20px;
-          }
-
-          span {
-            font-size: 16px;
-            font-weight: 700;
-          }
-        }
+        padding: 10px;
 
         .view-all {
           border: none;
@@ -1238,506 +1139,835 @@
         }
       }
 
-      // Recent Employees
+      .crm-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
 
-      .employee-table {
-        width: 100%;
+        svg {
+          font-size: 20px;
+        }
+
+        span {
+          font-size: 16px;
+          font-weight: 600;
+        }
       }
 
-      // Team Status
-      .team-list {
+      .crm-table {
+        width: 100%;
+        overflow-x: auto;
+
+        .ant-table {
+          width: 100%;
+          background: transparent;
+        }
+
+        .ant-table-container {
+          border-radius: 8px;
+          overflow: hidden;
+        }
+
+        /* Header */
+
+        .ant-table-thead > tr > th {
+          background: #fafafa !important;
+          color: #111827;
+          font-size: 13px;
+          font-weight: 600;
+          height: 38px;
+          padding: 8px 10px !important;
+          border-bottom: 1px solid #eeeeee !important;
+          white-space: nowrap;
+        }
+
+        /* Remove default Ant borders */
+
+        .ant-table-tbody > tr > td {
+          padding: 9px 10px !important;
+          font-size: 13px;
+          color: #111827;
+          border-bottom: 1px solid #eeeeee !important;
+          white-space: nowrap;
+        }
+
+        /* Alternating rows */
+
+        .crm-table-row-light > td {
+          background: #ffffff !important;
+        }
+
+        .crm-table-row-dark > td {
+          background: #eaf9fa !important;
+        }
+
+        /* Hover */
+
+        .ant-table-tbody > tr:hover > td {
+          background: #dff5f6 !important;
+        }
+
+        /* Client */
+
+        .crm-client-name {
+          font-weight: 500;
+          color: #111827;
+        }
+
+        /* Project */
+
+        .crm-project-name {
+          color: #374151;
+          font-size: 12.5px;
+        }
+
+        /* Task */
+
+        .crm-task-name {
+          display: block;
+          max-width: 190px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: #374151;
+        }
+
+        /* Status */
+
+        .ant-tag {
+          margin: 0;
+          border: none;
+          border-radius: 4px;
+          padding: 3px 9px;
+          font-size: 11px;
+          line-height: 18px;
+        }
+
+        /* Empty */
+
+        .ant-empty {
+          margin: 25px 0;
+        }
+
+        /* Loading */
+
+        .ant-spin-container {
+          min-height: 60px;
+        }
+      }
+
+      .box4-right {
+        width: 40%;
+
+        height: 350px;
+        padding: 20px;
+        background: #fff;
+        border-radius: 5px;
+        box-shadow: var(--shadow);
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        justify-content: center;
-        .team-row {
+        .notification-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border: 1px solid #003a42;
-          padding: 5px 10px;
-          border-radius: 5px;
-          gap: 10px;
-          font-size: 14px;
 
-          background: rgba(0, 142, 137, 0.058);
-          .team-left {
+          padding-bottom: 12px;
+          border-bottom: 1px solid #edf0f2;
+
+          .notification-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            .team-icon {
-              width: 26px;
-              height: 26px;
+            gap: 8px;
+
+            span {
+              font-size: 17px;
+              font-weight: 700;
+              color: #172033;
+            }
+          }
+
+          .notification-count {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            svg {
+              font-size: 30px;
+              color: var(--accent);
+              border-radius: 50%;
+              padding: 5px;
+              position: relative;
+              z-index: 1;
+            }
+
+            .count {
+              position: absolute;
+              top: -2px;
+              right: -2px;
+              z-index: 2;
+
+              min-width: 16px;
+              height: 16px;
+              padding: 0 4px;
+
               display: flex;
               align-items: center;
               justify-content: center;
-              border-radius: 5px;
 
-              svg {
-                font-size: 16px;
-              }
-            }
-            .heading{
-              display: flex;
-              flex-direction: column;
-              font-weight:700;
-              span{
-                font-size:12px;
-                font-weight:100;
-              }
-            }
-          }
+              background: red;
+              color: white;
+              border-radius: 50px;
 
-          .team-members {
-            color: #64748b;
-            white-space: nowrap;
+              font-size: 9px;
+              font-weight: 600;
+              line-height: 1;
+            }
           }
         }
+        .notification-list {
+          margin-top: 10px;
+
+          display: flex;
+          flex-direction: column;
+
+          gap: 10px;
+
+          overflow-y: auto;
+
+          padding-right: 4px;
+        }
+        .notification-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.45);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          padding: 20px;
+        }
+
+        .notification-modal {
+          width: 100%;
+          max-width: 550px;
+          background: #fff;
+          border-radius: 12px;
+          box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+          overflow: hidden;
+        }
+
+        .notification-modal-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 18px 20px;
+          border-bottom: 1px solid #eee;
+
+          h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #172033;
+          }
+
+          button {
+            border: none;
+            background: transparent;
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            color: #777;
+
+            &:hover {
+              color: #000;
+            }
+          }
+        }
+
+        .notification-modal-body {
+          padding: 20px;
+        }
+
+        .notification-modal-date {
+          margin: 0 0 15px;
+          font-size: 12px;
+          color: #888;
+        }
+
+        .notification-full-message {
+          font-size: 14px;
+          line-height: 1.7;
+          color: #444;
+          white-space: pre-wrap;
+          word-break: break-word;
+        }
+
+        // =========================
+        // ITEM
+        // =========================
+
+        .notification-item {
+          display: flex;
+          gap: 10px;
+
+          padding: 10px;
+
+          background: #f7f9fa;
+
+          border-radius: 7px;
+
+          transition: 0.2s ease;
+
+          &:hover {
+            background: #eef8f9;
+          }
+
+          .notification-icon {
+            width: 25px;
+            height: 25px;
+
+            flex-shrink: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: #077c87;
+            color: #fff;
+            svg {
+              font-size: 14px;
+            }
+          }
+          .notification-content {
+            h4 {
+              font-size: 13px;
+              font-weight: 600;
+              color: #172033;
+            }
+            p {
+              font-size: 10px;
+              line-height: 1.4;
+              color: #64748b;
+            }
+
+            .notification-date {
+              font-size: 9px;
+              color: #94a3b8;
+            }
+          }
+        }
+        .notification-list::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        .notification-list::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 10px;
+        }
       }
+
+      // Recent Employees
     }
   }
 
   //main right side data is here
-  .right-side {
-    width: 20%;
+.right-side {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  min-height: 0;
+
+  // =========================
+  // LEAVE MANAGEMENT
+  // =========================
+  .top-box1 {
+    width: 100%;
+    height: 250px;
+    flex-shrink: 0;
+    padding: 15px;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    height: 100%;
-    gap: 20px;
-    //clock scss
-    .top-box1 {
+    overflow: hidden;
+
+    .leave-header {
       width: 100%;
-      height: 140px;
+      height: 40px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      background: white;
-      border-radius: 5px;
-      box-shadow: var(--shadow);
-      padding: 10px;
-      .clock {
+      justify-content: space-between;
+
+      .leave-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        svg {
+          font-size: 20px;
+          color: #003a42;
+        }
+
+        span {
+          font-size: 17px;
+          font-weight: 700;
+          color: #222;
+          white-space: nowrap;
+        }
+      }
+
+      .view-all {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 18px;
+        border: 1px solid #003a42;
+        border-radius: 5px;
+        background: rgba(0, 142, 137, 0.08);
+        color: #003a42;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+        &:hover {
+          background: #003a42;
+          color: #fff;
+        }
+      }
+    }
+
+    .leave-content {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .leave-chart {
         position: relative;
-        width: 120px;
-        height: 120px;
-        border: 1px solid #077c87;
+        width: 55%;
+        height: 190px;
+display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .chart-center {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+
+          strong {
+            font-size: 24px;
+          
+            color: #222;
+          }
+
+          span {
+            margin-top: 5px;
+
+            font-size: 10px;
+            color: #777;
+
+         
+          }
+        }
+      }
+
+      .leave-legend {
+        width: 45%;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .legend-row {
+          width: 100%;
+
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          font-size: 12px;
+          color: #333;
+
+          .legend-left {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            min-width: 0;
+
+            span:last-child {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+
+          .legend-dot {
+            width: 12px;
+            height: 12px;
+            min-width: 12px;
+
+            border-radius: 50%;
+          }
+
+          strong {
+            margin-left: 8px;
+            font-size: 13px;
+            color: #222;
+          }
+        }
+      }
+    }
+  }
+
+
+  .middle-box2 {
+    width: 100%;
+    height: 430px;
+    flex-shrink: 0;
+
+    padding: 20px;
+    box-sizing: border-box;
+
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .calendar-header {
+      width: 100%;
+     
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding-bottom: 14px;
+
+      border-bottom: 1px solid #f0f1f5;
+
+      .calendar-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .calendar-icon {
+          width: 42px;
+          height: 42px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          border-radius: 11px;
+
+          background: linear-gradient(
+            135deg,
+            #20ad9b,
+            #077c87
+          );
+
+          box-shadow: 0 5px 12px rgba(32, 173, 155, 0.2);
+
+          svg {
+            font-size: 20px;
+            color: #fff;
+          }
+        }
+
+        h3 {
+          margin: 0;
+
+          font-size: 17px;
+          font-weight: 700;
+          color: #20242c;
+        }
+
+        p {
+          margin: 3px 0 0;
+
+          font-size: 11px;
+          color: #9ca3af;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .calendar-body {
+      width: 100%; 
+      background: #fafbfc;
+      border-radius: 12px;
+      border: 1px solid #f1f2f4;
+      padding: 10px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      > * {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+
+    .chart-legend {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+     gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 10px;
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        background: #f8f9fb;
+        border: 1px solid #eeeeee;
+        font-size: 11px;
+        color: #555b66;
+        font-weight: 600;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
         border-radius: 50%;
+        display: inline-block;
+
+        &.present {
+          background: #20ad9b;
+        }
+
+        &.absent {
+          background: #ff3b3b;
+        }
+
+        &.half-day {
+          background: #ffc62b;
+        }
+      }
+    }
+  }
+
+
+  .last-box3 {
+    width: 100%;
+    min-height: 250px;
+
+    padding: 15px;
+    box-sizing: border-box;
+
+    background: #fff;
+
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    .birthday-header {
+      width: 100%;
+
+      flex-shrink: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding-bottom: 12px;
+
+      border-bottom: 1px solid #edf0f2;
+
+      .birthday-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        svg {
+          font-size: 19px;
+          color: #077c87;
+        }
+
+        span {
+          font-size: 16px;
+          font-weight: 700;
+          color: #172033;
+          white-space: nowrap;
+        }
+      }
+    }
+
+    .birthday-list {
+      width: 100%;
+
+      flex: 1;
+      min-height: 0;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 8px;
+
+      margin-top: 10px;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .birthday-item {
+      width: 100%;
+      box-sizing: border-box;
+
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+
+      padding: 8px;
+
+      border-radius: 7px;
+
+      background: #f8fafb;
+
+      flex-shrink: 0;
+
+      transition: 0.2s ease;
+
+      &:hover {
+        background: #eef8f9;
+      }
+
+      .birthday-avatar {
+        width: 35px;
+        height: 35px;
+
+        flex-shrink: 0;
+
         display: flex;
         align-items: center;
         justify-content: center;
 
-        /* Numbers */
-        .clock-number {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          width: 10px;
-          height: 10px;
-          margin-left: -5px;
-          margin-top: -5px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #077c87;
+        border-radius: 50%;
+
+        background: #e8f7f8;
+        color: #077c87;
+
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .birthday-info {
+        flex: 1;
+        min-width: 0;
+
+        h4 {
+          margin: 0;
+
           font-size: 12px;
-          font-weight: 500;
-          transform-origin: 10px 10px;
-        }
-
-        /* Hour hand */
-        .hour-hand {
-          position: absolute;
-          width: 4px;
-          height: 42px;
-          background: #077c87;
-          bottom: 50%;
-          left: calc(50% - 2px);
-          transform-origin: bottom;
-          transform: rotate(145deg);
-          border-radius: 5px;
-        }
-        /* Minute hand */
-        .minute-hand {
-          position: absolute;
-          width: 2px;
-          height: 52px;
-          background: #077c87;
-          bottom: 50%;
-          left: calc(50% - 1px);
-          transform-origin: bottom;
-          transform: rotate(290deg);
-          border-radius: 5px;
-        }
-
-        /* Second hand */
-        .second-hand {
-          position: absolute;
-          width: 1px;
-          height: 55px;
-          background: #5de0ef;
-          bottom: 50%;
-          left: 50%;
-          transform-origin: bottom;
-          transform: rotate(215deg);
-        }
-
-        /* Center */
-        .clock-center {
-          position: absolute;
-          width: 8px;
-          height: 8px;
-          background: #077c87;
-          border-radius: 50%;
-          z-index: 5;
-        }
-      }
-    }
-    //Notification scss
-    .middle-box2 {
-      width: 100%;
-      padding: 20px;
-      background: #fff;
-      border-radius: 5px;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      .notification-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        padding-bottom: 12px;
-        border-bottom: 1px solid #edf0f2;
-
-        .notification-title {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-
-          svg {
-            font-size: 19px;
-            color: #077c87;
-          }
-
-          span {
-            font-size: 17px;
-            font-weight: 700;
-            color: #172033;
-          }
-        }
-
-        .notification-count {
-          min-width: 24px;
-          height: 24px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background: #e8f7f8;
-          color: #077c87;
-          font-size: 11px;
           font-weight: 600;
-        }
-      }
-      .notification-list {
-        margin-top: 10px;
+          color: #172033;
 
-        display: flex;
-        flex-direction: column;
-
-        gap: 10px;
-
-        overflow-y: auto;
-
-        padding-right: 4px;
-      }
-
-      // =========================
-      // ITEM
-      // =========================
-
-      .notification-item {
-        display: flex;
-        gap: 10px;
-
-        padding: 10px;
-
-        background: #f7f9fa;
-
-        border-radius: 7px;
-
-        transition: 0.2s ease;
-
-        &:hover {
-          background: #eef8f9;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        .notification-icon {
-          width: 25px;
-          height: 25px;
+        p {
+          margin: 3px 0 0;
 
-          flex-shrink: 0;
-
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          border-radius: 50%;
-
-          background: #077c87;
-          color: #fff;
-          svg {
-            font-size: 14px;
-          }
-        }
-        .notification-content {
-          h4 {
-            font-size: 13px;
-            font-weight: 600;
-            color: #172033;
-          }
-          p {
-            font-size: 10px;
-            line-height: 1.4;
-            color: #64748b;
-          }
-
-          .notification-date {
-            font-size: 9px;
-            color: #94a3b8;
-          }
-        }
-      }
-      .notification-list::-webkit-scrollbar {
-        width: 4px;
-      }
-
-      .notification-list::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      .notification-list::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 10px;
-      }
-    }
-
-    //birthday box
-    .last-box3 {
-      width: 100%;
-      height: 100%;
-
-      padding: 15px;
-
-      background: #fff;
-
-      border-radius: 5px;
-
-      box-shadow: var(--shadow);
-
-      display: flex;
-      flex-direction: column;
-
-      // =========================
-      // HEADER
-      // =========================
-
-      .birthday-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        padding-bottom: 12px;
-
-        border-bottom: 1px solid #edf0f2;
-
-        .birthday-title {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-
-          svg {
-            font-size: 19px;
-            color: #077c87;
-          }
-
-          span {
-            font-size: 16px;
-            font-weight: 700;
-            color: #172033;
-          }
-        }
-
-        .view-all {
-          border: none;
-          background: transparent;
-
-          color: #077c87;
-
-          font-size: 11px;
-          font-weight: 600;
-
-          cursor: pointer;
-        }
-      }
-
-      // =========================
-      // BIRTHDAY LIST
-      // =========================
-
-      .birthday-list {
-        display: flex;
-        flex-direction: column;
-
-        gap: 8px;
-
-        margin-top: 10px;
-
-        overflow-y: auto;
-      }
-
-      // =========================
-      // BIRTHDAY ITEM
-      // =========================
-
-      .birthday-item {
-        display: flex;
-        align-items: center;
-
-        gap: 10px;
-
-        padding: 8px;
-
-        border-radius: 7px;
-
-        background: #f8fafb;
-
-        transition: 0.2s ease;
-
-        &:hover {
-          background: #eef8f9;
-        }
-
-        // =========================
-        // AVATAR
-        // =========================
-
-        .birthday-avatar {
-          width: 35px;
-          height: 35px;
-
-          flex-shrink: 0;
-
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          border-radius: 50%;
-
-          background: #e8f7f8;
-
-          color: #077c87;
-
-          font-size: 10px;
-          font-weight: 700;
-        }
-
-        // =========================
-        // EMPLOYEE INFO
-        // =========================
-
-        .birthday-info {
-          flex: 1;
-          min-width: 0;
-
-          h4 {
-            margin: 0;
-
-            font-size: 12px;
-            font-weight: 600;
-
-            color: #172033;
-
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-
-          p {
-            margin: 3px 0 0;
-
-            font-size: 9px;
-
-            color: #64748b;
-
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-
-        // =========================
-        // DATE
-        // =========================
-
-        .birthday-date {
           font-size: 9px;
-
           color: #64748b;
 
           white-space: nowrap;
-        }
-
-        // =========================
-        // WISH BUTTON
-        // =========================
-
-        .wish-button {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-
-          border: none;
-
-          padding: 6px 8px;
-
-          border-radius: 5px;
-
-          background: #077c87;
-          color: #fff;
-
-          font-size: 9px;
-          font-weight: 500;
-
-          cursor: pointer;
-
-          transition: 0.2s ease;
-
-          svg {
-            font-size: 11px;
-          }
-
-          &:hover {
-            background: #056771;
-          }
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
 
-      // =========================
-      // SCROLLBAR
-      // =========================
+      .birthday-date {
+        flex-shrink: 0;
 
-      .birthday-list::-webkit-scrollbar {
-        width: 3px;
+        font-size: 9px;
+        color: #64748b;
+
+        white-space: nowrap;
       }
 
-      .birthday-list::-webkit-scrollbar-track {
-        background: transparent;
-      }
+      .wish-button {
+        flex-shrink: 0;
 
-      .birthday-list::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        border: none;
+
+        padding: 6px 8px;
+
+        border-radius: 5px;
+
+        background: #077c87;
+        color: #fff;
+
+        font-size: 9px;
+        font-weight: 500;
+
+        cursor: pointer;
+
+        transition: 0.2s ease;
+
+        svg {
+          font-size: 11px;
+        }
+
+        &:hover {
+          background: #056771;
+        }
       }
     }
+
+    .birthday-list::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .birthday-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .birthday-list::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
   }
+}
 }
