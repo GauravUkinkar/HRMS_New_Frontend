@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { FaPlus } from "react-icons/fa";
 import {
@@ -107,7 +109,7 @@ const OfficialNotes = () => {
 
   // ==========================================================
   // GET ALL OFFICIAL NOTES
-  // GET /Notification/admin
+  // GET /Notification/getAdminNotifications
   // ==========================================================
 
   const getOfficialNotes = async () => {
@@ -115,9 +117,12 @@ const OfficialNotes = () => {
       setNotesLoading(true);
       setNotesError("");
 
-      const res = await axios.get(`${BASE_URL}Notification/admin`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${BASE_URL}Notification/getAdminNotifications`,
+        {
+          withCredentials: true,
+        },
+      );
 
       console.log("GET ADMIN NOTIFICATIONS RESPONSE:", res.data);
 
@@ -214,21 +219,31 @@ const OfficialNotes = () => {
       // CONVERT OBJECT TO ARRAY
       // --------------------------------------------------------
 
-      const formattedNotes = Object.values(groupedNotifications).map(
-        (note, index) => ({
-          ...note,
+    const formattedNotes = Object.values(groupedNotifications).map(
+  (note, index) => ({
+    ...note,
 
-          key: index + 1,
+    key: index + 1,
 
-          recipientUids: [...new Set(note.recipientUids)],
+    recipientUids: [...new Set(note.recipientUids)],
+    notificationIds: [...new Set(note.notificationIds)],
+  }),
+);
 
-          notificationIds: [...new Set(note.notificationIds)],
-        }),
-      );
+// --------------------------------------------------------
+// SORT NOTES: NEWEST NOTE FIRST
+// --------------------------------------------------------
 
-      console.log("GROUPED OFFICIAL NOTES:", formattedNotes);
+formattedNotes.sort((a, b) => {
+  const dateA = new Date(a.createdAt).getTime();
+  const dateB = new Date(b.createdAt).getTime();
 
-      setNotes(formattedNotes);
+  return dateB - dateA;
+});
+
+console.log("GROUPED OFFICIAL NOTES - NEWEST FIRST:", formattedNotes);
+
+setNotes(formattedNotes);
       setCurrentPage(1);
     } catch (error) {
       console.error("Get Admin Notifications API Error:", error);
@@ -514,7 +529,7 @@ const OfficialNotes = () => {
 
   const handleEdit = async (note) => {
     if (!isEditAllowed(note)) {
-      alert("This note can only be edited on the day it was created.");
+      toast.warning("This note can only be edited on the day it was created.");
       return;
     }
 
@@ -535,7 +550,7 @@ const OfficialNotes = () => {
       const selectedNotification = res.data?.data;
 
       if (!selectedNotification) {
-        alert("Notification not found.");
+        toast.error("Notification not found.");
         return;
       }
 
@@ -594,13 +609,13 @@ const OfficialNotes = () => {
       console.error("Get Notification By ID API Error:", error);
 
       if (error.response?.status === 401) {
-        alert("Authentication required.");
+        toast.error("Authentication required.");
       } else if (error.response?.status === 403) {
-        alert("You are not authorized to view this notification.");
+        toast.error("You are not authorized to view this notification.");
       } else if (error.response?.status === 404) {
-        alert("Notification not found.");
+        toast.error("Notification not found.");
       } else {
-        alert("Failed to load notification.");
+        toast.error("Failed to load notification.");
       }
     }
   };
@@ -661,18 +676,18 @@ const OfficialNotes = () => {
         return Math.min(previousPage, newTotalPages);
       });
 
-      alert("Official note deleted successfully.");
+      toast.success("Official note deleted successfully.");
     } catch (error) {
       console.error("Delete Notification API Error:", error);
 
       if (error.response?.status === 401) {
-        alert("Authentication required.");
+        toast.warning("Authentication required.");
       } else if (error.response?.status === 403) {
-        alert("You are not authorized to delete this notification.");
+        toast.warning("You are not authorized to delete this notification.");
       } else if (error.response?.status === 404) {
-        alert("Notification not found.");
+        toast.warning("Notification not found.");
       } else {
-        alert(
+        toast.error(
           error.response?.data?.message ||
             error.response?.data ||
             error.message ||
@@ -693,12 +708,12 @@ const OfficialNotes = () => {
       // ========================================================
 
       if (!noteTitle || noteTitle.trim() === "") {
-        alert("Please enter a title.");
+        toast.warning("Please enter a title.");
         return;
       }
 
       if (!noteContent || noteContent.trim() === "") {
-        alert("Please enter a note.");
+        toast.warning("Please enter a note.");
         return;
       }
 
@@ -732,7 +747,7 @@ const OfficialNotes = () => {
         }
 
         if (recipientUids.length === 0) {
-          alert("No employees available.");
+          toast.error("No employees available.");
           return;
         }
 
@@ -764,7 +779,7 @@ const OfficialNotes = () => {
 
         console.log("CREATE OFFICIAL NOTE RESPONSE:", res.data);
 
-        alert("Official note sent successfully.");
+        toast.success("Official note sent successfully.");
 
         handleCloseNote();
 
@@ -795,12 +810,12 @@ const OfficialNotes = () => {
       // ========================================================
 
       if (editingNoteId === null || editingNoteId === undefined) {
-        alert("Notification ID is missing.");
+        toast.error("Notification ID is missing.");
         return;
       }
 
       if (!noteCreatedAt) {
-        alert("Created date is missing.");
+        toast.error("Created date is missing.");
         return;
       }
 
@@ -817,7 +832,7 @@ const OfficialNotes = () => {
       );
 
       if (!currentNote) {
-        alert("Current notification data was not found.");
+        toast.error("Current notification data was not found.");
         return;
       }
 
@@ -878,7 +893,7 @@ const OfficialNotes = () => {
       }
 
       if (notificationsToUpdate.length === 0) {
-        alert("Notification IDs are missing.");
+        toast.error("Notification IDs are missing.");
         return;
       }
 
@@ -921,9 +936,13 @@ const OfficialNotes = () => {
           updateData,
         );
 
-        return axios.put(`${BASE_URL}Notification/update`, updateData, {
-          withCredentials: true,
-        });
+        return axios.put(
+          `${BASE_URL}Notification/updateNotification `,
+          updateData,
+          {
+            withCredentials: true,
+          },
+        );
       });
 
       // ========================================================
@@ -939,7 +958,7 @@ const OfficialNotes = () => {
 
       console.log("ALL NOTIFICATIONS UPDATED SUCCESSFULLY");
 
-      alert("Official note updated successfully.");
+      toast.success("Official note updated successfully.");
 
       // --------------------------------------------------------
       // CLOSE MODAL
@@ -960,23 +979,23 @@ const OfficialNotes = () => {
       // --------------------------------------------------------
 
       if (error.response?.status === 400) {
-        alert(
+        toast.error(
           error.response?.data?.message ||
             error.response?.data ||
             "Invalid request.",
         );
       } else if (error.response?.status === 401) {
-        alert("Authentication required.");
+        toast.error("Authentication required.");
       } else if (error.response?.status === 403) {
-        alert(
+        toast.error(
           isEditing
             ? "You are not authorized to update this notification."
             : "You are not authorized to create this notification.",
         );
       } else if (error.response?.status === 404) {
-        alert("Notification not found.");
+        toast.error("Notification not found.");
       } else {
-        alert(
+        toast.error(
           error.response?.data?.message ||
             error.response?.data ||
             error.message ||
@@ -985,9 +1004,7 @@ const OfficialNotes = () => {
       }
     }
   };
-  useEffect(() => {
-    // ();
-  });
+ 
   // ==========================================================
   // FORMAT DATE
   // ==========================================================
