@@ -11,16 +11,17 @@ import { LuChartNoAxesCombined } from "react-icons/lu";
 import { LuListChecks } from "react-icons/lu";
 import { LuUsers } from "react-icons/lu";
 import { Table, Tag } from "antd";
-// import { FaQuoteLeft } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LuBell, LuCheck } from "react-icons/lu";
 import { LuCake, LuSend } from "react-icons/lu";
 import axios from "axios";
+import { toast } from "react-toastify";
 const BASE_URL_USER = import.meta.env.VITE_USER_BACKEND_URL;
 const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 const BASE_URL3 = import.meta.env.VITE_TEAM_URL;
 const AdminDash = () => {
+  const location = useLocation();
   const quotes = [
     "Great teams build great organizations.",
     "Success is the result of teamwork and dedication.",
@@ -559,9 +560,22 @@ const AdminDash = () => {
 
       console.log("NOTIFICATION API RESPONSE:", response.data);
 
-      setNotifications(response?.data || []);
+      const notificationData = Array.isArray(response.data)
+        ? response.data
+          .map((item) => item?.data)
+          .filter(Boolean)
+        : [];
+
+      console.log("NORMALIZED NOTIFICATIONS:", notificationData);
+
+      setNotifications(notificationData);
+
     } catch (error) {
-      console.error("Notification API Error:", error);
+      console.error(
+        "Notification API Error:",
+        error.response?.data || error
+      );
+
       setNotifications([]);
     } finally {
       setNotificationLoader(false);
@@ -593,29 +607,49 @@ const AdminDash = () => {
 
   //load unread all notification 
 
-  const getUnreadNotifications = async () => {
-    try {
-      setNotificationLoader(true);
+ const getUnreadNotifications = async () => {
+  try {
+    setNotificationLoader(true);
 
-      const response = await axios.get(
-        `${BASE_URL_USER}Notification/my/UnreadNotifications`,
-        {
-          withCredentials: true,
-        }
-      );
+    const response = await axios.get(
+      `${BASE_URL_USER}Notification/my/UnreadNotifications`,
+      {
+        withCredentials: true,
+      }
+    );
 
-      console.log("UNREAD NOTIFICATIONS:", response.data);
+    console.log(
+      "UNREAD NOTIFICATION API RESPONSE:",
+      response.data
+    );
 
-      setUnreadNotifications(response?.data || []);
-      setShowUnread(true);
+    const unreadData = Array.isArray(response.data)
+      ? response.data
+          .map((item) => item?.data)
+          .filter(Boolean)
+      : [];
 
-    } catch (error) {
-      console.error("Unread Notification API Error:", error);
-      setUnreadNotifications([]);
-    } finally {
-      setNotificationLoader(false);
-    }
-  };
+    console.log(
+      "NORMALIZED UNREAD NOTIFICATIONS:",
+      unreadData
+    );
+
+    setUnreadNotifications(unreadData);
+    setShowUnread(true);
+
+  } catch (error) {
+
+    console.error(
+      "Unread Notification API Error:",
+      error?.response?.data || error
+    );
+
+    setUnreadNotifications([]);
+
+  } finally {
+    setNotificationLoader(false);
+  }
+};
 
   const markNotificationAsRead = async (notificationId) => {
     try {
@@ -646,6 +680,32 @@ const AdminDash = () => {
   // Birthday API Integration
   const [birthday, setBirthday] = useState([]);
   const [birthdayLoader, setBirthdayLoader] = useState(false);
+  const [wishingEmployeeId, setWishingEmployeeId] = useState(null);
+
+  const [wishedEmployees, setWishedEmployees] = useState(() => {
+    const saved = localStorage.getItem("birthdayWishedEmployees");
+
+    return saved ? JSON.parse(saved) : [];
+  });
+
+
+
+  const isBirthdayToday = (birthdayDate) => {
+    if (!birthdayDate) return false;
+
+    const today = new Date();
+
+    const birthday = new Date(birthdayDate);
+
+    if (isNaN(birthday.getTime())) {
+      return false;
+    }
+
+    return (
+      birthday.getDate() === today.getDate() &&
+      birthday.getMonth() === today.getMonth()
+    );
+  };
 
   const getMonthBirthday = async () => {
     try {
@@ -673,6 +733,100 @@ const AdminDash = () => {
       setBirthdayLoader(false);
     }
   };
+  const handleBirthdayWish = async (employee) => {
+    console.log("WISH BUTTON CLICKED");
+    console.log("EMPLOYEE:", employee);
+
+    try {
+      const recipientUid = employee?.uid;
+
+      console.log("RECIPIENT UID:", recipientUid);
+
+      if (!recipientUid) {
+        toast.error("Recipient UID not found");
+        return;
+      }
+
+      // Already wished check
+      if (wishedEmployees.includes(recipientUid)) {
+        toast.info("Birthday wish already sent");
+        return;
+      }
+
+      setWishingEmployeeId(recipientUid);
+
+      const companyName = "Pandoza Solutions Pvt.Ltd.";
+
+      const payload = {
+        recipientUids: [recipientUid],
+
+        title: "Happy Birthday! 🎂",
+
+        message: `Wishing ${employee?.employeeName || "you"
+          } a very Happy Birthday! 🎉 From ${companyName}.`,
+
+        type: "birthday",
+
+        referenceId: recipientUid,
+      };
+
+      console.log(
+        "BIRTHDAY NOTIFICATION PAYLOAD:",
+        payload
+      );
+
+      const response = await axios.post(
+        `${BASE_URL_USER}Notification/Admin/create`,
+        payload,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log(
+        "BIRTHDAY NOTIFICATION RESPONSE:",
+        response.data
+      );
+
+      // =====================================
+      // SAVE WISHED EMPLOYEE
+      // =====================================
+
+      setWishedEmployees((prev) => {
+        const updated = [...prev, recipientUid];
+
+        localStorage.setItem(
+          "birthdayWishedEmployees",
+          JSON.stringify(updated)
+        );
+
+        return updated;
+      });
+
+      toast.success(
+        `Birthday wish sent to ${employee?.employeeName}! 🎉`
+      );
+
+    } catch (error) {
+
+      console.error(
+        "BIRTHDAY NOTIFICATION ERROR:",
+        error?.response?.data || error
+      );
+
+      toast.error(
+        error?.response?.data?.message ||
+        error?.response?.data?.responseMessage ||
+        "Unable to send birthday wish"
+      );
+
+    } finally {
+
+      setWishingEmployeeId(null);
+
+    }
+  };
+
   useEffect(() => {
     getEmployeeData();
     getAllLeaves();
@@ -687,7 +841,7 @@ const AdminDash = () => {
     getNotifications();
     getNotificationCount();
     getMonthBirthday();
-  }, []);
+  }, [location.key]);
 
 
   return (
@@ -1315,52 +1469,78 @@ const AdminDash = () => {
 
                 ) : (
 
-                  birthday.map((employee, index) => (
+                  birthday.map((employee, index) => {
 
-                    <div
-                      className="birthday-item"
-                      key={index}
-                    >
+                    const birthdayToday = isBirthdayToday(employee?.date);
 
-                      {/* Employee Avatar */}
-                      <div className="birthday-avatar">
-                        {(employee?.employeeName || "N/A")
-                          .split(" ")
-                          .map((word) => word[0])
-                          .join("")
-                          .toUpperCase()}
-                      </div>
+                    const employeeId =
+                      employee?.uid ??
+                      employee?.id ??
+                      employee?.employeeId;
 
-                      {/* Employee Information */}
-                      <div className="birthday-info">
-
-                        <h4>
-                          {employee?.employeeName || "N/A"}
-                        </h4>
-
-                      </div>
-
-                      {/* Birthday Date */}
-                      <div className="birthday-date">
-                        {employee?.date || "--"}
-                      </div>
-
-                      {/* Wish Button */}
-                      <button
-                        className="wish-button"
-                        onClick={() => {
-                          console.log(
-                            `Wishing ${employee?.employeeName} Happy Birthday!`
-                          );
-                        }}
+                    return (
+                      <div
+                        className={`birthday-item ${birthdayToday ? "birthday-today" : ""
+                          }`}
+                        key={employeeId || index}
                       >
-                        <LuSend />
-                        Wish
-                      </button>
 
-                    </div>
+                        {/* Employee Avatar */}
+                        <div className="birthday-avatar">
+                          {(employee?.employeeName || "N/A")
+                            .split(" ")
+                            .map((word) => word[0])
+                            .join("")
+                            .toUpperCase()}
+                        </div>
 
-                  ))
+                        {/* Employee Information */}
+                        <div className="birthday-info">
+
+                          <h4>
+                            {employee?.employeeName || "N/A"}
+                          </h4>
+
+                          {birthdayToday && (
+                            <span className="birthday-today-text">
+                              🎂 Birthday Today!
+                            </span>
+                          )}
+
+                        </div>
+
+                        {/* Birthday Date */}
+                        <div className="birthday-date">
+                          {employee?.date || "--"}
+                        </div>
+
+                        {/* Wish Button ONLY FOR TODAY'S BIRTHDAY */}
+                        {birthdayToday && (
+                          <button
+                            type="button"
+                            className={`wish-button ${wishedEmployees.includes(employeeId)
+                              ? "wish-sent"
+                              : ""
+                              }`}
+                            disabled={
+                              wishingEmployeeId === employeeId ||
+                              wishedEmployees.includes(employeeId)
+                            }
+                            onClick={() => handleBirthdayWish(employee)}
+                          >
+                            <LuSend />
+
+                            {wishingEmployeeId === employeeId
+                              ? "Sending..."
+                              : wishedEmployees.includes(employeeId)
+                                ? "Wished ✓"
+                                : "Wish"}
+                          </button>
+                        )}
+
+                      </div>
+                    );
+                  })
 
                 )}
 

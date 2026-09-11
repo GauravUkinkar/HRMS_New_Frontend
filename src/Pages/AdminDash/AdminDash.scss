@@ -897,10 +897,112 @@
 
           white-space: nowrap;
         }
+// =========================
+// TODAY'S BIRTHDAY
+// =========================
 
-        // =========================
-        // WISH BUTTON
-        // =========================
+&.birthday-today {
+  position: relative;
+  overflow: hidden;
+
+  background: #fff8e7;
+
+  border: 1px solid rgba(255, 193, 7, 0.45);
+
+  animation: birthdayPulse 2s ease-in-out infinite;
+
+  // Animated background
+  &::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+      radial-gradient(
+        circle at 10% 20%,
+        rgba(7, 255, 251, 0.075),
+        transparent 25%
+      ),
+      radial-gradient(
+        circle at 90% 80%,
+        rgba(167, 233, 239, 0.12),
+        transparent 25%
+      ),
+      radial-gradient(
+        circle at 50% 50%,
+        rgba(255, 105, 180, 0.08),
+        transparent 30%
+      );
+
+    animation: birthdayBackgroundMove 4s ease-in-out infinite alternate;
+
+    pointer-events: none;
+  }
+
+  // Keep content above animation
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+
+
+  .birthday-info {
+
+    h4 {
+      color: #172033;
+    }
+
+    .birthday-today-text {
+      display: block;
+
+      margin-top: 3px;
+
+      font-size: 9px;
+
+      font-weight: 700;
+
+      color: #d88900;
+
+      animation: birthdayTextBlink 1.5s ease-in-out infinite;
+    }
+  }
+
+  .birthday-date {
+    color: #d88900;
+    font-weight: 600;
+  }
+
+  .wish-button {
+    animation: wishButtonPulse 1.5s ease-in-out infinite;
+
+    &:hover {
+      background: #056771;
+
+      transform: scale(1.05);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+
+      cursor: not-allowed;
+
+      animation: none;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 
         .wish-button {
           display: flex;
