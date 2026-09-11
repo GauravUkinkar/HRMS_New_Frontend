@@ -219,21 +219,31 @@ const OfficialNotes = () => {
       // CONVERT OBJECT TO ARRAY
       // --------------------------------------------------------
 
-      const formattedNotes = Object.values(groupedNotifications).map(
-        (note, index) => ({
-          ...note,
+    const formattedNotes = Object.values(groupedNotifications).map(
+  (note, index) => ({
+    ...note,
 
-          key: index + 1,
+    key: index + 1,
 
-          recipientUids: [...new Set(note.recipientUids)],
+    recipientUids: [...new Set(note.recipientUids)],
+    notificationIds: [...new Set(note.notificationIds)],
+  }),
+);
 
-          notificationIds: [...new Set(note.notificationIds)],
-        }),
-      );
+// --------------------------------------------------------
+// SORT NOTES: NEWEST NOTE FIRST
+// --------------------------------------------------------
 
-      console.log("GROUPED OFFICIAL NOTES:", formattedNotes);
+formattedNotes.sort((a, b) => {
+  const dateA = new Date(a.createdAt).getTime();
+  const dateB = new Date(b.createdAt).getTime();
 
-      setNotes(formattedNotes);
+  return dateB - dateA;
+});
+
+console.log("GROUPED OFFICIAL NOTES - NEWEST FIRST:", formattedNotes);
+
+setNotes(formattedNotes);
       setCurrentPage(1);
     } catch (error) {
       console.error("Get Admin Notifications API Error:", error);
@@ -994,9 +1004,7 @@ const OfficialNotes = () => {
       }
     }
   };
-  useEffect(() => {
-    // ();
-  });
+ 
   // ==========================================================
   // FORMAT DATE
   // ==========================================================
