@@ -95,6 +95,9 @@ const TerminationLetter = lazy(() =>
 const Empdashboard = lazy(() =>
   import("./Pages/Empdashboard/Empdashboard")
 );
+const LeaveApplication = lazy(() =>
+  import("./Pages/LeaveApplication/LeaveApplication")
+);
 
 export const routes = [
 
@@ -142,6 +145,12 @@ export const routes = [
     comp: LeaveManagement,
     adminonly: true,
     employeeonly: false,
+  },
+    {
+    name: "LeaveApplication",
+    path: "/leaveApplication",
+    comp: LeaveApplication,
+
   },
 
   {
