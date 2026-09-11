@@ -88,19 +88,14 @@
       font-size: 13px;
       font-weight: 600;
       color: #374151;
-
       border-bottom: 1px solid #e5e7eb;
-
       white-space: nowrap;
     }
 
     td {
       padding: 16px;
-
       vertical-align: top;
-
       color: #374151;
-
       border-bottom: 1px solid #edf0f3;
     }
 
@@ -129,17 +124,13 @@
     .sr-number {
       width: 28px;
       height: 28px;
-
       display: inline-flex;
       align-items: center;
       justify-content: center;
-
       border-radius: 50%;
-
       background: #f1f5f9;
       color: #475569;
-
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
     }
 
@@ -147,8 +138,7 @@
 
     .note-date {
       color: #64748b;
-
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.5;
     }
 
@@ -158,13 +148,10 @@
 
     .note-content {
       max-width: 850px;
-
       color: #334155;
-
       font-size: 14px;
       font-weight: 500;
       line-height: 1.6;
-
       word-break: break-word;
     }
 
@@ -175,49 +162,43 @@
     .note-content-expanded {
       max-width: 850px;
       max-height: 500px;
-
       overflow-y: auto;
-
       padding: 14px 16px;
-
       border: 1px solid #e2e8f0;
       border-radius: 8px;
-
       background: #f8fafc;
       color: #334155;
-
       font-size: 14px;
       line-height: 1.7;
-
       word-break: break-word;
 
       // CKEditor generated HTML
 
-      p {
-        margin: 0 0 10px;
+      // p {
+      //   margin: 0 0 10px;
 
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
+      //   &:last-child {
+      //     margin-bottom: 0;
+      //   }
+      // }
 
       ul,
       ol {
-        margin: 10px 0;
+        // margin: 10px 0;
         padding-left: 24px;
       }
 
       li {
-        margin-bottom: 5px;
+        // margin-bottom: 5px;
       }
 
-      h1,
-      h2,
-      h3,
-      h4 {
-        margin-top: 12px;
-        margin-bottom: 8px;
-      }
+      // h1,
+      // h2,
+      // h3,
+      // h4 {
+      //   // margin-top: 12px;
+      //   // margin-bottom: 8px;
+      // }
 
       a {
         color: #438f9a;
@@ -225,11 +206,9 @@
       }
 
       blockquote {
-        margin: 15px 0;
+        // margin: 15px 0;
         padding: 10px 15px;
-
         border-left: 4px solid #438f9a;
-
         background: #f1f5f9;
         color: #64748b;
       }
@@ -254,166 +233,157 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-    }
+    
 
-    .action-btn {
-      width: 32px;
-      height: 32px;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      border: 1px solid #e5e7eb;
-      border-radius: 5px;
-
-      background: var(--white);
-
-      cursor: pointer;
-      transition: var(--trans);
-
-      .icon {
-        font-size: 17px;
-      }
-    }
-
-    // VIEW BUTTON
-
-    .view-btn {
-      color: var(--accent2);
-      background: #ffffff;
-      border-color: #dbe7f0;
-
-      &:hover {
-        background: #eff6ff;
-        border-color: #9beaec;
-        color: #39bdc7;
-
-        transform: translateY(-1px);
-      }
-
-      &.active {
-        background: #eef6f7;
-        border-color: #b9dce0;
-        color: #438f9a;
-
-        &:hover {
-          background: #e1f1f3;
-          border-color: #9bcbd0;
-          color: #347b86;
-        }
-      }
-    }
-
-    // EDIT BUTTON
-
-    .edit-btn {
-      .icon {
-        color: #498e97;
-      }
-
-      &:hover:not(:disabled) {
-        background: #eef6f7;
-        border-color: #b9dce0;
-      }
-
-      &.disabled {
-        cursor: not-allowed;
-        opacity: 1;
+      .action-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e5e7eb;
+        border-radius: 5px;
+        background: var(--white);
+        cursor: pointer;
+        transition: var(--trans);
 
         .icon {
-          color: #b8d5d9;
+          font-size: 17px;
         }
       }
-    }
 
-    // DELETE BUTTON
+      // VIEW BUTTON
 
-    .delete-btn {
-      color: #dc2626;
+      .view-btn {
+        color: var(--accent2);
+        background: #ffffff;
+        border-color: #dbe7f0;
 
-      &:hover {
-        background: #fef2f2;
-        border-color: #fecaca;
+        &:hover {
+          background: #eff6ff;
+          border-color: #9beaec;
+          color: #39bdc7;
+
+          transform: translateY(-1px);
+        }
+
+        &.active {
+          background: #eef6f7;
+          border-color: #b9dce0;
+          color: #438f9a;
+
+          &:hover {
+            background: #e1f1f3;
+            border-color: #9bcbd0;
+            color: #347b86;
+          }
+        }
+      }
+
+      // EDIT BUTTON
+
+      .edit-btn {
+        .icon {
+          color: #498e97;
+        }
+
+        &:hover:not(:disabled) {
+          background: #eef6f7;
+          border-color: #b9dce0;
+        }
+
+        &.disabled {
+          cursor: not-allowed;
+          opacity: 1;
+
+          .icon {
+            color: #b8d5d9;
+          }
+        }
+      }
+
+      // DELETE BUTTON
+
+      .delete-btn {
+        color: #dc2626;
+
+        &:hover {
+          background: #fef2f2;
+          border-color: #fecaca;
+        }
       }
     }
   }
 
   // ==========================================================
-  // TABLE FOOTER
+  // NOTES FOOTER
   // ==========================================================
 
- // ==========================================================
-// NOTES FOOTER
-// ==========================================================
+  .notes-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0 5px;
+  }
 
-.notes-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 18px 0 5px;
-}
+  .notes-count {
+    font-size: 14px;
+    color: #334155;
+  }
 
-.notes-count {
-  font-size: 13px;
-  color: #334155;
-}
+  // ==========================================================
+  // PAGINATION
+  // ==========================================================
 
-// ==========================================================
-// PAGINATION
-// ==========================================================
+  .pagination {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+  .pagination-pages {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 
-.pagination-pages {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
+  .pagination-btn,
+  .pagination-number {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
 
-.pagination-btn,
-.pagination-number {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 10px;
+    border: 1px solid #dbe4ea;
+    border-radius: 6px;
 
-  border: 1px solid #dbe4ea;
-  border-radius: 6px;
+    background: #ffffff;
+    color: #334155;
 
-  background: #ffffff;
-  color: #334155;
+    font-size: 13px;
+    cursor: pointer;
 
-  font-size: 13px;
-  cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  f .pagination-number {
+    padding: 0;
+  }
 
-  transition: all 0.2s ease;
-}
+  .pagination-btn:hover:not(:disabled),
+  .pagination-number:hover {
+    border-color: #4c9aa5;
+    color: #4c9aa5;
+  }
 
-.pagination-number {
-  padding: 0;
-}
+  .pagination-number.active {
+    background: #4c9aa5;
+    border-color: #4c9aa5;
+    color: #ffffff;
+  }
 
-.pagination-btn:hover:not(:disabled),
-.pagination-number:hover {
-  border-color: #4c9aa5;
-  color: #4c9aa5;
-}
-
-.pagination-number.active {
-  background: #4c9aa5;
-  border-color: #4c9aa5;
-  color: #ffffff;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
+  .pagination-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 
   // ==========================================================
   // TABLE MESSAGES
@@ -901,9 +871,6 @@
   }
 }
 
-
-
-
 // ============================================================
 // RESPONSIVE DESIGN
 // ============================================================
@@ -957,6 +924,13 @@
 
     .note-modal-footer {
       padding: 14px 16px;
+    }
+
+    .notes-footer {
+      justify-content: flex-end;
+      .notes-count {
+        display: none;
+      }
     }
   }
 }

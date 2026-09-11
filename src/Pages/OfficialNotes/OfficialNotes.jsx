@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { FaPlus } from "react-icons/fa";
 import {
@@ -37,15 +39,18 @@ const OfficialNotes = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const NOTES_PER_PAGE = 10;
+  const NOTES_PER_PAGE = 7;
+
   // ==========================================================
   // EMPLOYEE STATE
   // ==========================================================
 
   const [employees, setEmployees] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
+
   const [employeeLoading, setEmployeeLoading] = useState(false);
   const [employeeError, setEmployeeError] = useState("");
+
   const [isEmployeeDropdownOpen, setIsEmployeeDropdownOpen] = useState(false);
 
   // ==========================================================
@@ -54,7 +59,12 @@ const OfficialNotes = () => {
 
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
   const [editingNoteId, setEditingNoteId] = useState(null);
+
+  // Stores complete notification returned by
+  // GET /Notification/getNotificationById
+  const [editingNotification, setEditingNotification] = useState(null);
 
   const [noteTitle, setNoteTitle] = useState("");
   const [noteContent, setNoteContent] = useState("");
@@ -98,16 +108,17 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // GET ALL OFFICIAL NOTES / ADMIN NOTIFICATIONS
-  // GET /Notification/AdminNotifications
+  // GET ALL OFFICIAL NOTES
+  // GET /Notification/getAdminNotifications
   // ==========================================================
+
   const getOfficialNotes = async () => {
     try {
       setNotesLoading(true);
       setNotesError("");
 
       const res = await axios.get(
-        `${BASE_URL}Notification/AdminNotifications`,
+        `${BASE_URL}Notification/getAdminNotifications`,
         {
           withCredentials: true,
         },
@@ -115,9 +126,9 @@ const OfficialNotes = () => {
 
       console.log("GET ADMIN NOTIFICATIONS RESPONSE:", res.data);
 
-      // ========================================================
+      // --------------------------------------------------------
       // ONLY OFFICIAL NOTES
-      // ========================================================
+      // --------------------------------------------------------
 
       const officialNotifications = Array.isArray(res.data)
         ? res.data.filter(
@@ -125,30 +136,16 @@ const OfficialNotes = () => {
           )
         : [];
 
-      // ========================================================
+      // --------------------------------------------------------
       // GROUP NOTIFICATIONS
-      // ========================================================
+      //
+      // One official note may create multiple notification
+      // records - one record for every recipient.
+      // --------------------------------------------------------
 
       const groupedNotifications = {};
 
       officialNotifications.forEach((item) => {
-        /*
-         * Normalize createdAt to minute.
-         *
-         * Example:
-         *
-         * 2026-09-09T14:31:10
-         * 2026-09-09T14:31:11
-         * 2026-09-09T14:31:12
-         *
-         * All become:
-         *
-         * 2026-09-09T14:31
-         *
-         * Therefore, notifications created for multiple
-         * employees at the same time are grouped together.
-         */
-
         let normalizedCreatedAt = "";
 
         if (item?.createdAt) {
@@ -166,52 +163,61 @@ const OfficialNotes = () => {
           item?.type || "",
         ].join("___");
 
-        // ======================================================
+        // ------------------------------------------------------
         // CREATE GROUP
-        // ======================================================
+        // ------------------------------------------------------
 
         if (!groupedNotifications[groupKey]) {
           groupedNotifications[groupKey] = {
             key: Object.keys(groupedNotifications).length + 1,
 
+            // First notification ID
             notesId: item?.id,
 
+            // All notification IDs in this group
             notificationIds: [],
 
             title: item?.title || "",
-
             discription: item?.message || "",
-
             createdAt: item?.createdAt || "",
-
             type: item?.type || "",
 
-            referenceId: item?.referenceId,
+            referenceId: item?.referenceId ?? 0,
 
+            // All recipients
             recipientUids: [],
 
+            // Complete notification objects
             notifications: [],
           };
         }
 
-        // ======================================================
-        // ADD RECIPIENT
-        // ======================================================
+        // ------------------------------------------------------
+        // STORE NOTIFICATION ID
+        // ------------------------------------------------------
+
+        if (item?.id !== null && item?.id !== undefined) {
+          groupedNotifications[groupKey].notificationIds.push(item.id);
+        }
+
+        // ------------------------------------------------------
+        // STORE RECIPIENT UID
+        // ------------------------------------------------------
 
         if (item?.recipientUid !== null && item?.recipientUid !== undefined) {
           groupedNotifications[groupKey].recipientUids.push(item.recipientUid);
         }
 
-        // ======================================================
-        // STORE ORIGINAL NOTIFICATION
-        // ======================================================
+        // ------------------------------------------------------
+        // STORE COMPLETE NOTIFICATION
+        // ------------------------------------------------------
 
         groupedNotifications[groupKey].notifications.push(item);
       });
 
-      // ========================================================
+      // --------------------------------------------------------
       // CONVERT OBJECT TO ARRAY
-      // ========================================================
+      // --------------------------------------------------------
 
       const formattedNotes = Object.values(groupedNotifications).map(
         (note, index) => ({
@@ -219,8 +225,9 @@ const OfficialNotes = () => {
 
           key: index + 1,
 
-          // Remove duplicate employee IDs
           recipientUids: [...new Set(note.recipientUids)],
+
+          notificationIds: [...new Set(note.notificationIds)],
         }),
       );
 
@@ -248,75 +255,8 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // PAGINATION
-  // ==========================================================
-
-  const totalPages = Math.ceil(notes.length / NOTES_PER_PAGE);
-
-  const startIndex = (currentPage - 1) * NOTES_PER_PAGE;
-  const endIndex = startIndex + NOTES_PER_PAGE;
-
-  const currentNotes = notes.slice(startIndex, endIndex);
-  // ==========================================================
-  // GET SENT TO TEXT
-  // ==========================================================
-
-  const getSentToText = (recipientUids) => {
-    if (!recipientUids || recipientUids.length === 0) {
-      return "-";
-    }
-
-    // All employee IDs
-    const allEmployeeIds = employees
-      .map((employee) => employee.employeeId)
-      .filter((id) => id !== null && id !== undefined);
-
-    // Remove duplicate IDs
-    const uniqueRecipientIds = [...new Set(recipientUids)];
-
-    // ========================================================
-    // SENT TO ALL EMPLOYEES
-    // ========================================================
-
-    if (
-      allEmployeeIds.length > 0 &&
-      uniqueRecipientIds.length === allEmployeeIds.length &&
-      allEmployeeIds.every((id) =>
-        uniqueRecipientIds.some(
-          (recipientId) => String(recipientId) === String(id),
-        ),
-      )
-    ) {
-      return "All Employees";
-    }
-
-    // ========================================================
-    // SENT TO SPECIFIC EMPLOYEES
-    // ========================================================
-
-    const employeeNames = uniqueRecipientIds
-      .map((recipientId) => {
-        const employee = employees.find(
-          (item) => String(item.employeeId) === String(recipientId),
-        );
-
-        return employee?.employeeName;
-      })
-      .filter(Boolean);
-
-    // ========================================================
-    // IF EMPLOYEE NAME NOT FOUND
-    // ========================================================
-
-    if (employeeNames.length === 0) {
-      return `${uniqueRecipientIds.length} Employees`;
-    }
-
-    return employeeNames.join(", ");
-  };
-
-  // ==========================================================
   // GET ALL EMPLOYEES
+  // GET /Admin/GetAllEmployee
   // ==========================================================
 
   const getAllEmployees = async () => {
@@ -331,15 +271,29 @@ const OfficialNotes = () => {
       console.log("GET ALL EMPLOYEES RESPONSE:", res.data);
 
       const formattedEmployees = Array.isArray(res.data)
-        ? res.data.map((item, index) => ({
-            key: index + 1,
-            employeeId: item?.data?.uid,
-            employeeName: item?.data?.employeeName,
-            department: item?.data?.department,
-            designation: item?.data?.designation,
-            email: item?.data?.email,
-            contactNumber: item?.data?.contactNumber,
-          }))
+        ? res.data
+            .map((item, index) => ({
+              key: index + 1,
+
+              // IMPORTANT:
+              // Your employee API returns UID inside data.uid
+              employeeId: item?.data?.uid,
+
+              employeeName: item?.data?.employeeName,
+
+              department: item?.data?.department,
+
+              designation: item?.data?.designation,
+
+              email: item?.data?.email,
+
+              contactNumber: item?.data?.contactNumber,
+            }))
+            .filter(
+              (employee) =>
+                employee.employeeId !== null &&
+                employee.employeeId !== undefined,
+            )
         : [];
 
       setEmployees(formattedEmployees);
@@ -374,18 +328,84 @@ const OfficialNotes = () => {
   }, []);
 
   // ==========================================================
+  // PAGINATION
+  // ==========================================================
+
+  const totalPages = Math.ceil(notes.length / NOTES_PER_PAGE);
+
+  const startIndex = (currentPage - 1) * NOTES_PER_PAGE;
+
+  const endIndex = startIndex + NOTES_PER_PAGE;
+
+  const currentNotes = notes.slice(startIndex, endIndex);
+
+  // ==========================================================
+  // GET SENT TO TEXT
+  // ==========================================================
+
+  const getSentToText = (recipientUids) => {
+    if (!recipientUids || recipientUids.length === 0) {
+      return "-";
+    }
+
+    const allEmployeeIds = employees
+      .map((employee) => employee.employeeId)
+      .filter((id) => id !== null && id !== undefined);
+
+    const uniqueRecipientIds = [...new Set(recipientUids)];
+
+    // --------------------------------------------------------
+    // ALL EMPLOYEES
+    // --------------------------------------------------------
+
+    if (
+      allEmployeeIds.length > 0 &&
+      uniqueRecipientIds.length === allEmployeeIds.length &&
+      allEmployeeIds.every((id) =>
+        uniqueRecipientIds.some(
+          (recipientId) => String(recipientId) === String(id),
+        ),
+      )
+    ) {
+      return "All Employees";
+    }
+
+    // --------------------------------------------------------
+    // SPECIFIC EMPLOYEES
+    // --------------------------------------------------------
+
+    const employeeNames = uniqueRecipientIds
+      .map((recipientId) => {
+        const employee = employees.find(
+          (item) => String(item.employeeId) === String(recipientId),
+        );
+
+        return employee?.employeeName;
+      })
+      .filter(Boolean);
+
+    if (employeeNames.length === 0) {
+      return `${uniqueRecipientIds.length} Employees`;
+    }
+
+    return employeeNames.join(", ");
+  };
+
+  // ==========================================================
   // OPEN ADD NOTE MODAL
   // ==========================================================
 
   const handleAddNote = () => {
     setIsEditing(false);
     setEditingNoteId(null);
+    setEditingNotification(null);
 
     setNoteTitle("");
     setNoteContent("");
     setNoteCreatedAt("");
 
     setSelectedEmployees([]);
+
     setIsEmployeeDropdownOpen(false);
 
     setShowNoteModal(true);
@@ -400,12 +420,14 @@ const OfficialNotes = () => {
 
     setIsEditing(false);
     setEditingNoteId(null);
+    setEditingNotification(null);
 
     setNoteTitle("");
     setNoteContent("");
     setNoteCreatedAt("");
 
     setSelectedEmployees([]);
+
     setIsEmployeeDropdownOpen(false);
   };
 
@@ -425,7 +447,7 @@ const OfficialNotes = () => {
     if (checked) {
       const allEmployeeIds = employees
         .map((employee) => employee.employeeId)
-        .filter(Boolean);
+        .filter((id) => id !== null && id !== undefined);
 
       setSelectedEmployees(allEmployeeIds);
     } else {
@@ -440,7 +462,11 @@ const OfficialNotes = () => {
   const handleEmployeeSelection = (employeeId, checked) => {
     if (checked) {
       setSelectedEmployees((previous) => {
-        if (previous.includes(employeeId)) {
+        const alreadySelected = previous.some(
+          (id) => String(id) === String(employeeId),
+        );
+
+        if (alreadySelected) {
           return previous;
         }
 
@@ -448,7 +474,7 @@ const OfficialNotes = () => {
       });
     } else {
       setSelectedEmployees((previous) =>
-        previous.filter((id) => id !== employeeId),
+        previous.filter((id) => String(id) !== String(employeeId)),
       );
     }
   };
@@ -471,6 +497,7 @@ const OfficialNotes = () => {
     }
 
     const createdDate = new Date(note.createdAt);
+
     const today = new Date();
 
     const createdIndiaDate = createdDate.toLocaleDateString("en-IN", {
@@ -485,60 +512,108 @@ const OfficialNotes = () => {
   };
 
   // ==========================================================
-  // GET NOTE BY ID + EDIT
+  // GET NOTIFICATION BY ID + EDIT
+  //
+  // GET /Notification/getNotificationById?id={id}
   // ==========================================================
 
   const handleEdit = async (note) => {
     if (!isEditAllowed(note)) {
-      alert("This note can only be edited on the day it was created.");
+      toast.warning("This note can only be edited on the day it was created.");
       return;
     }
 
     try {
+      // ------------------------------------------------------
+      // GET ORIGINAL NOTIFICATION
+      // ------------------------------------------------------
+
       const res = await axios.get(
-        `${BASE_URL}AuthController/getOfficialNotesByNotesId?noteId=${note.notesId}`,
+        `${BASE_URL}Notification/getNotificationById?id=${note.notesId}`,
         {
           withCredentials: true,
         },
       );
 
-      console.log("GET NOTE BY ID RESPONSE:", res.data);
+      console.log("GET NOTIFICATION BY ID RESPONSE:", res.data);
 
-      const selectedNote = res.data?.data;
+      const selectedNotification = res.data?.data;
 
-      if (!selectedNote) {
-        alert("Note not found.");
+      if (!selectedNotification) {
+        toast.error("Notification not found.");
         return;
       }
 
+      // ------------------------------------------------------
+      // SET EDIT MODE
+      // ------------------------------------------------------
+
       setIsEditing(true);
-      setEditingNoteId(selectedNote.notesId);
-      setNoteCreatedAt(selectedNote.createdAt);
 
-      setNoteTitle("");
-      setNoteContent(selectedNote.discription || "");
+      setEditingNoteId(selectedNotification.id);
 
-      setSelectedEmployees([]);
+      setEditingNotification(selectedNotification);
+
+      setNoteTitle(selectedNotification.title || "");
+
+      setNoteContent(selectedNotification.message || "");
+
+      setNoteCreatedAt(selectedNotification.createdAt || "");
+
+      // ------------------------------------------------------
+      // LOAD EXISTING RECIPIENTS
+      // ------------------------------------------------------
+
+      let existingRecipients = [];
+
+      if (Array.isArray(selectedNotification.recipientUids)) {
+        existingRecipients = selectedNotification.recipientUids;
+      } else if (
+        selectedNotification.recipientUid !== null &&
+        selectedNotification.recipientUid !== undefined
+      ) {
+        existingRecipients = [selectedNotification.recipientUid];
+      }
+
+      // ------------------------------------------------------
+      // FALLBACK TO GROUPED NOTE RECIPIENTS
+      // ------------------------------------------------------
+
+      if (
+        existingRecipients.length === 0 &&
+        Array.isArray(note.recipientUids)
+      ) {
+        existingRecipients = note.recipientUids;
+      }
+
+      existingRecipients = [...new Set(existingRecipients)];
+
+      console.log("EXISTING RECIPIENTS FOR EDIT:", existingRecipients);
+
+      setSelectedEmployees(existingRecipients);
+
       setIsEmployeeDropdownOpen(false);
 
       setShowNoteModal(true);
     } catch (error) {
-      console.error("Get Official Note By ID API Error:", error);
+      console.error("Get Notification By ID API Error:", error);
 
       if (error.response?.status === 401) {
-        alert("Authentication required.");
+        toast.error("Authentication required.");
       } else if (error.response?.status === 403) {
-        alert("You are not authorized to view this note.");
+        toast.error("You are not authorized to view this notification.");
       } else if (error.response?.status === 404) {
-        alert("Note not found.");
+        toast.error("Notification not found.");
       } else {
-        alert("Failed to load note.");
+        toast.error("Failed to load notification.");
       }
     }
   };
 
+  // ==========================================================
   // DELETE NOTE
-  // DELETE /Notification/deleteNotification/{notificationId}
+  //
+  // DELETE /Notification/deleteNotification/{id}
   // ==========================================================
 
   const handleDelete = async (note) => {
@@ -558,19 +633,31 @@ const OfficialNotes = () => {
         },
       );
 
-      // Remove deleted note from UI immediately
+      // ------------------------------------------------------
+      // REMOVE FROM UI
+      // ------------------------------------------------------
+
       setNotes((previousNotes) =>
-        previousNotes.filter((item) => item.notesId !== note.notesId),
+        previousNotes.filter(
+          (item) => String(item.notesId) !== String(note.notesId),
+        ),
       );
 
-      // Close expanded note
-      if (expandedNoteId === note.notesId) {
+      // ------------------------------------------------------
+      // CLOSE EXPANDED NOTE
+      // ------------------------------------------------------
+
+      if (String(expandedNoteId) === String(note.notesId)) {
         setExpandedNoteId(null);
       }
 
-      // Keep pagination correct
+      // ------------------------------------------------------
+      // PAGINATION
+      // ------------------------------------------------------
+
       setCurrentPage((previousPage) => {
-        const remainingNotes = notes.length - 1;
+        const remainingNotes = Math.max(0, notes.length - 1);
+
         const newTotalPages = Math.max(
           1,
           Math.ceil(remainingNotes / NOTES_PER_PAGE),
@@ -579,18 +666,18 @@ const OfficialNotes = () => {
         return Math.min(previousPage, newTotalPages);
       });
 
-      // alert("Official note deleted successfully.");
+      toast.success("Official note deleted successfully.");
     } catch (error) {
       console.error("Delete Notification API Error:", error);
 
       if (error.response?.status === 401) {
-        alert("Authentication required.");
+        toast.warning("Authentication required.");
       } else if (error.response?.status === 403) {
-        alert("You are not authorized to delete this notification.");
+        toast.warning("You are not authorized to delete this notification.");
       } else if (error.response?.status === 404) {
-        alert("Notification not found.");
+        toast.warning("Notification not found.");
       } else {
-        alert(
+        toast.error(
           error.response?.data?.message ||
             error.response?.data ||
             error.message ||
@@ -606,51 +693,67 @@ const OfficialNotes = () => {
 
   const handleSubmitNote = async () => {
     try {
-      // --------------------------------------------------------
+      // ========================================================
       // VALIDATION
-      // --------------------------------------------------------
+      // ========================================================
 
       if (!noteTitle || noteTitle.trim() === "") {
-        alert("Please enter a title.");
+        toast.warning("Please enter a title.");
         return;
       }
 
       if (!noteContent || noteContent.trim() === "") {
-        alert("Please enter a note.");
+        toast.warning("Please enter a note.");
         return;
       }
 
       // ========================================================
       // ADD NEW NOTE
+      //
       // POST /Notification/Admin/create
       // ========================================================
 
       if (!isEditing) {
-        /*
-         * If employees are selected:
-         * send selected employee IDs.
-         *
-         * If no employee is selected:
-         * send the note to all employees.
-         */
+        let recipientUids = [];
 
-        const recipientUids =
-          selectedEmployees.length > 0
-            ? selectedEmployees
-            : employees.map((employee) => employee.employeeId).filter(Boolean);
+        // ------------------------------------------------------
+        // IF EMPLOYEES ARE SELECTED
+        // ------------------------------------------------------
+
+        if (selectedEmployees.length > 0) {
+          recipientUids = [...new Set(selectedEmployees)];
+        } else {
+          // ----------------------------------------------------
+          // NO SELECTION = ALL EMPLOYEES
+          // ----------------------------------------------------
+
+          recipientUids = [
+            ...new Set(
+              employees
+                .map((employee) => employee.employeeId)
+                .filter((id) => id !== null && id !== undefined),
+            ),
+          ];
+        }
 
         if (recipientUids.length === 0) {
-          alert("No employees available.");
+          toast.error("No employees available.");
           return;
         }
 
-        // IMPORTANT:
-        // Property names exactly match Swagger API.
+        // ------------------------------------------------------
+        // CREATE REQUEST
+        // ------------------------------------------------------
+
         const notificationData = {
           recipientUids: recipientUids,
+
           title: noteTitle.trim(),
+
           message: noteContent,
+
           type: "Official_Note",
+
           referenceId: 0,
         };
 
@@ -666,7 +769,7 @@ const OfficialNotes = () => {
 
         console.log("CREATE OFFICIAL NOTE RESPONSE:", res.data);
 
-        alert("Official note sent successfully.");
+        toast.success("Official note sent successfully.");
 
         handleCloseNote();
 
@@ -677,55 +780,212 @@ const OfficialNotes = () => {
 
       // ========================================================
       // UPDATE EXISTING NOTE
+      //
+      // PUT /Notification/update
+      //
+      // Swagger requires:
+      //
+      // {
+      //   id,
+      //   recipientUid,
+      //   senderUid,
+      //   title,
+      //   message,
+      //   type,
+      //   referenceId,
+      //   isRead,
+      //   createdAt,
+      //   readAt
+      // }
       // ========================================================
 
-      if (!editingNoteId) {
-        alert("Note ID is missing.");
+      if (editingNoteId === null || editingNoteId === undefined) {
+        toast.error("Notification ID is missing.");
         return;
       }
 
       if (!noteCreatedAt) {
-        alert("Created date is missing.");
+        toast.error("Created date is missing.");
         return;
       }
 
-      const updateData = {
-        notesId: editingNoteId,
-        discription: noteContent,
-        createdAt: noteCreatedAt,
-      };
+      // --------------------------------------------------------
+      // FIND GROUPED NOTE
+      // --------------------------------------------------------
 
-      console.log("UPDATE OFFICIAL NOTE REQUEST:", updateData);
+      const currentNote = notes.find(
+        (item) =>
+          String(item.notesId) === String(editingNoteId) ||
+          item.notificationIds?.some(
+            (id) => String(id) === String(editingNoteId),
+          ),
+      );
 
-      await axios.put(`${BASE_URL}Admin/updateOfficialNotes`, updateData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
+      if (!currentNote) {
+        toast.error("Current notification data was not found.");
+        return;
+      }
+
+      // --------------------------------------------------------
+      // GET ALL NOTIFICATION RECORDS
+      // --------------------------------------------------------
+      //
+      // Each recipient normally has one notification record.
+      //
+      // Example:
+      //
+      // ID 101 -> Employee 10
+      // ID 102 -> Employee 20
+      // ID 103 -> Employee 30
+      //
+      // We update each notification separately.
+      // --------------------------------------------------------
+
+      let notificationsToUpdate = [];
+
+      if (Array.isArray(currentNote.notifications)) {
+        notificationsToUpdate = currentNote.notifications.filter(
+          (notification) =>
+            notification?.id !== null && notification?.id !== undefined,
+        );
+      }
+
+      // --------------------------------------------------------
+      // FALLBACK
+      // --------------------------------------------------------
+
+      if (notificationsToUpdate.length === 0) {
+        const notificationIds = Array.isArray(currentNote.notificationIds)
+          ? currentNote.notificationIds
+          : [editingNoteId];
+
+        notificationsToUpdate = notificationIds.map((id) => ({
+          id: id,
+
+          recipientUid: currentNote.recipientUids?.[0] ?? 0,
+
+          senderUid: editingNotification?.senderUid ?? 0,
+
+          title: currentNote.title || "",
+
+          message: currentNote.discription || "",
+
+          type: currentNote.type || "Official_Note",
+
+          referenceId: currentNote.referenceId ?? 0,
+
+          isRead: false,
+
+          createdAt: currentNote.createdAt || noteCreatedAt,
+
+          readAt: null,
+        }));
+      }
+
+      if (notificationsToUpdate.length === 0) {
+        toast.error("Notification IDs are missing.");
+        return;
+      }
+
+      console.log("NOTIFICATIONS TO UPDATE:", notificationsToUpdate);
+
+      // ========================================================
+      // CREATE PUT REQUESTS
+      // ========================================================
+
+      const updateRequests = notificationsToUpdate.map((notification) => {
+        // --------------------------------------------------
+        // IMPORTANT:
+        // Use notification.id
+        //
+        // NOT editingNoteId
+        // --------------------------------------------------
+
+        const updateData = {
+          id: notification.id,
+
+          // Preserve original recipient.
+          recipientUid: notification.recipientUid ?? 0,
+
+          // UPDATED TITLE
+          title: noteTitle.trim(),
+
+          // UPDATED MESSAGE
+          message: noteContent,
+
+          // Preserve notification type.
+          type:
+            notification.type ||
+            editingNotification?.type ||
+            currentNote.type ||
+            "Official_Note",
+        };
+
+        console.log(
+          `PUT /Notification/update - ID ${notification.id}:`,
+          updateData,
+        );
+
+        return axios.put(
+          `${BASE_URL}Notification/updateNotification `,
+          updateData,
+          {
+            withCredentials: true,
+          },
+        );
       });
 
-      alert("Official note updated successfully.");
+      // ========================================================
+      // EXECUTE ALL PUT REQUESTS
+      // ========================================================
+
+      const updateResponses = await Promise.all(updateRequests);
+
+      console.log(
+        "UPDATE NOTIFICATION RESPONSES:",
+        updateResponses.map((response) => response.data),
+      );
+
+      console.log("ALL NOTIFICATIONS UPDATED SUCCESSFULLY");
+
+      toast.success("Official note updated successfully.");
+
+      // --------------------------------------------------------
+      // CLOSE MODAL
+      // --------------------------------------------------------
 
       handleCloseNote();
+
+      // --------------------------------------------------------
+      // REFRESH TABLE
+      // --------------------------------------------------------
 
       await getOfficialNotes();
     } catch (error) {
       console.error("Official Note API Error:", error);
 
+      // --------------------------------------------------------
+      // API ERROR HANDLING
+      // --------------------------------------------------------
+
       if (error.response?.status === 400) {
-        alert(
+        toast.error(
           error.response?.data?.message ||
             error.response?.data ||
             "Invalid request.",
         );
       } else if (error.response?.status === 401) {
-        alert("Authentication required.");
+        toast.error("Authentication required.");
       } else if (error.response?.status === 403) {
-        alert("You are not authorized to perform this action.");
+        toast.error(
+          isEditing
+            ? "You are not authorized to update this notification."
+            : "You are not authorized to create this notification.",
+        );
       } else if (error.response?.status === 404) {
-        alert("Note not found.");
+        toast.error("Notification not found.");
       } else {
-        alert(
+        toast.error(
           error.response?.data?.message ||
             error.response?.data ||
             error.message ||
@@ -734,7 +994,9 @@ const OfficialNotes = () => {
       }
     }
   };
-
+  useEffect(() => {
+    // ();
+  });
   // ==========================================================
   // FORMAT DATE
   // ==========================================================
@@ -744,7 +1006,13 @@ const OfficialNotes = () => {
       return "-";
     }
 
-    return new Date(createdAt).toLocaleString("en-IN", {
+    const date = new Date(createdAt);
+
+    if (isNaN(date.getTime())) {
+      return "-";
+    }
+
+    return date.toLocaleString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -752,6 +1020,19 @@ const OfficialNotes = () => {
       minute: "2-digit",
     });
   };
+
+  // ==========================================================
+  // CHECK ALL EMPLOYEES
+  // ==========================================================
+
+  const areAllEmployeesSelected =
+    employees.length > 0 &&
+    selectedEmployees.length === employees.length &&
+    employees.every((employee) =>
+      selectedEmployees.some(
+        (selectedId) => String(selectedId) === String(employee.employeeId),
+      ),
+    );
 
   // ==========================================================
   // JSX
@@ -793,7 +1074,9 @@ const OfficialNotes = () => {
             }}
           >
             <div className="note-modal">
-              {/* MODAL HEADER */}
+              {/* ==================================================
+                  MODAL HEADER
+              ================================================== */}
 
               <div className="note-modal-header">
                 <h2>
@@ -810,113 +1093,124 @@ const OfficialNotes = () => {
                 </button>
               </div>
 
-              {/* MODAL BODY */}
+              {/* ==================================================
+                  MODAL BODY
+              ================================================== */}
 
               <div className="note-modal-body">
-                {/* SEND TO */}
+                {/* ==================================================
+                    SEND TO
+                ================================================== */}
 
-                {!isEditing && (
-                  <div className="note-form-group">
-                    <label>Send To</label>
+                <div className="note-form-group">
+                  <label>Send To</label>
 
-                    <div className="employee-dropdown">
-                      {/* DROPDOWN HEADER */}
+                  <div className="employee-dropdown">
+                    {/* DROPDOWN HEADER */}
 
-                      <button
-                        type="button"
-                        className="employee-dropdown-header"
-                        onClick={handleEmployeeDropdown}
-                      >
-                        <span>
-                          {selectedEmployees.length === 0
-                            ? "All Employees"
-                            : selectedEmployees.length === 1
-                              ? "1 Employee Selected"
-                              : `${selectedEmployees.length} Employees Selected`}
-                        </span>
+                    <button
+                      type="button"
+                      className="employee-dropdown-header"
+                      onClick={handleEmployeeDropdown}
+                    >
+                      <span>
+                        {selectedEmployees.length === 0
+                          ? "All Employees"
+                          : selectedEmployees.length === 1
+                            ? "1 Employee Selected"
+                            : `${selectedEmployees.length} Employees Selected`}
+                      </span>
 
-                        <span className="dropdown-arrow">
-                          {isEmployeeDropdownOpen ? "⌃" : "⌄"}
-                        </span>
-                      </button>
+                      <span className="dropdown-arrow">
+                        {isEmployeeDropdownOpen ? "⌃" : "⌄"}
+                      </span>
+                    </button>
 
-                      {/* DROPDOWN MENU */}
+                    {/* DROPDOWN MENU */}
 
-                      {isEmployeeDropdownOpen && (
-                        <div className="employee-dropdown-menu">
-                          {/* LOADING */}
+                    {isEmployeeDropdownOpen && (
+                      <div className="employee-dropdown-menu">
+                        {/* LOADING */}
 
-                          {employeeLoading && (
-                            <div className="employee-loading">
-                              Loading employees...
-                            </div>
-                          )}
+                        {employeeLoading && (
+                          <div className="employee-loading">
+                            Loading employees...
+                          </div>
+                        )}
 
-                          {/* ERROR */}
+                        {/* ERROR */}
 
-                          {!employeeLoading && employeeError && (
-                            <div className="employee-error">
-                              {employeeError}
-                            </div>
-                          )}
+                        {!employeeLoading && employeeError && (
+                          <div className="employee-error">{employeeError}</div>
+                        )}
 
-                          {/* EMPLOYEES */}
+                        {/* EMPLOYEES */}
 
-                          {!employeeLoading &&
-                            !employeeError &&
-                            employees.length > 0 && (
-                              <>
-                                {/* ALL EMPLOYEES */}
+                        {!employeeLoading &&
+                          !employeeError &&
+                          employees.length > 0 && (
+                            <>
+                              {/* ALL EMPLOYEES */}
 
-                                <label className="employee-option">
+                              <label className="employee-option">
+                                <input
+                                  type="checkbox"
+                                  checked={areAllEmployeesSelected}
+                                  onChange={(event) =>
+                                    handleSelectAllEmployees(
+                                      event.target.checked,
+                                    )
+                                  }
+                                />
+
+                                <span>All Employees</span>
+                              </label>
+
+                              {/* INDIVIDUAL EMPLOYEES */}
+
+                              {employees.map((employee) => (
+                                <label
+                                  key={employee.employeeId}
+                                  className="employee-option"
+                                >
                                   <input
                                     type="checkbox"
-                                    checked={
-                                      selectedEmployees.length ===
-                                      employees.length
-                                    }
+                                    checked={selectedEmployees.some(
+                                      (selectedId) =>
+                                        String(selectedId) ===
+                                        String(employee.employeeId),
+                                    )}
                                     onChange={(event) =>
-                                      handleSelectAllEmployees(
+                                      handleEmployeeSelection(
+                                        employee.employeeId,
                                         event.target.checked,
                                       )
                                     }
                                   />
 
-                                  <span>All Employees</span>
+                                  <span>{employee.employeeName}</span>
                                 </label>
+                              ))}
+                            </>
+                          )}
 
-                                {/* INDIVIDUAL EMPLOYEES */}
+                        {/* NO EMPLOYEES */}
 
-                                {employees.map((employee) => (
-                                  <label
-                                    key={employee.employeeId}
-                                    className="employee-option"
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedEmployees.includes(
-                                        employee.employeeId,
-                                      )}
-                                      onChange={(event) =>
-                                        handleEmployeeSelection(
-                                          employee.employeeId,
-                                          event.target.checked,
-                                        )
-                                      }
-                                    />
-
-                                    <span>{employee.employeeName}</span>
-                                  </label>
-                                ))}
-                              </>
-                            )}
-                        </div>
-                      )}
-                    </div>
+                        {!employeeLoading &&
+                          !employeeError &&
+                          employees.length === 0 && (
+                            <div className="employee-error">
+                              No employees found.
+                            </div>
+                          )}
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
 
-                {/* TITLE */}
+                {/* ==================================================
+                    TITLE
+                ================================================== */}
 
                 <div className="note-form-group">
                   <label htmlFor="note-title">Title</label>
@@ -928,18 +1222,12 @@ const OfficialNotes = () => {
                     placeholder="Enter notification title..."
                     value={noteTitle}
                     onChange={(event) => setNoteTitle(event.target.value)}
-                    disabled={isEditing}
                   />
-
-                  {isEditing && (
-                    <small className="edit-title-info">
-                      Title cannot be changed because the update API does not
-                      return a title field.
-                    </small>
-                  )}
                 </div>
 
-                {/* MESSAGE */}
+                {/* ==================================================
+                    MESSAGE
+                ================================================== */}
 
                 <div className="note-form-group">
                   <label>Message</label>
@@ -953,6 +1241,7 @@ const OfficialNotes = () => {
                       }}
                       config={{
                         placeholder: "Enter official note...",
+
                         toolbar: [
                           "heading",
                           "|",
@@ -975,7 +1264,9 @@ const OfficialNotes = () => {
                 </div>
               </div>
 
-              {/* MODAL FOOTER */}
+              {/* ==================================================
+                  MODAL FOOTER
+              ================================================== */}
 
               <div className="note-modal-footer">
                 <button
@@ -1011,6 +1302,7 @@ const OfficialNotes = () => {
                 <th className="date-column">Date &amp; Time Posted On</th>
 
                 <th className="note-column">Note Title</th>
+
                 <th className="sent-to-column">Sent To</th>
 
                 <th className="action-column">Action</th>
@@ -1018,7 +1310,9 @@ const OfficialNotes = () => {
             </thead>
 
             <tbody>
-              {/* LOADING */}
+              {/* ==================================================
+                  LOADING
+              ================================================== */}
 
               {notesLoading && (
                 <tr>
@@ -1028,7 +1322,9 @@ const OfficialNotes = () => {
                 </tr>
               )}
 
-              {/* ERROR */}
+              {/* ==================================================
+                  ERROR
+              ================================================== */}
 
               {!notesLoading && notesError && (
                 <tr>
@@ -1038,19 +1334,36 @@ const OfficialNotes = () => {
                 </tr>
               )}
 
-              {/* EMPTY */}
+              {/* ==================================================
+                  EMPTY
+              ================================================== */}
+
+              {!notesLoading && !notesError && notes.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="table-message">
+                    No official notes found.
+                  </td>
+                </tr>
+              )}
+
+              {/* ==================================================
+                  NOTES
+              ================================================== */}
 
               {!notesLoading &&
                 !notesError &&
                 currentNotes.map((note, index) => {
-                  const isExpanded = expandedNoteId === note.notesId;
+                  const isExpanded =
+                    String(expandedNoteId) === String(note.notesId);
 
                   return (
                     <tr
                       key={note.notesId}
                       className={isExpanded ? "note-row-expanded" : ""}
                     >
-                      {/* SERIAL */}
+                      {/* ==================================================
+                            SERIAL
+                        ================================================== */}
 
                       <td className="sr-column">
                         <span className="sr-number">
@@ -1058,7 +1371,9 @@ const OfficialNotes = () => {
                         </span>
                       </td>
 
-                      {/* DATE */}
+                      {/* ==================================================
+                            DATE
+                        ================================================== */}
 
                       <td className="date-column">
                         <span className="note-date">
@@ -1066,7 +1381,9 @@ const OfficialNotes = () => {
                         </span>
                       </td>
 
-                      {/* NOTE TITLE */}
+                      {/* ==================================================
+                            NOTE TITLE / CONTENT
+                        ================================================== */}
 
                       <td className="note-column">
                         {isExpanded ? (
@@ -1075,7 +1392,6 @@ const OfficialNotes = () => {
                               {note.title || "-"}
                             </div>
 
-                            {/* Optional: show message when expanded */}
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: note.discription || "",
@@ -1089,13 +1405,19 @@ const OfficialNotes = () => {
                         )}
                       </td>
 
+                      {/* ==================================================
+                            SENT TO
+                        ================================================== */}
+
                       <td className="sent-to-column">
                         <span className="sent-to-text">
                           {getSentToText(note.recipientUids)}
                         </span>
                       </td>
 
-                      {/* ACTIONS */}
+                      {/* ==================================================
+                            ACTIONS
+                        ================================================== */}
 
                       <td className="action-column">
                         <div className="note-actions">
@@ -1155,7 +1477,9 @@ const OfficialNotes = () => {
           </table>
         </div>
 
-        {/* FOOTER */}
+        {/* ==================================================
+            FOOTER
+        ================================================== */}
 
         <div className="notes-footer">
           <div className="notes-count">
@@ -1167,8 +1491,14 @@ const OfficialNotes = () => {
                 )} of ${notes.length} notes`}
           </div>
 
+          {/* ==================================================
+              PAGINATION
+          ================================================== */}
+
           {totalPages > 1 && (
             <div className="pagination">
+              {/* PREVIOUS */}
+
               <button
                 type="button"
                 className="pagination-btn"
@@ -1180,9 +1510,13 @@ const OfficialNotes = () => {
                 Previous
               </button>
 
+              {/* PAGE NUMBERS */}
+
               <div className="pagination-pages">
                 {Array.from(
-                  { length: totalPages },
+                  {
+                    length: totalPages,
+                  },
                   (_, index) => index + 1,
                 ).map((page) => (
                   <button
@@ -1197,6 +1531,8 @@ const OfficialNotes = () => {
                   </button>
                 ))}
               </div>
+
+              {/* NEXT */}
 
               <button
                 type="button"
