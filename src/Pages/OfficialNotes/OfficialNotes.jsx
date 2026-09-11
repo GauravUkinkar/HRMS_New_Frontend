@@ -3,6 +3,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+
 import { FaPlus } from "react-icons/fa";
 import {
   MdEdit,
@@ -71,10 +72,17 @@ const OfficialNotes = () => {
   const [noteCreatedAt, setNoteCreatedAt] = useState("");
 
   // ==========================================================
-  // NOTE VIEW STATE
-  // ==========================================================
+// NOTE VIEW STATE
+// ==========================================================
 
-  const [expandedNoteId, setExpandedNoteId] = useState(null);
+const [expandedNoteId, setExpandedNoteId] = useState(null);
+
+// ==========================================================
+// NOTE DETAILS POPUP STATE
+// ==========================================================
+
+const [showNoteDetailsModal, setShowNoteDetailsModal] = useState(false);
+const [selectedNote, setSelectedNote] = useState(null);
 
   // ==========================================================
   // REMOVE HTML
@@ -219,21 +227,31 @@ const OfficialNotes = () => {
       // CONVERT OBJECT TO ARRAY
       // --------------------------------------------------------
 
-      const formattedNotes = Object.values(groupedNotifications).map(
-        (note, index) => ({
-          ...note,
+    const formattedNotes = Object.values(groupedNotifications).map(
+  (note, index) => ({
+    ...note,
 
-          key: index + 1,
+    key: index + 1,
 
-          recipientUids: [...new Set(note.recipientUids)],
+    recipientUids: [...new Set(note.recipientUids)],
+    notificationIds: [...new Set(note.notificationIds)],
+  }),
+);
 
-          notificationIds: [...new Set(note.notificationIds)],
-        }),
-      );
+// --------------------------------------------------------
+// SORT NOTES: NEWEST NOTE FIRST
+// --------------------------------------------------------
 
-      console.log("GROUPED OFFICIAL NOTES:", formattedNotes);
+formattedNotes.sort((a, b) => {
+  const dateA = new Date(a.createdAt).getTime();
+  const dateB = new Date(b.createdAt).getTime();
 
-      setNotes(formattedNotes);
+  return dateB - dateA;
+});
+
+console.log("GROUPED OFFICIAL NOTES - NEWEST FIRST:", formattedNotes);
+
+setNotes(formattedNotes);
       setCurrentPage(1);
     } catch (error) {
       console.error("Get Admin Notifications API Error:", error);
@@ -479,14 +497,16 @@ const OfficialNotes = () => {
     }
   };
 
-  // ==========================================================
-  // VIEW / HIDE NOTE
-  // ==========================================================
+ const handleToggleNote = (note) => {
+  setSelectedNote(note);
+  setShowNoteDetailsModal(true);
+  setExpandedNoteId(null);
+};
 
-  const handleToggleNote = (noteId) => {
-    setExpandedNoteId((previousId) => (previousId === noteId ? null : noteId));
-  };
-
+const handleCloseNoteDetails = () => {
+  setShowNoteDetailsModal(false);
+  setSelectedNote(null);
+};
   // ==========================================================
   // CHECK EDIT ALLOWED
   // ==========================================================
@@ -518,97 +538,111 @@ const OfficialNotes = () => {
   // ==========================================================
 
   const handleEdit = async (note) => {
-    if (!isEditAllowed(note)) {
-      toast.warning("This note can only be edited on the day it was created.");
+  if (!isEditAllowed(note)) {
+    toast.warning(
+      "This note can only be edited on the day it was created.",
+    );
+    return;
+  }
+
+  try {
+    // ------------------------------------------------------
+    // GET ORIGINAL NOTIFICATION
+    // ------------------------------------------------------
+
+    const res = await axios.get(
+      `${BASE_URL}Notification/getNotificationById?id=${note.notesId}`,
+      {
+        withCredentials: true,
+      },
+    );
+
+    console.log("GET NOTIFICATION BY ID RESPONSE:", res.data);
+
+    const selectedNotification = res.data?.data;
+
+    if (!selectedNotification) {
+      toast.error("Notification not found.");
       return;
     }
 
-    try {
-      // ------------------------------------------------------
-      // GET ORIGINAL NOTIFICATION
-      // ------------------------------------------------------
+    // ------------------------------------------------------
+    // SET EDIT MODE
+    // ------------------------------------------------------
 
-      const res = await axios.get(
-        `${BASE_URL}Notification/getNotificationById?id=${note.notesId}`,
-        {
-          withCredentials: true,
-        },
-      );
+    setIsEditing(true);
 
-      console.log("GET NOTIFICATION BY ID RESPONSE:", res.data);
+    setEditingNoteId(selectedNotification.id);
 
-      const selectedNotification = res.data?.data;
+    setEditingNotification(selectedNotification);
 
-      if (!selectedNotification) {
-        toast.error("Notification not found.");
-        return;
-      }
+    setNoteTitle(selectedNotification.title || "");
 
-      // ------------------------------------------------------
-      // SET EDIT MODE
-      // ------------------------------------------------------
+    setNoteContent(selectedNotification.message || "");
 
-      setIsEditing(true);
+    setNoteCreatedAt(selectedNotification.createdAt || "");
 
-      setEditingNoteId(selectedNotification.id);
+    // ------------------------------------------------------
+    // IMPORTANT:
+    // USE GROUPED NOTE RECIPIENTS
+    //
+    // note.recipientUids contains ALL employees who received
+    // this official note.
+    //
+    // Do NOT use only selectedNotification.recipientUid.
+    // ------------------------------------------------------
 
-      setEditingNotification(selectedNotification);
+    let existingRecipients = [];
 
-      setNoteTitle(selectedNotification.title || "");
-
-      setNoteContent(selectedNotification.message || "");
-
-      setNoteCreatedAt(selectedNotification.createdAt || "");
-
-      // ------------------------------------------------------
-      // LOAD EXISTING RECIPIENTS
-      // ------------------------------------------------------
-
-      let existingRecipients = [];
-
-      if (Array.isArray(selectedNotification.recipientUids)) {
-        existingRecipients = selectedNotification.recipientUids;
-      } else if (
-        selectedNotification.recipientUid !== null &&
-        selectedNotification.recipientUid !== undefined
-      ) {
-        existingRecipients = [selectedNotification.recipientUid];
-      }
-
-      // ------------------------------------------------------
-      // FALLBACK TO GROUPED NOTE RECIPIENTS
-      // ------------------------------------------------------
-
-      if (
-        existingRecipients.length === 0 &&
-        Array.isArray(note.recipientUids)
-      ) {
-        existingRecipients = note.recipientUids;
-      }
-
-      existingRecipients = [...new Set(existingRecipients)];
-
-      console.log("EXISTING RECIPIENTS FOR EDIT:", existingRecipients);
-
-      setSelectedEmployees(existingRecipients);
-
-      setIsEmployeeDropdownOpen(false);
-
-      setShowNoteModal(true);
-    } catch (error) {
-      console.error("Get Notification By ID API Error:", error);
-
-      if (error.response?.status === 401) {
-        toast.error("Authentication required.");
-      } else if (error.response?.status === 403) {
-        toast.error("You are not authorized to view this notification.");
-      } else if (error.response?.status === 404) {
-        toast.error("Notification not found.");
-      } else {
-        toast.error("Failed to load notification.");
-      }
+    if (
+      Array.isArray(note.recipientUids) &&
+      note.recipientUids.length > 0
+    ) {
+      existingRecipients = [...new Set(note.recipientUids)];
+    } else if (
+      Array.isArray(selectedNotification.recipientUids) &&
+      selectedNotification.recipientUids.length > 0
+    ) {
+      existingRecipients = [
+        ...new Set(selectedNotification.recipientUids),
+      ];
+    } else if (
+      selectedNotification.recipientUid !== null &&
+      selectedNotification.recipientUid !== undefined
+    ) {
+      existingRecipients = [selectedNotification.recipientUid];
     }
-  };
+
+    console.log(
+      "ALL EXISTING RECIPIENTS FOR EDIT:",
+      existingRecipients,
+    );
+
+    // ------------------------------------------------------
+    // SET ALL RECIPIENTS IN EDIT DROPDOWN
+    // ------------------------------------------------------
+
+    setSelectedEmployees(existingRecipients);
+
+    setIsEmployeeDropdownOpen(false);
+
+    setShowNoteModal(true);
+  } catch (error) {
+    console.error("Get Notification By ID API Error:", error);
+
+    if (error.response?.status === 401) {
+      toast.error("Authentication required.");
+    } else if (error.response?.status === 403) {
+      toast.error(
+        "You are not authorized to view this notification.",
+      );
+    } else if (error.response?.status === 404) {
+      toast.error("Notification not found.");
+    } else {
+      toast.error("Failed to load notification.");
+    }
+  }
+};
 
   // ==========================================================
   // DELETE NOTE
@@ -778,189 +812,300 @@ const OfficialNotes = () => {
         return;
       }
 
-      // ========================================================
-      // UPDATE EXISTING NOTE
-      //
-      // PUT /Notification/update
-      //
-      // Swagger requires:
-      //
-      // {
-      //   id,
-      //   recipientUid,
-      //   senderUid,
-      //   title,
-      //   message,
-      //   type,
-      //   referenceId,
-      //   isRead,
-      //   createdAt,
-      //   readAt
-      // }
-      // ========================================================
+     // ========================================================
+// UPDATE EXISTING NOTE
+// ========================================================
 
-      if (editingNoteId === null || editingNoteId === undefined) {
-        toast.error("Notification ID is missing.");
-        return;
-      }
+if (editingNoteId === null || editingNoteId === undefined) {
+  toast.error("Notification ID is missing.");
+  return;
+}
 
-      if (!noteCreatedAt) {
-        toast.error("Created date is missing.");
-        return;
-      }
+if (!noteCreatedAt) {
+  toast.error("Created date is missing.");
+  return;
+}
 
-      // --------------------------------------------------------
-      // FIND GROUPED NOTE
-      // --------------------------------------------------------
+// --------------------------------------------------------
+// FIND GROUPED NOTE
+// --------------------------------------------------------
 
-      const currentNote = notes.find(
-        (item) =>
-          String(item.notesId) === String(editingNoteId) ||
-          item.notificationIds?.some(
-            (id) => String(id) === String(editingNoteId),
-          ),
-      );
+const currentNote = notes.find(
+  (item) =>
+    String(item.notesId) === String(editingNoteId) ||
+    item.notificationIds?.some(
+      (id) => String(id) === String(editingNoteId),
+    ),
+);
 
-      if (!currentNote) {
-        toast.error("Current notification data was not found.");
-        return;
-      }
+if (!currentNote) {
+  toast.error("Current notification data was not found.");
+  return;
+}
 
-      // --------------------------------------------------------
-      // GET ALL NOTIFICATION RECORDS
-      // --------------------------------------------------------
-      //
-      // Each recipient normally has one notification record.
-      //
-      // Example:
-      //
-      // ID 101 -> Employee 10
-      // ID 102 -> Employee 20
-      // ID 103 -> Employee 30
-      //
-      // We update each notification separately.
-      // --------------------------------------------------------
+// --------------------------------------------------------
+// GET ALL EXISTING NOTIFICATION RECORDS
+// --------------------------------------------------------
 
-      let notificationsToUpdate = [];
+let existingNotifications = [];
 
-      if (Array.isArray(currentNote.notifications)) {
-        notificationsToUpdate = currentNote.notifications.filter(
-          (notification) =>
-            notification?.id !== null && notification?.id !== undefined,
-        );
-      }
+if (Array.isArray(currentNote.notifications)) {
+  existingNotifications = currentNote.notifications.filter(
+    (notification) =>
+      notification?.id !== null &&
+      notification?.id !== undefined,
+  );
+}
 
-      // --------------------------------------------------------
-      // FALLBACK
-      // --------------------------------------------------------
+// --------------------------------------------------------
+// SAFETY CHECK
+// --------------------------------------------------------
 
-      if (notificationsToUpdate.length === 0) {
-        const notificationIds = Array.isArray(currentNote.notificationIds)
-          ? currentNote.notificationIds
-          : [editingNoteId];
+if (existingNotifications.length === 0) {
+  toast.error("Existing notification records were not found.");
+  return;
+}
 
-        notificationsToUpdate = notificationIds.map((id) => ({
-          id: id,
+console.log(
+  "EXISTING NOTIFICATION RECORDS:",
+  existingNotifications,
+);
 
-          recipientUid: currentNote.recipientUids?.[0] ?? 0,
+// --------------------------------------------------------
+// GET SELECTED RECIPIENTS
+//
+// EMPTY = ALL EMPLOYEES
+// --------------------------------------------------------
 
-          senderUid: editingNotification?.senderUid ?? 0,
+let newRecipientUids = [];
 
-          title: currentNote.title || "",
+if (selectedEmployees.length > 0) {
+  newRecipientUids = [...new Set(selectedEmployees)];
+} else {
+  newRecipientUids = [
+    ...new Set(
+      employees
+        .map((employee) => employee.employeeId)
+        .filter(
+          (id) =>
+            id !== null &&
+            id !== undefined,
+        ),
+    ),
+  ];
+}
 
-          message: currentNote.discription || "",
+if (newRecipientUids.length === 0) {
+  toast.error("No employees selected.");
+  return;
+}
 
-          type: currentNote.type || "Official_Note",
+console.log(
+  "NEW RECIPIENT UIDS:",
+  newRecipientUids,
+);
 
-          referenceId: currentNote.referenceId ?? 0,
+// --------------------------------------------------------
+// EXISTING RECIPIENTS
+// --------------------------------------------------------
 
-          isRead: false,
+const oldRecipientUids = [
+  ...new Set(
+    existingNotifications
+      .map((notification) => notification.recipientUid)
+      .filter(
+        (id) =>
+          id !== null &&
+          id !== undefined,
+      ),
+  ),
+];
 
-          createdAt: currentNote.createdAt || noteCreatedAt,
+console.log(
+  "OLD RECIPIENT UIDS:",
+  oldRecipientUids,
+);
 
-          readAt: null,
-        }));
-      }
+// --------------------------------------------------------
+// FIND:
+// 1. RECIPIENTS TO KEEP
+// 2. RECIPIENTS TO ADD
+// 3. RECIPIENTS TO REMOVE
+// --------------------------------------------------------
 
-      if (notificationsToUpdate.length === 0) {
-        toast.error("Notification IDs are missing.");
-        return;
-      }
+const recipientsToKeep = newRecipientUids.filter(
+  (newId) =>
+    oldRecipientUids.some(
+      (oldId) =>
+        String(oldId) === String(newId),
+    ),
+);
 
-      console.log("NOTIFICATIONS TO UPDATE:", notificationsToUpdate);
+const recipientsToAdd = newRecipientUids.filter(
+  (newId) =>
+    !oldRecipientUids.some(
+      (oldId) =>
+        String(oldId) === String(newId),
+    ),
+);
 
-      // ========================================================
-      // CREATE PUT REQUESTS
-      // ========================================================
+const recipientsToRemove = oldRecipientUids.filter(
+  (oldId) =>
+    !newRecipientUids.some(
+      (newId) =>
+        String(newId) === String(oldId),
+    ),
+);
 
-      const updateRequests = notificationsToUpdate.map((notification) => {
-        // --------------------------------------------------
-        // IMPORTANT:
-        // Use notification.id
-        //
-        // NOT editingNoteId
-        // --------------------------------------------------
+console.log("RECIPIENTS TO KEEP:", recipientsToKeep);
 
-        const updateData = {
-          id: notification.id,
+console.log("RECIPIENTS TO ADD:", recipientsToAdd);
 
-          // Preserve original recipient.
-          recipientUid: notification.recipientUid ?? 0,
+console.log(
+  "RECIPIENTS TO REMOVE:",
+  recipientsToRemove,
+);
 
-          // UPDATED TITLE
-          title: noteTitle.trim(),
+// ========================================================
+// 1. UPDATE EXISTING NOTIFICATIONS
+// ========================================================
+//
+// Only update records whose recipients are still selected.
+// This changes title + message.
+//
+// ========================================================
 
-          // UPDATED MESSAGE
-          message: noteContent,
+const updateRequests = existingNotifications
+  .filter((notification) =>
+    recipientsToKeep.some(
+      (recipientId) =>
+        String(recipientId) ===
+        String(notification.recipientUid),
+    ),
+  )
+  .map((notification) => {
+    const updateData = {
+      id: notification.id,
 
-          // Preserve notification type.
-          type:
-            notification.type ||
-            editingNotification?.type ||
-            currentNote.type ||
-            "Official_Note",
-        };
+      recipientUid: notification.recipientUid,
 
-        console.log(
-          `PUT /Notification/update - ID ${notification.id}:`,
-          updateData,
-        );
+      title: noteTitle.trim(),
 
-        return axios.put(
-          `${BASE_URL}Notification/updateNotification `,
-          updateData,
-          {
-            withCredentials: true,
-          },
-        );
-      });
+      message: noteContent,
 
-      // ========================================================
-      // EXECUTE ALL PUT REQUESTS
-      // ========================================================
+      type:
+        notification.type ||
+        editingNotification?.type ||
+        currentNote.type ||
+        "Official_Note",
+    };
 
-      const updateResponses = await Promise.all(updateRequests);
+    console.log(
+      `UPDATE NOTIFICATION - ID ${notification.id}:`,
+      updateData,
+    );
 
-      console.log(
-        "UPDATE NOTIFICATION RESPONSES:",
-        updateResponses.map((response) => response.data),
-      );
+    return axios.put(
+     `${BASE_URL}Notification/updateNotification`,
+      updateData,
+      {
+        withCredentials: true,
+      },
+    );
+  });
 
-      console.log("ALL NOTIFICATIONS UPDATED SUCCESSFULLY");
+// ========================================================
+// 2. CREATE NOTIFICATIONS FOR NEW RECIPIENTS
+// ========================================================
 
-      toast.success("Official note updated successfully.");
+let createRequest = null;
 
-      // --------------------------------------------------------
-      // CLOSE MODAL
-      // --------------------------------------------------------
+if (recipientsToAdd.length > 0) {
+  const createData = {
+    recipientUids: recipientsToAdd,
 
-      handleCloseNote();
+    title: noteTitle.trim(),
 
-      // --------------------------------------------------------
-      // REFRESH TABLE
-      // --------------------------------------------------------
+    message: noteContent,
 
-      await getOfficialNotes();
+    type:
+      editingNotification?.type ||
+      currentNote.type ||
+      "Official_Note",
+
+    referenceId:
+      editingNotification?.referenceId ??
+      currentNote.referenceId ??
+      0,
+  };
+
+  console.log(
+    "CREATE NOTIFICATIONS FOR NEW RECIPIENTS:",
+    createData,
+  );
+
+  createRequest = axios.post(
+    `${BASE_URL}Notification/Admin/create`,
+    createData,
+    {
+      withCredentials: true,
+    },
+  );
+}
+
+// ========================================================
+// 3. DELETE NOTIFICATIONS FOR REMOVED RECIPIENTS
+// ========================================================
+
+const deleteRequests = existingNotifications
+  .filter((notification) =>
+    recipientsToRemove.some(
+      (recipientId) =>
+        String(recipientId) ===
+        String(notification.recipientUid),
+    ),
+  )
+  .map((notification) => {
+    console.log(
+      `DELETE NOTIFICATION - ID ${notification.id}`,
+    );
+
+    return axios.delete(
+      `${BASE_URL}Notification/deleteNotification/${notification.id}`,
+      {
+        withCredentials: true,
+      },
+    );
+  });
+
+// ========================================================
+// EXECUTE ALL REQUESTS
+// ========================================================
+
+const allRequests = [
+  ...updateRequests,
+  ...deleteRequests,
+];
+
+if (createRequest) {
+  allRequests.push(createRequest);
+}
+
+await Promise.all(allRequests);
+
+console.log(
+  "ALL UPDATE / CREATE / DELETE OPERATIONS COMPLETED",
+);
+
+// ========================================================
+// SUCCESS
+// ========================================================
+
+toast.success("Official note updated successfully.");
+
+handleCloseNote();
+
+await getOfficialNotes();
     } catch (error) {
       console.error("Official Note API Error:", error);
 
@@ -994,9 +1139,7 @@ const OfficialNotes = () => {
       }
     }
   };
-  useEffect(() => {
-    // ();
-  });
+ 
   // ==========================================================
   // FORMAT DATE
   // ==========================================================
@@ -1428,7 +1571,7 @@ const OfficialNotes = () => {
                             className={`action-btn view-btn ${
                               isExpanded ? "active" : ""
                             }`}
-                            onClick={() => handleToggleNote(note.notesId)}
+                            onClick={() => handleToggleNote(note)}
                             title={
                               isExpanded ? "Close Full Note" : "View Full Note"
                             }
@@ -1548,6 +1691,164 @@ const OfficialNotes = () => {
           )}
         </div>
       </div>
+
+
+      {/* ==================================================
+    NOTE DETAILS POPUP
+================================================== */}
+
+{showNoteDetailsModal && selectedNote && (
+  <div
+    className="note-details-modal-overlay"
+    onClick={handleCloseNoteDetails}
+  >
+    <div
+      className="note-details-modal"
+      onClick={(event) => event.stopPropagation()}
+    >
+      {/* ==================================================
+          POPUP HEADER
+      ================================================== */}
+
+      <div className="note-details-modal-header">
+        <h2>Note Details</h2>
+
+        <button
+          type="button"
+          className="note-details-close-icon"
+          onClick={handleCloseNoteDetails}
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* ==================================================
+          POPUP BODY
+      ================================================== */}
+
+      <div className="note-details-modal-body">
+
+        {/* POSTED ON */}
+
+        <div className="note-details-field posted-field">
+          <div className="note-details-label">
+            Posted on
+          </div>
+
+          <div className="note-details-value">
+            {formatDate(selectedNote.createdAt)}
+          </div>
+        </div>
+
+        {/* TITLE */}
+
+        <div className="note-details-field">
+          <div className="note-details-label">
+            TITLE
+          </div>
+
+          <div className="note-details-title-value">
+            {selectedNote.title || "-"}
+          </div>
+        </div>
+
+        {/* MESSAGE */}
+
+        <div className="note-details-field">
+          <div className="note-details-label">
+            MESSAGE
+          </div>
+
+          <div
+            className="note-details-message"
+            dangerouslySetInnerHTML={{
+              __html: selectedNote.discription || "",
+            }}
+          />
+        </div>
+
+        {/* SEND TO */}
+
+        <div className="note-details-field">
+          <div className="note-details-label">
+            SEND TO
+          </div>
+
+          <div className="note-details-recipients">
+            {(() => {
+              const recipientIds = selectedNote.recipientUids || [];
+
+              if (recipientIds.length === 0) {
+                return (
+                  <span className="note-recipient-chip">
+                    No recipients
+                  </span>
+                );
+              }
+
+              const recipientNames = recipientIds.map(
+                (recipientId) => {
+                  const employee = employees.find(
+                    (item) =>
+                      String(item.employeeId) ===
+                      String(recipientId),
+                  );
+
+                  return (
+                    employee?.employeeName ||
+                    `Employee ${recipientId}`
+                  );
+                },
+              );
+
+              const visibleRecipients =
+                recipientNames.slice(0, 3);
+
+              const remainingCount =
+                recipientNames.length - visibleRecipients.length;
+
+              return (
+                <>
+                  {visibleRecipients.map(
+                    (name, index) => (
+                      <span
+                        key={`${name}-${index}`}
+                        className="note-recipient-chip"
+                      >
+                        {name}
+                      </span>
+                    ),
+                  )}
+
+                  {remainingCount > 0 && (
+                    <span className="note-recipient-more">
+                      +{remainingCount}
+                    </span>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      </div>
+
+      {/* ==================================================
+          POPUP FOOTER
+      ================================================== */}
+
+      <div className="note-details-modal-footer">
+        <button
+          type="button"
+          className="note-details-close-btn"
+          onClick={handleCloseNoteDetails}
+        >
+          [ Close ]
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </MainPanel>
   );
 };

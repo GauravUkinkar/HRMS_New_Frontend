@@ -233,7 +233,6 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-    
 
       .action-btn {
         width: 32px;
@@ -471,18 +470,15 @@
 
   .close-btn {
     position: absolute;
-
     top: 50%;
     right: 16px;
-
     width: 32px;
     height: 32px;
-
     display: flex;
     align-items: center;
     justify-content: center;
 
-    transform: translateY(-50%);
+    // transform: translateY(-50%);
 
     border: none;
     border-radius: 5px;
@@ -494,14 +490,14 @@
 
     cursor: pointer;
 
-    &:hover {
-      background: #f3f4f6 !important;
-      color: #111827 !important;
-    }
+    // &:hover {
+    //   background: #f3f4f6 !important;
+    //   color: #111827 !important;
+    // }
 
-    svg {
-      font-size: 17px;
-    }
+    // svg {
+    //   font-size: 17px;
+    // }
   }
 
   // ==========================================================
@@ -871,6 +867,512 @@
   }
 }
 
+// ============================================================
+// NOTE DETAILS VIEW POPUP
+// ============================================================
+
+// ============================================================
+// NOTE DETAILS VIEW POPUP
+// LIGHT TEAL DESIGN
+// ============================================================
+
+.note-details-modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  // Light overlay instead of black
+  background: rgba(235, 245, 247, 0.72);
+
+  backdrop-filter: blur(2px);
+}
+
+// ============================================================
+// MAIN POPUP
+// ============================================================
+
+.note-details-modal {
+  width: 100%;
+  max-width: 1060px;
+
+  max-height: 90vh;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: #ffffff;
+
+  color: #173447;
+
+  border: 2px solid #b5e7ea;
+
+  border-radius: 7px;
+
+  box-shadow:
+    0 10px 30px rgba(44, 101, 115, 0.12),
+    0 2px 8px rgba(44, 101, 115, 0.06);
+
+  font-family: inherit;
+}
+
+// ============================================================
+// HEADER
+// ============================================================
+
+.note-details-modal-header {
+  min-height: 68px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 24px;
+
+  background: #eaf8f8;
+
+  border-bottom: 2px solid #d3eff0;
+
+  h2 {
+    margin: 0;
+
+    color: #173447;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    line-height: 1.2;
+  }
+}
+
+// ============================================================
+// HEADER CLOSE X
+// ============================================================
+
+.note-details-close-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 5px;
+
+  background: transparent;
+
+  color: #173447;
+
+  font-family: Arial, sans-serif;
+
+  font-size: 22px;
+  font-weight: 400;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #d9f1f2;
+    color: #006f78;
+  }
+}
+
+// ============================================================
+// BODY
+// ============================================================
+
+.note-details-modal-body {
+  flex: 1;
+
+  min-height: 0;
+
+  padding: 24px 26px;
+
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 26px;
+
+  background: #ffffff;
+
+  scrollbar-width: thin;
+
+  scrollbar-color: #a8dfe2 #ffffff;
+}
+
+// ============================================================
+// FIELD
+// ============================================================
+
+.note-details-field {
+  width: 100%;
+}
+
+// ============================================================
+// LABEL
+// ============================================================
+
+.note-details-label {
+  margin-bottom: 8px;
+
+  color: #5f8299;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  line-height: 1.25;
+
+  letter-spacing: 0;
+
+  text-transform: uppercase;
+}
+
+// Posted on should NOT be uppercase
+
+.posted-field {
+  .note-details-label {
+    text-transform: none;
+  }
+}
+
+// ============================================================
+// POSTED DATE
+// ============================================================
+
+.note-details-value {
+  color: #173447;
+
+  font-size: 21px;
+  font-weight: 500;
+
+  line-height: 1.5;
+}
+
+// ============================================================
+// TITLE
+// ============================================================
+
+.note-details-title-value {
+  color: #173447;
+
+  font-size: 20px;
+  font-weight: 500;
+
+  line-height: 1.5;
+
+  word-break: break-word;
+}
+
+// ============================================================
+// MESSAGE BOX
+// ============================================================
+
+.note-details-message {
+  min-height: 116px;
+
+  max-height: 260px;
+
+  overflow-y: auto;
+
+  padding: 20px;
+
+  border: 2px solid #b5e7ea;
+
+  border-radius: 7px;
+
+  background: #eefafa;
+
+  color: #173447;
+
+  font-size: 18px;
+
+  font-weight: 500;
+
+  line-height: 1.6;
+
+  word-break: break-word;
+
+  scrollbar-width: thin;
+
+  scrollbar-color: #9ed8dc #eefafa;
+
+  p {
+    margin: 0 0 10px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  ul,
+  ol {
+    margin: 0 0 10px;
+
+    padding-left: 22px;
+  }
+
+  a {
+    color: #007982;
+
+    text-decoration: underline;
+  }
+
+  blockquote {
+    margin: 10px 0;
+
+    padding-left: 12px;
+
+    border-left: 3px solid #9ddfe2;
+  }
+}
+
+// ============================================================
+// SEND TO
+// ============================================================
+
+.note-details-recipients {
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  color: #173447;
+}
+
+// ============================================================
+// RECIPIENT CHIP
+// ============================================================
+
+.note-recipient-chip {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  min-height: 44px;
+
+  padding: 6px 22px;
+
+  border: 1px solid #c6ecee;
+
+  border-radius: 12px;
+
+  background: #e5f7f7;
+
+  color: #087782;
+
+  font-size: 18px;
+
+  font-weight: 600;
+
+  line-height: 1.2;
+}
+
+// ============================================================
+// +3
+// ============================================================
+
+.note-recipient-more {
+  display: inline-flex;
+
+  align-items: center;
+
+  color: #087782;
+
+  font-size: 18px;
+
+  font-weight: 700;
+}
+
+// ============================================================
+// FOOTER
+// ============================================================
+
+.note-details-modal-footer {
+  min-height: 84px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  padding: 14px 26px;
+
+  border-top: 2px solid #d3eff0;
+
+  background: #ffffff;
+}
+
+// ============================================================
+// CLOSE BUTTON
+// ============================================================
+
+.note-details-close-btn {
+  min-width: 124px;
+  min-height: 52px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 22px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #dff5f5;
+
+  color: #007782;
+
+  font-family: inherit;
+
+  font-size: 18px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #cceff0;
+
+    color: #00666e;
+  }
+}
+
+// ============================================================
+// RESPONSIVE
+// ============================================================
+
+@media (max-width: 768px) {
+
+  .note-details-modal-overlay {
+    padding: 12px;
+  }
+
+  .note-details-modal {
+    max-height: 94vh;
+
+    border-radius: 7px;
+  }
+
+  .note-details-modal-header {
+    min-height: 58px;
+
+    padding: 0 16px;
+
+    h2 {
+      font-size: 22px;
+    }
+  }
+
+  .note-details-modal-body {
+    padding: 20px 16px;
+
+    gap: 22px;
+  }
+
+  .note-details-label {
+    font-size: 15px;
+  }
+
+  .note-details-value {
+    font-size: 17px;
+  }
+
+  .note-details-title-value {
+    font-size: 17px;
+  }
+
+  .note-details-message {
+    min-height: 100px;
+
+    padding: 15px;
+
+    font-size: 16px;
+  }
+
+  .note-recipient-chip {
+    min-height: 38px;
+
+    padding: 5px 14px;
+
+    font-size: 15px;
+  }
+
+  .note-details-modal-footer {
+    min-height: 70px;
+
+    padding: 10px 16px;
+  }
+
+  .note-details-close-btn {
+    min-width: 100px;
+    min-height: 44px;
+
+    font-size: 16px;
+  }
+}
+
+// ============================================================
+// MOBILE
+// ============================================================
+
+@media (max-width: 768px) {
+  .note-details-modal-overlay {
+    padding: 12px;
+  }
+
+  .note-details-modal {
+    width: 100%;
+
+    max-height: 92vh;
+  }
+
+  .note-details-modal-header {
+    min-height: 46px;
+
+    padding-left: 14px;
+  }
+
+  .note-details-modal-body {
+    padding: 14px;
+
+    gap: 18px;
+  }
+
+  .note-details-message {
+    max-height: 180px;
+  }
+
+  .note-details-modal-footer {
+    padding: 8px 14px;
+  }
+}
 // ============================================================
 // RESPONSIVE DESIGN
 // ============================================================
