@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import "./OfferLetter.scss";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
@@ -22,6 +22,9 @@ import { MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const companyConfig = {
   "The Indian Journey": {
@@ -79,74 +82,75 @@ const InternshipOfferLetter = ({
         : { possessive: "their", reflexive: "them" };
 
   return (
-   <div className="page-wrapper">
+    <div className="page-wrapper">
 
-     <div className="internship-pdf-page">
-      <img
-        className="pan-water-mark"
-        src={selectedCompany.watermark}
-        alt="Company Watermark"
-      />
+      <div className="internship-pdf-page">
+        <img
+          className="pan-water-mark"
+          src={selectedCompany.watermark}
+          alt="Company Watermark"
+        />
 
-      <div className="internship-header">
-        <div className="internship-logo">
-          <img
-            src={selectedCompany.logo}
-            alt={formData.companyName || "Company Logo"}
-          />
+        <div className="internship-header">
+          <div className="internship-logo">
+            <img
+              src={selectedCompany.logo}
+              alt={formData.companyName || "Company Logo"}
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="internship-heading">
-        <h3>To Whom It May Concern</h3>
-        <h3>Internship Offer Letter</h3>
-      </div>
+        <div className="internship-heading">
+          <h3>To Whom It May Concern</h3>
+          <h3>Internship Offer Letter</h3>
+        </div>
 
-      <div className="internship-content">
-        <p>Dear,</p>
+        <div className="internship-content">
+          <p>Dear,</p>
 
-        <p>{formData.employeeName || "Employee Name"}</p>
+          <p className="employeename">{formData.employeeName || "Employee Name"}</p>
 
-        <p>
-          We are pleased to offer {formData.employeeName || "Employee Name"} an
-          internship position at {formData.companyName || "Company Name"}
-          commencing from <strong>{formatDate(formData.dateOfjoining)}</strong>
-          for a duration of three (3) months.
-        </p>
+          <p>
+            We are pleased to offer <strong> {formData.employeeName || "Employee Name"}</strong> an
+            internship position at {formData.companyName || "Company Name"}
 
-        <p>
-          During the internship period, {formData.employeeName || "Employee Name"}
-          will be entitled to a monthly stipend of{" "}
-          <strong>{Number(formData.salary || 0).toLocaleString("en-IN")}</strong>,
-          which will be calculated based on the number of working days attended.
-          Please note that <strong>no paid leave will be granted</strong> during
-          the internship period.
-        </p>
+            commencing from <strong>{formatDate(formData.dateOfjoining)}</strong>
+            for a duration of three (3) months.
+          </p>
 
-        <p>
-          This internship is intended to provide practical exposure and
-          professional development in the relevant domain. Furthermore, {pronoun.possessive}{" "}
-          performance will be closely monitored and evaluated throughout the
-          internship. Based on {pronoun.possessive} overall performance and
-          conduct, a decision regarding {pronoun.possessive} confirmation as a
-          permanent employee may be made at the end of the internship.
-        </p>
+          <p>
+            During the internship period, {formData.employeeName || "Employee Name"}
+            will be entitled to a monthly stipend of{" "}
+            <strong>{Number(formData.salary || 0).toLocaleString("en-IN")}</strong>,
+            which will be calculated based on the number of working days attended.
+            Please note that <strong>no paid leave will be granted</strong> during
+            the internship period.
+          </p>
 
-        <p>
-          We welcome {formData.employeeName || "Employee Name"} to our team and
-          look forward to a productive and rewarding association.
-        </p>
+          <p>
+            This internship is intended to provide practical exposure and
+            professional development in the relevant domain. Furthermore, {pronoun.possessive}{" "}
+            performance will be closely monitored and evaluated throughout the
+            internship. Based on {pronoun.possessive} overall performance and
+            conduct, a decision regarding {pronoun.possessive} confirmation as a
+            permanent employee may be made at the end of the internship.
+          </p>
 
-        <p>For any further details, feel free to contact us.</p>
+          <p>
+            We welcome {formData.employeeName || "Employee Name"} to our team and
+            look forward to a productive and rewarding association.
+          </p>
 
-        <div className="internship-signature">
-          <p>{formData.hrManagerName || "HR Manager"}</p>
-          <p>HR &amp; Admin Manager</p>
-          <p>{formData.companyName || "Company Name"}</p>
+          <p>For any further details, feel free to contact us.</p>
+
+          <div className="internship-signature">
+            <p>{formData.hrManagerName || "HR Manager"}</p>
+            <p>HR &amp; Admin Manager</p>
+            <p>{formData.companyName || "Company Name"}</p>
+          </div>
         </div>
       </div>
     </div>
-</div>
   );
 };
 
@@ -155,6 +159,9 @@ const OfferLetter = () => {
 
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
+ 
+
+  const pdfRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -224,98 +231,323 @@ const OfferLetter = () => {
     );
   };
 
+  const generateOfferLetterPDF = async () => {
+    if (!pdfRef.current) {
+      throw new Error("Offer letter preview not found");
+    }
+
+    // Wait until fonts are loaded
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+
+    const pdfPages = pdfRef.current.querySelectorAll(
+      ".internship-pdf-page, " +
+      ".offer-pdf-page, " +
+      ".salary-pdf-page, " +
+      ".terms-condition-page, " +
+      ".eight-twelve-page, " +
+      ".new-page, " +
+      ".acceptance-page, " +
+      ".third-last-page, " +
+      ".secondlast-page, " +
+      ".last-page"
+    );
+
+    if (!pdfPages.length) {
+      throw new Error("No offer letter pages found");
+    }
+
+    let pdf = null;
+
+    for (let i = 0; i < pdfPages.length; i++) {
+
+      const page = pdfPages[i];
+
+      const canvas = await html2canvas(page, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL(
+        "image/jpeg",
+        0.95
+      );
+
+      const pageWidth = 700;
+      const pageHeight = 1120;
+
+      if (!pdf) {
+
+        pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "px",
+          format: [pageWidth, pageHeight],
+          compress: true,
+        });
+
+      } else {
+
+        pdf.addPage(
+          [pageWidth, pageHeight],
+          "portrait"
+        );
+      }
+
+      pdf.addImage(
+        imgData,
+        "JPEG",
+        0,
+        0,
+        pageWidth,
+        pageHeight,
+        undefined,
+        "FAST"
+      );
+    }
+
+    return pdf.output("blob");
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("=================================");
     console.log("SUBMIT BUTTON CLICKED");
-
     console.log("FORM DATA:", formData);
+    console.log("=================================");
 
     try {
       setLoading(true);
 
-      const payload = {
+      // ==========================================
+      // STEP 1: GENERATE PDF FROM PREVIEW
+      // ==========================================
+
+      console.log("Generating offer letter PDF...");
+
+      const pdfBlob = await generateOfferLetterPDF();
+
+      if (!pdfBlob) {
+        throw new Error("PDF generation failed");
+      }
+
+      console.log("PDF generated successfully");
+      console.log("PDF SIZE:", pdfBlob.size);
+
+
+      // ==========================================
+      // STEP 2: CREATE PDF FILE
+      // ==========================================
+
+      const employeeName =
+        formData.employeeName?.trim() || "Employee";
+
+      const pdfFileName =
+        `${employeeName}_Offer_Letter.pdf`;
+
+      const pdfFile = new File(
+        [pdfBlob],
+        pdfFileName,
+        {
+          type: "application/pdf",
+        }
+      );
+
+      console.log("PDF FILE:", pdfFile);
+
+
+      // ==========================================
+      // STEP 3: CREATE JSON DATA
+      // ==========================================
+
+      const data = {
         issuedDate: formData.issuedDate,
+
         companyName: formData.companyName,
+
         employeeName: formData.employeeName,
+
         designation: formData.designation,
+
         department: formData.department,
+
         dateOfjoining: formData.dateOfjoining,
+
         hrManagerName: formData.hrManagerName,
-        salary: Number(formData.salary),
+
+        salary: Number(formData.salary) || 0,
+
         gender: formData.gender,
+
         employeeType: formData.employeeType,
+
         documentName: "Offer Letter",
       };
+
+      console.log(
+        "DATA TO SEND:",
+        JSON.stringify(data, null, 2)
+      );
+
+
+      // ==========================================
+      // STEP 4: CREATE MULTIPART FORM DATA
+      // ==========================================
+
+      const formDataToSend = new FormData();
+
+
+      // API FIELD 1
+      // Swagger says: file
+      formDataToSend.append(
+        "file",
+        pdfFile
+      );
+
+
+      // API FIELD 2
+      // Swagger says: data
+      formDataToSend.append(
+        "data",
+        JSON.stringify(data)
+      );
+
+
+      // ==========================================
+      // STEP 5: CHECK FOR DEBUG
+      // ==========================================
+
+      console.log("=================================");
+      console.log("MULTIPART DATA");
+      console.log("=================================");
+
+      for (const [key, value] of formDataToSend.entries()) {
+
+        console.log(
+          key,
+          value
+        );
+      }
+
+
+      // ==========================================
+      // STEP 6: CALL API
+      // ==========================================
 
       console.log(
         "API URL:",
         `${BASE_URL}Admin/addOfficialLetter`
       );
 
-      console.log("API PAYLOAD:", payload);
-
       const response = await axios.post(
         `${BASE_URL}Admin/addOfficialLetter`,
-        payload,
+        formDataToSend,
         {
           withCredentials: true,
         }
       );
 
-      console.log("API RESPONSE:", response);
+
+      // ==========================================
+      // STEP 7: API RESPONSE
+      // ==========================================
+
+      console.log(
+        "API RESPONSE:",
+        response.data
+      );
+
+
+      // ==========================================
+      // STEP 8: SUCCESS
+      // ==========================================
 
       if (response.data?.status === "OK") {
+
         toast.success(
           response.data?.responseMessage ||
           "Offer letter added successfully!"
         );
 
+
+        // Reset form
         setFormData({
           issuedDate: new Date()
             .toISOString()
             .split("T")[0],
 
           companyName: "",
+
           employeeName: "",
+
           designation: "",
+
           department: "",
+
           dateOfjoining: "",
+
           hrManagerName: "",
+
           salary: "",
+
           gender: "",
+
           employeeType: "",
         });
+
       } else {
+
         toast.error(
           response.data?.responseMessage ||
           "Failed to add offer letter"
         );
       }
+
     } catch (error) {
-      console.error("API ERROR:", error);
 
       console.error(
-        "API ERROR RESPONSE:",
+        "================================="
+      );
+
+      console.error(
+        "OFFER LETTER ERROR"
+      );
+
+      console.error(
+        "================================="
+      );
+
+      console.error(
+        error
+      );
+
+      console.error(
+        "ERROR RESPONSE:",
         error.response
       );
 
       console.error(
-        "API ERROR DATA:",
+        "ERROR DATA:",
         error.response?.data
       );
+
 
       toast.error(
         error.response?.data?.responseMessage ||
         error.response?.data?.message ||
+        error.message ||
         "Something went wrong while adding offer letter"
       );
+
     } finally {
+
       setLoading(false);
     }
   };
-
   return (
     <>
       <MainPanel>
@@ -498,7 +730,7 @@ const OfferLetter = () => {
 
 
             <div className="right-offer">
-              <div className="pages-wrapper">
+              <div className="pages-wrapper " ref={pdfRef}>
 
                 {formData.employeeType === "Intern" ? (
                   <InternshipOfferLetter
@@ -508,1561 +740,1561 @@ const OfferLetter = () => {
                   />
                 ) : (
                   <>
-                <div className="offer-pdf-page">
+                    <div className="offer-pdf-page">
 
-                  <img
-                    className="pan-water-mark"
-                    src={selectedCompany.watermark}
-                    alt="Company Watermark"
-                  />
-
-                  <div className="top">
-                    <div className="date">
-                      Date:{" "}
-                      {formatDate(
-                        formData.issuedDate
-                      )}
-                    </div>
-
-                    <div className="logo">
                       <img
-                        src={selectedCompany.logo}
-                        alt={
-                          formData.companyName ||
-                          "Company Logo"
-                        }
+                        className="pan-water-mark"
+                        src={selectedCompany.watermark}
+                        alt="Company Watermark"
                       />
+
+                      <div className="top">
+                        <div className="date">
+                          Date:{" "}
+                          {formatDate(
+                            formData.issuedDate
+                          )}
+                        </div>
+
+                        <div className="logo">
+                          <img
+                            src={selectedCompany.logo}
+                            alt={
+                              formData.companyName ||
+                              "Company Logo"
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      <div className="heading">
+                        <h3>
+                          Letter of Offer
+                        </h3>
+                      </div>
+                      <div className="name">
+                        <p>Dear</p>
+                        <h4>
+                          {formData.employeeName ||
+                            "N/A"}
+                        </h4>
+                      </div>
+                      <div className="gap"></div>
+                      <p>
+                        Further to your interview, we
+                        are pleased to offer you the
+                        position of{" "}
+                        <strong>
+                          {formData.designation ||
+                            "N/A"}
+                        </strong>{" "}
+                        in our organization. Please
+                        refer to the attached Annexure-1
+                        for your salary structure and an
+                        explanation of its components.
+                      </p>
+
+                      <div className="gap"></div>
+                      <p>
+                        On joining, you will be subject
+                        to the employee policies and
+                        practices of{" "}
+                        <strong>
+                          {formData.companyName ||
+                            "N/A"}
+                        </strong>
+                        . A summary of the present
+                        policies is included in Annexure-2
+                        to this offer letter for your
+                        reference. Also, refer to
+                        Annexure-3 for the list of
+                        documents to be submitted at the
+                        time of your joining.
+                      </p>
+
+                      <div className="gap"></div>
+                      <p>
+                        You are required to join duties
+                        with effect from{" "}
+                        <strong>
+                          {formatDate(
+                            formData.dateOfjoining
+                          )}
+                        </strong>{" "}
+                        at our <strong>{selectedCompany.location}</strong>{" "}
+                        office for this offer to be
+                        valid. You will be on probation
+                        for a period of 3 months.
+                      </p>
+
+                      <div className="gap"></div>
+
+                      <p>
+                        Kindly report at the following
+                        address, at 10:00 a.m. on your
+                        date of joining – <strong>
+                          {formatDate(
+                            formData.dateOfjoining
+                          )}
+                        </strong>{" "}
+                      </p>
+
+                      <div className="gap"></div>
+
+                      <div className="address">
+
+                        <h4>
+                          {formData.companyName ||
+                            "N/A"}
+                        </h4>
+
+                        <p>
+                          {selectedCompany.address}
+                        </p>
+
+                      </div>
+
+                      <div className="gap"></div>
+
+                      <p>
+                        {formData.companyName ||
+                          "N/A"}{" "}
+                        holds the right to cancel this
+                        offer with or without a reason
+                        at any time before you join.{" "}
+                        {formData.companyName ||
+                          "N/A"}{" "}
+                        may defer and/or cancel this offer
+                        at any time before or after your
+                        joining in case any information
+                        furnished by you is found
+                        incorrect or misleading.
+                      </p>
+
+                      <div className="gap"></div>
+
+                      <p>
+                        We look forward to your joining{" "}
+                        {formData.companyName ||
+                          "N/A"}{" "}
+                        at the earliest and wish you a
+                        successful career with us.
+                      </p>
+
+                      <div className="gap"></div>
+
+                      <p>
+                        Thanking you,
+                      </p>
+
+                      <p>
+                        Sincerely
+                      </p>
+
+                      <p>
+                        For{" "}
+                        <strong>   {formData.companyName ||
+                          "N/A"}</strong>
+
+                      </p>
+
+                      <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
+
+                      <p>
+                        Hr Admin & Finance
+                      </p>
+
+                      <p>
+                        <strong> {formData.hrManagerName ||
+                          "N/A"}</strong>
+
+                      </p>
+
+                      <div className="gap"></div>
+
+                      {/* DYNAMIC FOOTER */}
+
+                      <p className="footer">
+                        {selectedCompany.address}
+                        {" | CONTACT: "}
+                        {selectedCompany.contact}
+                      </p>
+
                     </div>
-                  </div>
-
-                  <div className="heading">
-                    <h3>
-                      Letter of Offer
-                    </h3>
-                  </div>
-                  <div className="name">
-                    <p>Dear</p>
-                    <h4>
-                      {formData.employeeName ||
-                        "N/A"}
-                    </h4>
-                  </div>
-                  <div className="gap"></div>
-                  <p>
-                    Further to your interview, we
-                    are pleased to offer you the
-                    position of{" "}
-                    <strong>
-                      {formData.designation ||
-                        "N/A"}
-                    </strong>{" "}
-                    in our organization. Please
-                    refer to the attached Annexure-1
-                    for your salary structure and an
-                    explanation of its components.
-                  </p>
-
-                  <div className="gap"></div>
-                  <p>
-                    On joining, you will be subject
-                    to the employee policies and
-                    practices of{" "}
-                    <strong>
-                      {formData.companyName ||
-                        "N/A"}
-                    </strong>
-                    . A summary of the present
-                    policies is included in Annexure-2
-                    to this offer letter for your
-                    reference. Also, refer to
-                    Annexure-3 for the list of
-                    documents to be submitted at the
-                    time of your joining.
-                  </p>
-
-                  <div className="gap"></div>
-                  <p>
-                    You are required to join duties
-                    with effect from{" "}
-                    <strong>
-                      {formatDate(
-                        formData.dateOfjoining
-                      )}
-                    </strong>{" "}
-                    at our <strong>{selectedCompany.location}</strong>{" "}
-                    office for this offer to be
-                    valid. You will be on probation
-                    for a period of 3 months.
-                  </p>
-
-                  <div className="gap"></div>
-
-                  <p>
-                    Kindly report at the following
-                    address, at 10:00 a.m. on your
-                    date of joining – <strong>
-                      {formatDate(
-                        formData.dateOfjoining
-                      )}
-                    </strong>{" "}
-                  </p>
-
-                  <div className="gap"></div>
-
-                  <div className="address">
-
-                    <h4>
-                      {formData.companyName ||
-                        "N/A"}
-                    </h4>
-
-                    <p>
-                      {selectedCompany.address}
-                    </p>
-
-                  </div>
-
-                  <div className="gap"></div>
-
-                  <p>
-                    {formData.companyName ||
-                      "N/A"}{" "}
-                    holds the right to cancel this
-                    offer with or without a reason
-                    at any time before you join.{" "}
-                    {formData.companyName ||
-                      "N/A"}{" "}
-                    may defer and/or cancel this offer
-                    at any time before or after your
-                    joining in case any information
-                    furnished by you is found
-                    incorrect or misleading.
-                  </p>
 
-                  <div className="gap"></div>
 
-                  <p>
-                    We look forward to your joining{" "}
-                    {formData.companyName ||
-                      "N/A"}{" "}
-                    at the earliest and wish you a
-                    successful career with us.
-                  </p>
 
-                  <div className="gap"></div>
+                    <div className="salary-pdf-page">
+
+                      {/* DYNAMIC WATERMARK */}
+
+                      <img
+                        className="pan-water-mark"
+                        src={selectedCompany.watermark}
+                        alt="Company Watermark"
+                      />
 
-                  <p>
-                    Thanking you,
-                  </p>
+                      {/* DYNAMIC LOGO */}
 
-                  <p>
-                    Sincerely
-                  </p>
+                      <div className="logo">
 
-                  <p>
-                    For{" "}
-                    <strong>   {formData.companyName ||
-                      "N/A"}</strong>
+                        <img
+                          src={selectedCompany.logo}
+                          alt={
+                            formData.companyName ||
+                            "Company Logo"
+                          }
+                        />
 
-                  </p>
+                      </div>
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="top">
 
-                  <p>
-                    Hr Admin & Finance
-                  </p>
+                        <h3>
+                          ANNEXURE-1
+                        </h3>
 
-                  <p>
-                    <strong> {formData.hrManagerName ||
-                      "N/A"}</strong>
+                        <div className="small-gap"></div>
 
-                  </p>
+                        <h3>
+                          SALARY BREAKUP
+                        </h3>
 
-                  <div className="gap"></div>
+                      </div>
 
-                  {/* DYNAMIC FOOTER */}
+                      <div className="gap"></div>
 
-                  <p className="footer">
-                    {selectedCompany.address}
-                    {" | CONTACT: "}
-                    {selectedCompany.contact}
-                  </p>
+                      <div className="info">
 
-                </div>
-
-
-
-                <div className="salary-pdf-page">
-
-                  {/* DYNAMIC WATERMARK */}
-
-                  <img
-                    className="pan-water-mark"
-                    src={selectedCompany.watermark}
-                    alt="Company Watermark"
-                  />
+                        <p>
+                          <span>
+                            Name:{" "}
+                            <span>
+                              <strong>  {formData.employeeName ||
+                                "N/A"}</strong>
 
-                  {/* DYNAMIC LOGO */}
+                            </span>
+                          </span>
+                        </p>
 
-                  <div className="logo">
+                        <p>
+                          <span>
+                            Designation:{" "}
+                            <strong>{formData.designation ||
+                              "N/A"}</strong>
+                          </span>
+                        </p>
 
-                    <img
-                      src={selectedCompany.logo}
-                      alt={
-                        formData.companyName ||
-                        "Company Logo"
-                      }
-                    />
+                        <p>
+                          <span>
+                            Date of Joining:{" "}
+                            <strong>{formatDate(
+                              formData.dateOfjoining
+                            )}</strong>
+                          </span>
+                        </p>
 
-                  </div>
+                        <p>
+                          <span>
+                            Department:{" "}
+                            <strong>{formData.department ||
+                              "N/A"}</strong>
+                          </span>
+                        </p>
 
-                  <div className="top">
+                        <p>
+                          <span>
+                            Employee Type:{" "}
+                            <strong>{formData.employeeType ||
+                              "N/A"}</strong>
+                          </span>
+                        </p>
 
-                    <h3>
-                      ANNEXURE-1
-                    </h3>
+                        <p>
+                          <span>
+                            Gender:{" "}
+                            <strong>{formData.gender ||
+                              "N/A"}</strong>
+                          </span>
+                        </p>
 
-                    <div className="small-gap"></div>
+                        <p>
+                          <span>
+                            Location:{" "}
+                            <strong>{selectedCompany.location ||
+                              "N/A"}</strong>
+                          </span>
+                        </p>
 
-                    <h3>
-                      SALARY BREAKUP
-                    </h3>
+                      </div>
 
-                  </div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="gap"></div>
+                      <table className="salary-table">
 
-                  <div className="info">
+                        <thead>
 
-                    <p>
-                      <span>
-                        Name:{" "}
-                        <span>
-                          <strong>  {formData.employeeName ||
-                            "N/A"}</strong>
+                          <tr>
 
-                        </span>
-                      </span>
-                    </p>
+                            <th>
+                              No.
+                            </th>
 
-                    <p>
-                      <span>
-                        Designation:{" "}
-                        <strong>{formData.designation ||
-                          "N/A"}</strong>
-                      </span>
-                    </p>
+                            <th>
+                              Component of Salary
+                            </th>
 
-                    <p>
-                      <span>
-                        Date of Joining:{" "}
-                        <strong>{formatDate(
-                          formData.dateOfjoining
-                        )}</strong>
-                      </span>
-                    </p>
+                            <th>
+                              Amount Rs (Monthly)
+                            </th>
 
-                    <p>
-                      <span>
-                        Department:{" "}
-                        <strong>{formData.department ||
-                          "N/A"}</strong>
-                      </span>
-                    </p>
+                            <th>
+                              Amount Rs (Annually)
+                            </th>
 
-                    <p>
-                      <span>
-                        Employee Type:{" "}
-                        <strong>{formData.employeeType ||
-                          "N/A"}</strong>
-                      </span>
-                    </p>
+                          </tr>
 
-                    <p>
-                      <span>
-                        Gender:{" "}
-                        <strong>{formData.gender ||
-                          "N/A"}</strong>
-                      </span>
-                    </p>
+                        </thead>
 
-                    <p>
-                      <span>
-                        Location:{" "}
-                        <strong>{selectedCompany.location ||
-                          "N/A"}</strong>
-                      </span>
-                    </p>
+                        <tbody>
 
-                  </div>
+                          {/* A */}
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                          <tr>
 
-                  <table className="salary-table">
+                            <td>
+                              A
+                            </td>
 
-                    <thead>
+                            <td>
+                              <strong>
+                                Monthly Salary
+                                components
+                              </strong>
+                            </td>
 
-                      <tr>
+                            <td>
+                              {formatAmount(
+                                monthlySalary
+                              )}
+                              /-
+                            </td>
 
-                        <th>
-                          No.
-                        </th>
+                            <td>
+                              {formatAmount(
+                                annualSalary
+                              )}
+                              /-
+                            </td>
 
-                        <th>
-                          Component of Salary
-                        </th>
+                          </tr>
 
-                        <th>
-                          Amount Rs (Monthly)
-                        </th>
+                          {/* BASIC */}
 
-                        <th>
-                          Amount Rs (Annually)
-                        </th>
+                          <tr>
 
-                      </tr>
+                            <td></td>
 
-                    </thead>
+                            <td>
+                              Basic
+                            </td>
 
-                    <tbody>
+                            <td>
+                              {formatAmount(
+                                basic
+                              )}
+                              /-
+                            </td>
 
-                      {/* A */}
+                            <td>
+                              {formatAmount(
+                                annualBasic
+                              )}
+                              /-
+                            </td>
 
-                      <tr>
+                          </tr>
 
-                        <td>
-                          A
-                        </td>
+                          {/* DA */}
 
-                        <td>
-                          <strong>
-                            Monthly Salary
-                            components
-                          </strong>
-                        </td>
+                          <tr>
 
-                        <td>
-                          {formatAmount(
-                            monthlySalary
-                          )}
-                          /-
-                        </td>
+                            <td></td>
 
-                        <td>
-                          {formatAmount(
-                            annualSalary
-                          )}
-                          /-
-                        </td>
+                            <td>
+                              DA
+                            </td>
 
-                      </tr>
+                            <td>
+                              {formatAmount(
+                                da
+                              )}
+                              /-
+                            </td>
 
-                      {/* BASIC */}
+                            <td>
+                              {formatAmount(
+                                annualDa
+                              )}
+                              /-
+                            </td>
 
-                      <tr>
+                          </tr>
 
-                        <td></td>
+                          {/* HRA */}
 
-                        <td>
-                          Basic
-                        </td>
+                          <tr>
 
-                        <td>
-                          {formatAmount(
-                            basic
-                          )}
-                          /-
-                        </td>
+                            <td></td>
 
-                        <td>
-                          {formatAmount(
-                            annualBasic
-                          )}
-                          /-
-                        </td>
+                            <td>
+                              HRA
+                            </td>
 
-                      </tr>
+                            <td>
+                              {formatAmount(
+                                hra
+                              )}
+                              /-
+                            </td>
 
-                      {/* DA */}
+                            <td>
+                              {formatAmount(
+                                annualHra
+                              )}
+                              /-
+                            </td>
 
-                      <tr>
+                          </tr>
 
-                        <td></td>
+                          {/* OTHER */}
 
-                        <td>
-                          DA
-                        </td>
+                          <tr>
 
-                        <td>
-                          {formatAmount(
-                            da
-                          )}
-                          /-
-                        </td>
+                            <td></td>
 
-                        <td>
-                          {formatAmount(
-                            annualDa
-                          )}
-                          /-
-                        </td>
+                            <td>
+                              Other Allowance
+                            </td>
 
-                      </tr>
+                            <td>
+                              {formatAmount(
+                                otherAllowance
+                              )}
+                              /-
+                            </td>
 
-                      {/* HRA */}
+                            <td>
+                              {formatAmount(
+                                annualOtherAllowance
+                              )}
+                              /-
+                            </td>
 
-                      <tr>
+                          </tr>
 
-                        <td></td>
+                          {/* GROSS */}
 
-                        <td>
-                          HRA
-                        </td>
+                          <tr>
 
-                        <td>
-                          {formatAmount(
-                            hra
-                          )}
-                          /-
-                        </td>
+                            <td></td>
 
-                        <td>
-                          {formatAmount(
-                            annualHra
-                          )}
-                          /-
-                        </td>
+                            <td>
+                              <strong>
+                                ANNUAL FIXED GROSS
+                                SALARY (A)
+                              </strong>
+                            </td>
 
-                      </tr>
+                            <td>
+                              <strong>
+                                {formatAmount(
+                                  monthlySalary
+                                )}
+                                /-
+                              </strong>
+                            </td>
 
-                      {/* OTHER */}
+                            <td>
+                              <strong>
+                                {formatAmount(
+                                  annualSalary
+                                )}
+                                /-
+                              </strong>
+                            </td>
 
-                      <tr>
+                          </tr>
 
-                        <td></td>
+                          {/* DEDUCTION */}
 
-                        <td>
-                          Other Allowance
-                        </td>
+                          <tr>
 
-                        <td>
-                          {formatAmount(
-                            otherAllowance
-                          )}
-                          /-
-                        </td>
+                            <td>
+                              B
+                            </td>
 
-                        <td>
-                          {formatAmount(
-                            annualOtherAllowance
-                          )}
-                          /-
-                        </td>
+                            <td>
+                              <strong>
+                                Deduction
+                              </strong>
+                            </td>
 
-                      </tr>
+                            <td></td>
 
-                      {/* GROSS */}
+                            <td></td>
 
-                      <tr>
+                          </tr>
 
-                        <td></td>
+                          <tr>
 
-                        <td>
-                          <strong>
-                            ANNUAL FIXED GROSS
-                            SALARY (A)
-                          </strong>
-                        </td>
+                            <td></td>
 
-                        <td>
-                          <strong>
-                            {formatAmount(
-                              monthlySalary
-                            )}
-                            /-
-                          </strong>
-                        </td>
+                            <td>
+                              Professional Tax*
+                            </td>
 
-                        <td>
-                          <strong>
-                            {formatAmount(
-                              annualSalary
-                            )}
-                            /-
-                          </strong>
-                        </td>
+                            <td>
+                              200/-
+                            </td>
 
-                      </tr>
+                            <td>
+                              2,500/-
+                            </td>
 
-                      {/* DEDUCTION */}
+                          </tr>
 
-                      <tr>
+                          <tr>
 
-                        <td>
-                          B
-                        </td>
+                            <td></td>
 
-                        <td>
-                          <strong>
-                            Deduction
-                          </strong>
-                        </td>
+                            <td>
+                              Provident Fund (PF)**
+                            </td>
 
-                        <td></td>
+                            <td>
+                              1,800/-
+                            </td>
 
-                        <td></td>
+                            <td>
+                              21,600/-
+                            </td>
 
-                      </tr>
+                          </tr>
 
-                      <tr>
+                          {/* TOTAL DEDUCTION */}
 
-                        <td></td>
+                          <tr>
 
-                        <td>
-                          Professional Tax*
-                        </td>
+                            <td></td>
 
-                        <td>
-                          200/-
-                        </td>
+                            <td>
+                              <strong>
+                                TOTAL DEDUCTION (B)
+                              </strong>
+                            </td>
 
-                        <td>
-                          2,500/-
-                        </td>
+                            <td>
+                              <strong>
+                                2,000/-
+                              </strong>
+                            </td>
 
-                      </tr>
+                            <td>
+                              <strong>
+                                24,100/-
+                              </strong>
+                            </td>
 
-                      <tr>
+                          </tr>
 
-                        <td></td>
+                          {/* CTC */}
 
-                        <td>
-                          Provident Fund (PF)**
-                        </td>
+                          <tr>
 
-                        <td>
-                          1,800/-
-                        </td>
+                            <td>
+                              C
+                            </td>
 
-                        <td>
-                          21,600/-
-                        </td>
+                            <td>
+                              <strong>
+                                COST TO COMPANY (A-B)
+                              </strong>
+                            </td>
 
-                      </tr>
+                            <td>
+                              <strong>
+                                {formatAmount(
+                                  Math.max(
+                                    monthlySalary -
+                                    2000,
+                                    0
+                                  )
+                                )}
+                                /-
+                              </strong>
+                            </td>
 
-                      {/* TOTAL DEDUCTION */}
+                            <td>
+                              <strong>
+                                {formatAmount(
+                                  Math.max(
+                                    annualSalary -
+                                    24100,
+                                    0
+                                  )
+                                )}
+                                /-
+                              </strong>
+                            </td>
 
-                      <tr>
+                          </tr>
 
-                        <td></td>
+                        </tbody>
 
-                        <td>
-                          <strong>
-                            TOTAL DEDUCTION (B)
-                          </strong>
-                        </td>
+                      </table>
 
-                        <td>
-                          <strong>
-                            2,000/-
-                          </strong>
-                        </td>
+                      <div className="gap"></div>
 
-                        <td>
-                          <strong>
-                            24,100/-
-                          </strong>
-                        </td>
+                      <p>
+                        *Professional Tax deduction
+                        for the month of February will
+                        be ₹300.
+                      </p>
 
-                      </tr>
+                      <div className="small-gap"></div>
 
-                      {/* CTC */}
+                      <p>
+                        **The PF deduction consists of
+                        both employee and employer
+                        contributions.
+                      </p>
 
-                      <tr>
+                      <p className="footer">
+                        {selectedCompany.address}
+                        {" | CONTACT: "}
+                        {selectedCompany.contact}
+                      </p>
 
-                        <td>
-                          C
-                        </td>
+                    </div>
 
-                        <td>
-                          <strong>
-                            COST TO COMPANY (A-B)
-                          </strong>
-                        </td>
-
-                        <td>
-                          <strong>
-                            {formatAmount(
-                              Math.max(
-                                monthlySalary -
-                                2000,
-                                0
-                              )
-                            )}
-                            /-
-                          </strong>
-                        </td>
-
-                        <td>
-                          <strong>
-                            {formatAmount(
-                              Math.max(
-                                annualSalary -
-                                24100,
-                                0
-                              )
-                            )}
-                            /-
-                          </strong>
-                        </td>
-
-                      </tr>
-
-                    </tbody>
-
-                  </table>
-
-                  <div className="gap"></div>
-
-                  <p>
-                    *Professional Tax deduction
-                    for the month of February will
-                    be ₹300.
-                  </p>
-
-                  <div className="small-gap"></div>
-
-                  <p>
-                    **The PF deduction consists of
-                    both employee and employer
-                    contributions.
-                  </p>
-
-                  <p className="footer">
-                    {selectedCompany.address}
-                    {" | CONTACT: "}
-                    {selectedCompany.contact}
-                  </p>
-
-                </div>
-
-                {/* ==================================================
+                    {/* ==================================================
                     PAGE 3 - EXPLANATION
                 ================================================== */}
 
-                <div className="terms-condition-page">
+                    <div className="terms-condition-page">
 
-                  <img
-                    className="pan-water-mark"
-                    src={selectedCompany.watermark}
-                    alt="Company Watermark"
-                  />
+                      <img
+                        className="pan-water-mark"
+                        src={selectedCompany.watermark}
+                        alt="Company Watermark"
+                      />
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="logo">
+                      <div className="logo">
 
-                    <img
-                      src={selectedCompany.logo}
-                      alt={
-                        formData.companyName ||
-                        "Company Logo"
-                      }
-                    />
+                        <img
+                          src={selectedCompany.logo}
+                          alt={
+                            formData.companyName ||
+                            "Company Logo"
+                          }
+                        />
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <h4>
-                    Explanation of terms used:
-                  </h4>
+                      <h4>
+                        Explanation of terms used:
+                      </h4>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="salary-description">
+                      <div className="salary-description">
 
-                    <p>
-                      <strong>
-                        I. Basic :
-                      </strong>{" "}
-                      This is the base component of
-                      the salary to which many other
-                      components are linked. The
-                      amount is fully taxable.
-                    </p>
+                        <p>
+                          <strong>
+                            I. Basic :
+                          </strong>{" "}
+                          This is the base component of
+                          the salary to which many other
+                          components are linked. The
+                          amount is fully taxable.
+                        </p>
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="salary-description">
+                      <div className="salary-description">
 
-                    <p>
-                      <strong>
-                        II. HRA :
-                      </strong>{" "}
-                      This amount will not be taxable
-                      if you submit the appropriate
-                      rent agreement and rent receipts.
-                      Tax benefit calculation will be
-                      done on the basis of provisions
-                      of the Income Tax Act, of 1961.
-                    </p>
+                        <p>
+                          <strong>
+                            II. HRA :
+                          </strong>{" "}
+                          This amount will not be taxable
+                          if you submit the appropriate
+                          rent agreement and rent receipts.
+                          Tax benefit calculation will be
+                          done on the basis of provisions
+                          of the Income Tax Act, of 1961.
+                        </p>
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="salary-description">
+                      <div className="salary-description">
 
-                    <p>
-                      <strong>
-                        III. Special Allowance :
-                      </strong>{" "}
-                      This will vary as it is based on
-                      the difference between your gross
-                      salary and other components that
-                      make up the entire salary. It is
-                      a fully taxable component.
-                    </p>
+                        <p>
+                          <strong>
+                            III. Special Allowance :
+                          </strong>{" "}
+                          This will vary as it is based on
+                          the difference between your gross
+                          salary and other components that
+                          make up the entire salary. It is
+                          a fully taxable component.
+                        </p>
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="salary-description">
+                      <div className="salary-description">
 
-                    <p>
-                      <strong>
-                        Income Tax :
-                      </strong>{" "}
-                      Income tax and Professional tax
-                      will be deducted at source as per
-                      the rules applicable.
-                    </p>
+                        <p>
+                          <strong>
+                            Income Tax :
+                          </strong>{" "}
+                          Income tax and Professional tax
+                          will be deducted at source as per
+                          the rules applicable.
+                        </p>
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <p className="footer">
-                    {selectedCompany.address}
-                    {" | CONTACT: "}
-                    {selectedCompany.contact}
-                  </p>
+                      <p className="footer">
+                        {selectedCompany.address}
+                        {" | CONTACT: "}
+                        {selectedCompany.contact}
+                      </p>
 
-                </div>
+                    </div>
 
-                {/* ==================================================
+                    {/* ==================================================
                     PAGE 4 - ANNEXURE 2
                 ================================================== */}
 
-                <div className="eight-twelve-page">
+                    <div className="eight-twelve-page">
 
-                  <img
-                    className="pan-water-mark"
-                    src={selectedCompany.watermark}
-                    alt="Company Watermark"
-                  />
+                      <img
+                        className="pan-water-mark"
+                        src={selectedCompany.watermark}
+                        alt="Company Watermark"
+                      />
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="logo">
+                      <div className="logo">
 
-                    <img
-                      src={selectedCompany.logo}
-                      alt={
-                        formData.companyName ||
-                        "Company Logo"
-                      }
-                    />
+                        <img
+                          src={selectedCompany.logo}
+                          alt={
+                            formData.companyName ||
+                            "Company Logo"
+                          }
+                        />
 
-                  </div>
+                      </div>
 
-                  <div className="top">
+                      <div className="top">
 
-                    <h3>
-                      ANNEXURE-2
-                    </h3>
+                        <h3>
+                          ANNEXURE-2
+                        </h3>
 
-                    <h3>
-                      Additional Terms and
-                      Conditions of Offer
-                    </h3>
+                        <h3>
+                          Additional Terms and
+                          Conditions of Offer
+                        </h3>
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    1. Date of joining:
-                  </strong>
+                      <strong>
+                        1. Date of joining:
+                      </strong>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    This offer for employment is
-                    subject to your joining and
-                    reporting to the designated{" "}
-                    {formData.companyName ||
-                      "Company Name"}{" "}
-                    location on failing which this
-                    offer will stand withdrawn.
-                  </p>
+                      <p>
+                        This offer for employment is
+                        subject to your joining and
+                        reporting to the designated{" "}
+                        {formData.companyName ||
+                          "Company Name"}{" "}
+                        location on failing which this
+                        offer will stand withdrawn.
+                      </p>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    2. Work location and transfer:
-                  </strong>
+                      <strong>
+                        2. Work location and transfer:
+                      </strong>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    Your initial location after
-                    joining will be at{" "}
-                    {formData.companyName ||
-                      "Company Name"}{" "}
-                    <strong>
-                      {selectedCompany.location}
-                    </strong>{" "}
-                    office. This offer is subject to
-                    your preparedness to work in any
-                    of the locations of{" "}
-                    {formData.companyName ||
-                      "Company Name"}{" "}
-                    or its affiliates.
-                  </p>
+                      <p>
+                        Your initial location after
+                        joining will be at{" "}
+                        {formData.companyName ||
+                          "Company Name"}{" "}
+                        <strong>
+                          {selectedCompany.location}
+                        </strong>{" "}
+                        office. This offer is subject to
+                        your preparedness to work in any
+                        of the locations of{" "}
+                        {formData.companyName ||
+                          "Company Name"}{" "}
+                        or its affiliates.
+                      </p>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    3. Mandatory tenure of employment:
-                  </strong>
+                      <strong>
+                        3. Mandatory tenure of employment:
+                      </strong>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    On joining{" "}
-                    {formData.companyName ||
-                      "Company Name"}
-                    , you will continue to be employed
-                    with the company for a minimum
-                    period of one year.
-                  </p>
+                      <p>
+                        On joining{" "}
+                        {formData.companyName ||
+                          "Company Name"}
+                        , you will continue to be employed
+                        with the company for a minimum
+                        period of one year.
+                      </p>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    Background verification:
-                  </strong>
+                      <strong>
+                        Background verification:
+                      </strong>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    This offer for employment is
-                    subject to the satisfactory
-                    completion of your background
-                    reference check.
-                  </p>
+                      <p>
+                        This offer for employment is
+                        subject to the satisfactory
+                        completion of your background
+                        reference check.
+                      </p>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <p className="footer">
-                    {selectedCompany.address}
-                    {" | CONTACT: "}
-                    {selectedCompany.contact}
-                  </p>
+                      <p className="footer">
+                        {selectedCompany.address}
+                        {" | CONTACT: "}
+                        {selectedCompany.contact}
+                      </p>
 
-                </div>
+                    </div>
 
-                {/* ==================================================
+                    {/* ==================================================
                     PAGE 5
                 ================================================== */}
 
-                <div className="new-page">
+                    <div className="new-page">
 
-                  <img
-                    className="pan-water-mark"
-                    src={selectedCompany.watermark}
-                    alt="Company Watermark"
-                  />
+                      <img
+                        className="pan-water-mark"
+                        src={selectedCompany.watermark}
+                        alt="Company Watermark"
+                      />
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="logo">
+                      <div className="logo">
 
-                    <img
-                      src={selectedCompany.logo}
-                      alt={
-                        formData.companyName ||
-                        "Company Logo"
-                      }
-                    />
+                        <img
+                          src={selectedCompany.logo}
+                          alt={
+                            formData.companyName ||
+                            "Company Logo"
+                          }
+                        />
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    5. Travel and passport:
-                  </strong>
+                      <strong>
+                        5. Travel and passport:
+                      </strong>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    You should possess a valid passport
-                    during your employment with{" "}
-                    {formData.companyName ||
-                      "Company Name"}. In case you do
-                    not have a valid passport at the
-                    time of joining, you should get one
-                    issued within three months from the
-                    date of joining.
-                  </p>
+                      <p>
+                        You should possess a valid passport
+                        during your employment with{" "}
+                        {formData.companyName ||
+                          "Company Name"}. In case you do
+                        not have a valid passport at the
+                        time of joining, you should get one
+                        issued within three months from the
+                        date of joining.
+                      </p>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    6. Confidentiality and return of
-                    materials:
-                  </strong>
+                      <strong>
+                        6. Confidentiality and return of
+                        materials:
+                      </strong>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    You will be required to maintain
-                    organizational secrecy and
-                    confidentiality with respect to
-                    information and procedures followed
-                    in{" "}
-                    {formData.companyName ||
-                      "Company Name"}.
-                  </p>
+                      <p>
+                        You will be required to maintain
+                        organizational secrecy and
+                        confidentiality with respect to
+                        information and procedures followed
+                        in{" "}
+                        {formData.companyName ||
+                          "Company Name"}.
+                      </p>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    7. Non-competition:
-                  </strong>
+                      <strong>
+                        7. Non-competition:
+                      </strong>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    During the term of your employment
-                    with{" "}
-                    {formData.companyName ||
-                      "Company Name"}, you will not
-                    engage in any other employment,
-                    occupation, consulting, or other
-                    business activity related to the
-                    business in which the company is
-                    involved.
-                  </p>
+                      <p>
+                        During the term of your employment
+                        with{" "}
+                        {formData.companyName ||
+                          "Company Name"}, you will not
+                        engage in any other employment,
+                        occupation, consulting, or other
+                        business activity related to the
+                        business in which the company is
+                        involved.
+                      </p>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    8. Leaves and holidays:
-                  </strong>
+                      <strong>
+                        8. Leaves and holidays:
+                      </strong>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    The company will announce the list
-                    of holidays at the beginning of
-                    each calendar year. Employees are
-                    entitled to{" "}
-                    <strong>
-                      two paid leaves per month
-                    </strong>
-                    .
-                  </p>
+                      <p>
+                        The company will announce the list
+                        of holidays at the beginning of
+                        each calendar year. Employees are
+                        entitled to{" "}
+                        <strong>
+                          two paid leaves per month
+                        </strong>
+                        .
+                      </p>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    To request a leave, employees are
-                    required to{" "}
-                    <strong>
-                      submit their leave application at
-                      least four days in advance
-                    </strong>
-                    .
-                  </p>
+                      <p>
+                        To request a leave, employees are
+                        required to{" "}
+                        <strong>
+                          submit their leave application at
+                          least four days in advance
+                        </strong>
+                        .
+                      </p>
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    *It Will be applicable after
-                    probation period.
-                  </strong>
+                      <strong>
+                        *It Will be applicable after
+                        probation period.
+                      </strong>
 
-                  <p className="footer">
-                    {selectedCompany.address}
-                    {" | CONTACT: "}
-                    {selectedCompany.contact}
-                  </p>
+                      <p className="footer">
+                        {selectedCompany.address}
+                        {" | CONTACT: "}
+                        {selectedCompany.contact}
+                      </p>
 
-                </div>
+                    </div>
 
-                {/* ==================================================
+                    {/* ==================================================
                     PAGE 6
                 ================================================== */}
 
-                <div className="acceptance-page">
+                    <div className="acceptance-page">
 
-                  <img
-                    className="pan-water-mark"
-                    src={selectedCompany.watermark}
-                    alt="Company Watermark"
-                  />
+                      <img
+                        className="pan-water-mark"
+                        src={selectedCompany.watermark}
+                        alt="Company Watermark"
+                      />
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="logo">
+                      <div className="logo">
 
-                    <img
-                      src={selectedCompany.logo}
-                      alt={
-                        formData.companyName ||
-                        "Company Logo"
-                      }
-                    />
+                        <img
+                          src={selectedCompany.logo}
+                          alt={
+                            formData.companyName ||
+                            "Company Logo"
+                          }
+                        />
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    9. Dress code:
-                  </strong>
-
-                  <div className="small-gap"></div>
-
-                  <p>
-                    The work dress code ranges from
-                    Formal to Business Casual to
-                    Casual.{" "}
-                    {formData.companyName ||
-                      "Company Name"}
-                    ’s objective in establishing a
-                    dress code is to allow our
-                    employees to work comfortably in
-                    the workplace while projecting a
-                    professional image.
-                  </p>
-
-                  <div className="gap"></div>
-
-                  <p>
-                    You are required to wear formal on
-                    your date of joining, which is:
-                    <br />
-
-                    <strong>
-                      * For Gentlemen
-                    </strong>
-                    : Formal full-sleeve shirts and
-                    trousers with a tie and polished
-                    formal shoes.
-
-                    <br />
-
-                    <strong>
-                      * For Ladies
-                    </strong>
-                    : Western formals, salwar-kameez
-                    or formal saris with sandals.
-                  </p>
-
-                  <div className="gap"></div>
-
-                  <strong>
-                    10. Termination and resignation:
-                  </strong>
-
-                  <div className="small-gap"></div>
-
-                  <div className="a-point">
-
-                    <p>
-                      A.{" "}
                       <strong>
-                        Termination :
-                      </strong>{" "}
-                      {formData.companyName ||
-                        "Company Name"}{" "}
-                      reserves the right to terminate
-                      the services of an employee.
-                    </p>
+                        9. Dress code:
+                      </strong>
 
-                  </div>
+                      <div className="small-gap"></div>
 
-                  <div className="small-gap"></div>
+                      <p>
+                        The work dress code ranges from
+                        Formal to Business Casual to
+                        Casual.{" "}
+                        {formData.companyName ||
+                          "Company Name"}
+                        ’s objective in establishing a
+                        dress code is to allow our
+                        employees to work comfortably in
+                        the workplace while projecting a
+                        professional image.
+                      </p>
 
-                  <div className="subpoints">
+                      <div className="gap"></div>
 
-                    <p>
-                      a. With or without cause by
-                      providing immediate termination.
-                    </p>
+                      <p>
+                        You are required to wear formal on
+                        your date of joining, which is:
+                        <br />
 
-                    <div className="small-gap"></div>
+                        <strong>
+                          * For Gentlemen
+                        </strong>
+                        : Formal full-sleeve shirts and
+                        trousers with a tie and polished
+                        formal shoes.
 
-                    <p>
-                      b. Without notice in the
-                      following cases:
-                    </p>
+                        <br />
 
-                  </div>
+                        <strong>
+                          * For Ladies
+                        </strong>
+                        : Western formals, salwar-kameez
+                        or formal saris with sandals.
+                      </p>
 
-                  <ul className="listing">
+                      <div className="gap"></div>
 
-                    <li>
-                      If the employee is absent or on
-                      unauthorized leave without
-                      notice in writing or without
-                      sufficient reasons for 5 days
-                      or more.
-                    </li>
-
-                    <div className="small-gap"></div>
-
-                    <li>
-                      If the employee goes on a strike
-                      or supports a strike in
-                      contravention of any law.
-                    </li>
-
-                    <div className="small-gap"></div>
-
-                    <li>
-                      The employee causes damage to
-                      the physical or intellectual
-                      property of{" "}
-                      {formData.companyName ||
-                        "Company Name"}.
-                    </li>
-
-                  </ul>
-
-                  <div className="a-point">
-
-                    <div className="gap"></div>
-
-                    <p>
-                      B.{" "}
                       <strong>
-                        Resignation :
-                      </strong>{" "}
-                      For resigning from{" "}
-                      {formData.companyName ||
-                        "Company Name"}, you are
-                      required to serve a 1 months’
-                      notice period as per the policy
-                      of resignation.
-                    </p>
+                        10. Termination and resignation:
+                      </strong>
 
-                  </div>
+                      <div className="small-gap"></div>
 
-                  <p className="footer">
-                    {selectedCompany.address}
-                    {" | CONTACT: "}
-                    {selectedCompany.contact}
-                  </p>
+                      <div className="a-point">
 
-                </div>
+                        <p>
+                          A.{" "}
+                          <strong>
+                            Termination :
+                          </strong>{" "}
+                          {formData.companyName ||
+                            "Company Name"}{" "}
+                          reserves the right to terminate
+                          the services of an employee.
+                        </p>
 
-                {/* ==================================================
+                      </div>
+
+                      <div className="small-gap"></div>
+
+                      <div className="subpoints">
+
+                        <p>
+                          a. With or without cause by
+                          providing immediate termination.
+                        </p>
+
+                        <div className="small-gap"></div>
+
+                        <p>
+                          b. Without notice in the
+                          following cases:
+                        </p>
+
+                      </div>
+
+                      <ul className="listing">
+
+                        <li>
+                          If the employee is absent or on
+                          unauthorized leave without
+                          notice in writing or without
+                          sufficient reasons for 5 days
+                          or more.
+                        </li>
+
+                        <div className="small-gap"></div>
+
+                        <li>
+                          If the employee goes on a strike
+                          or supports a strike in
+                          contravention of any law.
+                        </li>
+
+                        <div className="small-gap"></div>
+
+                        <li>
+                          The employee causes damage to
+                          the physical or intellectual
+                          property of{" "}
+                          {formData.companyName ||
+                            "Company Name"}.
+                        </li>
+
+                      </ul>
+
+                      <div className="a-point">
+
+                        <div className="gap"></div>
+
+                        <p>
+                          B.{" "}
+                          <strong>
+                            Resignation :
+                          </strong>{" "}
+                          For resigning from{" "}
+                          {formData.companyName ||
+                            "Company Name"}, you are
+                          required to serve a 1 months’
+                          notice period as per the policy
+                          of resignation.
+                        </p>
+
+                      </div>
+
+                      <p className="footer">
+                        {selectedCompany.address}
+                        {" | CONTACT: "}
+                        {selectedCompany.contact}
+                      </p>
+
+                    </div>
+
+                    {/* ==================================================
                     PAGE 7
                 ================================================== */}
 
-                <div className="third-last-page">
+                    <div className="third-last-page">
 
-                  <img
-                    className="pan-water-mark"
-                    src={selectedCompany.watermark}
-                    alt="Company Watermark"
-                  />
+                      <img
+                        className="pan-water-mark"
+                        src={selectedCompany.watermark}
+                        alt="Company Watermark"
+                      />
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="logo">
+                      <div className="logo">
 
-                    <img
-                      src={selectedCompany.logo}
-                      alt={
-                        formData.companyName ||
-                        "Company Logo"
-                      }
-                    />
+                        <img
+                          src={selectedCompany.logo}
+                          alt={
+                            formData.companyName ||
+                            "Company Logo"
+                          }
+                        />
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    11. Rules and regulations:
-                  </strong>
+                      <strong>
+                        11. Rules and regulations:
+                      </strong>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    You will be subject to all rules
-                    and regulations of{" "}
-                    {formData.companyName ||
-                      "Company Name"}{" "}
-                    that are in force and shall abide
-                    by them until in employment with
-                    the organization.
-                  </p>
+                      <p>
+                        You will be subject to all rules
+                        and regulations of{" "}
+                        {formData.companyName ||
+                          "Company Name"}{" "}
+                        that are in force and shall abide
+                        by them until in employment with
+                        the organization.
+                      </p>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <strong>
-                    12. Acceptance:
-                  </strong>
+                      <strong>
+                        12. Acceptance:
+                      </strong>
 
-                  <p>
-                    If the terms and conditions of this
-                    offer are acceptable to you, kindly
-                    return a duplicate of this letter
-                    of offer duly signed with your
-                    acceptance.
-                  </p>
+                      <p>
+                        If the terms and conditions of this
+                        offer are acceptable to you, kindly
+                        return a duplicate of this letter
+                        of offer duly signed with your
+                        acceptance.
+                      </p>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    Before the date of joining, kindly
-                    forward a copy of your resignation
-                    letter and the acceptance of the
-                    same from your HR to
-                  </p>
+                      <p>
+                        Before the date of joining, kindly
+                        forward a copy of your resignation
+                        letter and the acceptance of the
+                        same from your HR to
+                      </p>
 
-                  <a
-                    href="mailto:info@pandozasolutions.com"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    info@pandozasolutions.com
-                  </a>
+                      <a
+                        href="mailto:info@pandozasolutions.com"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        info@pandozasolutions.com
+                      </a>
 
-                  <p>
-                    You can also mail us at
-                  </p>
+                      <p>
+                        You can also mail us at
+                      </p>
 
-                  <a
-                    href="mailto:info@pandozasolutions.com"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    info@pandozasolutions.com
-                  </a>
+                      <a
+                        href="mailto:info@pandozasolutions.com"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        info@pandozasolutions.com
+                      </a>
 
-                  <p>
-                    if you have any queries.
-                  </p>
+                      <p>
+                        if you have any queries.
+                      </p>
 
-                  <p className="footer">
-                    {selectedCompany.address}
-                    {" | CONTACT: "}
-                    {selectedCompany.contact}
-                  </p>
+                      <p className="footer">
+                        {selectedCompany.address}
+                        {" | CONTACT: "}
+                        {selectedCompany.contact}
+                      </p>
 
-                </div>
+                    </div>
 
-                {/* ==================================================
+                    {/* ==================================================
                     PAGE 8 - ANNEXURE 3
                 ================================================== */}
 
-                <div className="secondlast-page">
+                    <div className="secondlast-page">
 
-                  <img
-                    className="pan-water-mark"
-                    src={selectedCompany.watermark}
-                    alt="Company Watermark"
-                  />
+                      <img
+                        className="pan-water-mark"
+                        src={selectedCompany.watermark}
+                        alt="Company Watermark"
+                      />
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="logo">
+                      <div className="logo">
 
-                    <img
-                      src={selectedCompany.logo}
-                      alt={
-                        formData.companyName ||
-                        "Company Logo"
-                      }
-                    />
+                        <img
+                          src={selectedCompany.logo}
+                          alt={
+                            formData.companyName ||
+                            "Company Logo"
+                          }
+                        />
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="top">
+                      <div className="top">
 
-                    <h3>
-                      ANNEXURE-3
-                    </h3>
+                        <h3>
+                          ANNEXURE-3
+                        </h3>
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <ul className="edu-doc">
+                      <ul className="edu-doc">
 
-                    <h3>
-                      Educational documents:
-                    </h3>
+                        <h3>
+                          Educational documents:
+                        </h3>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      10th and 12th/Diploma mark sheets
-                    </li>
+                        <li>
+                          10th and 12th/Diploma mark sheets
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      Degree certificate and mark
-                      sheet
-                    </li>
+                        <li>
+                          Degree certificate and mark
+                          sheet
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      PG certificate and mark sheet
-                    </li>
+                        <li>
+                          PG certificate and mark sheet
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      Any Certification mark
-                      sheet/certificate
-                    </li>
+                        <li>
+                          Any Certification mark
+                          sheet/certificate
+                        </li>
 
-                  </ul>
+                      </ul>
 
-                  <ul className="emp-doc">
+                      <ul className="emp-doc">
 
-                    <h3>
-                      Employment documents:
-                    </h3>
+                        <h3>
+                          Employment documents:
+                        </h3>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      Relieving and Experience letters
-                      from past employers
-                    </li>
+                        <li>
+                          Relieving and Experience letters
+                          from past employers
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      Last 3 salary slips
-                    </li>
+                        <li>
+                          Last 3 salary slips
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      Salary proof of fixed and
-                      variable components
-                    </li>
+                        <li>
+                          Salary proof of fixed and
+                          variable components
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      Bank statement for last 3
-                      months
-                    </li>
+                        <li>
+                          Bank statement for last 3
+                          months
+                        </li>
 
-                  </ul>
+                      </ul>
 
-                  <ul className="emp-doc">
+                      <ul className="emp-doc">
 
-                    <h3>
-                      Personal documents:
-                    </h3>
+                        <h3>
+                          Personal documents:
+                        </h3>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      Marriage certificate
-                    </li>
+                        <li>
+                          Marriage certificate
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      3 passport-size photographs
-                    </li>
+                        <li>
+                          3 passport-size photographs
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      Passport Copy
-                    </li>
+                        <li>
+                          Passport Copy
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      PAN Card
-                    </li>
+                        <li>
+                          PAN Card
+                        </li>
 
-                    <div className="small-gap"></div>
+                        <div className="small-gap"></div>
 
-                    <li>
-                      Aadhar Card
-                    </li>
+                        <li>
+                          Aadhar Card
+                        </li>
 
-                  </ul>
+                      </ul>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <p>
-                    Before the date of joining, kindly
-                    forward a copy of your resignation
-                    letter and the acceptance of the
-                    same from your HR to
-                  </p>
+                      <p>
+                        Before the date of joining, kindly
+                        forward a copy of your resignation
+                        letter and the acceptance of the
+                        same from your HR to
+                      </p>
 
-                  <a
-                    href="mailto:info@pandozasolutions.com"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    info@pandozasolutions.com
-                  </a>
+                      <a
+                        href="mailto:info@pandozasolutions.com"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        info@pandozasolutions.com
+                      </a>
 
-                  <p className="footer">
-                    {selectedCompany.address}
-                    {" | CONTACT: "}
-                    {selectedCompany.contact}
-                  </p>
+                      <p className="footer">
+                        {selectedCompany.address}
+                        {" | CONTACT: "}
+                        {selectedCompany.contact}
+                      </p>
 
-                </div>
+                    </div>
 
-                {/* ==================================================
+                    {/* ==================================================
                     PAGE 9 - ACCEPTANCE
                 ================================================== */}
 
-                <div className="last-page">
+                    <div className="last-page">
 
-                  <img
-                    className="pan-water-mark"
-                    src={selectedCompany.watermark}
-                    alt="Company Watermark"
-                  />
+                      <img
+                        className="pan-water-mark"
+                        src={selectedCompany.watermark}
+                        alt="Company Watermark"
+                      />
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="logo">
+                      <div className="logo">
 
-                    <img
-                      src={selectedCompany.logo}
-                      alt={
-                        formData.companyName ||
-                        "Company Logo"
-                      }
-                    />
+                        <img
+                          src={selectedCompany.logo}
+                          alt={
+                            formData.companyName ||
+                            "Company Logo"
+                          }
+                        />
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
-                  <div className="gap"></div>
+                      <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <div className="top">
+                      <div className="top">
 
-                    <h3>
-                      ACCEPTANCE OF OFFER
-                    </h3>
+                        <h3>
+                          ACCEPTANCE OF OFFER
+                        </h3>
 
-                  </div>
+                      </div>
 
-                  <div className="gap"></div>
+                      <div className="gap"></div>
 
-                  <p>
-                    I have read the offer letter and
-                    the annexed policies. I hereby
-                    accept the offer on the aforesaid
-                    terms.
-                  </p>
+                      <p>
+                        I have read the offer letter and
+                        the annexed policies. I hereby
+                        accept the offer on the aforesaid
+                        terms.
+                      </p>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    I shall join duties with effect
-                    from the date mentioned hereinabove.
-                    In case of delays in joining, I
-                    shall inform the concerned
-                    authority one week in advance in
-                    writing.
-                  </p>
+                      <p>
+                        I shall join duties with effect
+                        from the date mentioned hereinabove.
+                        In case of delays in joining, I
+                        shall inform the concerned
+                        authority one week in advance in
+                        writing.
+                      </p>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    Name:{" "}
-                    <strong>
-                      {formData.employeeName ||
-                        "Employee Name"}
-                    </strong>
-                  </p>
+                      <p>
+                        Name:{" "}
+                        <strong>
+                          {formData.employeeName ||
+                            "Employee Name"}
+                        </strong>
+                      </p>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    Date:{" "}
-                    <strong>
-                      {formatDate(
-                        formData.dateOfjoining
-                      )}
-                    </strong>
-                  </p>
+                      <p>
+                        Date:{" "}
+                        <strong>
+                          {formatDate(
+                            formData.dateOfjoining
+                          )}
+                        </strong>
+                      </p>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    Signature:
-                  </p>
+                      <p>
+                        Signature:
+                      </p>
 
-                  <div className="small-gap"></div>
+                      <div className="small-gap"></div>
 
-                  <p>
-                    Place:{" "}
-                    <strong>
-                      {selectedCompany.location}
-                    </strong>
-                  </p>
+                      <p>
+                        Place:{" "}
+                        <strong>
+                          {selectedCompany.location}
+                        </strong>
+                      </p>
 
-                  <p className="footer">
-                    {selectedCompany.address}
-                    {" | CONTACT: "}
-                    {selectedCompany.contact}
-                  </p>
+                      <p className="footer">
+                        {selectedCompany.address}
+                        {" | CONTACT: "}
+                        {selectedCompany.contact}
+                      </p>
 
-                </div>
+                    </div>
 
-              
+
                   </>
                 )}
-</div>
+              </div>
 
             </div>
 
