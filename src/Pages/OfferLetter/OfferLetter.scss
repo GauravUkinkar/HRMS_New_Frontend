@@ -43,7 +43,7 @@
           position: relative;
           width: 700px;
           height: 1120px;
-          padding: 35px 40px;
+          padding: 20px 20px;
           box-sizing: border-box;
           background: #fff;
           overflow: hidden;
@@ -52,26 +52,18 @@
           // WATERMARK
           // ------------------------------
 
-          .internship-watermark {
+          .pan-water-mark { 
             position: absolute !important;
-
             width: 90% !important;
             max-width: 630px !important;
-
             height: auto !important;
             max-height: 700px !important;
-
             left: 50% !important;
             top: 50% !important;
-
             transform: translate(-50%, -50%) !important;
-
             opacity: 0.08 !important;
-
             object-fit: contain !important;
-
             z-index: 0 !important;
-
             pointer-events: none;
           }
 
@@ -139,12 +131,14 @@
             color: #111;
 
             p {
-              margin: 0 0 22px;
 
               font-size: 15px;
               line-height: 1.55;
 
               letter-spacing: 0.3px;
+            }
+            .employeename{
+              padding-bottom:20px;
             }
 
             strong {
