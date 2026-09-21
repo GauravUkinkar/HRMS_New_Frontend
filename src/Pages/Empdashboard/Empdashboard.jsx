@@ -120,7 +120,6 @@ const EmployeeDash = () => {
     },
   ];
 
-
   const [quote] = useState(() => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     return quotes[randomIndex];
@@ -144,7 +143,7 @@ const EmployeeDash = () => {
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [punchingOut, setPunchingOut] = useState(false);
   const remainingTimerRef = useRef(null);
-  //to get employee id 
+  //to get employee id
   const getEmployeeWorkSession = async () => {
     try {
       const employeeId = user?.employeeId;
@@ -158,7 +157,7 @@ const EmployeeDash = () => {
         `${BASE_URL2}api/punch/employee/${employeeId}`,
         {
           withCredentials: true,
-        }
+        },
       );
 
       console.log("EMPLOYEE WORK SESSION:", response.data);
@@ -170,30 +169,17 @@ const EmployeeDash = () => {
         return;
       }
 
-      const hours = Number(
-        employeeData?.remainingTime?.hours || 0
-      );
+      const hours = Number(employeeData?.remainingTime?.hours || 0);
 
-      const minutes = Number(
-        employeeData?.remainingTime?.minutes || 0
-      );
+      const minutes = Number(employeeData?.remainingTime?.minutes || 0);
 
-      const seconds = Number(
-        employeeData?.remainingTime?.seconds || 0
-      );
+      const seconds = Number(employeeData?.remainingTime?.seconds || 0);
 
-      const totalSeconds =
-        hours * 60 * 60 +
-        minutes * 60 +
-        seconds;
+      const totalSeconds = hours * 60 * 60 + minutes * 60 + seconds;
 
       setRemainingSeconds(totalSeconds);
-
     } catch (error) {
-      console.error(
-        "Employee Work Session Error:",
-        error
-      );
+      console.error("Employee Work Session Error:", error);
 
       setRemainingSeconds(0);
     }
@@ -227,147 +213,134 @@ const EmployeeDash = () => {
     };
   }, []);
 
-
   const formatRemainingTime = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
 
-    const minutes = Math.floor(
-      (totalSeconds % 3600) / 60
-    );
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
 
     const seconds = totalSeconds % 60;
 
-    return `${String(hours).padStart(2, "0")}:${String(
-      minutes
-    ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0",
+    )}:${String(seconds).padStart(2, "0")}`;
   };
-  const remainingTimeText =
-    formatRemainingTime(remainingSeconds);
+  const remainingTimeText = formatRemainingTime(remainingSeconds);
 
-  //punch out logic 
- // =====================================================
-// PUNCH OUT
-// =====================================================
+  //punch out logic
+  // =====================================================
+  // PUNCH OUT
+  // =====================================================
 
-const handlePunchOut = async () => {
-  const employeeId = user?.employeeId;
+  const handlePunchOut = async () => {
+    const employeeId = user?.employeeId;
 
-  if (!employeeId) {
-    toast.error("Employee ID not found");
-    return;
-  }
+    if (!employeeId) {
+      toast.error("Employee ID not found");
+      return;
+    }
 
-  if (punchingOut) return;
+    if (punchingOut) return;
 
-  try {
-    setPunchingOut(true);
+    try {
+      setPunchingOut(true);
 
-    const response = await axios.get(
-      `${BASE_URL2}api/punch/OUT/${employeeId}/false`,
-      {
-        withCredentials: true,
+      const response = await axios.get(
+        `${BASE_URL2}api/punch/OUT/${employeeId}/false`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log("PUNCH OUT RESPONSE:", response.data);
+
+      if (response.status === 200) {
+        // Stop countdown immediately
+        if (remainingTimerRef.current) {
+          clearInterval(remainingTimerRef.current);
+          remainingTimerRef.current = null;
+        }
+
+        setRemainingSeconds(0);
+
+        toast.success(response?.data?.message || "Punch Out Successful!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+
+        // Refresh employee work-session data
+        await getEmployeeWorkSession();
+
+        // Refresh attendance table
+        await getEmployeeData();
+
+        // Refresh dashboard summary
+        await getTodaydata();
+
+        // Refresh employee attendance calendar
+        await fetchAttendance();
       }
-    );
+    } catch (error) {
+      console.error("PUNCH OUT ERROR:", error);
+      console.error("STATUS:", error?.response?.status);
+      console.error("RESPONSE:", error?.response?.data);
 
-    console.log("PUNCH OUT RESPONSE:", response.data);
-
-    if (response.status === 200) {
-      // Stop countdown immediately
-      if (remainingTimerRef.current) {
-        clearInterval(remainingTimerRef.current);
-        remainingTimerRef.current = null;
-      }
-
-      setRemainingSeconds(0);
-
-      toast.success(
-        response?.data?.message || "Punch Out Successful!",
+      toast.error(
+        error?.response?.data?.message ||
+          "Unable to punch out. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
-        }
+        },
       );
-
-      // Refresh employee work-session data
-      await getEmployeeWorkSession();
-
-      // Refresh attendance table
-      await getEmployeeData();
-
-      // Refresh dashboard summary
-      await getTodaydata();
-
-      // Refresh employee attendance calendar
-      await fetchAttendance();
+    } finally {
+      setPunchingOut(false);
     }
-  } catch (error) {
-    console.error("PUNCH OUT ERROR:", error);
-    console.error("STATUS:", error?.response?.status);
-    console.error("RESPONSE:", error?.response?.data);
-
-    toast.error(
-      error?.response?.data?.message ||
-        "Unable to punch out. Please try again.",
-      {
-        position: "top-right",
-        autoClose: 3000,
-      }
-    );
-  } finally {
-    setPunchingOut(false);
-  }
-};
+  };
 
   const confirmPunchOut = () => {
-  toast(
-    ({ closeToast }) => (
-      <div className="punch-confirm-toast">
+    toast(
+      ({ closeToast }) => (
+        <div className="punch-confirm-toast">
+          <div className="punch-confirm-content">
+            <h4>Confirm Punch Out</h4>
 
-        <div className="punch-confirm-content">
-          <h4>Confirm Punch Out</h4>
+            <p>Are you sure you want to end your working day?</p>
+          </div>
 
-          <p>
-            Are you sure you want to end your working day?
-          </p>
+          <div className="punch-confirm-buttons">
+            <button
+              type="button"
+              className="punch-cancel-btn"
+              onClick={() => {
+                closeToast();
+              }}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              className="punch-ok-btn"
+              onClick={() => {
+                closeToast();
+                handlePunchOut();
+              }}
+            >
+              OK
+            </button>
+          </div>
         </div>
-
-        <div className="punch-confirm-buttons">
-
-          <button
-            type="button"
-            className="punch-cancel-btn"
-            onClick={() => {
-              closeToast();
-            }}
-          >
-            Cancel
-          </button>
-
-          <button
-            type="button"
-            className="punch-ok-btn"
-            onClick={() => {
-              closeToast();
-              handlePunchOut();
-            }}
-          >
-            OK
-          </button>
-
-        </div>
-
-      </div>
-    ),
-    {
-      position: "top-center",
-      autoClose: false,
-      closeOnClick: false,
-      closeButton: false,
-      draggable: false,
-    }
-  );
-};
-
+      ),
+      {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      },
+    );
+  };
 
   const getTodaydata = async () => {
     try {
@@ -769,17 +742,17 @@ const handlePunchOut = async () => {
         (a, b) =>
           new Date(
             b.entryDate ||
-            b.entry_date ||
-            b.startingDate ||
-            b.starting_date ||
-            0,
+              b.entry_date ||
+              b.startingDate ||
+              b.starting_date ||
+              0,
           ) -
           new Date(
             a.entryDate ||
-            a.entry_date ||
-            a.startingDate ||
-            a.starting_date ||
-            0,
+              a.entry_date ||
+              a.startingDate ||
+              a.starting_date ||
+              0,
           ),
       );
 
@@ -856,9 +829,7 @@ const handlePunchOut = async () => {
     }
   }, [user?.employeeId]);
 
-
-  // for remaining time detection 
-
+  // for remaining time detection
 
   return (
     <>
@@ -1018,7 +989,14 @@ const handlePunchOut = async () => {
                     >
                       {punchingOut ? "Punching Out..." : "Punch Out"}
                     </button>
-                    <a className="btn1" href="https://newcrm.diwise.in/add_entries">LogIn to CRM</a>
+                    <a
+                      className="btn2"
+                      href="https://newcrm.diwise.in/add_entries"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      LogIn to CRM
+                    </a>
                   </div>
                 </div>
               </div>
@@ -1091,10 +1069,10 @@ const handlePunchOut = async () => {
                         render: (date) =>
                           date
                             ? new Date(date).toLocaleDateString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
                             : "--",
                       },
 
@@ -1237,8 +1215,9 @@ const handlePunchOut = async () => {
                   ) : (
                     displayedNotifications.map((notification) => (
                       <div
-                        className={`notification-item ${notification?.isRead ? "read" : "unread"
-                          }`}
+                        className={`notification-item ${
+                          notification?.isRead ? "read" : "unread"
+                        }`}
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
                       >
@@ -1256,15 +1235,15 @@ const handlePunchOut = async () => {
                           <span className="notification-date">
                             {notification?.createdAt
                               ? new Date(notification.createdAt).toLocaleString(
-                                "en-IN",
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                },
-                              )
+                                  "en-IN",
+                                  {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  },
+                                )
                               : "--"}
                           </span>
                         </div>
@@ -1301,14 +1280,14 @@ const handlePunchOut = async () => {
                         <p className="notification-modal-date">
                           {selectedNotification?.createdAt
                             ? new Date(
-                              selectedNotification.createdAt,
-                            ).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
+                                selectedNotification.createdAt,
+                              ).toLocaleString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
                             : "--"}
                         </p>
 
