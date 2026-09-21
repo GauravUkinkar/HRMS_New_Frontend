@@ -141,6 +141,9 @@ const EmployeeDash = () => {
   const hourAngle = (hours % 12) * 30 + minutes * 0.5;
   const [today, setToday] = useState({});
   const [remainingSeconds, setRemainingSeconds] = useState(0);
+  const [punchInTime, setPunchInTime] = useState(null);
+  const [punchOutTime, setPunchOutTime] = useState(null);
+  const [punchingIn, setPunchingIn] = useState(false);
   const [punchingOut, setPunchingOut] = useState(false);
   const remainingTimerRef = useRef(null);
   //to get employee id
@@ -157,7 +160,7 @@ const EmployeeDash = () => {
         `${BASE_URL2}api/punch/employee/${employeeId}`,
         {
           withCredentials: true,
-        },
+        }
       );
 
       console.log("EMPLOYEE WORK SESSION:", response.data);
@@ -166,24 +169,108 @@ const EmployeeDash = () => {
 
       if (!employeeData) {
         setRemainingSeconds(0);
+        setPunchInTime(null);
+        setPunchOutTime(null);
         return;
       }
 
-      const hours = Number(employeeData?.remainingTime?.hours || 0);
+      // =========================
+      // PUNCH IN TIME
+      // =========================
 
-      const minutes = Number(employeeData?.remainingTime?.minutes || 0);
+      setPunchInTime(employeeData?.punchIn || null);
+      setPunchOutTime(employeeData?.punchOut || null);
+      // =========================
+      // REMAINING TIME
+      // =========================
+      const hours = Number(
+        employeeData?.remainingTime?.hours || 0
+      );
 
-      const seconds = Number(employeeData?.remainingTime?.seconds || 0);
+      const minutes = Number(
+        employeeData?.remainingTime?.minutes || 0
+      );
 
-      const totalSeconds = hours * 60 * 60 + minutes * 60 + seconds;
+      const seconds = Number(
+        employeeData?.remainingTime?.seconds || 0
+      );
+
+      const totalSeconds =
+        hours * 60 * 60 +
+        minutes * 60 +
+        seconds;
 
       setRemainingSeconds(totalSeconds);
+
     } catch (error) {
-      console.error("Employee Work Session Error:", error);
+      console.error(
+        "Employee Work Session Error:",
+        error
+      );
 
       setRemainingSeconds(0);
+      setPunchInTime(null);
     }
   };
+
+  const handlePunchIn = async () => {
+    const employeeId = user?.employeeId;
+
+    if (!employeeId) {
+      toast.error("Employee ID not found");
+      return;
+    }
+
+    if (punchingIn) return;
+
+    try {
+      setPunchingIn(true);
+
+      const response = await axios.get(
+        `${BASE_URL2}api/punch/IN/${employeeId}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("PUNCH IN RESPONSE:", response.data);
+
+      if (response.status === 200) {
+        toast.success(
+          response?.data?.message || "Punch In Successful!",
+          {
+            position: "top-right",
+            autoClose: 3000,
+          }
+        );
+
+        // Get latest punch-in + remaining time
+        await getEmployeeWorkSession();
+
+        // Refresh attendance
+        await getEmployeeData();
+        await getTodaydata();
+        await fetchAttendance();
+      }
+
+    } catch (error) {
+      console.error("PUNCH IN ERROR:", error);
+      console.error("STATUS:", error?.response?.status);
+      console.error("RESPONSE:", error?.response?.data);
+
+      toast.error(
+        error?.response?.data?.message ||
+        "Unable to punch in. Please try again.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
+    } finally {
+      setPunchingIn(false);
+    }
+  };
+
   useEffect(() => {
     if (user?.employeeId) {
       getEmployeeWorkSession();
@@ -287,7 +374,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to punch out. Please try again.",
+        "Unable to punch out. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -742,17 +829,17 @@ const EmployeeDash = () => {
         (a, b) =>
           new Date(
             b.entryDate ||
-              b.entry_date ||
-              b.startingDate ||
-              b.starting_date ||
-              0,
+            b.entry_date ||
+            b.startingDate ||
+            b.starting_date ||
+            0,
           ) -
           new Date(
             a.entryDate ||
-              a.entry_date ||
-              a.startingDate ||
-              a.starting_date ||
-              0,
+            a.entry_date ||
+            a.startingDate ||
+            a.starting_date ||
+            0,
           ),
       );
 
@@ -982,13 +1069,30 @@ const EmployeeDash = () => {
                   <h2>Remaining Time</h2>
                   <h3> {remainingTimeText}</h3>
                   <div class="buttons">
-                    <button
-                      className="btn1"
-                      onClick={confirmPunchOut}
-                      disabled={punchingOut}
-                    >
-                      {punchingOut ? "Punching Out..." : "Punch Out"}
-                    </button>
+                    {punchInTime && !punchOutTime ? (
+                      <button
+                        className="btn1"
+                        onClick={confirmPunchOut}
+                        disabled={punchingOut}
+                      >
+                        {punchingOut ? "Punching Out..." : "Punch Out"}
+                      </button>
+                    ) : !punchInTime ? (
+                      <button
+                        className="btn1 punch-in-btn"
+                        onClick={handlePunchIn}
+                        disabled={punchingIn}
+                      >
+                        {punchingIn ? "Punching In..." : "Punch In"}
+                      </button>
+                    ) : (
+                      <button
+                        className="btn1"
+                        disabled
+                      >
+                        Day Ended
+                      </button>
+                    )}
                     <a
                       className="btn2"
                       href="https://newcrm.diwise.in/add_entries"
@@ -1069,10 +1173,10 @@ const EmployeeDash = () => {
                         render: (date) =>
                           date
                             ? new Date(date).toLocaleDateString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              })
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
                             : "--",
                       },
 
@@ -1215,9 +1319,8 @@ const EmployeeDash = () => {
                   ) : (
                     displayedNotifications.map((notification) => (
                       <div
-                        className={`notification-item ${
-                          notification?.isRead ? "read" : "unread"
-                        }`}
+                        className={`notification-item ${notification?.isRead ? "read" : "unread"
+                          }`}
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
                       >
@@ -1235,15 +1338,15 @@ const EmployeeDash = () => {
                           <span className="notification-date">
                             {notification?.createdAt
                               ? new Date(notification.createdAt).toLocaleString(
-                                  "en-IN",
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  },
-                                )
+                                "en-IN",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
                               : "--"}
                           </span>
                         </div>
@@ -1280,14 +1383,14 @@ const EmployeeDash = () => {
                         <p className="notification-modal-date">
                           {selectedNotification?.createdAt
                             ? new Date(
-                                selectedNotification.createdAt,
-                              ).toLocaleString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                              selectedNotification.createdAt,
+                            ).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                             : "--"}
                         </p>
 

@@ -121,6 +121,14 @@ export const routes = [
   },
 
   {
+    name: "My Profile",
+    path: "/profile/:employeeId",
+    comp: Profile,
+    adminonly: false,
+    employeeonly: true,
+  },
+
+  {
     name: "Upload Documents",
     path: "/uploadDoc",
     comp: UploadDoc,
@@ -149,7 +157,7 @@ export const routes = [
     adminonly: true,
     employeeonly: false,
   },
-    {
+  {
     name: "LeaveApplication",
     path: "/leaveApplication",
     comp: LeaveApplication,
@@ -240,7 +248,7 @@ export const routes = [
     adminonly: true,
     employeeonly: false,
   },
-    {
+  {
     name: "EmpAttendance",
     path: "/empattendance",
     comp: EmpAttendance,
@@ -270,7 +278,7 @@ export const routes = [
     adminonly: true,
     employeeonly: false,
   },
-    {
+  {
     name: "WarningLetter",
     path: "/warningLetter",
     comp: WarningLetter,
@@ -298,25 +306,25 @@ export const routes = [
     comp: ReleavingLetter,
     adminonly: true,
   },
-    {
+  {
     name: "InternshipLetter",
     path: "/internshipLetter",
     comp: InternshipLetter,
     adminonly: true,
   },
-      {
+  {
     name: "ExperienceLetter",
     path: "/experienceLetter",
     comp: ExperienceLetter,
     adminonly: true,
   },
-      {
+  {
     name: "PromotionLetter",
     path: "/promotionLetter",
     comp: PromotionLetter,
     adminonly: true,
   },
-        {
+  {
     name: "TerminationLetter",
     path: "/terminationLetter",
     comp: TerminationLetter,
