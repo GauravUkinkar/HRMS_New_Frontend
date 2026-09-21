@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Empdashboard.scss";
 import Calender from "../../comp/Calender/Calender";
@@ -141,6 +141,234 @@ const EmployeeDash = () => {
   const minuteAngle = minutes * 6 + seconds * 0.1;
   const hourAngle = (hours % 12) * 30 + minutes * 0.5;
   const [today, setToday] = useState({});
+  const [remainingSeconds, setRemainingSeconds] = useState(0);
+  const [punchingOut, setPunchingOut] = useState(false);
+  const remainingTimerRef = useRef(null);
+  //to get employee id 
+  const getEmployeeWorkSession = async () => {
+    try {
+      const employeeId = user?.employeeId;
+
+      if (!employeeId) {
+        console.log("Employee ID not available");
+        return;
+      }
+
+      const response = await axios.get(
+        `${BASE_URL2}api/punch/employee/${employeeId}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("EMPLOYEE WORK SESSION:", response.data);
+
+      const employeeData = response?.data?.data;
+
+      if (!employeeData) {
+        setRemainingSeconds(0);
+        return;
+      }
+
+      const hours = Number(
+        employeeData?.remainingTime?.hours || 0
+      );
+
+      const minutes = Number(
+        employeeData?.remainingTime?.minutes || 0
+      );
+
+      const seconds = Number(
+        employeeData?.remainingTime?.seconds || 0
+      );
+
+      const totalSeconds =
+        hours * 60 * 60 +
+        minutes * 60 +
+        seconds;
+
+      setRemainingSeconds(totalSeconds);
+
+    } catch (error) {
+      console.error(
+        "Employee Work Session Error:",
+        error
+      );
+
+      setRemainingSeconds(0);
+    }
+  };
+  useEffect(() => {
+    if (user?.employeeId) {
+      getEmployeeWorkSession();
+    }
+  }, [user?.employeeId]);
+
+  useEffect(() => {
+    if (remainingTimerRef.current) {
+      clearInterval(remainingTimerRef.current);
+    }
+
+    remainingTimerRef.current = setInterval(() => {
+      setRemainingSeconds((prev) => {
+        if (prev <= 0) {
+          clearInterval(remainingTimerRef.current);
+          return 0;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (remainingTimerRef.current) {
+        clearInterval(remainingTimerRef.current);
+      }
+    };
+  }, []);
+
+
+  const formatRemainingTime = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+
+    const minutes = Math.floor(
+      (totalSeconds % 3600) / 60
+    );
+
+    const seconds = totalSeconds % 60;
+
+    return `${String(hours).padStart(2, "0")}:${String(
+      minutes
+    ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  };
+  const remainingTimeText =
+    formatRemainingTime(remainingSeconds);
+
+  //punch out logic 
+ // =====================================================
+// PUNCH OUT
+// =====================================================
+
+const handlePunchOut = async () => {
+  const employeeId = user?.employeeId;
+
+  if (!employeeId) {
+    toast.error("Employee ID not found");
+    return;
+  }
+
+  if (punchingOut) return;
+
+  try {
+    setPunchingOut(true);
+
+    const response = await axios.get(
+      `${BASE_URL2}api/punch/OUT/${employeeId}/false`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    console.log("PUNCH OUT RESPONSE:", response.data);
+
+    if (response.status === 200) {
+      // Stop countdown immediately
+      if (remainingTimerRef.current) {
+        clearInterval(remainingTimerRef.current);
+        remainingTimerRef.current = null;
+      }
+
+      setRemainingSeconds(0);
+
+      toast.success(
+        response?.data?.message || "Punch Out Successful!",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
+      );
+
+      // Refresh employee work-session data
+      await getEmployeeWorkSession();
+
+      // Refresh attendance table
+      await getEmployeeData();
+
+      // Refresh dashboard summary
+      await getTodaydata();
+
+      // Refresh employee attendance calendar
+      await fetchAttendance();
+    }
+  } catch (error) {
+    console.error("PUNCH OUT ERROR:", error);
+    console.error("STATUS:", error?.response?.status);
+    console.error("RESPONSE:", error?.response?.data);
+
+    toast.error(
+      error?.response?.data?.message ||
+        "Unable to punch out. Please try again.",
+      {
+        position: "top-right",
+        autoClose: 3000,
+      }
+    );
+  } finally {
+    setPunchingOut(false);
+  }
+};
+
+  const confirmPunchOut = () => {
+  toast(
+    ({ closeToast }) => (
+      <div className="punch-confirm-toast">
+
+        <div className="punch-confirm-content">
+          <h4>Confirm Punch Out</h4>
+
+          <p>
+            Are you sure you want to end your working day?
+          </p>
+        </div>
+
+        <div className="punch-confirm-buttons">
+
+          <button
+            type="button"
+            className="punch-cancel-btn"
+            onClick={() => {
+              closeToast();
+            }}
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            className="punch-ok-btn"
+            onClick={() => {
+              closeToast();
+              handlePunchOut();
+            }}
+          >
+            OK
+          </button>
+
+        </div>
+
+      </div>
+    ),
+    {
+      position: "top-center",
+      autoClose: false,
+      closeOnClick: false,
+      closeButton: false,
+      draggable: false,
+    }
+  );
+};
+
+
   const getTodaydata = async () => {
     try {
       // Get today's date in YYYY-MM-DD format
@@ -541,17 +769,17 @@ const EmployeeDash = () => {
         (a, b) =>
           new Date(
             b.entryDate ||
-              b.entry_date ||
-              b.startingDate ||
-              b.starting_date ||
-              0,
+            b.entry_date ||
+            b.startingDate ||
+            b.starting_date ||
+            0,
           ) -
           new Date(
             a.entryDate ||
-              a.entry_date ||
-              a.startingDate ||
-              a.starting_date ||
-              0,
+            a.entry_date ||
+            a.startingDate ||
+            a.starting_date ||
+            0,
           ),
       );
 
@@ -627,6 +855,11 @@ const EmployeeDash = () => {
       fetchRecentCrmEntries();
     }
   }, [user?.employeeId]);
+
+
+  // for remaining time detection 
+
+
   return (
     <>
       <MainPanel
@@ -776,9 +1009,15 @@ const EmployeeDash = () => {
                 </div>
                 <div className="right">
                   <h2>Remaining Time</h2>
-                  <h3>08:30:30</h3>
+                  <h3> {remainingTimeText}</h3>
                   <div class="buttons">
-                    <button className="btn1">Punch Out</button>
+                    <button
+                      className="btn1"
+                      onClick={confirmPunchOut}
+                      disabled={punchingOut}
+                    >
+                      {punchingOut ? "Punching Out..." : "Punch Out"}
+                    </button>
                     <a className="btn1" href="https://newcrm.diwise.in/add_entries">LogIn to CRM</a>
                   </div>
                 </div>
@@ -852,10 +1091,10 @@ const EmployeeDash = () => {
                         render: (date) =>
                           date
                             ? new Date(date).toLocaleDateString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              })
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
                             : "--",
                       },
 
@@ -998,9 +1237,8 @@ const EmployeeDash = () => {
                   ) : (
                     displayedNotifications.map((notification) => (
                       <div
-                        className={`notification-item ${
-                          notification?.isRead ? "read" : "unread"
-                        }`}
+                        className={`notification-item ${notification?.isRead ? "read" : "unread"
+                          }`}
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
                       >
@@ -1018,15 +1256,15 @@ const EmployeeDash = () => {
                           <span className="notification-date">
                             {notification?.createdAt
                               ? new Date(notification.createdAt).toLocaleString(
-                                  "en-IN",
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  },
-                                )
+                                "en-IN",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
                               : "--"}
                           </span>
                         </div>
@@ -1063,14 +1301,14 @@ const EmployeeDash = () => {
                         <p className="notification-modal-date">
                           {selectedNotification?.createdAt
                             ? new Date(
-                                selectedNotification.createdAt,
-                              ).toLocaleString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                              selectedNotification.createdAt,
+                            ).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                             : "--"}
                         </p>
 

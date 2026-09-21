@@ -2804,3 +2804,79 @@ display: flex;
     }
   }
 }
+/* =========================================
+   PUNCH OUT CONFIRMATION TOAST
+========================================= */
+
+.punch-confirm-toast {
+  width: 340px;
+  padding: 4px;
+}
+
+.punch-confirm-content {
+  h4 {
+    margin: 0 0 8px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #6b7280;
+  }
+}
+
+.punch-confirm-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+
+  button {
+    min-width: 80px;
+    height: 34px;
+
+    border-radius: 5px;
+    padding: 0 16px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+  }
+
+  .punch-cancel-btn {
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: #374151;
+
+    &:hover {
+      background: #f3f4f6;
+    }
+  }
+
+  .punch-ok-btn {
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: #fff;
+
+    &:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+  }
+}
+
+/* Punch Out disabled state */
+
+.buttons {
+  .btn1:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
