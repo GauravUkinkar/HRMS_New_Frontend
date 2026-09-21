@@ -24,45 +24,60 @@ const Viewdoc = () => {
     getAllEmployee();
   }, []);
 
-  const getAllEmployee = async () => {
-    try {
-      setLoadingEmployees(true);
+const getAllEmployee = async () => {
+  try {
+    setLoadingEmployees(true);
 
-      const res = await axios.get(
-        `${BASE_URL}Admin/GetAllEmployee`,
-        {
-          withCredentials: true,
+    console.log("Employee API URL:", `${BASE_URL}Admin/GetAllEmployee`);
+
+    const res = await axios.get(
+      `${BASE_URL}Admin/GetAllEmployee`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    console.log("All Employee API Response:", res.data);
+
+    // Handle different possible response structures
+    const employeeData = Array.isArray(res.data)
+      ? res.data
+      : res.data?.data || [];
+
+    const employeeList = employeeData
+      .map((item) => {
+        const employee = item?.data || item;
+
+        if (!employee) {
+          return null;
         }
+
+        return {
+          uid: employee.uid,
+          employeeName: employee.employeeName,
+          employeeId: employee.employeeId,
+        };
+      })
+      .filter(
+        (employee) =>
+          employee?.uid &&
+          employee?.employeeId
       );
 
-      console.log("All Employee API Response:", res.data);
+    setEmployees(employeeList);
 
-      const employeeList = res.data
-        .map((item) => {
-          if (!item?.data) {
-            return null;
-          }
+    console.log("Employee List:", employeeList);
+  } catch (error) {
+    console.error("Get Employee Error:", error);
+    console.error("Status:", error?.response?.status);
+    console.error("Response:", error?.response?.data);
+    console.error("Headers:", error?.response?.headers);
 
-          return {
-            uid: item.data.uid,
-            employeeName: item.data.employeeName,
-            employeeId: item.data.employeeId,
-          };
-        })
-        .filter(Boolean);
-
-      setEmployees(employeeList);
-
-      console.log("Employee List:", employeeList);
-    } catch (error) {
-      console.error(
-        "Get Employee Error:",
-        error.response?.data || error
-      );
-    } finally {
-      setLoadingEmployees(false);
-    }
-  };
+    setEmployees([]);
+  } finally {
+    setLoadingEmployees(false);
+  }
+};
 
   const getEmployeeDocuments = async (employeeId) => {
     try {
