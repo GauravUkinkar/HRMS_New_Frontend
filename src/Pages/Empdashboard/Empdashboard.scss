@@ -1084,6 +1084,7 @@
               border-radius: 5px;
               font-size: 14px;
               font-weight: 540;
+              text-decoration: none;
               &:hover{
                 transform: translateY(-5px);
                 transition: var(--trans);
@@ -2001,4 +2002,805 @@ display: flex;
     }
   }
 }
+}
+/* =========================================
+   EMPLOYEE DASHBOARD RESPONSIVE
+========================================= */
+
+/* =========================================
+   1200px - Reduce spacing and widths
+========================================= */
+
+@media only screen and (max-width: 1000px) {
+  .employeedash-parent {
+    gap: 15px;
+
+    .left-side {
+      width: 75%;
+    }
+
+    .right-side {
+      width: 25%;
+    }
+
+    .box1 {
+      .quote {
+        .quote-text {
+          p {
+            max-width: 30ch;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
+    .box2 {
+      gap: 15px;
+
+      .card {
+        padding: 15px;
+        min-width: 180px;
+
+        .card-icon {
+          font-size: 26px;
+        }
+
+        .card-content {
+          .card-title {
+            font-size: 14px;
+          }
+
+          p {
+            font-size: 20px;
+          }
+        }
+      }
+    }
+
+    .box3 {
+      .box3-right {
+        .left {
+          width: 100%;
+
+          .clock {
+            width: 150px;
+            height: 150px;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/* =========================================
+   1000px - STACK LEFT + RIGHT
+========================================= */
+
+@media only screen and (max-width: 1200px) {
+ .employeedash-parent {
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px 5px;
+
+    .left-side,
+    .right-side {
+      width: 100%;
+      height: auto;
+    }
+
+    /* =========================
+       BOX 1
+    ========================= */
+
+    .left-side {
+      .box1 {
+        width: 100%;
+        box-sizing: border-box;
+
+        .quote {
+          max-width: 60%;
+        }
+      }
+
+      /* =========================
+         BOX 2
+      ========================= */
+
+      .box2 {
+        width: 100%;
+
+        .card {
+          flex: 1 1 calc(50% - 10px);
+          min-width: 0;
+        }
+      }
+
+      /* =========================
+         BOX 3
+      ========================= */
+
+      .box3 {
+        width: 100%;
+
+        .box3-left {
+          width: 100%;
+        }
+
+        .box3-right {
+          width: 100%;
+          box-sizing: border-box;
+
+          .left {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+
+            .clock {
+              width: 170px;
+              height: 170px;
+            }
+          }
+
+          .right {
+            width: 100%;
+            box-sizing: border-box;
+          }
+        }
+      }
+
+      /* =========================
+         BOX 4
+      ========================= */
+
+      .box4 {
+        width: 100%;
+        flex-direction: column;
+
+        .box4-left,
+        .box4-right {
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        .box4-right {
+          height: 350px;
+        }
+      }
+    }
+
+    /* =========================
+       RIGHT SIDE
+    ========================= */
+
+    .right-side {
+      width: 100%;
+
+      .top-box1,
+      .middle-box2,
+      .last-box3 {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .top-box1 {
+        height: auto;
+        min-height: 250px;
+      }
+
+      .middle-box2 {
+        height: auto;
+        min-height: 430px;
+      }
+
+      .last-box3 {
+        min-height: 250px;
+      }
+    }
+  }
+}
+
+
+/* =========================================
+   850px - BETTER TABLET LAYOUT
+========================================= */
+
+@media only screen and (max-width: 850px) {
+  .employeedash-parent {
+    gap: 15px;
+
+    .left-side {
+      gap: 15px;
+
+      /* =========================
+         BOX 1
+      ========================= */
+
+      .box1 {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+
+        h2 {
+          margin: 0;
+        }
+
+        .quote {
+          width: 100%;
+          max-width: none;
+          box-sizing: border-box;
+
+          .quote-text {
+            p {
+              max-width: none;
+              font-size: 14px;
+            }
+          }
+        }
+      }
+
+      /* =========================
+         BOX 2
+      ========================= */
+
+      .box2 {
+        gap: 15px;
+
+        .card {
+          flex: 1 1 calc(50% - 8px);
+          min-width: 0;
+          padding: 15px;
+
+          .card-icon {
+            font-size: 25px;
+            padding: 7px;
+          }
+
+          .card-content {
+            .card-title {
+              font-size: 14px;
+            }
+
+            p {
+              font-size: 19px;
+            }
+          }
+        }
+      }
+
+      /* =========================
+         BOX 3
+      ========================= */
+
+      .box3 {
+        flex-direction: column;
+        gap: 15px;
+
+        .box3-left,
+        .box3-right {
+          width: 100%;
+        }
+
+        .box3-right {
+          padding: 15px;
+
+          .left {
+            width: 100%;
+          }
+
+          .right {
+            width: 100%;
+
+            .buttons {
+              width: 100%;
+              justify-content: center;
+              flex-wrap: wrap;
+            }
+          }
+        }
+      }
+
+      /* =========================
+         BOX 4
+      ========================= */
+
+      .box4 {
+        flex-direction: column;
+        gap: 15px;
+
+        .box4-left,
+        .box4-right {
+          width: 100%;
+        }
+
+        .box4-right {
+          height: 350px;
+        }
+
+        .crm-table {
+          overflow-x: auto;
+
+          .ant-table {
+            min-width: 700px;
+          }
+        }
+      }
+    }
+
+    /* =========================
+       RIGHT SIDE
+    ========================= */
+
+    .right-side {
+      gap: 15px;
+
+      .top-box1 {
+        height: auto;
+        min-height: 250px;
+
+        .leave-content {
+          .leave-chart {
+            width: 55%;
+          }
+
+          .leave-legend {
+            width: 45%;
+          }
+        }
+      }
+
+      .middle-box2 {
+        min-height: 430px;
+
+        .calendar-body {
+          overflow-x: auto;
+        }
+      }
+
+      .last-box3 {
+        min-height: 250px;
+
+        .birthday-item {
+          .birthday-info {
+            h4 {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/* =========================================
+   600px - MOBILE
+========================================= */
+
+@media only screen and (max-width: 600px) {
+  .employeedash-parent {
+    padding: 8px 5px;
+    gap: 12px;
+
+    .left-side,
+    .right-side {
+      gap: 12px;
+    }
+
+    /* =========================
+       BOX 1
+    ========================= */
+
+    .left-side {
+      .box1 {
+        padding: 12px;
+
+        h2 {
+          font-size: 18px;
+
+          span {
+            font-size: 12px;
+          }
+        }
+
+        .quote {
+          padding: 8px;
+
+          .quote-icon {
+            font-size: 13px;
+          }
+
+          .quote-text {
+            p {
+              font-size: 12px;
+              line-height: 1.4;
+            }
+          }
+        }
+      }
+
+      /* =========================
+         BOX 2
+      ========================= */
+
+      .box2 {
+        flex-direction: column;
+        gap: 12px;
+
+        .card {
+          width: 100%;
+          min-width: 0;
+          box-sizing: border-box;
+          padding: 15px;
+
+          .card-icon {
+            font-size: 24px;
+          }
+
+          .card-content {
+            .card-title {
+              font-size: 13px;
+            }
+
+            p {
+              font-size: 19px;
+            }
+          }
+        }
+      }
+
+      /* =========================
+         BOX 3
+      ========================= */
+
+      .box3 {
+        .box3-left {
+          padding: 12px;
+
+          .box4-heading {
+            .heading-title {
+              gap: 7px;
+
+              svg {
+                font-size: 17px;
+              }
+
+              span {
+                font-size: 14px;
+              }
+            }
+
+            .view-all {
+              padding: 5px 10px;
+              font-size: 11px;
+            }
+          }
+        }
+
+        .box3-right {
+          padding: 12px;
+
+          .left {
+            .clock {
+              width: 150px;
+              height: 150px;
+
+              .clock-number {
+                font-size: 13px;
+              }
+
+              .hour-hand {
+                height: 45px;
+              }
+
+              .minute-hand {
+                height: 60px;
+              }
+
+              .second-hand {
+                height: 65px;
+              }
+            }
+          }
+
+          .right {
+            padding: 10px;
+
+            h3 {
+              font-size: 14px;
+              padding: 8px;
+            }
+
+            .buttons {
+              gap: 10px;
+
+              .btn1 {
+                padding: 8px 12px;
+                font-size: 12px;
+              }
+            }
+          }
+        }
+      }
+
+      /* =========================
+         BOX 4
+      ========================= */
+
+      .box4 {
+        .box4-right {
+          height: 320px;
+          padding: 12px;
+        }
+
+        .crm-heading {
+          padding: 8px;
+
+          .crm-title {
+            span {
+              font-size: 14px;
+            }
+
+            svg {
+              font-size: 18px;
+            }
+          }
+
+          .view-all {
+            padding: 5px 10px;
+            font-size: 11px;
+          }
+        }
+
+        .crm-table {
+          overflow-x: auto;
+
+          .ant-table {
+            min-width: 700px;
+          }
+        }
+      }
+    }
+
+    /* =========================
+       LEAVE
+    ========================= */
+
+    .right-side {
+      .top-box1 {
+        min-height: 280px;
+        padding: 12px;
+
+        .leave-header {
+          height: auto;
+          gap: 10px;
+
+          .leave-title {
+            gap: 6px;
+
+            span {
+              font-size: 14px;
+            }
+
+            svg {
+              font-size: 17px;
+            }
+          }
+
+          .view-all {
+            padding: 5px 10px;
+            font-size: 11px;
+          }
+        }
+
+        .leave-content {
+          .leave-chart {
+            width: 50%;
+            height: 180px;
+          }
+
+          .leave-legend {
+            width: 50%;
+            gap: 10px;
+
+            .legend-row {
+              font-size: 10px;
+
+              .legend-dot {
+                width: 9px;
+                height: 9px;
+                min-width: 9px;
+              }
+
+              strong {
+                font-size: 11px;
+              }
+            }
+          }
+        }
+      }
+
+      /* =========================
+         CALENDAR
+      ========================= */
+
+      .middle-box2 {
+        min-height: 400px;
+        padding: 12px;
+
+        .calendar-header {
+          .calendar-title {
+            gap: 8px;
+
+            .calendar-icon {
+              width: 35px;
+              height: 35px;
+
+              svg {
+                font-size: 17px;
+              }
+            }
+
+            h3 {
+              font-size: 14px;
+            }
+
+            p {
+              font-size: 9px;
+            }
+          }
+        }
+
+        .calendar-body {
+          padding: 5px;
+        }
+
+        .chart-legend {
+          gap: 4px;
+
+          .legend-item {
+            padding: 5px 7px;
+            font-size: 9px;
+          }
+        }
+      }
+
+      /* =========================
+         BIRTHDAYS
+      ========================= */
+
+      .last-box3 {
+        min-height: 250px;
+        padding: 12px;
+
+        .birthday-header {
+          .birthday-title {
+            gap: 6px;
+
+            svg {
+              font-size: 17px;
+            }
+
+            span {
+              font-size: 14px;
+            }
+          }
+        }
+
+        .birthday-item {
+          gap: 7px;
+          padding: 7px;
+
+          .birthday-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 9px;
+          }
+
+          .birthday-info {
+            h4 {
+              font-size: 11px;
+            }
+
+            p {
+              font-size: 8px;
+            }
+          }
+
+          .birthday-date {
+            display: none;
+          }
+
+          .wish-button {
+            padding: 5px 7px;
+            font-size: 8px;
+
+            svg {
+              font-size: 10px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+/* =========================================
+   400px - SMALL MOBILE
+========================================= */
+
+@media only screen and (max-width: 400px) {
+  .employeedash-parent {
+    .left-side {
+      .box3 {
+        .box3-right {
+          .left {
+            .clock {
+              width: 135px;
+              height: 135px;
+
+              .clock-number {
+                font-size: 11px;
+              }
+
+              .hour-hand {
+                height: 40px;
+              }
+
+              .minute-hand {
+                height: 52px;
+              }
+
+              .second-hand {
+                height: 58px;
+              }
+
+              .clock-center {
+                width: 9px;
+                height: 9px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .right-side {
+      .top-box1 {
+        .leave-content {
+          flex-direction: column;
+
+          .leave-chart,
+          .leave-legend {
+            width: 100%;
+          }
+
+          .leave-chart {
+            height: 150px;
+          }
+
+          .leave-legend {
+            gap: 8px;
+
+            .legend-row {
+              justify-content: space-between;
+            }
+          }
+        }
+      }
+
+      .last-box3 {
+        .birthday-item {
+          .birthday-info {
+            h4 {
+              max-width: 120px;
+            }
+          }
+        }
+      }
+    }
+  }
 }

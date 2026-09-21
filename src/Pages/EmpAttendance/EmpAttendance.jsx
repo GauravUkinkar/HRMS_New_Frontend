@@ -13,8 +13,6 @@ const Attendance = () => {
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
   const [showPreviousAttendance] = useState(false);
-
-
   const [showEmployeeAttendance] = useState(false);
   const [selectedEmployee] = useState(null);
   const [employeeAttendanceList] = useState([]);
@@ -36,6 +34,7 @@ const Attendance = () => {
             key: item?.employeeId || index,
             employeeId: item?.employeeId || "",
             employeeName: item?.employeeName?.toUpperCase() || "",
+            employeeDesignation:item?.employeeDesignation?.toUpperCase() || "",
             punchIn: item?.punchInByAdmin
               ? "Punch In From Admin"
               : item?.punchIn
@@ -62,67 +61,6 @@ const Attendance = () => {
       setLoader(false);
     }
   };
-  const previousAttendanceColumns = [
-    {
-      title: "Emp Id",
-      dataIndex: "employeeId",
-      key: "employeeId",
-      align: "center",
-    },
-    {
-      title: "Employee Name",
-      dataIndex: "employeeName",
-      key: "employeeName",
-      align: "center",
-    },
-    {
-      title: "Designation",
-      dataIndex: "employeeDesignation",
-      key: "employeeDesignation",
-      align: "center",
-    },
-    {
-      title: "In Time",
-      key: "punchIn",
-      align: "center",
-      render: (_, record) => {
-        if (!record?.punchIn) return "-";
-        if (record?.punchInByAdmin) return "Punch In From Admin";
-        return dayjs(record.punchIn).format("HH:mm:ss");
-      },
-    },
-    {
-      title: "Out Time",
-      key: "punchOut",
-      align: "center",
-      render: (_, record) => {
-        if (!record?.punchOut) return "-";
-        if (record?.punchOutByAdmin) return "Punch Out From Admin";
-        return dayjs(record.punchOut).format("HH:mm:ss");
-      },
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      align: "center",
-      render: (status) => {
-        const normalizedStatus = String(status || "")
-          .trim()
-          .toUpperCase();
-
-        return (
-          <span
-            className={`attendance-status ${
-              normalizedStatus === "HALF_DAY" ? "half-day-status" : ""
-            }`}
-          >
-            {status || "-"}
-          </span>
-        );
-      },
-    },
-  ];
 
   const employeeAttendanceColumns = [
     {

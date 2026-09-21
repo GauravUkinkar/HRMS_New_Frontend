@@ -120,36 +120,7 @@ const EmployeeDash = () => {
     },
   ];
 
-  const birthdayEmployees = [
-    {
-      id: 1,
-      name: "Davis Lewis",
-      designation: "Accountant",
-      birthday: "01 Sep 2026",
-      month: 8,
-    },
-    {
-      id: 2,
-      name: "Sneha Patil",
-      designation: "HR Executive",
-      birthday: "05 Sep 2026",
-      month: 8,
-    },
-    {
-      id: 3,
-      name: "Rahul Kulkarni",
-      designation: "Software Developer",
-      birthday: "12 Sep 2026",
-      month: 8,
-    },
-    {
-      id: 4,
-      name: "Anjali Pawar",
-      designation: "Marketing Executive",
-      birthday: "18 Sep 2026",
-      month: 8,
-    },
-  ];
+
   const [quote] = useState(() => {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     return quotes[randomIndex];
@@ -596,11 +567,52 @@ const EmployeeDash = () => {
     }
   };
 
+  const [birthdayEmployees, setBirthdayEmployees] = useState([]);
+  const [birthdayLoader, setBirthdayLoader] = useState(false);
+
+  const getBirthdayEmployees = async () => {
+    try {
+      setBirthdayLoader(true);
+
+      const currentMonth = new Date().toLocaleString("en-US", {
+        month: "short",
+      });
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_USER_BACKEND_URL}AuthController/birthdays`,
+        {
+          params: {
+            month: currentMonth,
+          },
+          withCredentials: true,
+        },
+      );
+      console.log("Birthday API Response:", response.data);
+
+      const birthdayData = response?.data?.data || [];
+
+      const formattedBirthdays = birthdayData.map((employee) => ({
+        id: employee.uid,
+        name: employee.employeeName || "Unknown",
+        birthday: employee.date || "",
+        designation: employee.designation || "Employee",
+      }));
+
+      setBirthdayEmployees(formattedBirthdays);
+    } catch (error) {
+      console.error("Birthday API Error:", error);
+      setBirthdayEmployees([]);
+    } finally {
+      setBirthdayLoader(false);
+    }
+  };
+
   useEffect(() => {
     getEmployeeData();
     getTodaydata();
     getNotifications();
     getNotificationCount();
+    getBirthdayEmployees();
   }, []);
   useEffect(() => {
     getAllLeaveRecords();
@@ -767,7 +779,7 @@ const EmployeeDash = () => {
                   <h3>08:30:30</h3>
                   <div class="buttons">
                     <button className="btn1">Punch Out</button>
-                    <button className="btn1">LogIn to CRM</button>
+                    <a className="btn1" href="https://newcrm.diwise.in/add_entries">LogIn to CRM</a>
                   </div>
                 </div>
               </div>
@@ -1188,39 +1200,34 @@ const EmployeeDash = () => {
 
               {/* Birthday List */}
               <div className="birthday-list">
-                {birthdayEmployees.map((employee) => (
-                  <div className="birthday-item" key={employee.id}>
-                    {/* Employee Avatar */}
-                    <div className="birthday-avatar">
-                      {employee.name
-                        .split(" ")
-                        .map((word) => word[0])
-                        .join("")
-                        .toUpperCase()}
+                {birthdayLoader ? (
+                  <div className="birthday-loading">Loading birthdays...</div>
+                ) : birthdayEmployees.length > 0 ? (
+                  birthdayEmployees.map((employee) => (
+                    <div className="birthday-item" key={employee.id}>
+                      {/* Employee Avatar */}
+                      <div className="birthday-avatar">
+                        {employee.name
+                          .split(" ")
+                          .filter(Boolean)
+                          .map((word) => word[0])
+                          .join("")
+                          .toUpperCase()}
+                      </div>
+
+                      {/* Employee Information */}
+                      <div className="birthday-info">
+                        <h4>{employee.name}</h4>
+                        <p>{employee.designation}</p>
+                      </div>
+
+                      {/* Birthday Date */}
+                      <div className="birthday-date">{employee.birthday}</div>
                     </div>
-
-                    {/* Employee Information */}
-                    <div className="birthday-info">
-                      <h4>{employee.name}</h4>
-
-                      <p>{employee.designation}</p>
-                    </div>
-
-                    {/* Birthday Date */}
-                    <div className="birthday-date">{employee.birthday}</div>
-
-                    {/* Wish Button */}
-                    <button
-                      className="wish-button"
-                      onClick={() => {
-                        console.log(`Wishing ${employee.name} Happy Birthday!`);
-                      }}
-                    >
-                      <LuSend />
-                      Wish
-                    </button>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <div className="birthday-empty">No birthdays this month</div>
+                )}
               </div>
             </div>
           </div>

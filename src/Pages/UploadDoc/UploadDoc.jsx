@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./UploadDoc.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import FileUpload from "../../comp/FileUpload/FileUpload";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { UserContext } from "../../../Context";
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const UploadDoc = () => {
+   const { user } = useContext(UserContext);
 
   const [documents, setDocuments] = useState({
     aadharCard: null,
@@ -80,161 +81,113 @@ const UploadDoc = () => {
     );
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    try {
-      setLoading(true);
-      const uid =
-        await getCurrentUserUid();
-      if (!uid) {
-        toast.error(
-          "Unable to get logged-in user UID"
-        );
+  try {
+    setLoading(true);
+
+    const uid = user?.uid;
+
+    console.log("Logged-in User:", user);
+    console.log("Uploading documents for UID:", uid);
+
+    if (!uid) {
+      toast.error("Unable to get logged-in user UID");
+      return;
+    }
+
+    const requiredDocuments = [
+      {
+        key: "aadharCard",
+        label: "Aadhar Card",
+      },
+      {
+        key: "panCard",
+        label: "Pan Card",
+      },
+      {
+        key: "tenthCertificate",
+        label: "10th Certificate",
+      },
+      {
+        key: "twelfthCertificate",
+        label: "12th Certificate",
+      },
+      {
+        key: "degreeCertificate",
+        label: "Degree Certificate",
+      },
+      {
+        key: "relievingCertificate",
+        label: "Relieving Certificate",
+      },
+    ];
+
+    for (const document of requiredDocuments) {
+      if (!documents[document.key]) {
+        toast.error(`Please upload ${document.label}`);
         return;
       }
-
-      console.log(
-        "Uploading documents for UID:",
-        uid
-      );
-
-      const requiredDocuments = [
-        {
-          key: "aadharCard",
-          label: "Aadhar Card",
-        },
-        {
-          key: "panCard",
-          label: "Pan Card",
-        },
-        {
-          key: "tenthCertificate",
-          label: "10th Certificate",
-        },
-        {
-          key: "twelfthCertificate",
-          label: "12th Certificate",
-        },
-        {
-          key: "degreeCertificate",
-          label: "Degree Certificate",
-        },
-        {
-          key: "relievingCertificate",
-          label: "Releiving Certificate",
-        },
-      ];
-
-      for (
-        const document of requiredDocuments
-      ) {
-        if (
-          !documents[document.key]
-        ) {
-          toast.error(
-            `Please upload ${document.label}`
-          );
-
-          return;
-        }
-      }
-
-      const formData =
-        new FormData();
-      Object.entries(
-        documents
-      ).forEach(
-        ([key, file]) => {
-          if (file) {
-            formData.append(
-              key,
-              file
-            );
-          }
-        }
-      );
-
-      console.log(
-        "========== DOCUMENT UPLOAD =========="
-      );
-
-      console.log(
-        "UID:",
-        uid
-      );
-
-      for (
-        const [
-          key,
-          value,
-        ] of formData.entries()
-      ) {
-        console.log(
-          key,
-          value
-        );
-      }
-      const response =
-        await axios.post(
-          `${BASE_URL}uploadDoc/upload`,
-          formData,
-          {
-            params: {
-              uid: uid,
-            },
-
-            withCredentials: true,
-          }
-        );
-      console.log(
-        "Upload Response:",
-        response.data
-      );
-
-      toast.success(
-        "Documents uploaded successfully!"
-      );
-      setDocuments({
-        aadharCard: null,
-        panCard: null,
-        tenthCertificate: null,
-        twelfthCertificate: null,
-        degreeCertificate: null,
-        diplomaCertificate: null,
-        postGraduationCertificate: null,
-        relievingCertificate: null,
-        experienceLetter: null,
-        bankStatement: null,
-        salarySlip1: null,
-        salarySlip2: null,
-      });
-
-    } catch (error) {
-      console.error(
-        "Upload Documents Error:",
-        error
-      );
-
-      console.error(
-        "Status:",
-        error.response?.status
-      );
-
-      console.error(
-        "Response:",
-        error.response?.data
-      );
-
-      toast.error(
-        error.response?.data?.message ||
-        "Failed to upload documents"
-      );
-
-    } finally {
-      setLoading(false);
     }
-  };
+
+    const formData = new FormData();
+
+    Object.entries(documents).forEach(([key, file]) => {
+      if (file) {
+        formData.append(key, file);
+      }
+    });
+
+    console.log("========== DOCUMENT UPLOAD ==========");
+    console.log("UID:", uid);
+
+    for (const [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    const response = await axios.post(
+      `${BASE_URL}uploadDoc/upload`,
+      formData,
+      {
+        params: {
+          uid: uid,
+        },
+        withCredentials: true,
+      }
+    );
+
+    console.log("Upload Response:", response.data);
+
+    toast.success("Documents uploaded successfully!");
+
+    setDocuments({
+      aadharCard: null,
+      panCard: null,
+      tenthCertificate: null,
+      twelfthCertificate: null,
+      degreeCertificate: null,
+      diplomaCertificate: null,
+      postGraduationCertificate: null,
+      relievingCertificate: null,
+      experienceLetter: null,
+      bankStatement: null,
+      salarySlip1: null,
+      salarySlip2: null,
+    });
+  } catch (error) {
+    console.error("Upload Documents Error:", error);
+    console.error("Status:", error?.response?.status);
+    console.error("Response:", error?.response?.data);
+
+    toast.error(
+      error?.response?.data?.message ||
+        "Failed to upload documents"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <MainPanel
       title="Upload Documents"

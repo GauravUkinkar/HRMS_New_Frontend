@@ -3,21 +3,31 @@ import "./LeaveApplication.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import axios from "axios";
 import { UserContext } from "../../../Context";
-
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
+import DatePickerModule from "react-multi-date-picker";
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+} from "recharts";
 import { toast } from "react-toastify";
+
+const DatePicker = DatePickerModule?.default || DatePickerModule;
 
 const BASE_URL1 = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const LeaveApplication = () => {
-  // GET USER FROM CONTEXT
   const { user } = useContext(UserContext);
-
-  // STATES
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [leaveLoader, setLeaveLoader] = useState(false);
 
-  // GET LEAVE RECORD
+  const [leaveDates, setLeaveDates] = useState([]);
+  const [leaveReason, setLeaveReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [legends, setLegends] = useState(false);
+
+
   const getAllLeaveRecords = async () => {
     try {
       setLeaveLoader(true);
@@ -59,30 +69,32 @@ const LeaveApplication = () => {
     }
   };
 
-  // CALL API WHEN EMPLOYEE ID IS AVAILABLE
+
   useEffect(() => {
     if (user?.employeeId) {
       getAllLeaveRecords();
     }
   }, [user?.employeeId]);
 
-  // CALCULATE LEAVES
+
   const totalPaidLeaves = leaveRecords.reduce(
-    (total, employee) => total + Number(employee?.paidLeaves || 0),
+    (total, employee) =>
+      total + Number(employee?.paidLeaves || 0),
     0,
   );
 
   const totalUsedLeaves = leaveRecords.reduce(
-    (total, employee) => total + Number(employee?.usedLeaves || 0),
+    (total, employee) =>
+      total + Number(employee?.usedLeaves || 0),
     0,
   );
 
   const totalRemainingLeaves = leaveRecords.reduce(
-    (total, employee) => total + Number(employee?.remainingLeaves || 0),
+    (total, employee) =>
+      total + Number(employee?.remainingLeaves || 0),
     0,
   );
 
-  // CHART DATA
   const leaveData = [
     {
       name: "Remaining",
@@ -100,100 +112,202 @@ const LeaveApplication = () => {
       color: "#ff424c",
     },
   ];
+  const handleDayClick = (clickedDate) => {
+    const dateStr = clickedDate.format("YYYY-MM-DD");
 
-  const[leaveDays, setLeaveDays] = useState("");
-  const[leaveReason, setLeaveReason] = useState("");
-  const[submitting, setSubmitting] = useState(false);
+    const currentLeaveDates = leaveDates || [];
 
-const handleLeaveSubmit = async (e) => {
-  e.preventDefault();
-
-  const employeeId = user?.employeeId;
-
-  console.log("USER:", user);
-  console.log("EMPLOYEE ID:", employeeId);
-
-  if (!employeeId) {
-    toast.error("Employee ID not found");
-    return;
-  }
-
-  if (!leaveDays || Number(leaveDays) <= 0) {
-    toast.error("Please enter leave days");
-    return;
-  }
-
-  if (!leaveReason.trim()) {
-    toast.error("Please enter leave reason");
-    return;
-  }
-
-  try {
-    setSubmitting(true);
-
-    const payload = {
-      uid: 0,
-      leaveReason: leaveReason.trim(),
-      totalleaveDays: Number(leaveDays),
-      employeeId: employeeId,
-      employeeName: user?.employeeName || "",
-      entryDate: new Date().toISOString(),
-      leaveDates: [],
-    };
-
-    console.log("Add Leave Payload:", payload);
-
-    const response = await axios.post(
-      `${BASE_URL1}AuthController/addLeave`,
-      payload,
+    const existingIndex = currentLeaveDates.findIndex(
+      (item) => item.date === dateStr,
+    );
+    if (existingIndex === -1) {
+      setLeaveDates([
+        ...currentLeaveDates,
         {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }
+          date: dateStr,
+          isPL: false,
+        },
+      ]);
 
+      return;
+    }
+
+    const existing = currentLeaveDates[existingIndex];
+    if (!existing.isPL) {
+      const paidLeaveCount = currentLeaveDates.filter(
+        (item) => item.isPL === true,
+      ).length;
+
+      // Check paid leave limit
+      if (paidLeaveCount >= totalRemainingLeaves) {
+        toast.error(
+          `You have only ${totalRemainingLeaves} paid leave(s) remaining`,
+        );
+
+        return;
+      }
+
+      const updated = [...currentLeaveDates];
+
+      updated[existingIndex] = {
+        ...updated[existingIndex],
+        isPL: true,
+      };
+
+      setLeaveDates(updated);
+
+      return;
+    }
+    const updated = currentLeaveDates.filter(
+      (item) => item.date !== dateStr,
     );
 
-    console.log("Add Leave Response:", response.data);
+    setLeaveDates(updated);
+  };
+  const handleLeaveSubmit = async (e) => {
+    e.preventDefault();
 
-    toast.success(
-      response?.data?.responseMessage ||
-        response?.data?.message ||
-        "Leave application submitted successfully"
-    );
+    const employeeId = user?.employeeId;
 
-    setLeaveDays("");
-    setLeaveReason("");
+    console.log("USER:", user);
+    console.log("EMPLOYEE ID:", employeeId);
 
-    await getAllLeaveRecords();
-  } catch (error) {
-    console.error("Add Leave API Error:", error);
-    console.error("Error Response:", error?.response?.data);
+    if (!employeeId) {
+      toast.error("Employee ID not found");
+      return;
+    }
 
-    toast.error(
-      error?.response?.data?.responseMessage ||
-        error?.response?.data?.message ||
-        "Failed to submit leave application"
-    );
-  } finally {
-    setSubmitting(false);
-  }
+    if (!leaveDates.length) {
+      toast.error("Please select at least one leave date");
+      return;
+    }
+
+    if (!leaveReason.trim()) {
+      toast.error("Please enter leave reason");
+      return;
+    }
+
+    const paidLeaveCount = leaveDates.filter(
+      (item) => item.isPL === true,
+    ).length;
+
+    if (paidLeaveCount > totalRemainingLeaves) {
+      toast.error(
+        `You can select maximum ${totalRemainingLeaves} paid leave(s)`,
+      );
+
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+const formatEntryDate = () => {
+  const now = new Date();
+
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}-${String(now.getDate()).padStart(2, "0")} ${String(
+    now.getHours()
+  ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(
+    now.getSeconds()
+  ).padStart(2, "0")}`;
 };
+
+      const payload = {
+        uid: user?.uid,
+
+        leaveReason: leaveReason.trim(),
+
+        totalleaveDays: leaveDates.length,
+
+        employeeId: employeeId,
+
+        employeeName: user?.employeeName || "",
+
+        entryDate: formatEntryDate(),
+
+        leaveDates: leaveDates.map((item) => ({
+          date: item.date,
+          isPL: item.isPL,
+        })),
+      };
+
+      console.log("Add Leave Payload:", payload);
+
+      const response = await axios.post(
+        `${BASE_URL1}AuthController/addLeave`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials:true,
+        },
+      );
+
+      console.log("Add Leave Response:", response.data);
+
+      toast.success(
+        response?.data?.responseMessage ||
+          response?.data?.message ||
+          "Leave application submitted successfully",
+      );
+
+      // Clear form
+      setLeaveDates([]);
+      setLeaveReason("");
+
+      // Refresh leave records
+      await getAllLeaveRecords();
+    } catch (error) {
+      console.error("Add Leave API Error:", error);
+      console.error(
+        "Error Response:",
+        error?.response?.data,
+      );
+
+      toast.error(
+        error?.response?.data?.responseMessage ||
+          error?.response?.data?.message ||
+          "Failed to submit leave application",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+
+  const selectedPaidLeaves = leaveDates.filter(
+    (item) => item.isPL === true,
+  ).length;
+
+
 
   return (
     <MainPanel>
       <div className="leave-container">
+
+
         <div className="heading">
           <h1>Leave Management</h1>
         </div>
+
         <div className="bottom">
+
+
           <div className="leave-content">
             <div className="leave-chart">
               {leaveLoader ? (
-                <div className="leave-loading">Loading...</div>
+                <div className="leave-loading">
+                  Loading...
+                </div>
               ) : (
                 <>
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer
+                    width="100%"
+                    height="100%"
+                  >
                     <PieChart>
                       <Pie
                         data={leaveData}
@@ -207,7 +321,10 @@ const handleLeaveSubmit = async (e) => {
                         endAngle={-270}
                       >
                         {leaveData.map((item) => (
-                          <Cell key={item.name} fill={item.color} />
+                          <Cell
+                            key={item.name}
+                            fill={item.color}
+                          />
                         ))}
                       </Pie>
 
@@ -223,9 +340,16 @@ const handleLeaveSubmit = async (e) => {
               )}
             </div>
 
+            {/* ======================================
+                CHART LEGEND
+            ====================================== */}
+
             <div className="leave-legend">
               {leaveData.map((item) => (
-                <div className="legend-row" key={item.name}>
+                <div
+                  className="legend-row"
+                  key={item.name}
+                >
                   <div className="legend-left">
                     <span
                       className="legend-dot"
@@ -243,52 +367,130 @@ const handleLeaveSubmit = async (e) => {
             </div>
           </div>
 
+
+
           <div className="leave-form">
-            <div className="form-header">Apply Leave</div>
+            <div className="form-header">
+              Apply Leave
+            </div>
 
-<form className="form-body" onSubmit={handleLeaveSubmit}>
-  <label>Enter Leave Days</label>
+            <form
+              className="form-body"
+              onSubmit={handleLeaveSubmit}
+            >
 
-  <input
-    type="number"
-    min="1"
-    placeholder="Enter Leave Days"
-    value={leaveDays}
-    onChange={(e) => setLeaveDays(e.target.value)}
-    disabled={submitting}
-  />
 
-  {totalRemainingLeaves > 0 ? (
-    <>
-      <label>Enter Paid Leaves</label>
+              <label>Select Leave Days</label>
 
-      <input
-        type="number"
-        min="1"
-        max={totalRemainingLeaves}
-        placeholder="Enter Paid Leaves"
-        disabled={submitting}
-      />
-    </>
-  ) : (
-    <div className="no-paid-leave">
-      <span>*</span> Paid leaves are not present
-    </div>
-  )}
+              <div
+                className="calendar-wrapper"
+                style={{
+                  position: "relative",
+                  width: "100%",
+                }}
+              >
+                <DatePicker
+                  className="leave-calendar"
+                  multiple
+                  placeholder="Select Leave Days"
+                  value={leaveDates.map(
+                    (item) => item.date,
+                  )}
+                  onOpen={() => setLegends(true)}
+                  onClose={() => setLegends(false)}
+                  format="YYYY-MM-DD"
+                  mapDays={({ date }) => {
+                    const dateStr =
+                      date.format("YYYY-MM-DD");
 
-  <label>Enter Leave Reason</label>
+                    const matched = leaveDates.find(
+                      (item) => item.date === dateStr,
+                    );
 
-  <textarea
-    placeholder="Enter Leave Reason"
-    value={leaveReason}
-    onChange={(e) => setLeaveReason(e.target.value)}
-    disabled={submitting}
-  />
+                    return {
+                      onClick: () =>
+                        handleDayClick(date),
 
-  <button type="submit" disabled={submitting}>
-    {submitting ? "Submitting..." : "Submit"}
-  </button>
-</form>
+                      style: matched
+                        ? {
+                            backgroundColor:
+                              matched.isPL
+                                ? "#42cfa5"
+                                : "#ff424c",
+                            color: "white",
+                            borderRadius: "50%",
+                          }
+                        : undefined,
+                    };
+                  }}
+                />
+
+                {legends && (
+                  <div className="calendar-legend">
+                    <div className="legend-item">
+                      <span className="circle paid"></span>
+                      Paid Leave
+                    </div>
+
+                    <div className="legend-item">
+                      <span className="circle unpaid"></span>
+                      Unpaid Leave
+                    </div>
+
+                    <div className="legend-item">
+                      <span className="circle remove"></span>
+                      3rd click to remove
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="selected-leave-info">
+                <span>
+                  Selected Days:{" "}
+                  <strong>{leaveDates.length}</strong>
+                </span>
+
+                <span>
+                  Paid Leaves:{" "}
+                  <strong>{selectedPaidLeaves}</strong>
+                </span>
+              </div>
+
+              {totalRemainingLeaves <= 0 && (
+                <div className="no-paid-leave">
+                  <span>*</span> Paid leaves are not
+                  present
+                </div>
+              )}
+
+              <label>Enter Leave Reason</label>
+
+              <textarea
+                placeholder="Enter Leave Reason"
+                value={leaveReason}
+                onChange={(e) =>
+                  setLeaveReason(e.target.value)
+                }
+                disabled={submitting}
+                maxLength={50}
+              />
+
+              <small className="character-count">
+                {leaveReason.length}/50
+              </small>
+
+         
+
+              <button
+                type="submit"
+                disabled={submitting}
+              >
+                {submitting
+                  ? "Submitting..."
+                  : "Submit"}
+              </button>
+            </form>
           </div>
         </div>
       </div>
