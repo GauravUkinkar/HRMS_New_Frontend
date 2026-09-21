@@ -202,6 +202,24 @@
               font-weight: 700;
             }
           }
+           .view-all {
+          border: none;
+          background: transparent;
+          color: #003a42;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          text-decoration: none;
+          transition: var(--trans);
+          background: rgba(0, 142, 137, 0.082);
+          padding: 5px 20px;
+          border-radius: 5px;
+          border: 1px solid #003a42;
+          &:hover {
+            background: #003a42;
+            color: white;
+          }
+        }
 
           .month-select {
             border: 1px solid #077c87;

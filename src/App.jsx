@@ -13,6 +13,7 @@ import Loader from "./comp/Loader/Loader";
 import { useContext } from "react";
 import { UserContext } from "../Context";
 import LeaveApplication from "./Pages/LeaveApplication/LeaveApplication";
+import PageNotFound from "./Pages/PageNotFound/PageNotFound";
 
 
 function App() {
@@ -33,6 +34,11 @@ function App() {
         {routes.map((item, index) => (
           <Route key={index} path={item.path} element={<AuthRoute adminonly={item.adminonly} employeeonly={item.employeeonly}><item.comp /></AuthRoute>} />
         ))}
+
+           <Route
+          path="*"
+          element={<PageNotFound />}
+        />
       </Routes>
     </>
   );

@@ -5,7 +5,9 @@ import Sidebar from "../sidebar/Sidebar";
 import { BsClockHistory } from "react-icons/bs";
 import { FaChevronDown } from "react-icons/fa6";
 import axios from "axios";
+
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+
 const MainPanel = ({
   children,
   title,
@@ -17,37 +19,66 @@ const MainPanel = ({
   const [showProfile, setShowProfile] = useState(false);
   const [showPunchModal, setShowPunchModal] = useState(false);
 
-  // Close sidebar after clicking any navigation link
+  const [userDetails, setUserDetails] = useState(null);
+
+  /* =====================================================
+     CLOSE SIDEBAR
+  ===================================================== */
+
   const closeSidebar = () => {
     setActive(false);
   };
-  const [userDetails, setUserDetails] = useState(null);
+
+  /* =====================================================
+     GET LOGGED IN USER
+  ===================================================== */
 
   const getLoggedInUser = async () => {
     try {
-
-      const res = await axios.get(`${BASE_URL}/AuthController/getUserById`,
+      const res = await axios.get(
+        `${BASE_URL}/AuthController/getUserById`,
         {
           withCredentials: true,
         }
       );
+
       const user = res?.data?.data;
 
       if (user) {
         setUserDetails(user);
       }
-      console.log("response", res.data);
-      setUserName(res.data.userName);
 
+      console.log("Logged In User:", user);
+    } catch (error) {
+      console.log(
+        "Error fetching logged-in user:",
+        error
+      );
     }
-    catch (error) {
-      console.log("Error fetching logged-in user:", error);
-    }
+  };
 
-  }
+  /* =====================================================
+     GET USER
+  ===================================================== */
+
   useEffect(() => {
     getLoggedInUser();
   }, []);
+
+  /* =====================================================
+     CHECK ROLE
+  ===================================================== */
+
+  const userRole = String(
+    userDetails?.role ||
+      userDetails?.crmRole ||
+      ""
+  )
+    .trim()
+    .toUpperCase();
+
+  const isEmployee = userRole === "EMPLOYEE";
+
   return (
     <div
       className="main_panel parent"
@@ -55,23 +86,40 @@ const MainPanel = ({
     >
 
       {/* ================= SIDEBAR ================= */}
-      <div className={active ? "sidebar active" : "sidebar"}>
+
+      <div
+        className={
+          active
+            ? "sidebar active"
+            : "sidebar"
+        }
+      >
         <Sidebar
           active={active}
           setActive={setActive}
           closeSidebar={closeSidebar}
         />
       </div>
+
       {active && (
         <div
           className="sidebar_overlay"
           onClick={() => setActive(false)}
         />
       )}
+
       {/* ================= MAIN SECTION ================= */}
-      <div className={active ? "main_section active" : "main_section"}>
+
+      <div
+        className={
+          active
+            ? "main_section active"
+            : "main_section"
+        }
+      >
 
         {/* ================= HEADER ================= */}
+
         <div className="header">
 
           <div className="left_section">
@@ -79,89 +127,138 @@ const MainPanel = ({
             <div className="top_sec">
 
               {/* Hamburger */}
+
               <div
-                className={active ? "hanburger active" : "hanburger"}
-                onClick={() => setActive((prev) => !prev)}
+                className={
+                  active
+                    ? "hanburger active"
+                    : "hanburger"
+                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActive((prev) => !prev);
+                }}
               >
                 <span className="hm"></span>
                 <span className="hm"></span>
                 <span className="hm"></span>
               </div>
 
-              <h2 className="title">{title}</h2>
+              <h2 className="title">
+                {title}
+              </h2>
 
             </div>
 
             {/* Breadcrumb */}
+
             <div className="breadcrumb">
 
-              {breadcrumbs.map((item, index) => (
-                <span key={index}>
+              {breadcrumbs.map(
+                (item, index) => (
+                  <span key={index}>
 
-                  {item.link ? (
-                    <Link to={item.link}>{item.label}</Link>
-                  ) : (
-                    <span>{item.label}</span>
-                  )}
+                    {item.link ? (
+                      <Link to={item.link}>
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <span>
+                        {item.label}
+                      </span>
+                    )}
 
-                  {index !== breadcrumbs.length - 1 && (
-                    <span className="separator"> / </span>
-                  )}
+                    {index !==
+                      breadcrumbs.length - 1 && (
+                      <span className="separator">
+                        {" / "}
+                      </span>
+                    )}
 
-                </span>
-              ))}
+                  </span>
+                )
+              )}
 
             </div>
 
           </div>
 
           {/* ================= RIGHT HEADER ================= */}
+
           <div className="right-side">
 
-            {/* Time */}
-            <div
-              className="real-time-clock"
-              onClick={() => setShowPunchModal(true)}
-            >
-              <div className="icon">
-                <BsClockHistory />
-              </div>
+            {/* =================================================
+                DAY STARTED
+                SHOW ONLY FOR EMPLOYEE
+            ================================================= */}
 
-              <div className="right">
-                <p>Day Started</p>
-                <span>09:15 AM</span>
-              </div>
-            </div>
+            {isEmployee && (
+              <div
+                className="real-time-clock"
+                onClick={() =>
+                  setShowPunchModal(true)
+                }
+              >
 
-            {/* User */}
+                <div className="icon">
+                  <BsClockHistory />
+                </div>
+
+                <div className="right">
+                  <p>Day Started</p>
+                  <span>
+                    09:15 AM
+                  </span>
+                </div>
+
+              </div>
+            )}
+
+            {/* ================= USER ================= */}
+
             <div
               className="user"
-              onClick={() => setShowProfile(!showProfile)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowProfile(
+                  !showProfile
+                );
+              }}
             >
 
               <div className="user-avatar">
+
                 {(
                   userDetails?.employeeName ||
                   userDetails?.email ||
                   "U"
                 )
                   .split(" ")
-                  .map((word) => word.charAt(0))
+                  .map((word) =>
+                    word.charAt(0)
+                  )
                   .join("")
                   .slice(0, 2)
                   .toUpperCase()}
+
               </div>
 
               <div className="user-info">
+
                 <p>
                   {userDetails?.employeeName ||
-                    userDetails?.email?.split("@")[0] ||
+                    userDetails?.email?.split(
+                      "@"
+                    )[0] ||
                     "User"}
                 </p>
 
                 <span>
-                  {userDetails?.role || userDetails?.crmRole || "Employee"}
+                  {userDetails?.role ||
+                    userDetails?.crmRole ||
+                    "Employee"}
                 </span>
+
               </div>
 
               <div className="user-arrow">
@@ -169,7 +266,12 @@ const MainPanel = ({
               </div>
 
               {showProfile && (
-                <div className="profile-menu">
+                <div
+                  className="profile-menu"
+                  onClick={(e) =>
+                    e.stopPropagation()
+                  }
+                >
 
                   <Link to="/profile">
                     Profile
@@ -188,52 +290,75 @@ const MainPanel = ({
 
         </div>
 
-        {/* ================= PUNCH MODAL ================= */}
-        {showPunchModal && (
-          <div
-            className="punch-overlay"
-            onClick={() => setShowPunchModal(false)}
-          >
+        {/* =================================================
+            PUNCH MODAL
+            SHOW ONLY FOR EMPLOYEE
+        ================================================= */}
 
+        {isEmployee &&
+          showPunchModal && (
             <div
-              className="punch-modal"
-              onClick={(e) => e.stopPropagation()}
+              className="punch-overlay"
+              onClick={() =>
+                setShowPunchModal(false)
+              }
             >
 
-              <button
-                className="close-btn"
-                onClick={() => setShowPunchModal(false)}
+              <div
+                className="punch-modal"
+                onClick={(e) =>
+                  e.stopPropagation()
+                }
               >
-                ✕
-              </button>
 
-              <div className="modal-header">
+                <button
+                  className="close-btn"
+                  onClick={() =>
+                    setShowPunchModal(false)
+                  }
+                >
+                  ✕
+                </button>
 
-                <BsClockHistory />
+                <div className="modal-header">
 
-                <div>
-                  <p>Session: Day Started</p>
-                  <h3>Punch Details</h3>
+                  <BsClockHistory />
+
+                  <div>
+                    <p>
+                      Session: Day Started
+                    </p>
+
+                    <h3>
+                      Punch Details
+                    </h3>
+                  </div>
+
                 </div>
 
-              </div>
+                <div className="modal-body">
 
-              <div className="modal-body">
+                  <h4>
+                    Punched In at:
+                    <span>
+                      09:15 AM
+                    </span>
+                  </h4>
 
-                <h4>
-                  Punched In at:
-                  <span>09:15 AM</span>
-                </h4>
+                  <div className="remaining">
+                    Remaining:
 
-                <div className="remaining">
-                  Remaining:
-                  <h2>8h 15m</h2>
-                </div>
+                    <h2>
+                      8h 15m
+                    </h2>
+                  </div>
 
-                <div className="buttons">
+                  <div className="buttons">
 
-                  <div className="end-btn">
-                    End Your Day
+                    <div className="end-btn">
+                      End Your Day
+                    </div>
+
                   </div>
 
                 </div>
@@ -241,11 +366,10 @@ const MainPanel = ({
               </div>
 
             </div>
-
-          </div>
-        )}
+          )}
 
         {/* ================= PAGE CONTENT ================= */}
+
         <div className="botttom_page">
           {children}
         </div>
