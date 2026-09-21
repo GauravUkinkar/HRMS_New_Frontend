@@ -1,0 +1,621 @@
+/* =====================================================
+   PAGE NOT FOUND
+===================================================== */
+
+.page-not-found {
+  width: 100%;
+  min-height: calc(100vh - 150px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   MAIN CARD
+===================================================== */
+
+.not-found-card {
+  width: 100%;
+  max-width: 1100px;
+
+  min-height: 500px;
+
+  display: grid;
+  grid-template-columns: 48% 52%;
+
+  align-items: center;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 8px;
+
+  padding: 45px;
+
+  box-sizing: border-box;
+
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.08);
+
+  overflow: hidden;
+}
+
+
+/* =====================================================
+   LEFT SECTION
+===================================================== */
+
+.not-found-left {
+  position: relative;
+
+  min-height: 380px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(0, 140, 158, 0.12) 0%,
+      rgba(0, 140, 158, 0.05) 45%,
+      transparent 70%
+    );
+
+  border-radius: 50%;
+}
+
+
+/* =====================================================
+   404 NUMBER
+===================================================== */
+
+.error-shape {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  position: relative;
+
+  z-index: 2;
+}
+
+
+.four {
+  font-size: 130px;
+
+  line-height: 1;
+
+  font-weight: 800;
+
+  color: #003047;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  text-shadow:
+    4px 5px 0 #d7eef2;
+}
+
+
+/* =====================================================
+   ZERO
+===================================================== */
+
+.zero {
+  width: 125px;
+  height: 125px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #008c9e;
+
+  box-shadow:
+    0 12px 25px rgba(0, 140, 158, 0.25);
+
+  transform: rotate(-8deg);
+}
+
+
+.zero-inner {
+  width: 65px;
+  height: 65px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  color: #008c9e;
+
+  font-size: 42px;
+
+  font-weight: 800;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+}
+
+
+/* =====================================================
+   DECORATIVE DOTS
+===================================================== */
+
+.small-dots {
+  position: absolute;
+
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+
+  background: #72c3d1;
+}
+
+
+.dot-one {
+  top: 60px;
+  left: 80px;
+}
+
+
+.dot-two {
+  right: 75px;
+  top: 100px;
+
+  width: 8px;
+  height: 8px;
+
+  background: #008c9e;
+}
+
+
+.dot-three {
+  bottom: 70px;
+  left: 120px;
+
+  width: 9px;
+  height: 9px;
+
+  background: #003047;
+}
+
+
+/* =====================================================
+   RIGHT CONTENT
+===================================================== */
+
+.not-found-content {
+  padding: 20px 20px 20px 45px;
+}
+
+
+/* =====================================================
+   ERROR LABEL
+===================================================== */
+
+.error-label {
+  display: inline-block;
+
+  margin-bottom: 8px;
+
+  color: #008c9e;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+}
+
+
+/* =====================================================
+   HEADING
+===================================================== */
+
+.not-found-content h1 {
+  margin: 0 0 18px;
+
+  color: #002b3f;
+
+  font-size: 42px;
+
+  line-height: 1.2;
+
+  font-weight: 700;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+}
+
+
+/* =====================================================
+   DESCRIPTION
+===================================================== */
+
+.not-found-content > p {
+  max-width: 500px;
+
+  margin: 0 0 10px;
+
+  color: #667085;
+
+  font-size: 17px;
+
+  line-height: 1.6;
+}
+
+
+.not-found-content .sub-text {
+  margin-bottom: 28px;
+
+  color: #98a2b3;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.not-found-buttons {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 30px;
+}
+
+
+.dashboard-button,
+.back-button {
+  height: 45px;
+
+  padding: 0 20px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  border-radius: 5px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+
+  box-sizing: border-box;
+}
+
+
+.dashboard-button {
+  background: #008c9e;
+
+  border: 1px solid #008c9e;
+
+  color: #ffffff;
+
+  text-decoration: none;
+}
+
+
+.dashboard-button:hover {
+  background: #007481;
+
+  border-color: #007481;
+
+  color: #ffffff;
+}
+
+
+.back-button {
+  background: #ffffff;
+
+  border: 1px solid #008c9e;
+
+  color: #008c9e;
+}
+
+
+.back-button:hover {
+  background: #008c9e;
+
+  color: #ffffff;
+}
+
+
+/* =====================================================
+   HELP BOX
+===================================================== */
+
+.help-box {
+  max-width: 500px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 15px;
+
+  border-radius: 6px;
+
+  background: #f4fafb;
+
+  border: 1px solid #d7eef2;
+}
+
+
+.help-icon {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #dff4f7;
+
+  color: #008c9e;
+
+  font-size: 16px;
+}
+
+
+.help-content h3 {
+  margin: 0 0 3px;
+
+  color: #003047;
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+
+.help-content p {
+  margin: 0;
+
+  color: #667085;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1000px) {
+
+  .not-found-card {
+    grid-template-columns: 1fr;
+
+    max-width: 750px;
+
+    padding: 35px;
+  }
+
+
+  .not-found-left {
+    min-height: 280px;
+
+    max-width: 600px;
+
+    width: 100%;
+
+    margin: 0 auto;
+  }
+
+
+  .not-found-content {
+    padding: 25px 10px 10px;
+
+    text-align: center;
+  }
+
+
+  .not-found-content > p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  .not-found-buttons {
+    justify-content: center;
+  }
+
+
+  .help-box {
+    margin: 0 auto;
+
+    text-align: left;
+  }
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .page-not-found {
+    min-height: calc(100vh - 130px);
+
+    padding: 15px 10px;
+  }
+
+
+  .not-found-card {
+    padding: 20px;
+
+    border-radius: 6px;
+  }
+
+
+  .not-found-left {
+    min-height: 220px;
+  }
+
+
+  .four {
+    font-size: 75px;
+
+    text-shadow:
+      2px 3px 0 #d7eef2;
+  }
+
+
+  .zero {
+    width: 75px;
+    height: 75px;
+  }
+
+
+  .zero-inner {
+    width: 40px;
+    height: 40px;
+
+    font-size: 27px;
+  }
+
+
+  .small-dots {
+    display: none;
+  }
+
+
+  .not-found-content {
+    padding: 15px 0 5px;
+  }
+
+
+  .error-label {
+    font-size: 14px;
+  }
+
+
+  .not-found-content h1 {
+    font-size: 30px;
+
+    margin-bottom: 12px;
+  }
+
+
+  .not-found-content > p {
+    font-size: 14px;
+  }
+
+
+  .not-found-content .sub-text {
+    font-size: 13px;
+
+    margin-bottom: 22px;
+  }
+
+
+  .not-found-buttons {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    width: 100%;
+  }
+
+
+  .dashboard-button,
+  .back-button {
+    width: 100%;
+  }
+
+
+  .help-box {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    align-items: flex-start;
+  }
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 380px) {
+
+  .not-found-card {
+    padding: 15px;
+  }
+
+
+  .not-found-left {
+    min-height: 190px;
+  }
+
+
+  .four {
+    font-size: 60px;
+  }
+
+
+  .zero {
+    width: 60px;
+    height: 60px;
+  }
+
+
+  .zero-inner {
+    width: 32px;
+    height: 32px;
+
+    font-size: 21px;
+  }
+
+
+  .not-found-content h1 {
+    font-size: 26px;
+  }
+}

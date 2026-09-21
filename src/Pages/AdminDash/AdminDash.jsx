@@ -1065,6 +1065,10 @@ const AdminDash = () => {
                     <LuListChecks />
                     <span>Leave Requests</span>
                   </div>
+                  
+                  <Link to="/LeaveManagement" className="view-all">
+                    View All →
+                  </Link>
 
 
                 </div>
@@ -1178,6 +1182,10 @@ const AdminDash = () => {
                     <LuUsers />
                     <span>Team Status</span>
                   </div>
+                  
+                  <Link to="#" className="view-all">
+                    View All →
+                  </Link>
                 </div>
 
                 <div className="team-list">
