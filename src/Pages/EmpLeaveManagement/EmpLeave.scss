@@ -1,0 +1,68 @@
+.leave-list {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+  }
+  .table-row-light {
+    td {
+      background: #eafafa !important;
+    }
+  }
+
+  .table-row-dark {
+    td {
+      background: var(--white) !important;
+    }
+  }
+
+  .ant-table {
+    background: var(--white);
+    border-radius: 10px;
+    
+  }
+
+
+  .ant-table-thead > tr > th {
+    background: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+
+    .anticon {
+      color: #0b8b95;
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+}
+

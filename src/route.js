@@ -101,6 +101,9 @@ const Empdashboard = lazy(() =>
 const LeaveApplication = lazy(() =>
   import("./Pages/LeaveApplication/LeaveApplication")
 );
+const EmpLeaveManagement = lazy(() =>
+  import("./Pages/EmpLeaveManagement/EmpLeave")
+);
 
 export const routes = [
 
@@ -154,8 +157,7 @@ export const routes = [
     name: "LeaveManagement",
     path: "/leaveManagement",
     comp: LeaveManagement,
-    adminonly: true,
-    employeeonly: false,
+
   },
   {
     name: "LeaveApplication",
@@ -170,6 +172,12 @@ export const routes = [
     comp: Payslip,
     adminonly: false,
     employeeonly: true,
+  },
+    {
+    name: "EmpLeaveManagement",
+    path: "/empLeaveManagement",
+    comp: EmpLeaveManagement,
+
   },
 
 

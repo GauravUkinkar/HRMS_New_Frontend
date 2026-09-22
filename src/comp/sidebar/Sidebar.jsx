@@ -20,11 +20,7 @@ import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
-const Sidebar = ({
-  active,
-  setActive,
-  closeSidebar,
-}) => {
+const Sidebar = ({ active, setActive, closeSidebar }) => {
   const navigate = useNavigate();
 
   const [childIndex, setChildIndex] = useState(null);
@@ -40,25 +36,18 @@ const Sidebar = ({
           `${BASE_URL}AuthController/getUserById`,
           {
             withCredentials: true,
-          }
+          },
         );
 
         if (response.data?.status === "OK") {
           const role = response.data?.data?.role;
 
-          setUserRole(
-            role
-              ? role.toString().trim().toUpperCase()
-              : ""
-          );
+          setUserRole(role ? role.toString().trim().toUpperCase() : "");
         } else {
           setUserRole("");
         }
       } catch (error) {
-        console.error(
-          "Sidebar user API error:",
-          error
-        );
+        console.error("Sidebar user API error:", error);
         setUserRole("");
       } finally {
         setRoleLoading(false);
@@ -68,10 +57,7 @@ const Sidebar = ({
     getCurrentUser();
   }, []);
 
-  const role = userRole
-    ?.toString()
-    .trim()
-    .toUpperCase();
+  const role = userRole?.toString().trim().toUpperCase();
 
   const isAdmin = role === "ADMIN";
   const isEmployee = role === "EMPLOYEE";
@@ -118,6 +104,7 @@ const Sidebar = ({
         {
           name: "View Documents",
           link: "/Viewdoc",
+          employeeLink: "/Empviewdoc",
         },
       ],
     },
@@ -125,7 +112,7 @@ const Sidebar = ({
     {
       icon: <LuCalendarClock />,
       name: "Leave Management",
-      link: "/LeaveManagement",
+      link: isAdmin ? "/LeaveManagement" : "/empLeaveManagement",
     },
 
     {
@@ -235,18 +222,13 @@ const Sidebar = ({
     }
 
     if (item.children) {
-      const visibleChildren =
-        item.children.filter(canShowChild);
+      const visibleChildren = item.children.filter(canShowChild);
 
       if (visibleChildren.length === 0) {
         return;
       }
 
-      setChildIndex(
-        childIndex === index
-          ? null
-          : index
-      );
+      setChildIndex(childIndex === index ? null : index);
 
       return;
     }
@@ -273,15 +255,12 @@ const Sidebar = ({
         {},
         {
           withCredentials: true,
-        }
+        },
       );
 
       navigate("/login");
     } catch (error) {
-      console.error(
-        "Logout failed:",
-        error
-      );
+      console.error("Logout failed:", error);
 
       navigate("/login");
     }
@@ -299,15 +278,9 @@ const Sidebar = ({
         <div className="top">
           <div className="logo">
             {!active ? (
-              <img
-                src={logo2}
-                alt="Logo"
-              />
+              <img src={logo2} alt="Logo" />
             ) : (
-              <img
-                src={logo}
-                alt="Logo"
-              />
+              <img src={logo} alt="Logo" />
             )}
           </div>
         </div>
@@ -317,9 +290,7 @@ const Sidebar = ({
             <LuLogOut />
           </span>
 
-          <span className="nav_text">
-            Logout
-          </span>
+          <span className="nav_text">Logout</span>
         </div>
       </div>
     );
@@ -336,128 +307,77 @@ const Sidebar = ({
       <div className="top">
         <div className="logo">
           {!active ? (
-            <img
-              src={logo2}
-              alt="Logo"
-            />
+            <img src={logo2} alt="Logo" />
           ) : (
-            <img
-              src={logo}
-              alt="Logo"
-            />
+            <img src={logo} alt="Logo" />
           )}
         </div>
 
         <div className="navsection">
-          {navs
-            .filter(canShowMenu)
-            .map((item, index) => {
-              const visibleChildren =
-                item.children
-                  ? item.children.filter(
-                    canShowChild
-                  )
-                  : [];
+          {navs.filter(canShowMenu).map((item, index) => {
+            const visibleChildren = item.children
+              ? item.children.filter(canShowChild)
+              : [];
 
-              if (
-                item.children &&
-                visibleChildren.length === 0
-              ) {
-                return null;
-              }
+            if (item.children && visibleChildren.length === 0) {
+              return null;
+            }
 
-              return (
-                <div
-                  className="nav_item"
-                  key={item.name}
-                >
-                  {item.children ? (
-                    <div
-                      className={
-                        childIndex === index
-                          ? "link active"
-                          : "link"
-                      }
-                      onClick={() =>
-                        handleParentClick(
-                          item,
-                          index
-                        )
-                      }
-                    >
-                      <span className="nav_icon">
-                        {item.icon}
-                      </span>
+            return (
+              <div className="nav_item" key={item.name}>
+                {item.children ? (
+                  <div
+                    className={childIndex === index ? "link active" : "link"}
+                    onClick={() => handleParentClick(item, index)}
+                  >
+                    <span className="nav_icon">{item.icon}</span>
 
-                      <span className="nav_text">
-                        {item.name}
-                      </span>
-                    </div>
-                  ) : (
-                    <Link
-                      className="link"
-                      to={item.link}
-                      onClick={() =>
-                        handleParentClick(
-                          item,
-                          index
-                        )
-                      }
-                    >
-                      <span className="nav_icon">
-                        {item.icon}
-                      </span>
+                    <span className="nav_text">{item.name}</span>
+                  </div>
+                ) : (
+                  <Link
+                    className="link"
+                    to={item.link}
+                    onClick={() => handleParentClick(item, index)}
+                  >
+                    <span className="nav_icon">{item.icon}</span>
 
-                      <span className="nav_text">
-                        {item.name}
-                      </span>
-                    </Link>
-                  )}
+                    <span className="nav_text">{item.name}</span>
+                  </Link>
+                )}
 
-                  {item.children &&
-                    childIndex === index && (
-                      <div
-                        className="child_list"
-                        onMouseLeave={() =>
-                          setChildIndex(null)
+                {item.children && childIndex === index && (
+                  <div
+                    className="child_list"
+                    onMouseLeave={() => setChildIndex(null)}
+                  >
+                    {visibleChildren.map((child, childIndex) => (
+                      <Link
+                        to={
+                          isEmployee && child.employeeLink
+                            ? child.employeeLink
+                            : child.link
                         }
+                        key={`${child.name}-${childIndex}`}
+                        onClick={handleChildClick}
                       >
-                        {visibleChildren.map(
-                          (
-                            child,
-                            childIndex
-                          ) => (
-                            <Link
-                              to={child.link}
-                              key={`${child.name}-${childIndex}`}
-                              onClick={
-                                handleChildClick
-                              }
-                            >
-                              {child.name}
-                            </Link>
-                          )
-                        )}
-                      </div>
-                    )}
-                </div>
-              );
-            })}
+                        {child.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <Link
-        className="logout"
-        to="/login"
-        onClick={logout}
-      >
+      <Link className="logout" to="/login" onClick={logout}>
         <span>
           <LuLogOut />
         </span>
 
-        <span className="nav_text">
-          Logout
-        </span>
+        <span className="nav_text">Logout</span>
       </Link>
     </div>
   );

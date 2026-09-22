@@ -31,6 +31,8 @@
 .custom-calendar-day.attendance-present {
   background: #20ad9b;
   color: #fff;
+    width: 24px;
+  height: 24px;
 }
 
 .custom-calendar-day.attendance-present:hover {
@@ -41,29 +43,36 @@
 .custom-calendar-day.attendance-half-day {
   background: #ffc62b;
   color: #fff;
+    width: 24px;
+  height: 24px;
 }
 
 .custom-calendar-day.attendance-half-day:hover {
   background: #ffc62b;
+    width: 24px;
+  height: 24px;
 }
 
 /* Absent */
 .custom-calendar-day.attendance-absent {
   background: #ff3b3b;
   color: #fff;
+    width: 24px;
+  height: 24px;
 }
 
 .custom-calendar-day.attendance-absent:hover {
   background: #ff3b3b;
+    width: 24px;
+  height: 24px;
 }
 
 /* TODAY */
 .custom-calendar-day.today-date {
-  border: 3px solid #4d89f8;
   font-weight: 700;
 }
 
-/* Today without attendance */
+
 .custom-calendar-day.today-date:not(
     .attendance-present,
     .attendance-half-day,
@@ -71,9 +80,65 @@
   ) {
   background: #4d89f8;
   color: #fff;
+      width: 24px;
+  height: 24px;
 }
 
-/* Outside current month */
+
 .custom-calendar-day.outside-month {
   opacity: 0.35;
 }
+@media (max-width: 1670px) {
+  .MuiDayCalendar-header,
+  .MuiDayCalendar-weekContainer {
+    gap: 12px;
+  }
+
+  .custom-calendar-day {
+    width: 26px;
+    height: 26px;
+    font-size: 13px;
+  }
+
+  .custom-calendar-day.attendance-present,
+  .custom-calendar-day.attendance-half-day,
+  .custom-calendar-day.attendance-absent,
+  .custom-calendar-day.today-date:not(
+      .attendance-present,
+      .attendance-half-day,
+      .attendance-absent
+    ) {
+    width: 23px;
+    height: 23px;
+  }
+}
+
+
+
+@media (max-width: 1495px) {
+  .MuiDayCalendar-header,
+  .MuiDayCalendar-weekContainer {
+    gap: 8px;
+  }
+
+  .custom-calendar-day {
+    width: 25px;
+    height: 25px;
+    font-size: 13px;
+  }
+
+  .custom-calendar-day.attendance-present,
+  .custom-calendar-day.attendance-half-day,
+  .custom-calendar-day.attendance-absent,
+  .custom-calendar-day.today-date:not(
+      .attendance-present,
+      .attendance-half-day,
+      .attendance-absent
+    ) {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+
+
