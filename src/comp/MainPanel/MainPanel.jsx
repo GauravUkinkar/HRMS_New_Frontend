@@ -63,6 +63,37 @@ const MainPanel = ({
     }
   };
 
+  useEffect(() => {
+  const timer = setInterval(() => {
+    setRemainingTime((prev) => {
+      let totalSeconds =
+        Number(prev.hours || 0) * 3600 +
+        Number(prev.minutes || 0) * 60 +
+        Number(prev.seconds || 0);
+
+      if (totalSeconds <= 0) {
+        clearInterval(timer);
+
+        return {
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        };
+      }
+
+      totalSeconds -= 1;
+
+      return {
+        hours: Math.floor(totalSeconds / 3600),
+        minutes: Math.floor((totalSeconds % 3600) / 60),
+        seconds: totalSeconds % 60,
+      };
+    });
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, []);
+
   const getTodayPunchDetails = async (employeeId) => {
     if (!employeeId) return;
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Profile.scss";
 import maleUser from "../../assets/manuser.webp";
@@ -8,9 +8,12 @@ import { Link, useParams } from "react-router-dom";
 import { SlDocs } from "react-icons/sl";
 import { MdOutlineEditNote } from "react-icons/md";
 import axios from "axios";
+import { UserContext } from "../../../Context";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 const Profile = () => {
+
+    const { user } = useContext(UserContext);
     const [loader, setLoader] = useState(false);
 
     // Sensitive information visibility
@@ -58,29 +61,69 @@ const Profile = () => {
         );
     };
     const getEmployee = async () => {
-        try {
-            const res = await axios.get(
-                `${BASE_URL}Admin/GetEmployeeById/${employeeId}`,
-                { withCredentials: true });
+        if (!employeeId || !user) return;
 
-            console.log("Employee Details:", res.data);
-            setEmployeeProfile(res.data?.data);
+        try {
+            setLoader(true);
+
+            const role = String(
+                user?.role ||
+                user?.crmRole ||
+                ""
+            )
+                .trim()
+                .toUpperCase();
+
+            let res;
+
+            if (role === "EMPLOYEE") {
+                res = await axios.get(
+                    `${BASE_URL}AuthController/GetEmployeeByEmployeeId/${employeeId}`,
+                    {
+                        withCredentials: true,
+                    }
+                );
+            } else {
+                res = await axios.get(
+                    `${BASE_URL}Admin/GetEmployeeById/${employeeId}`,
+                    {
+                        withCredentials: true,
+                    }
+                );
+            }
+
+            console.log("Employee Profile Response:", res.data);
+
+            setEmployeeProfile(res?.data?.data);
             setImageError(false);
+
         } catch (error) {
-            console.log(
-                error.response?.data || error
+            console.error(
+                "Employee Profile Error:",
+                error?.response?.data || error
             );
+
+            setEmployeeProfile(null);
+        } finally {
+            setLoader(false);
         }
     };
+
     useEffect(() => {
-        if (employeeId) {
+        if (employeeId && user) {
             getEmployee();
         }
-    }, [employeeId]);
+    }, [employeeId, user]);
 
     return (
         <>
-            <MainPanel title="Admin Dashboard">
+            <MainPanel
+                title={
+                    String(user?.role || user?.crmRole || "").trim().toUpperCase() === "EMPLOYEE"
+                        ? "Employee Dashboard"
+                        : "Admin Dashboard"
+                }
+            >
                 {loader && <p>loading.....</p>}
                 <div className="bottom-side">
 
