@@ -314,10 +314,7 @@ const EmployeeDash = () => {
   };
   const remainingTimeText = formatRemainingTime(remainingSeconds);
 
-  //punch out logic
-  // =====================================================
-  // PUNCH OUT
-  // =====================================================
+
 
   const handlePunchOut = async () => {
     const employeeId = user?.employeeId;
@@ -1079,7 +1076,7 @@ const EmployeeDash = () => {
                       </button>
                     ) : !punchInTime ? (
                       <button
-                        className="btn1 punch-in-btn"
+                        className="btn1"
                         onClick={handlePunchIn}
                         disabled={punchingIn}
                       >

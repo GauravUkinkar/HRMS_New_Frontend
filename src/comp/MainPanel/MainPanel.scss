@@ -263,18 +263,19 @@
 
           border-radius: 5px;
 
-          background: #5edbd721;
+          background: var(--accent2);
 
           padding: 10px;
 
-          border: 1px solid #5edbd7a3;
+          
 
           cursor: pointer;
 
           transition: var(--trans);
 
           &:hover {
-            background: #5edbd735;
+            background:#003A42;
+            transition: var(--trans);
           }
 
           // --------------------------------------------
@@ -288,7 +289,7 @@
 
             align-items: center;
 
-            color: rgba(0, 0, 0, 0.722);
+            color: white;
           }
 
           // --------------------------------------------
@@ -305,13 +306,15 @@
             p {
               margin: 0;
 
-              font-size: 12px;
+              font-size: 16px;
 
-              color: rgba(0, 0, 0, 0.607);
+              color:white;
+              font-weight: 500;
             }
 
             span {
               font-weight: 700;
+              color: white;
             }
           }
         }
