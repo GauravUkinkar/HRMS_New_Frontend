@@ -1,6 +1,7 @@
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -20,6 +21,7 @@ const FileUpload = ({
   multiple = false,
   accept,
   required = false,
+  file,
 }) => {
   return (
     <Button
@@ -30,18 +32,31 @@ const FileUpload = ({
       sx={{
         justifyContent: "flex-start",
         color: "black",
-        borderColor: "black",
+        borderColor: file ? "#22c55e" : "black",
         height: "56px",
         textTransform: "none",
-
+        backgroundColor: file ? "#f0fdf4" : "transparent",
         "&:hover": {
           borderColor: "var(--accent)",
+          backgroundColor: file ? "#f0fdf4" : "transparent",
         },
       }}
     >
-      
-        {label}
-  {required && <span style={{ color: "red", marginLeft: "4px" }}> *</span>}
+      {label}
+
+      {required && (
+        <span style={{ color: "red", marginLeft: "4px" }}> *</span>
+      )}
+
+      {file && (
+        <CheckCircleIcon
+          sx={{
+            color: "#22c55e",
+            fontSize: "20px",
+            marginLeft: "8px",
+          }}
+        />
+      )}
 
       <VisuallyHiddenInput
         type="file"

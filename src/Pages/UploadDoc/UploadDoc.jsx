@@ -1,365 +1,357 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./UploadDoc.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import FileUpload from "../../comp/FileUpload/FileUpload";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { UserContext } from "../../../Context";
+
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
+const initialDocuments = {
+  adharCard: null,
+  panCard: null,
+  experianceLetter: null,
+  salarySlip1: null,
+  salarySlip2: null,
+  salarySlip3: null,
+  bankStatement: null,
+  relevingLetter: null,
+  tenthCertificate: null,
+  twelfthCertificate: null,
+  degreeCertificate: null,
+  latestEducationCertificateOrDegree: null,
+  employeeImage: null,
+  diplomaCertificate: null,
+};
+
 const UploadDoc = () => {
-   const { user } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
-  const [documents, setDocuments] = useState({
-    aadharCard: null,
-    panCard: null,
-    tenthCertificate: null,
-    twelfthCertificate: null,
-    degreeCertificate: null,
-    diplomaCertificate: null,
-    postGraduationCertificate: null,
-    relievingCertificate: null,
-    experienceLetter: null,
-    bankStatement: null,
-    salarySlip1: null,
-    salarySlip2: null,
-  });
+  const [documents, setDocuments] = useState(initialDocuments);
+  const [availableDocuments, setAvailableDocuments] = useState({});
+  const [loadingDocuments, setLoadingDocuments] = useState(true);
+  const [updating, setUpdating] = useState(false);
 
-  const [loading, setLoading] = useState(false);
+  const employeeId = user?.employeeId;
 
-  const getCurrentUserUid = async () => {
+  const getEmployeeDocuments = async () => {
+    if (!employeeId) {
+      setLoadingDocuments(false);
+      return;
+    }
+
     try {
+      setLoadingDocuments(true);
+
       const response = await axios.get(
-        `${BASE_URL}Admin/getUserById`,
+        `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`,
         {
           withCredentials: true,
         }
       );
 
-      console.log(
-        "Current User Response:",
-        response.data
-      );
-
-      const uid =
-        response.data?.uid ??
-        response.data?.data?.uid;
-
-      console.log(
-        "Logged-in User UID:",
-        uid
-      );
-
-      return uid;
-
+      if (response?.data?.status === "OK" && response?.data?.data) {
+        setAvailableDocuments(response.data.data);
+      } else {
+        setAvailableDocuments({});
+      }
     } catch (error) {
       console.error(
-        "Get Current User Error:",
-        error.response?.data || error
+        "Get Documents Error:",
+        error?.response?.data || error
       );
 
-      return null;
+      setAvailableDocuments({});
+    } finally {
+      setLoadingDocuments(false);
     }
   };
 
-  const handleFileChange = (
-    name,
-    event
-  ) => {
-    const file =
-      event.target.files?.[0];
-    if (!file) {
-      return;
-    }
+  useEffect(() => {
+    getEmployeeDocuments();
+  }, [employeeId]);
+
+  const handleFileChange = (name, event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
     setDocuments((prev) => ({
       ...prev,
       [name]: file,
     }));
-    console.log(
-      `${name}:`,
-      file
-    );
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const isDocumentAvailable = (name) => {
+    const selectedFile = documents[name];
+    const existingFile = availableDocuments?.[name];
 
-  try {
-    setLoading(true);
+    return Boolean(selectedFile || existingFile);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     const uid = user?.uid;
 
-    console.log("Logged-in User:", user);
-    console.log("Uploading documents for UID:", uid);
-
     if (!uid) {
-      toast.error("Unable to get logged-in user UID");
+      toast.error("User ID not found");
       return;
     }
 
-    const requiredDocuments = [
-      {
-        key: "aadharCard",
-        label: "Aadhar Card",
-      },
-      {
-        key: "panCard",
-        label: "Pan Card",
-      },
-      {
-        key: "tenthCertificate",
-        label: "10th Certificate",
-      },
-      {
-        key: "twelfthCertificate",
-        label: "12th Certificate",
-      },
-      {
-        key: "degreeCertificate",
-        label: "Degree Certificate",
-      },
-      {
-        key: "relievingCertificate",
-        label: "Relieving Certificate",
-      },
-    ];
-
-    for (const document of requiredDocuments) {
-      if (!documents[document.key]) {
-        toast.error(`Please upload ${document.label}`);
-        return;
-      }
-    }
-
-    const formData = new FormData();
-
-    Object.entries(documents).forEach(([key, file]) => {
-      if (file) {
-        formData.append(key, file);
-      }
-    });
-
-    console.log("========== DOCUMENT UPLOAD ==========");
-    console.log("UID:", uid);
-
-    for (const [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
-    const response = await axios.post(
-      `${BASE_URL}uploadDoc/upload`,
-      formData,
-      {
-        params: {
-          uid: uid,
-        },
-        withCredentials: true,
-      }
+    const selectedDocuments = Object.entries(documents).filter(
+      ([, file]) => file instanceof File
     );
 
-    console.log("Upload Response:", response.data);
+    if (selectedDocuments.length === 0) {
+      toast.error("Please select at least one new document");
+      return;
+    }
 
-    toast.success("Documents uploaded successfully!");
+    try {
+      setUpdating(true);
 
-    setDocuments({
-      aadharCard: null,
-      panCard: null,
-      tenthCertificate: null,
-      twelfthCertificate: null,
-      degreeCertificate: null,
-      diplomaCertificate: null,
-      postGraduationCertificate: null,
-      relievingCertificate: null,
-      experienceLetter: null,
-      bankStatement: null,
-      salarySlip1: null,
-      salarySlip2: null,
-    });
-  } catch (error) {
-    console.error("Upload Documents Error:", error);
-    console.error("Status:", error?.response?.status);
-    console.error("Response:", error?.response?.data);
+      const formData = new FormData();
 
-    toast.error(
-      error?.response?.data?.message ||
-        "Failed to upload documents"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      selectedDocuments.forEach(([name, file]) => {
+        formData.append(name, file);
+      });
+
+      const response = await axios.put(
+        `${BASE_URL}uploadDoc/update`,
+        formData,
+        {
+          params: {
+            uId: uid,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response?.status === 200 || response?.status === 201) {
+        toast.success("Documents updated successfully");
+
+        setDocuments(initialDocuments);
+
+        await getEmployeeDocuments();
+      }
+    } catch (error) {
+      console.error(
+        "Update Documents Error:",
+        error?.response?.data || error
+      );
+
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to update documents"
+      );
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   return (
     <MainPanel
-      title="Upload Documents"
-      breadcrumbs={[
-        {
-          label: "Dashboard",
-          link: "/dashboard",
-        },
-        {
-          label: "Documents",
-        },
-      ]}
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "EMPLOYEE"
+          ? "Employee Dashboard"
+          : "Admin Dashboard"
+      }
     >
-      <form
-        className="upload-parent"
-        onSubmit={handleSubmit}
-      >
-        <h1>
-          Upload Documents
-        </h1>
+      <div className="upload-parent">
+        <h1>Update Documents</h1>
 
-        <div className="inputs">
-          <div className="form-row">
-
-            <FileUpload
-              label="Aadhar Card"
-              required
-              onChange={(e) =>
-                handleFileChange(
-                  "aadharCard",
-                  e
-                )
-              }
-            />
-
-            <FileUpload
-              label="Pan Card"
-              required
-              onChange={(e) =>
-                handleFileChange(
-                  "panCard",
-                  e
-                )
-              }
-            />
-
+        {loadingDocuments ? (
+          <div className="document-loading">
+            Loading Documents...
           </div>
-          <div className="form-row">
-            <FileUpload
-              label="10th Certificate"
-              required
-              onChange={(e) =>
-                handleFileChange(
-                  "tenthCertificate",
-                  e
-                )
-              }
-            />
-            <FileUpload
-              label="12th Certificate"
-              required
-              onChange={(e) =>
-                handleFileChange(
-                  "twelfthCertificate",
-                  e
-                )
-              }
-            />
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="inputs">
+              <div className="form-row">
+                <FileUpload
+                  label="Aadhar Card"
+                  file={
+                    documents.adharCard ||
+                    availableDocuments?.adharCard
+                  }
+                  onChange={(e) =>
+                    handleFileChange("adharCard", e)
+                  }
+                />
 
-          </div>
-          <div className="form-row">
-            <FileUpload
-              label="Degree Certificate"
-              required
-              onChange={(e) =>
-                handleFileChange(
-                  "degreeCertificate",
-                  e
-                )
-              }
-            />
-            <FileUpload
-              label="Diploma Certificate"
-              onChange={(e) =>
-                handleFileChange(
-                  "diplomaCertificate",
-                  e
-                )
-              }
-            />
+                <FileUpload
+                  file={
+                    documents.panCard ||
+                    availableDocuments?.panCard
+                  }
+                  onChange={(e) =>
+                    handleFileChange("panCard", e)
+                  }
+                />
+              </div>
 
-          </div>
-          <div className="form-row">
-            <FileUpload
-              label="Post-Graduation Certificate"
-              onChange={(e) =>
-                handleFileChange(
-                  "postGraduationCertificate",
-                  e
-                )
-              }
-            />
+              <div className="form-row">
+                <FileUpload
+                  label="10th Certificate"
+                  file={
+                    documents.tenthCertificate ||
+                    availableDocuments?.tenthCertificate
+                  }
+                  onChange={(e) =>
+                    handleFileChange("tenthCertificate", e)
+                  }
+                />
 
-            <FileUpload
-              label="Releiving Certificate"
-              required
-              onChange={(e) =>
-                handleFileChange(
-                  "relievingCertificate",
-                  e
-                )
-              }
-            />
+                <FileUpload
+                  label="12th Certificate"
+                  file={
+                    documents.twelfthCertificate ||
+                    availableDocuments?.twelfthCertificate
+                  }
+                  onChange={(e) =>
+                    handleFileChange("twelfthCertificate", e)
+                  }
+                />
+              </div>
 
-          </div>
-          <div className="form-row">
-            <FileUpload
-              label="Experience Letter"
-              onChange={(e) =>
-                handleFileChange(
-                  "experienceLetter",
-                  e
-                )
-              }
-            />
-            <FileUpload
-              label="Bank Statement"
-              onChange={(e) =>
-                handleFileChange(
-                  "bankStatement",
-                  e
-                )
-              }
-            />
+              <div className="form-row">
+                <FileUpload
+                  label="Degree Certificate"
+                  file={
+                    documents.degreeCertificate ||
+                    availableDocuments?.degreeCertificate
+                  }
+                  onChange={(e) =>
+                    handleFileChange("degreeCertificate", e)
+                  }
+                />
 
-          </div>
+                <FileUpload
+                  label="Diploma Certificate"
+                  file={
+                    documents.diplomaCertificate ||
+                    availableDocuments?.diplomaCertificate
+                  }
+                  onChange={(e) =>
+                    handleFileChange("diplomaCertificate", e)
+                  }
+                />
+              </div>
 
-          <div className="form-row">
+              <div className="form-row">
+                <FileUpload
+                  label="Experience Letter"
+                  file={
+                    documents.experianceLetter ||
+                    availableDocuments?.experianceLetter
+                  }
+                  onChange={(e) =>
+                    handleFileChange("experianceLetter", e)
+                  }
+                />
 
-            <FileUpload
-              label="Salary-Slip1"
-              onChange={(e) =>
-                handleFileChange(
-                  "salarySlip1",
-                  e
-                )
-              }
-            />
+                <FileUpload
+                  label="Relieving Letter"
+                  file={
+                    documents.relevingLetter ||
+                    availableDocuments?.relevingLetter
+                  }
+                  onChange={(e) =>
+                    handleFileChange("relevingLetter", e)
+                  }
+                />
+              </div>
 
-            <FileUpload
-              label="Salary-Slip2"
-              onChange={(e) =>
-                handleFileChange(
-                  "salarySlip2",
-                  e
-                )
-              }
-            />
-          </div>
-        </div>
+              <div className="form-row">
+                <FileUpload
+                  label="Salary Slip 1"
+                  file={
+                    documents.salarySlip1 ||
+                    availableDocuments?.salarySlip1
+                  }
+                  onChange={(e) =>
+                    handleFileChange("salarySlip1", e)
+                  }
+                />
 
-        <button
-          type="submit"
-          className="btn"
-          disabled={loading}
-        >
-          {loading
-            ? "Uploading..."
-            : "Submit"}
-        </button>
+                <FileUpload
+                  label="Salary Slip 2"
+                  file={
+                    documents.salarySlip2 ||
+                    availableDocuments?.salarySlip2
+                  }
+                  onChange={(e) =>
+                    handleFileChange("salarySlip2", e)
+                  }
+                />
+              </div>
 
-      </form>
+              <div className="form-row">
+                <FileUpload
+                  label="Salary Slip 3"
+                  file={
+                    documents.salarySlip3 ||
+                    availableDocuments?.salarySlip3
+                  }
+                  onChange={(e) =>
+                    handleFileChange("salarySlip3", e)
+                  }
+                />
+
+                <FileUpload
+                  label="Bank Statement"
+                  file={
+                    documents.bankStatement ||
+                    availableDocuments?.bankStatement
+                  }
+                  onChange={(e) =>
+                    handleFileChange("bankStatement", e)
+                  }
+                />
+              </div>
+
+              <div className="form-row">
+                <FileUpload
+                  label="Latest Education Certificate/Degree"
+                  file={
+                    documents.latestEducationCertificateOrDegree ||
+                    availableDocuments?.latestEducationCertificateOrDegree
+                  }
+                  onChange={(e) =>
+                    handleFileChange(
+                      "latestEducationCertificateOrDegree",
+                      e
+                    )
+                  }
+                />
+
+                <FileUpload
+                  label="Employee Image"
+                  file={
+                    documents.employeeImage ||
+                    availableDocuments?.employeeImage
+                  }
+                  onChange={(e) =>
+                    handleFileChange("employeeImage", e)
+                  }
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn"
+                disabled={updating}
+              >
+                {updating ? "Updating..." : "Update Documents"}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
     </MainPanel>
   );
 };
