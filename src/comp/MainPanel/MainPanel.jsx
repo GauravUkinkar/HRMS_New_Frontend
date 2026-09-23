@@ -157,7 +157,11 @@ const handlePunchIn = async () => {
 
   if (punchingIn) return;
 
-  const punchInUrl = `${ATTENDANCE_URL}api/punch/IN/${employeeId}`;
+  const punchInUrl = `${ATTENDANCE_URL}api/punch/in/${employeeId}/false`;
+  const payload = {
+    employeeName: userDetails?.employeeName || "",
+    employeeDesignation: userDetails?.employeeDesignation || "",
+  };
 
 
   console.log("ATTENDANCE_URL:", ATTENDANCE_URL);
@@ -168,11 +172,15 @@ const handlePunchIn = async () => {
   try {
     setPunchingIn(true);
 
-    const response = await axios.get(punchInUrl, {
+    const response = await axios.post(punchInUrl, payload, {
       withCredentials: true,
+      headers:{
+        "Content-Type": "application/json",
+      },
     });
 
     console.log("PUNCH IN RESPONSE:", response.data);
+    console.log("PUNCH IN STATUS:", response.status);
 
     if (response.status === 200) {
       toast.success(

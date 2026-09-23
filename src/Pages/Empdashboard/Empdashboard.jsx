@@ -1065,7 +1065,7 @@ const EmployeeDash = () => {
                 <div className="right">
                   <h2>Remaining Time</h2>
                   <h3> {remainingTimeText}</h3>
-                  <div class="buttons">
+                  <div className="buttons">
                     {punchInTime && !punchOutTime ? (
                       <button
                         className="btn1"
