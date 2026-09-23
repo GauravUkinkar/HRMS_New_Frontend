@@ -216,50 +216,65 @@ const Empviewdoc = () => {
   // DOWNLOAD DOCUMENT
   // =====================================================
 
-  const handleDownload = async (filePath, documentName) => {
-    try {
-      const fileUrl = getFileUrl(filePath);
-
-      if (!fileUrl) {
-        alert("Document not available");
-        return;
-      }
-
-      const response = await axios.get(fileUrl, {
-        responseType: "blob",
-        withCredentials: true,
-      });
-
-      const blob = new Blob([response.data], {
-        type: response.headers["content-type"] || "application/octet-stream",
-      });
-
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-
-      link.href = blobUrl;
-
-      // Keep original extension when possible
-      const originalPath = String(filePath);
-
-      const extension = originalPath.split(".").pop() || "pdf";
-
-      link.download = `${documentName}.${extension}`;
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      document.body.removeChild(link);
-
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error("Download Error:", error.response?.data || error);
-
-      alert("Unable to download document");
+ const handleDownload = async (filePath, documentName) => {
+  try {
+    if (!employeeId) {
+      alert("Employee ID not available");
+      return;
     }
-  };
+
+    if (!filePath) {
+      alert("Document not available");
+      return;
+    }
+
+    const filePathString = String(filePath);
+
+    const fileName = filePathString
+      .split("/")
+      .pop()
+      .split("\\")
+      .pop();
+
+    if (!fileName || !fileName.includes(".")) {
+      alert("Invalid document file");
+      return;
+    }
+
+    const downloadUrl = `${BASE_URL}uploadDoc/download/${employeeId}/${fileName}`;
+
+    const response = await axios.get(downloadUrl, {
+      responseType: "blob",
+      withCredentials: true,
+    });
+
+    const blob = new Blob([response.data], {
+      type:
+        response.headers["content-type"] ||
+        "application/octet-stream",
+    });
+
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = blobUrl;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error(
+      "Download Error:",
+      error.response?.data || error
+    );
+
+    alert("Unable to download document");
+  }
+};
 
   // =====================================================
   // CHECK IMAGE
