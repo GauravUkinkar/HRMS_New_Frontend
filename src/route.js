@@ -173,8 +173,8 @@ export const routes = [
     name: "Payslip",
     path: "/Payslip",
     comp: Payslip,
-    adminonly: false,
-    employeeonly: true,
+    adminonly: true,
+    employeeonly: false,
   },
     {
     name: "EmpLeaveManagement",
