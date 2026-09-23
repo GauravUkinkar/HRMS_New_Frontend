@@ -94,11 +94,14 @@
       }
     }
   }
-  .btn {
+  .submit-btn{
     width: fit-content;
     padding: 10px 30px;
     align-self: center;
+    color: var(--white);
+    background: #0A7A85;
   }
+
 }
 
 @media only screen and (max-width: 900px) {

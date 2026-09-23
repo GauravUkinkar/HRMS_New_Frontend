@@ -110,6 +110,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        
         .heading {
           display: flex;
           align-items: center;
@@ -126,7 +127,12 @@
               font-weight: 700;
             }
           }
-          .month-select {
+         .attendance-filters{
+          display: flex;
+          align-items: center;
+          gap: 10px;
+  
+ .month-select {
             border: 1px solid #077c87;
             background: #fff;
             border-radius: 5px;
@@ -139,6 +145,7 @@
               border-color: #20ad9b;
             }
           }
+         }
         }
 
         .attendance-chart {
