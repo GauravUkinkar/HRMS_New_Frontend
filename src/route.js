@@ -104,6 +104,9 @@ const LeaveApplication = lazy(() =>
 const EmpLeaveManagement = lazy(() =>
   import("./Pages/EmpLeaveManagement/EmpLeave")
 );
+const PayslipManagement = lazy(() =>
+  import("./Pages/PayslipManagement/Payslipmanagement")
+);
 
 export const routes = [
 
@@ -277,6 +280,12 @@ export const routes = [
     comp: SalaryManagement,
     adminonly: true,
     employeeonly: false,
+  },
+    {
+    name: "PayslipManagement",
+    path: "/payslipManagement",
+    comp: PayslipManagement,
+    employeeonly: true,
   },
 
   {

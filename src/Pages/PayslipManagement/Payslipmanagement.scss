@@ -1,0 +1,13 @@
+.payslip-list{
+    .page-header{
+        display: flex;
+        justify-content: space-between;
+        padding: 15px;
+        background-color: var(--accent2);
+        padding-bottom: 15px;
+        h2{
+            color: white;
+        }
+
+    }
+}
