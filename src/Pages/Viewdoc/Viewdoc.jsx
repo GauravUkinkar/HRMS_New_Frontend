@@ -7,7 +7,6 @@ import { IoMdDownload } from "react-icons/io";
 import { MdOutlinePreview } from "react-icons/md";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
-
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
@@ -15,20 +14,23 @@ const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 const Viewdoc = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
+
   const [documents, setDocuments] = useState({});
+
   const [loadingEmployees, setLoadingEmployees] = useState(false);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
 
   const [previewFile, setPreviewFile] = useState("");
   const [previewName, setPreviewName] = useState("");
 
+  // ============================================
+  // GET ALL EMPLOYEES
+  // ============================================
+
   useEffect(() => {
     getAllEmployee();
   }, []);
 
-  // ============================================
-  // GET ALL EMPLOYEES
-  // ============================================
   const getAllEmployee = async () => {
     try {
       setLoadingEmployees(true);
@@ -67,8 +69,7 @@ const Viewdoc = () => {
         })
         .filter(
           (employee) =>
-            employee?.uid &&
-            employee?.employeeId
+            employee?.uid && employee?.employeeId
         );
 
       setEmployees(employeeList);
@@ -88,6 +89,7 @@ const Viewdoc = () => {
   // ============================================
   // GET EMPLOYEE DOCUMENTS
   // ============================================
+
   const getEmployeeDocuments = async (employeeId) => {
     try {
       setLoadingDocuments(true);
@@ -141,6 +143,7 @@ const Viewdoc = () => {
   // ============================================
   // EMPLOYEE CHANGE
   // ============================================
+
   const handleEmployeeChange = (e) => {
     const uid = e.target.value;
 
@@ -174,6 +177,7 @@ const Viewdoc = () => {
   // ============================================
   // DOCUMENT LIST
   // ============================================
+
   const documentList = [
     {
       key: "adharCard",
@@ -240,6 +244,7 @@ const Viewdoc = () => {
   // ============================================
   // AVAILABLE DOCUMENTS
   // ============================================
+
   const availableDocuments =
     documentList.filter(
       (document, index, array) => {
@@ -263,40 +268,22 @@ const Viewdoc = () => {
     );
 
   // ============================================
-  // CREATE FILE URL
+  // GET SELECTED EMPLOYEE
   // ============================================
-  const getFileUrl = (filePath) => {
-    if (!filePath) {
-      return "";
-    }
 
-    const filePathString = String(filePath).trim();
-
-    // Already a complete URL
-    if (
-      filePathString.startsWith("http://") ||
-      filePathString.startsWith("https://")
-    ) {
-      return filePathString;
-    }
-
-    const baseUrl = String(BASE_URL || "").replace(
-      /\/+$/,
-      ""
+  const getSelectedEmployee = () => {
+    return employees.find(
+      (employee) =>
+        String(employee.uid) ===
+        String(selectedEmployee)
     );
-
-    const path = filePathString.replace(
-      /^\/+/,
-      ""
-    );
-
-    return `${baseUrl}/${path}`;
   };
 
   // ============================================
-  // GET ORIGINAL FILE NAME
+  // GET FILE NAME
   // ============================================
-  const getOriginalFileName = (
+
+  const getFileName = (
     filePath,
     documentName
   ) => {
@@ -330,8 +317,58 @@ const Viewdoc = () => {
   };
 
   // ============================================
-  // PREVIEW
+  // GET DOWNLOAD FILE NAME
   // ============================================
+
+  const getDownloadFileName = (
+    filePath,
+    documentName
+  ) => {
+    const fileName = getFileName(
+      filePath,
+      documentName
+    );
+
+    return fileName || `${documentName}.pdf`;
+  };
+
+  // ============================================
+  // CREATE FILE URL FOR PREVIEW
+  // ============================================
+
+  const getFileUrl = (filePath) => {
+    if (!filePath) {
+      return "";
+    }
+
+    const filePathString = String(
+      filePath
+    ).trim();
+
+    // Already complete URL
+    if (
+      filePathString.startsWith("http://") ||
+      filePathString.startsWith("https://")
+    ) {
+      return filePathString;
+    }
+
+    const baseUrl = String(
+      BASE_URL || ""
+    ).replace(/\/+$/, "");
+
+    const path = filePathString.replace(
+      /^\/+/,
+      ""
+    );
+
+    return `${baseUrl}/${path}`;
+  };
+
+  // ============================================
+  // PREVIEW DOCUMENT
+  // ============================================
+
   const handlePreview = (
     filePath,
     documentName
@@ -343,68 +380,126 @@ const Viewdoc = () => {
       return;
     }
 
-    console.log("Preview URL:", fileUrl);
+    console.log(
+      "Preview URL:",
+      fileUrl
+    );
 
     setPreviewFile(fileUrl);
     setPreviewName(documentName);
   };
 
   // ============================================
-  // DOWNLOAD DOCUMENT
+  // DOWNLOAD DOCUMENT USING DOWNLOAD API
   // ============================================
+
   const handleDownload = async (
     filePath,
     documentName
   ) => {
     try {
-      const fileUrl = getFileUrl(filePath);
+      // ------------------------------------------
+      // GET SELECTED EMPLOYEE
+      // ------------------------------------------
 
-      if (!fileUrl) {
-        alert("Document not available");
+      const selectedEmp =
+        getSelectedEmployee();
+
+      if (!selectedEmp?.employeeId) {
+        alert(
+          "Please select an employee first."
+        );
         return;
       }
 
+      const employeeId =
+        selectedEmp.employeeId;
+
+      // ------------------------------------------
+      // GET FILE NAME
+      // ------------------------------------------
+
+      const fileName =
+        getDownloadFileName(
+          filePath,
+          documentName
+        );
+
+      if (!fileName) {
+        alert(
+          "Document file name not available."
+        );
+        return;
+      }
+
+      // ------------------------------------------
+      // DOWNLOAD API
+      //
+      // Example:
+      // https://userservicetest.pandozasolutions.com/
+      // uploadDoc/download/PSPL1173/employeeImage.jpg
+      // ------------------------------------------
+
+      const downloadUrl =
+        `${BASE_URL}uploadDoc/download/${encodeURIComponent(
+          employeeId
+        )}/${encodeURIComponent(fileName)}`;
+
       console.log(
-        "Downloading file:",
-        fileUrl
+        "Employee ID:",
+        employeeId
       );
 
-      // Get the original filename
-      let fileName = getOriginalFileName(
-        filePath,
-        documentName
-      );
-
       console.log(
-        "Default file name:",
+        "File Name:",
         fileName
       );
 
-      /*
-       * Fetch the file as Blob.
-       *
-       * credentials: "include" sends the
-       * logged-in user's cookies if your
-       * backend requires authentication.
-       */
-      const response = await fetch(fileUrl, {
-        method: "GET",
-        credentials: "include",
-      });
+      console.log(
+        "Download API:",
+        downloadUrl
+      );
 
-      if (!response.ok) {
+      // ------------------------------------------
+      // CALL DOWNLOAD API
+      // ------------------------------------------
+
+      const response = await axios.get(
+        downloadUrl,
+        {
+          responseType: "blob",
+          withCredentials: true,
+        }
+      );
+
+      console.log(
+        "Download API Response:",
+        response
+      );
+
+      // ------------------------------------------
+      // CHECK FILE
+      // ------------------------------------------
+
+      if (
+        !response.data ||
+        response.data.size === 0
+      ) {
         throw new Error(
-          `Download failed: ${response.status} ${response.statusText}`
+          "Downloaded file is empty."
         );
       }
 
-      // ========================================
-      // TRY TO GET FILE NAME FROM BACKEND
-      // ========================================
+      // ------------------------------------------
+      // GET FILE NAME FROM CONTENT-DISPOSITION
+      // ------------------------------------------
+
+      let finalFileName = fileName;
+
       const contentDisposition =
-        response.headers.get(
+        response.headers[
           "content-disposition"
-        );
+        ];
 
       if (contentDisposition) {
         const fileNameMatch =
@@ -413,7 +508,7 @@ const Viewdoc = () => {
           );
 
         if (fileNameMatch) {
-          fileName = decodeURIComponent(
+          finalFileName = decodeURIComponent(
             fileNameMatch[1] ||
               fileNameMatch[2]
           );
@@ -421,33 +516,28 @@ const Viewdoc = () => {
       }
 
       console.log(
-        "Final download filename:",
-        fileName
+        "Final Download Filename:",
+        finalFileName
       );
 
-      // ========================================
-      // CREATE BLOB
-      // ========================================
-      const blob = await response.blob();
+      // ------------------------------------------
+      // CREATE BLOB URL
+      // ------------------------------------------
 
-      if (!blob || blob.size === 0) {
-        throw new Error(
-          "Downloaded file is empty"
-        );
-      }
-
-      // ========================================
-      // CREATE TEMPORARY DOWNLOAD URL
-      // ========================================
       const blobUrl =
-        window.URL.createObjectURL(blob);
+        window.URL.createObjectURL(
+          response.data
+        );
+
+      // ------------------------------------------
+      // CREATE DOWNLOAD LINK
+      // ------------------------------------------
 
       const link =
         document.createElement("a");
 
       link.href = blobUrl;
-      link.download = fileName;
-
+      link.download = finalFileName;
       link.style.display = "none";
 
       document.body.appendChild(link);
@@ -456,8 +546,10 @@ const Viewdoc = () => {
 
       document.body.removeChild(link);
 
-      // Give browser a little time before
-      // releasing the Blob URL
+      // ------------------------------------------
+      // CLEANUP
+      // ------------------------------------------
+
       setTimeout(() => {
         window.URL.revokeObjectURL(
           blobUrl
@@ -466,7 +558,7 @@ const Viewdoc = () => {
 
       console.log(
         "Document downloaded successfully:",
-        fileName
+        finalFileName
       );
     } catch (error) {
       console.error(
@@ -474,40 +566,29 @@ const Viewdoc = () => {
         error
       );
 
-      /*
-       * Fallback:
-       * If the backend does not allow Blob
-       * download because of CORS, open the
-       * file directly.
-       */
-      try {
-        const fileUrl = getFileUrl(filePath);
+      console.error(
+        "Download Error Response:",
+        error?.response
+      );
 
-        if (fileUrl) {
-          const link =
-            document.createElement("a");
+      // ------------------------------------------
+      // BACKEND ERROR MESSAGE
+      // ------------------------------------------
 
-          link.href = fileUrl;
-          link.target = "_blank";
-          link.rel = "noopener noreferrer";
-
-          document.body.appendChild(link);
-
-          link.click();
-
-          document.body.removeChild(link);
-
-          return;
-        }
-      } catch (fallbackError) {
+      if (error?.response) {
         console.error(
-          "Fallback download error:",
-          fallbackError
+          "Status:",
+          error.response.status
+        );
+
+        console.error(
+          "Data:",
+          error.response.data
         );
       }
 
       alert(
-        "Unable to download document. Please check the document URL or backend access."
+        "Unable to download document. Please check the document and try again."
       );
     }
   };
@@ -515,6 +596,7 @@ const Viewdoc = () => {
   // ============================================
   // CHECK IMAGE
   // ============================================
+
   const isImageFile = (fileUrl) => {
     return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(
       fileUrl
@@ -524,6 +606,7 @@ const Viewdoc = () => {
   // ============================================
   // CHECK PDF
   // ============================================
+
   const isPdfFile = (fileUrl) => {
     return /\.pdf(\?.*)?$/i.test(
       fileUrl
@@ -533,6 +616,7 @@ const Viewdoc = () => {
   // ============================================
   // JSX
   // ============================================
+
   return (
     <MainPanel
       title="View Uploaded Documents"
