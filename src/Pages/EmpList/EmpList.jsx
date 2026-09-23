@@ -688,31 +688,45 @@ const EmpList = () => {
         /* ==========================================
            NORMAL EMPLOYEE LIST PAGE
         ========================================== */
-        <div className="emp-list">
+   <div className="emp-list">
 
-          <div className="page-header">
+  <div className="page-header">
 
-            <h2>Employees</h2>
+    {/* BACK BUTTON */}
+    <button
+      type="button"
+      className="previous-view-back"
+      onClick={() => navigate("/")}
+    >
+      ← Back
+    </button>
 
-            <div className="btn-group">
+    {/* EMPLOYEE TITLE + BUTTONS */}
+    <div className="employee-list-heading">
 
-              <div className="count">
-                Total Number Of Employee:{" "}
-                <span>
-                  {allemployee.length}
-                </span>
-              </div>
+      <h2>Employees</h2>
 
-              <Link to="/addEmployee">
-                <span>
-                  <FaPlus />
-                </span>{" "}
-                Add Employee
-              </Link>
+      <div className="btn-group">
 
-            </div>
+        <div className="count">
+          Total Number Of Employee:{" "}
+          <span>
+            {allemployee.length}
+          </span>
+        </div>
 
-          </div>
+        <Link to="/addEmployee">
+          <span>
+            <FaPlus />
+          </span>{" "}
+          Add Employee
+        </Link>
+
+      </div>
+
+    </div>
+
+  </div>
 
           <Table
             columns={columns}
