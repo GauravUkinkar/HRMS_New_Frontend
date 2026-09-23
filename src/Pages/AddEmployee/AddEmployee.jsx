@@ -670,7 +670,7 @@ const AddEmployee = () => {
             </div>
           </div>
 
-          <button className="btn" type="submit">
+          <button className="btn submit-btn" type="submit">
             Submit
           </button>
         </form>

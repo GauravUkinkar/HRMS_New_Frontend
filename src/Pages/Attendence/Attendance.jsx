@@ -1206,69 +1206,115 @@ const Attendance = () => {
           </div>
         </div>
       )}
+{showEmployeeAttendance ? (
+  <div className="employee-attendance-page">
 
-      {showEmployeeAttendance ? (
-        <>
-          <div className="previous-view-header">
-            <button
-              type="button"
-              className="previous-view-back"
-              onClick={closeEmployeeAttendance}
-            >
-              ← Back
-            </button>
+    {/* BACK + TITLE */}
+    <div className="attendance-header">
 
-            <div className="previous-view-title">
-              <h1 className="empname">
-                Check Employee Attendance -{" "}
-                <span> {selectedEmployee?.employeeName} </span>
-              </h1>
-            </div>
-          </div>
+      <button
+        type="button"
+        className="attendance-back-btn"
+        onClick={closeEmployeeAttendance}
+      >
+        ← Back
+      </button>
 
-          <div className="employee-month-search">
-            <div className="month-field">
-              <label>Month</label>
-              <select
-                value={selectedMonth}
-                onChange={handleEmployeeMonthChange}
+      <h1>
+        Check Employee Attendance -{" "}
+        <span>
+          {selectedEmployee?.name || ""}
+        </span>
+      </h1>
+
+    </div>
+
+
+    {/* MONTH + YEAR */}
+    <div className="attendance-filter">
+
+      <div className="attendance-filter-field">
+        <label>Month</label>
+
+        <select
+          value={selectedMonth}
+          onChange={handleEmployeeMonthChange}
+        >
+          {Array.from(
+            { length: 12 },
+            (_, index) => (
+              <option
+                key={index + 1}
+                value={index + 1}
               >
-                {Array.from({ length: 12 }, (_, index) => (
-                  <option key={index + 1} value={index + 1}>
-                    {dayjs().month(index).format("MMMM")}
-                  </option>
-                ))}
-              </select>
-            </div>
+                {dayjs()
+                  .month(index)
+                  .format("MMMM")}
+              </option>
+            )
+          )}
+        </select>
+      </div>
 
-            <div className="year-field">
-              <label>Year</label>
-              <input
-                type="number"
-                value={selectedYear}
-                onChange={handleEmployeeYearChange}
-              />
-            </div>
-          </div>
 
-          <Table_Comp
-            columns={employeeAttendanceColumns}
-            data={employeeAttendanceList.map((item, index) => ({
-              ...item,
-              employeeId:
-                item?.employeeId || selectedEmployee?.employeeId || "",
-              employeeName:
-                item?.employeeName || selectedEmployee?.employeeName || "",
-              employeeDesignation:
-                item?.employeeDesignation ||
-                selectedEmployee?.employeeDesignation ||
-                "",
-              key: `${item?.date || index}-${index}`,
-            }))}
-            loading={employeeAttendanceLoading}
-          />
-        </>
-      ) : showPreviousAttendance ? (
+      <div className="attendance-filter-field">
+        <label>Year</label>
+
+        <input
+          type="number"
+          value={selectedYear}
+          onChange={handleEmployeeYearChange}
+        />
+      </div>
+
+    </div>
+
+
+    {/* ATTENDANCE TABLE */}
+    <Table
+      columns={employeeAttendanceColumns}
+      dataSource={employeeAttendanceList.map(
+        (item, index) => ({
+          ...item,
+
+          employeeId:
+            item?.employeeId ||
+            selectedEmployee?.empId ||
+            "",
+
+          employeeName:
+            item?.employeeName ||
+            selectedEmployee?.name ||
+            "",
+
+          employeeDesignation:
+            item?.employeeDesignation ||
+            selectedEmployee?.designation ||
+            "",
+
+          key: `${
+            item?.date || index
+          }-${index}`,
+        })
+      )}
+      loading={employeeAttendanceLoading}
+      bordered
+      scroll={{ x: "max-content" }}
+      pagination={{
+        pageSize: 10,
+        showSizeChanger: true,
+      }}
+    />
+
+  </div>
+) : (
+  <div className="emp-list">
+
+    {/* YOUR EXISTING EMPLOYEE LIST CODE */}
+
+  </div>
+)}
+  
         <>
           <div className="previous-view-header">
             <button

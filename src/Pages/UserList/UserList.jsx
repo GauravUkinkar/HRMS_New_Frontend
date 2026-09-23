@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { Space, Table } from "antd";
 import axios from "axios";
@@ -8,24 +9,29 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SearchOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./userlist.scss";
+
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const UserList = () => {
+    const navigate = useNavigate();
+
     const [alluser, setAllUser] = useState([]);
-    const [showDeletedUsers, setShowDeletedUsers] =
-        useState(false);
+    const [showDeletedUsers, setShowDeletedUsers] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const formatUsers = (response) => {
         const data = Array.isArray(response)
-            ? response : Array.isArray(response?.data)
+            ? response
+            : Array.isArray(response?.data)
                 ? response.data
                 : [];
+
         return data.map((item, index) => {
             const user = item?.data || item || {};
 
             return {
-                key: user.uid ||
+                key:
+                    user.uid ||
                     user.uId ||
                     user.userId ||
                     index + 1,
@@ -40,19 +46,31 @@ const UserList = () => {
     const getAllUser = async () => {
         try {
             setLoading(true);
+
             const res = await axios.get(
                 `${BASE_URL}Admin/GetAllUser`,
                 {
                     withCredentials: true,
                 }
             );
+
             console.log("Active Users Response:", res.data);
+
             const users = formatUsers(res.data);
+
             console.log("Formatted Active Users:", users);
+
             setAllUser(users);
         } catch (error) {
-            console.error("Get Active User Error:", error.response?.data || error);
-            toast.error(error.response?.data?.message || "Failed to load active users");
+            console.error(
+                "Get Active User Error:",
+                error.response?.data || error
+            );
+
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to load active users"
+            );
         } finally {
             setLoading(false);
         }
@@ -61,28 +79,47 @@ const UserList = () => {
     const getDeletedUsers = async () => {
         try {
             setLoading(true);
+
             const res = await axios.get(
                 `${BASE_URL}Admin/getAllDeletedUsers/deleted`,
                 {
                     withCredentials: true,
                 }
             );
-            console.log("Deleted Users Full Response:", res.data);
+
+            console.log(
+                "Deleted Users Full Response:",
+                res.data
+            );
+
             const deletedUsers = formatUsers(res.data);
-            console.log("Formatted Deleted Users:", deletedUsers);
+
+            console.log(
+                "Formatted Deleted Users:",
+                deletedUsers
+            );
+
             setAllUser(deletedUsers);
         } catch (error) {
-            console.error("Get Deleted Users Error:", error.response?.data || error);
-            toast.error(error.response?.data?.message || "Failed to load deleted users");
+            console.error(
+                "Get Deleted Users Error:",
+                error.response?.data || error
+            );
+
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to load deleted users"
+            );
+
             setAllUser([]);
         } finally {
             setLoading(false);
         }
     };
+
     const handleActiveUsers = () => {
         setShowDeletedUsers(false);
         getAllUser();
-
     };
 
     const handleDeletedUsers = () => {
@@ -95,29 +132,30 @@ const UserList = () => {
             toast.error("User ID is missing");
             return;
         }
+
         toast.warning(
             ({ closeToast }) => (
                 <div>
                     <div
-                        style={{ marginBottom: "10px", }}
+                        style={{
+                            marginBottom: "10px",
+                        }}
                     >
                         Are you sure you want to delete
                         this user?
                     </div>
+
                     <div
                         style={{
-                            display: "flex", gap: "8px",
+                            display: "flex",
+                            gap: "8px",
                         }}
                     >
-
                         <button
                             type="button"
                             onClick={() => {
-
                                 closeToast();
-
                                 deleteUser(uid);
-
                             }}
                             style={{
                                 border: "none",
@@ -131,13 +169,11 @@ const UserList = () => {
                             Confirm
                         </button>
 
-
                         <button
                             type="button"
                             onClick={closeToast}
                             style={{
-                                border:
-                                    "1px solid #ccc",
+                                border: "1px solid #ccc",
                                 background: "#fff",
                                 color: "#333",
                                 padding: "6px 14px",
@@ -148,10 +184,8 @@ const UserList = () => {
                             Cancel
                         </button>
                     </div>
-
                 </div>
             ),
-
             {
                 autoClose: false,
                 closeOnClick: false,
@@ -163,6 +197,7 @@ const UserList = () => {
     const deleteUser = async (uid) => {
         try {
             console.log("Deleting User UID:", uid);
+
             const response = await axios.delete(
                 `${BASE_URL}Admin/deleteUserByUserId/${uid}`,
                 {
@@ -170,31 +205,29 @@ const UserList = () => {
                 }
             );
 
-
             console.log(
                 "Delete User Response:",
                 response.data
             );
 
+            toast.success("User deleted successfully");
 
-            toast.success(
-                "User deleted successfully"
-            );
             setAllUser((prevUsers) =>
                 prevUsers.filter(
-                    (user) => user.uid !== uid));
+                    (user) => user.uid !== uid
+                )
+            );
         } catch (error) {
             console.error(
                 "Delete User Error:",
                 error.response?.data || error
             );
+
             toast.error(
                 error.response?.data?.message ||
                 "Failed to delete user"
             );
-
         }
-
     };
 
     useEffect(() => {
@@ -213,18 +246,20 @@ const UserList = () => {
             width: 150,
             fixed: "left",
         },
-        ...(!showDeletedUsers
-            ? []
-            : []),
+
+        ...(!showDeletedUsers ? [] : []),
 
         {
             title: (
-                <>Email <SearchOutlined /></>
+                <>
+                    Email <SearchOutlined />
+                </>
             ),
             dataIndex: "email",
             key: "email",
             width: 260,
         },
+
         {
             title: (
                 <>
@@ -235,15 +270,18 @@ const UserList = () => {
             key: "role",
             width: 260,
         },
+
         {
             title: "Status",
             dataIndex: "isDeleted",
             key: "status",
             width: 140,
+
             render: (_, record) => {
                 const isActive =
                     record.isDeleted === false ||
                     record.isDeleted === "false";
+
                 return (
                     <span
                         className={
@@ -259,6 +297,7 @@ const UserList = () => {
                 );
             },
         },
+
         ...(!showDeletedUsers
             ? [
                 {
@@ -269,15 +308,14 @@ const UserList = () => {
 
                     render: (_, record) => (
                         <Space size="middle">
-
-
-                            {/* DELETE */}
                             <DeleteOutlined
                                 className="delete"
-                                onClick={() => handleDeleteUser(record.uid)
+                                onClick={() =>
+                                    handleDeleteUser(
+                                        record.uid
+                                    )
                                 }
                             />
-
                         </Space>
                     ),
                 },
@@ -286,32 +324,52 @@ const UserList = () => {
     ];
 
     return (
-
         <>
             <MainPanel
-                title="User List "
+                title="User List"
                 breadcrumbs={[
-                    { label: "Dashboard", link: "/dashboard" },
-                    { label: "User List" },
+                    {
+                        label: "Dashboard",
+                        link: "/dashboard",
+                    },
+                    {
+                        label: "User List",
+                    },
                 ]}
-
-
-
-
-                
             >
                 <div className="user-list">
+
+                    {/* PAGE HEADER */}
                     <div className="page-header">
-                        ss
+
+                        {/* BACK BUTTON */}
+                        <button
+                            type="button"
+                            className="previous-view-back"
+                            onClick={() =>
+                                navigate("/")
+                            }
+                        >
+                            ← Back
+                        </button>
+
+                        {/* PAGE TITLE */}
                         <h2>
                             {showDeletedUsers
                                 ? "Deleted Users"
                                 : "All Users"}
                         </h2>
+
+                        {/* BUTTON GROUP */}
                         <div className="btn-group">
+
                             <div className="count">
-                                Total Number Of Users: <span>{alluser.length}</span>
+                                Total Number Of Users:
+                                <span>
+                                    {alluser.length}
+                                </span>
                             </div>
+
                             <button
                                 type="button"
                                 className={
@@ -319,22 +377,37 @@ const UserList = () => {
                                         ? "active"
                                         : ""
                                 }
-                                onClick={handleActiveUsers}>
-                                <span><FaPlus /></span>
+                                onClick={
+                                    handleActiveUsers
+                                }
+                            >
+                                <span>
+                                    <FaPlus />
+                                </span>
                                 Active Users
                             </button>
+
                             <button
                                 type="button"
                                 className={
                                     showDeletedUsers
                                         ? "active"
-                                        : ""}
-                                onClick={handleDeletedUsers}
+                                        : ""
+                                }
+                                onClick={
+                                    handleDeletedUsers
+                                }
                             >
-                                <span><FaEye /></span>Deleted User
+                                <span>
+                                    <FaEye />
+                                </span>
+                                Deleted User
                             </button>
+
                         </div>
                     </div>
+
+                    {/* USER TABLE */}
                     <Table
                         columns={columns}
                         dataSource={alluser}
@@ -347,15 +420,14 @@ const UserList = () => {
                             pageSize: 20,
                             showSizeChanger: true,
                         }}
-
-                        rowClassName={
-                            (_, index) =>
-                                index % 2 === 0
-                                    ? "table-row-light"
-                                    : "table-row-dark"
+                        rowClassName={(_, index) =>
+                            index % 2 === 0
+                                ? "table-row-light"
+                                : "table-row-dark"
                         }
                     />
                 </div>
+
                 <ToastContainer
                     position="top-right"
                     autoClose={3000}
@@ -365,12 +437,8 @@ const UserList = () => {
                     pauseOnHover
                 />
             </MainPanel>
-
         </>
-
     );
-
 };
-
 
 export default UserList;
