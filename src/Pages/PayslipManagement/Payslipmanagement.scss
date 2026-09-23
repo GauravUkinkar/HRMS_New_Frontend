@@ -1,13 +1,47 @@
-.payslip-list{
-    .page-header{
-        display: flex;
-        justify-content: space-between;
-        padding: 15px;
-        background-color: var(--accent2);
-        padding-bottom: 15px;
-        h2{
-            color: white;
-        }
+.payslip-list {
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: var(--accent2);
 
+    h2 {
+      color: white;
+      margin: 0;
     }
+  }
+
+.view-btn {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  margin: 0 auto;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--accent) !important;
+  border-radius: 5px !important;
+  background: white !important;
+  color: var(--accent) !important;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--accent) !important;
+    color: white !important;
+  }
+
+  &.disabled {
+    border-color: #ccc !important;
+    background: #f5f5f5 !important;
+    color: #aaa !important;
+    cursor: not-allowed !important;
+
+    &:hover {
+      background: #f5f5f5 !important;
+      color: #aaa !important;
+    }
+  }
+}
 }

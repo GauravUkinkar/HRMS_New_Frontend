@@ -1,42 +1,91 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./Payslipmanagement.scss";
-import { DatePicker, Table, Tag } from "antd";
+import { DatePicker, Table } from "antd";
 import axios from "axios";
-
+import { UserContext } from "../../../Context";
+import { IoEyeOutline } from "react-icons/io5";
+import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 const Payslipmanagement = () => {
+  const navigate = useNavigate();
+  const { user } = useContext(UserContext);
+
+const employeeId = user?.employeeId;
   const [allemployee, setAllEmployee] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const [selectedMonth, setSelectedMonth] = useState(null);
-  const [selectedYear, setSelectedYear] = useState(null);
-
-  const [employeeId, setEmployeeId] = useState("");
-  const [employees, setEmployees] = useState([]);
-
-  useEffect(() => {
-    const getAllEmployees = async () =>{
-      try{
-        const response = await axios.get(
-          `${import.meta.env.VITE_USER_BACKEND_URL}Admin/GetAllEmployee`,
-          {
-            withCredentials:true,
-          }
-        );
-
-        console.log("Employee API:", response.data);
-
-        setEmployees(response?.data?.data || []);
-      } catch (error) {
-        console.error("Employee API Error:", error);
-      }
-    };
-    getAllEmployees();
-
-  }, []);
-
-
   const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
+useEffect(() => {
+  if (!employeeId) return;
+
+  const currentDate = new Date();
+
+  const month = currentDate.toLocaleString("en-US", {
+    month: "long",
+  });
+
+  const year = currentDate.getFullYear().toString();
+
+  getPayslip(month, year);
+}, [employeeId]);
+const getPayslip = async (month, year) => {
+  try {
+    if (!employeeId) {
+      console.error("Employee ID not found");
+      return;
+    }
+
+    setLoading(true);
+
+    const response = await axios.get(
+      `${BASE_URL}AuthController/getByMonthYearAndEmployeeId`,
+      {
+        params: {
+          month,
+          employeeId,
+          year,
+        },
+        withCredentials: true,
+      }
+    );
+
+    console.log("Payslip API Response:", response.data);
+
+    const salaryData = response?.data?.[0]?.data;
+
+    console.log("Salary Data:", salaryData);
+
+    if (salaryData) {
+      setAllEmployee([salaryData]);
+    } else {
+      setAllEmployee([
+        {
+          sid: "no-salary",
+          employeeId,
+          employeeName: user?.employeeName || "-",
+          month,
+          year,
+          noSalaryData: true,
+        },
+      ]);
+    }
+  } catch (error) {
+    console.error("Payslip API Error:", error);
+    setAllEmployee([
+          {  sid: "no-salary",
+      employeeId,
+      employeeName: user?.employeeName || "-",
+      month,
+      year,
+      noSalaryData: true,
+          },
+    ]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const formatAmount = (value) => {
     const amount = Number(value || 0);
@@ -222,33 +271,37 @@ const Payslipmanagement = () => {
       dataIndex: "uanNo",
       key: "uanNo",
     },
-  ];
+{
+  title: "Action",
+  key: "action",
+  fixed: "right",
+  width: 80,
+  align: "center",
+  className: "action-column",
+  render: (_, record) => {
+    const disabled = record.noSalaryData;
 
-  // Uncomment and modify when you have the API endpoint
-  /*
-  useEffect(() => {
-    const getAllPayslips = async () => {
-      try {
-        setLoading(true);
-
-        const response = await axios.get(
-          `${BASE_URL}admin/getAllNewSalaries`,
-          {
-            withCredentials: true,
+    return (
+      <button
+        type="button"
+        className={`view-btn ${disabled ? "disabled" : ""}`}
+        disabled={disabled}
+        onClick={() => {
+          if (!disabled) {
+            navigate("/Payslip", {
+              state:{
+                payslip:record,
+              },
+            });
           }
-        );
-
-        setAllEmployee(response.data || []);
-      } catch (error) {
-        console.error("Payslip API Error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getAllPayslips();
-  }, []);
-  */
+        }}
+      >
+        <IoEyeOutline size={20} />
+      </button>
+    );
+  },
+},
+  ];
 
   return (
     <MainPanel
@@ -267,7 +320,19 @@ const Payslipmanagement = () => {
   picker="month"
   format="MMMM YYYY"
   placeholder="Select Month & Year"
+  defaultValue={dayjs()}
 
+  onChange={(date) => {
+    if (!date) {
+      setAllEmployee([]);
+      return;
+    }
+
+    const month = date.format("MMMM");
+    const year = date.format("YYYY");
+
+    getPayslip(month, year);
+  }}
 />
          
         </div>
