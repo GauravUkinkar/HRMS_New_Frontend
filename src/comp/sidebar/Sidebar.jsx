@@ -186,8 +186,8 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
 
     {
       icon: <IoDocumentTextOutline />,
-      name: "Payslip",
-      link: "/Payslip",
+      name: "PayslipManagement",
+      link: "/payslipManagement",
       employeeOnly: true,
     },
   ];

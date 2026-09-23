@@ -1,7 +1,8 @@
 import React from "react";
 import "./Payslip.scss";
 // import logo from "../../../src/assets/ logo.png";
-import logo from "../../../src/assets/logo.png"
+import logo from "../../../src/assets/offer-logo-pan.png"
+import watermark from "../../assets/pan-watermark.webp"
 import { SlCalender } from "react-icons/sl";
 import { IoMdDownload } from "react-icons/io";
 import MainPanel from "../../comp/MainPanel/MainPanel";
@@ -11,6 +12,9 @@ const Payslip = () => {
     <MainPanel>
     <div className="main-container">
       <div className="payslip-container">
+        <div class="watermark">
+          <img src={watermark} alt="watermark"/>
+        </div>
         <div className="header">
           <div className="logo">
             <img src={logo} alt="Logo" />
