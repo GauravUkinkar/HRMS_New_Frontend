@@ -22,50 +22,82 @@ const FileUpload = ({
   accept,
   required = false,
   file,
+  error,
 }) => {
   return (
-    <Button
-      component="label"
-      variant="outlined"
-      fullWidth
-      startIcon={<CloudUploadIcon />}
-      sx={{
-        justifyContent: "flex-start",
-        color: "black",
-        borderColor: file ? "#22c55e" : "black",
-        height: "56px",
-        textTransform: "none",
-        backgroundColor: file ? "#f0fdf4" : "transparent",
-        "&:hover": {
-          borderColor: "var(--accent)",
-          backgroundColor: file ? "#f0fdf4" : "transparent",
-        },
-      }}
-    >
-      {label}
+    <div style={{ width: "100%" }}>
+      <Button
+        component="label"
+        variant="outlined"
+        fullWidth
+        startIcon={<CloudUploadIcon />}
+        sx={{
+          justifyContent: "flex-start",
+          color: "black",
+          borderColor: error
+            ? "#dc2626"
+            : file
+            ? "#22c55e"
+            : "black",
+          height: "56px",
+          textTransform: "none",
+          backgroundColor: error
+            ? "#fef2f2"
+            : file
+            ? "#f0fdf4"
+            : "transparent",
+          "&:hover": {
+            borderColor: error
+              ? "#dc2626"
+              : "var(--accent)",
+            backgroundColor: error
+              ? "#fef2f2"
+              : file
+              ? "#f0fdf4"
+              : "transparent",
+          },
+        }}
+      >
+        {label}
 
-      {required && (
-        <span style={{ color: "red", marginLeft: "4px" }}> *</span>
-      )}
+        {required && (
+          <span style={{ color: "red", marginLeft: "4px" }}>
+            *
+          </span>
+        )}
 
-      {file && (
-        <CheckCircleIcon
-          sx={{
-            color: "#22c55e",
-            fontSize: "20px",
-            marginLeft: "8px",
-          }}
+        {file && !error && (
+          <CheckCircleIcon
+            sx={{
+              color: "#22c55e",
+              fontSize: "20px",
+              marginLeft: "8px",
+            }}
+          />
+        )}
+
+        <VisuallyHiddenInput
+          type="file"
+          onChange={onChange}
+          multiple={multiple}
+          accept={accept}
+          required={required}
         />
-      )}
+      </Button>
 
-      <VisuallyHiddenInput
-        type="file"
-        onChange={onChange}
-        multiple={multiple}
-        accept={accept}
-        required={required}
-      />
-    </Button>
+      {error && (
+        <div
+          style={{
+            color: "#dc2626",
+            fontSize: "12px",
+            marginTop: "4px",
+            paddingLeft: "4px",
+          }}
+        >
+          {error}
+        </div>
+      )}
+    </div>
   );
 };
 
