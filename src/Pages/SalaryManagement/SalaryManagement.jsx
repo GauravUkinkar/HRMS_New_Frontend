@@ -3,6 +3,7 @@ import "./SalaryManagement.scss";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
+
 import { Avatar, Space, Table } from "antd";
 
 import { FaEye } from "react-icons/fa";
@@ -247,6 +248,12 @@ const SalaryManagement = () => {
               }`
             : nameParts[0]?.[0] || "?";
 
+
+
+  
+
+
+
         return (
           <Space>
             <Avatar className="avatar">
@@ -455,49 +462,51 @@ const SalaryManagement = () => {
 
 
     {
-      title: "Actions",
-      key: "actions",
-      width: 120,
-      fixed: "right",
+  title: "Actions",
+  key: "actions",
+  width: 120,
+  fixed: "right",
 
-      render: (_, record) => (
-        <Space size="middle">
-                 <FaEye
-            className="viewsalary"
-            onClick={() => {
-              console.log(
-                "View Salary:",
-                record
-              );
-            }}
-          />
-          <EditOutlined
-            className="edit"
-            onClick={() => {
-                console.log("FULL RECORD:", record);
-              navigate(`/editSalary/${record.key}`);
-              console.log(
-                "Edit Salary:",
-                record
-              );
-            }}
-          />
+  render: (_, record) => (
+    <Space size="middle">
 
-          <DeleteOutlined
-            className="delete"
-            onClick={() => {
-              deleteSalary(record)
-              console.log(
-                "Delete Salary:",
-                record
-              );
-            }}
-          />
+      {/* VIEW SALARY SLIP */}
+      <FaEye
+        className="viewsalary"
+        onClick={() => {
+          console.log("Selected Salary Record:", record);
 
-   
-        </Space>
-      ),
-    },
+          navigate("/Payslip", {
+            state: {
+              salary: record,
+            },
+          });
+        }}
+      />
+
+      {/* EDIT SALARY */}
+      <EditOutlined
+        className="edit"
+        onClick={() => {
+          console.log("FULL RECORD:", record);
+
+          navigate(`/editSalary/${record.key}`);
+        }}
+      />
+
+      {/* DELETE SALARY */}
+      <DeleteOutlined
+        className="delete"
+        onClick={() => {
+          deleteSalary(record);
+
+          console.log("Delete Salary:", record);
+        }}
+      />
+
+    </Space>
+  ),
+},
   ];
 
 
