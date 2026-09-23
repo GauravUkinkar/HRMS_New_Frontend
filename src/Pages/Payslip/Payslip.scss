@@ -243,7 +243,7 @@
         border: 1px solid var(--accent2);
         color: var(--white);
         background: var(--accent2);
-        padding: 5px 10px;
+        padding: 10px 15px;
         border-radius: 5px;
         display: flex;
         align-items: center;
@@ -259,4 +259,52 @@
       }
     }
   }
+  @media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  // Hide everything except the payslip
+  body * {
+    visibility: hidden;
+  }
+
+  .payslip-container,
+  .payslip-container * {
+    visibility: visible;
+  }
+
+  .payslip-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+    box-sizing: border-box;
+    background: white !important;
+    box-shadow: none !important;
+  }
+
+  .download {
+    display: none !important;
+  }
+
+  // Prevent table/content from splitting
+  .summary,
+  .tables,
+  .table-card,
+  .net-total {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
 }
