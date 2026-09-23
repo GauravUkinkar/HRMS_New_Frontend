@@ -356,13 +356,14 @@ const handlePunchIn = async () => {
   // =========================
   // USER ROLE
   // =========================
-  const userRole = String(
-    userDetails?.role || userDetails?.crmRole || ""
-  )
-    .trim()
-    .toUpperCase();
+ const userRole = String(
+  userDetails?.role || userDetails?.crmRole || ""
+)
+  .trim()
+  .toUpperCase();
 
-  const isEmployee = userRole === "EMPLOYEE";
+const isEmployee = userRole === "EMPLOYEE";
+const isAdmin = userRole === "ADMIN";
 
   // =========================
   // FORMAT PUNCH TIME
@@ -500,71 +501,80 @@ const handlePunchIn = async () => {
                 </div>
               </div>
             )}
+{/* ================= USER ================= */}
+<div
+  className={`user ${isAdmin ? "admin-user" : ""}`}
+  onClick={(e) => {
+    e.stopPropagation();
 
-            {/* ================= USER ================= */}
-            <div
-              className="user"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowProfile(!showProfile);
-              }}
-            >
-              <div className="user-avatar">
-                {userDetails?.image ? (
-                  <img
-                    src={userDetails.image}
-                    alt={
-                      userDetails?.employeeName || "User"
-                    }
-                    className="user-profile-image"
-                  />
-                ) : (
-                  (
-                    userDetails?.employeeName ||
-                    userDetails?.email ||
-                    "U"
-                  )
-                    .split(" ")
-                    .map((word) => word.charAt(0))
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()
-                )}
-              </div>
+    // Admin should not open profile/settings dropdown
+    if (isAdmin) {
+      setShowProfile(false);
+      return;
+    }
 
-              <div className="user-info">
-                <p>
-                  {userDetails?.employeeName ||
-                    userDetails?.email?.split("@")[0] ||
-                    "User"}
-                </p>
+    setShowProfile(!showProfile);
+  }}
+>
+  <div className="user-avatar">
+    {userDetails?.image ? (
+      <img
+        src={userDetails.image}
+        alt={userDetails?.employeeName || "User"}
+        className="user-profile-image"
+      />
+    ) : (
+      (
+        userDetails?.employeeName ||
+        userDetails?.email ||
+        "U"
+      )
+        .split(" ")
+        .map((word) => word.charAt(0))
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    )}
+  </div>
 
-                <span>
-                  {userDetails?.role ||
-                    userDetails?.crmRole ||
-                    "Employee"}
-                </span>
-              </div>
+  <div className="user-info">
+    <p>
+      {userDetails?.employeeName ||
+        userDetails?.email?.split("@")[0] ||
+        "User"}
+    </p>
 
-              <div className="user-arrow">
-                <FaChevronDown />
-              </div>
+    <span>
+      {userDetails?.role ||
+        userDetails?.crmRole ||
+        "Employee"}
+    </span>
+  </div>
 
-              {showProfile && (
-                <div
-                  className="profile-menu"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Link
-                    to={`/profile/${userDetails?.employeeId}`}
-                  >
-                    Profile
-                  </Link>
+  {/* Hide dropdown arrow for Admin */}
+  {!isAdmin && (
+    <div className="user-arrow">
+      <FaChevronDown />
+    </div>
+  )}
 
-                  <Link to="/settings">Settings</Link>
-                </div>
-              )}
-            </div>
+  {/* Profile + Settings only for non-admin users */}
+  {!isAdmin && showProfile && (
+    <div
+      className="profile-menu"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Link to={`/profile/${userDetails?.employeeId}`}>
+        Profile
+      </Link>
+
+      <Link to="/settings">
+        Settings
+      </Link>
+    </div>
+  )}
+</div>
+          
           </div>
         </div>
 
