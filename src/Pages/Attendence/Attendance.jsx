@@ -17,10 +17,13 @@ const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 const Attendance = () => {
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
   const [previousAttendance, setPreviousAttendance] = useState({
-    employeeId: "", date: "", status: ""
+    employeeId: "",
+    date: "",
+    status: "",
   });
   const [previousAttendanceData, setPreviousAttendanceData] = useState([]);
-  const [attendanceHistoryLoading, setAttendanceHistoryLoading] = useState(false);
+  const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
+    useState(false);
 
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
@@ -32,14 +35,20 @@ const Attendance = () => {
   const [activePunchIn, setActivePunchIn] = useState(null);
   const [newTime, setNewTime] = useState("");
   const [showPreviousAttendance, setShowPreviousAttendance] = useState(false);
-  const [previousStartDate, setPreviousStartDate] = useState(dayjs().format("YYYY-MM-DD"));
-  const [previousEndDate, setPreviousEndDate] = useState(dayjs().format("YYYY-MM-DD"));
+  const [previousStartDate, setPreviousStartDate] = useState(
+    dayjs().format("YYYY-MM-DD"),
+  );
+  const [previousEndDate, setPreviousEndDate] = useState(
+    dayjs().format("YYYY-MM-DD"),
+  );
   const [previousAttendanceList, setPreviousAttendanceList] = useState([]);
-  const [previousAttendanceLoading, setPreviousAttendanceLoading] = useState(false);
+  const [previousAttendanceLoading, setPreviousAttendanceLoading] =
+    useState(false);
   const [showEmployeeAttendance, setShowEmployeeAttendance] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [employeeAttendanceList, setEmployeeAttendanceList] = useState([]);
-  const [employeeAttendanceLoading, setEmployeeAttendanceLoading] = useState(false);
+  const [employeeAttendanceLoading, setEmployeeAttendanceLoading] =
+    useState(false);
   const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1);
   const [selectedYear, setSelectedYear] = useState(dayjs().year());
   const handleAddPreviousAttendance = () => {
@@ -70,49 +79,32 @@ const Attendance = () => {
 
   const getAllEmployee = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}Admin/GetAllEmployee`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get(`${BASE_URL}Admin/GetAllEmployee`, {
+        withCredentials: true,
+      });
 
-      const employees = res.data.map(
-        (item, index) => ({
-          key: index + 1,
+      const employees = res.data.map((item, index) => ({
+        key: index + 1,
 
-          name:
-            item?.data?.employeeName || "",
+        name: item?.data?.employeeName || "",
 
-          empId:
-            item?.data?.employeeId || "",
+        empId: item?.data?.employeeId || "",
 
-          email:
-            item?.data?.email || "",
+        email: item?.data?.email || "",
 
-          status:
-            item?.data?.employeeStatus || "",
+        status: item?.data?.employeeStatus || "",
 
-          designation:
-            item?.data?.employeeDesignation ||
-            item?.data?.designation ||
-            "",
+        designation:
+          item?.data?.employeeDesignation || item?.data?.designation || "",
 
-          uid:
-            item?.data?.uid || "",
-        })
-      );
+        uid: item?.data?.uid || "",
+      }));
 
       setAllEmployee(employees);
 
-      console.log(
-        "ALL EMPLOYEES:",
-        employees
-      );
+      console.log("ALL EMPLOYEES:", employees);
     } catch (error) {
-      console.error(
-        "Get All Employee Error:",
-        error?.response?.data || error
-      );
+      console.error("Get All Employee Error:", error?.response?.data || error);
     }
   };
   const getSelectedEmployeeText = () => {
@@ -129,7 +121,7 @@ const Attendance = () => {
 
     if (selectedEmployees.length === 1) {
       const employee = allemployee.find(
-        (item) => item.empId === selectedEmployees[0]
+        (item) => item.empId === selectedEmployees[0],
       );
       return employee?.name || "Select Employee";
     }
@@ -143,13 +135,10 @@ const Attendance = () => {
     }
 
     if (employeeId === "ALL") {
-      const allIds = allemployee
-        .map((item) => item.empId)
-        .filter(Boolean);
+      const allIds = allemployee.map((item) => item.empId).filter(Boolean);
 
       const isAllSelected =
-        allIds.length > 0 &&
-        selectedEmployees.length === allIds.length;
+        allIds.length > 0 && selectedEmployees.length === allIds.length;
 
       if (isAllSelected) {
         setSelectedEmployees([]);
@@ -220,55 +209,43 @@ const Attendance = () => {
       setLoader(true);
       const response = await axios.get(`${BASE_URL2}api/punch/details`);
 
-      const tableData = response?.data?.data?.sort(
-        (a, b) => new Date(a?.punchIn || 0) - new Date(b?.punchIn || 0)
-      ).map((item, index) => ({
-        key:
-          item?.employeeId ||
-          index,
-        employeeId:
-          item?.employeeId || "",
-        employeeName:
-          item?.employeeName
-            ?.toUpperCase() || "",
-        punchIn: item?.punchInByAdmin ? "Punch In From Admin" : item?.punchIn ? item.punchIn
-          .split("T")[1]?.replace("Z", "")
-          .slice(0, 8) : "",
-        punchOut:
-          item?.punchOutByAdmin
-            ? "Punch Out From Admin"
-            : item?.punchOut
-              ? item.punchOut
-                .split("T")[1]
-                ?.replace(
-                  "Z",
-                  ""
-                )
-                .slice(
-                  0,
-                  8
-                )
-              : "",
-        status: item?.status || "Absent"
-      })) || [];
+      const tableData =
+        response?.data?.data
+          ?.sort(
+            (a, b) => new Date(a?.punchIn || 0) - new Date(b?.punchIn || 0),
+          )
+          .map((item, index) => ({
+            key: item?.employeeId || index,
+            employeeId: item?.employeeId || "",
+            employeeName: item?.employeeName?.toUpperCase() || "",
+            punchIn: item?.punchInByAdmin
+              ? "Punch In From Admin"
+              : item?.punchIn
+                ? item.punchIn.split("T")[1]?.replace("Z", "").slice(0, 8)
+                : "",
+            punchOut: item?.punchOutByAdmin
+              ? "Punch Out From Admin"
+              : item?.punchOut
+                ? item.punchOut.split("T")[1]?.replace("Z", "").slice(0, 8)
+                : "",
+            status: item?.status || "Absent",
+          })) || [];
 
       setData(tableData);
 
       console.log("TODAY ATTENDANCE:", tableData);
     } catch (error) {
       console.error("Attendance API Error:", error);
-      toast.error(error?.response?.data?.message || "Unable to load attendance");
+      toast.error(
+        error?.response?.data?.message || "Unable to load attendance",
+      );
       setData([]);
     } finally {
       setLoader(false);
     }
   };
 
-  const getEmployeeMonthlyAttendance = async (
-    employeeId,
-    month,
-    year
-  ) => {
+  const getEmployeeMonthlyAttendance = async (employeeId, month, year) => {
     if (!employeeId) {
       setEmployeeAttendanceList([]);
       return;
@@ -287,7 +264,7 @@ const Attendance = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const attendanceList = Array.isArray(response?.data)
@@ -303,8 +280,7 @@ const Attendance = () => {
       console.error("Employee Monthly Attendance Error:", error);
       setEmployeeAttendanceList([]);
       toast.error(
-        error?.response?.data?.message ||
-        "Unable to load employee attendance"
+        error?.response?.data?.message || "Unable to load employee attendance",
       );
     } finally {
       setEmployeeAttendanceLoading(false);
@@ -320,7 +296,7 @@ const Attendance = () => {
     await getEmployeeMonthlyAttendance(
       record?.employeeId,
       dayjs().month() + 1,
-      dayjs().year()
+      dayjs().year(),
     );
   };
 
@@ -331,7 +307,7 @@ const Attendance = () => {
     await getEmployeeMonthlyAttendance(
       selectedEmployee?.employeeId,
       month,
-      selectedYear
+      selectedYear,
     );
   };
 
@@ -342,7 +318,7 @@ const Attendance = () => {
     await getEmployeeMonthlyAttendance(
       selectedEmployee?.employeeId,
       selectedMonth,
-      year
+      year,
     );
   };
 
@@ -356,9 +332,7 @@ const Attendance = () => {
     setPreviousAttendanceList([]);
   };
 
-  const getPreviousAttendance = async (
-    employeeId
-  ) => {
+  const getPreviousAttendance = async (employeeId) => {
     if (!employeeId) {
       setPreviousAttendanceData([]);
       return;
@@ -373,13 +347,11 @@ const Attendance = () => {
       const startDate = `${today.year()}-01-01`;
 
       const endDate = today.format("YYYY-MM-DD");
-      console.log("API REQUEST:",
-        {
-          employeeId,
-          startDate,
-          endDate,
-        }
-      );
+      console.log("API REQUEST:", {
+        employeeId,
+        startDate,
+        endDate,
+      });
       const response = await axios.post(
         `${BASE_URL2}api/punch/attendance/${employeeId}`,
         {
@@ -388,31 +360,21 @@ const Attendance = () => {
         },
         {
           headers: {
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       console.log("PREVIOUS ATTENDANCE RESPONSE:", response?.data);
       let attendanceList = [];
 
-      if (
-        Array.isArray(response?.data)
-      ) {
+      if (Array.isArray(response?.data)) {
         attendanceList = response.data;
-      } else if (
-        Array.isArray(response?.data?.data)
-      ) {
+      } else if (Array.isArray(response?.data?.data)) {
         attendanceList = response.data.data;
-      } else if (
-        Array.isArray(response?.data?.result)
-      ) {
-        attendanceList =
-          response.data.result;
-      } else if (
-        Array.isArray(response?.data?.attendance)
-      ) {
+      } else if (Array.isArray(response?.data?.result)) {
+        attendanceList = response.data.result;
+      } else if (Array.isArray(response?.data?.attendance)) {
         attendanceList = response.data.attendance;
       }
 
@@ -422,31 +384,24 @@ const Attendance = () => {
       setTimeout(() => {
         setDatePickerOpen(true);
       }, 200);
-
     } catch (error) {
-      console.error(
-        "Previous Attendance API Error:",
-        error
-      );
+      console.error("Previous Attendance API Error:", error);
 
-      console.error(
-        "SERVER RESPONSE:",
-        error?.response?.data
-      );
+      console.error("SERVER RESPONSE:", error?.response?.data);
 
       setPreviousAttendanceData([]);
 
       toast.error(
-        error?.response?.data?.message ||
-        "Unable to load previous attendance"
+        error?.response?.data?.message || "Unable to load previous attendance",
       );
     } finally {
-      setAttendanceHistoryLoading(
-        false
-      );
+      setAttendanceHistoryLoading(false);
     }
   };
-  const getPreviousAttendanceView = async (startDate = previousStartDate, endDate = previousEndDate) => {
+  const getPreviousAttendanceView = async (
+    startDate = previousStartDate,
+    endDate = previousEndDate,
+  ) => {
     try {
       setPreviousAttendanceLoading(true);
 
@@ -457,7 +412,7 @@ const Attendance = () => {
             startDate,
             endDate,
           },
-        }
+        },
       );
 
       const attendanceList = Array.isArray(response?.data?.data)
@@ -471,8 +426,7 @@ const Attendance = () => {
       console.error("Previous Attendance View Error:", error);
       setPreviousAttendanceList([]);
       toast.error(
-        error?.response?.data?.message ||
-        "Unable to load previous attendance"
+        error?.response?.data?.message || "Unable to load previous attendance",
       );
     } finally {
       setPreviousAttendanceLoading(false);
@@ -552,8 +506,9 @@ const Attendance = () => {
 
         return (
           <span
-            className={`attendance-status ${normalizedStatus === "HALF_DAY" ? "half-day-status" : ""
-              }`}
+            className={`attendance-status ${
+              normalizedStatus === "HALF_DAY" ? "half-day-status" : ""
+            }`}
           >
             {status || "-"}
           </span>
@@ -584,9 +539,7 @@ const Attendance = () => {
       align: "center",
       search: true,
       render: (_, record) =>
-        record?.employeeId ||
-        selectedEmployee?.employeeId ||
-        "-",
+        record?.employeeId || selectedEmployee?.employeeId || "-",
     },
     {
       title: "Date",
@@ -594,10 +547,7 @@ const Attendance = () => {
       key: "date",
       align: "center",
       search: true,
-      render: (date) =>
-        date
-          ? dayjs(date).format("YYYY-MM-DD")
-          : "-",
+      render: (date) => (date ? dayjs(date).format("YYYY-MM-DD") : "-"),
     },
     {
       title: "Employee Name",
@@ -606,9 +556,7 @@ const Attendance = () => {
       align: "center",
       search: true,
       render: (_, record) =>
-        record?.employeeName ||
-        selectedEmployee?.employeeName ||
-        "-",
+        record?.employeeName || selectedEmployee?.employeeName || "-",
     },
     {
       title: "Designation",
@@ -665,10 +613,9 @@ const Attendance = () => {
 
         return (
           <span
-            className={`attendance-status ${normalizedStatus === "HALF_DAY"
-              ? "half-day-status"
-              : ""
-              }`}
+            className={`attendance-status ${
+              normalizedStatus === "HALF_DAY" ? "half-day-status" : ""
+            }`}
           >
             {status || "-"}
           </span>
@@ -677,45 +624,24 @@ const Attendance = () => {
     },
   ];
 
-  const getAttendanceStatusByDate = (
-    date
-  ) => {
+  const getAttendanceStatusByDate = (date) => {
     if (!date) {
       return null;
     }
 
-    const selectedDate =
-      dayjs(date).format(
-        "YYYY-MM-DD"
-      );
+    const selectedDate = dayjs(date).format("YYYY-MM-DD");
 
-    const record =
-      previousAttendanceData.find(
-        (item) => {
+    const record = previousAttendanceData.find((item) => {
+      if (!item?.date) {
+        return false;
+      }
 
-          if (!item?.date) {
-            return false;
-          }
+      const apiDate = String(item.date).split("T")[0];
 
-          const apiDate =
-            String(
-              item.date
-            ).split("T")[0];
+      return apiDate === selectedDate;
+    });
 
-          return (
-            apiDate ===
-            selectedDate
-          );
-        }
-      );
-
-    return (
-      record?.status
-        ?.toString()
-        .trim()
-        .toUpperCase() ||
-      null
-    );
+    return record?.status?.toString().trim().toUpperCase() || null;
   };
 
   const adjustPreviousAttendance = async () => {
@@ -770,16 +696,12 @@ const Attendance = () => {
             headers: {
               "Content-Type": "application/json",
             },
-          }
+          },
         );
 
-        if (
-          response?.status === 200 &&
-          response?.data?.success !== false
-        ) {
+        if (response?.status === 200 && response?.data?.success !== false) {
           toast.success(
-            response?.data?.message ||
-            "Attendance adjustment completed"
+            response?.data?.message || "Attendance adjustment completed",
           );
 
           await getEmployeeData();
@@ -796,8 +718,7 @@ const Attendance = () => {
           setShowAttendanceModal(false);
         } else {
           throw new Error(
-            response?.data?.message ||
-            "Unable to update attendance"
+            response?.data?.message || "Unable to update attendance",
           );
         }
 
@@ -805,8 +726,7 @@ const Attendance = () => {
       }
 
       const selectedEmployee = allemployee.find(
-        (item) =>
-          String(item?.empId || "") === String(employeeId)
+        (item) => String(item?.empId || "") === String(employeeId),
       );
 
       if (!selectedEmployee) {
@@ -826,13 +746,10 @@ const Attendance = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
-      if (
-        response?.status === 200 &&
-        response?.data?.success !== false
-      ) {
+      if (response?.status === 200 && response?.data?.success !== false) {
         toast.success("Previous Attendance Updated Successfully");
 
         await getEmployeeData();
@@ -850,148 +767,97 @@ const Attendance = () => {
         setShowAttendanceModal(false);
       } else {
         throw new Error(
-          response?.data?.message ||
-          "Unable to update previous attendance"
+          response?.data?.message || "Unable to update previous attendance",
         );
       }
     } catch (error) {
       console.error("Adjust Previous Attendance Error:", error);
       toast.error(
         error?.response?.data?.message ||
-        error?.message ||
-        "Unable to update previous attendance"
+          error?.message ||
+          "Unable to update previous attendance",
       );
     } finally {
       setAttendanceHistoryLoading(false);
     }
   };
 
-  const markPresent = async (
-    employeeId
-  ) => {
+  const markPresent = async (employeeId) => {
     try {
       setLoader(true);
 
-      const response =
-        await axios.get(
-          `${BASE_URL2}api/punch/mark/fd/${employeeId}/true/true`
-        );
+      const response = await axios.get(
+        `${BASE_URL2}api/punch/mark/fd/${employeeId}/true/true`,
+      );
 
-      if (
-        response.status ===
-        200
-      ) {
-        toast.success(
-          "Marked Present Successfully"
-        );
+      if (response.status === 200) {
+        toast.success("Marked Present Successfully");
 
         await getEmployeeData();
       }
     } catch (error) {
-      console.error(
-        "Mark Present Error:",
-        error
-      );
+      console.error("Mark Present Error:", error);
 
-      toast.error(
-        error?.response?.data?.message ||
-        "Unable to mark present"
-      );
+      toast.error(error?.response?.data?.message || "Unable to mark present");
     } finally {
       setLoader(false);
     }
   };
 
-  const markHalfDay = async (
-    employeeId
-  ) => {
+  const markHalfDay = async (employeeId) => {
     try {
       setLoader(true);
 
-      const response =
-        await axios.get(
-          `${BASE_URL2}api/punch/mark/hd/${employeeId}/true/true`
-        );
+      const response = await axios.get(
+        `${BASE_URL2}api/punch/mark/hd/${employeeId}/true/true`,
+      );
 
-      if (
-        response.status ===
-        200
-      ) {
-        toast.success(
-          "Marked Half Day Successfully"
-        );
+      if (response.status === 200) {
+        toast.success("Marked Half Day Successfully");
 
         await getEmployeeData();
       }
     } catch (error) {
-      console.error(
-        "Mark Half Day Error:",
-        error
-      );
+      console.error("Mark Half Day Error:", error);
 
-      toast.error(
-        error?.response?.data?.message ||
-        "Unable to mark half day"
-      );
+      toast.error(error?.response?.data?.message || "Unable to mark half day");
     } finally {
       setLoader(false);
     }
   };
 
-  const markAbsent = async (
-    employeeId
-  ) => {
+  const markAbsent = async (employeeId) => {
     try {
       setLoader(true);
 
-      const response =
-        await axios.get(
-          `${BASE_URL2}api/punch/mark/ab/${employeeId}`
-        );
+      const response = await axios.get(
+        `${BASE_URL2}api/punch/mark/ab/${employeeId}`,
+      );
 
-      if (
-        response.status ===
-        200
-      ) {
-        toast.success(
-          "Marked Absent Successfully"
-        );
+      if (response.status === 200) {
+        toast.success("Marked Absent Successfully");
 
         await getEmployeeData();
       }
     } catch (error) {
-      console.error(
-        "Mark Absent Error:",
-        error
-      );
+      console.error("Mark Absent Error:", error);
 
-      toast.error(
-        error?.response?.data?.message ||
-        "Unable to mark absent"
-      );
+      toast.error(error?.response?.data?.message || "Unable to mark absent");
     } finally {
       setLoader(false);
     }
   };
 
-  const removePunchIn = async (
-    employeeId
-  ) => {
+  const removePunchIn = async (employeeId) => {
     try {
       setLoader(true);
 
-      const response =
-        await axios.get(
-          `${BASE_URL2}api/punch/clear/in/${employeeId}`
-        );
+      const response = await axios.get(
+        `${BASE_URL2}api/punch/clear/in/${employeeId}`,
+      );
 
-      if (
-        response.status ===
-        200
-      ) {
-        toast.success(
-          "Punch In Removed Successfully"
-        );
+      if (response.status === 200) {
+        toast.success("Punch In Removed Successfully");
 
         setActivePunchIn(null);
         setNewTime("");
@@ -999,291 +865,166 @@ const Attendance = () => {
         await getEmployeeData();
       }
     } catch (error) {
-      console.error(
-        "Remove Punch In Error:",
-        error
-      );
+      console.error("Remove Punch In Error:", error);
 
       toast.error(
-        error?.response?.data?.message ||
-        "Unable to remove punch in"
+        error?.response?.data?.message || "Unable to remove punch in",
       );
     } finally {
       setLoader(false);
     }
   };
 
-  const changePunchInTime = (
-    record
-  ) => {
-    setActivePunchIn(
-      record?.employeeId
-    );
+  const changePunchInTime = (record) => {
+    setActivePunchIn(record?.employeeId);
 
-    if (
-      record?.punchIn &&
-      record.punchIn !==
-      "Punch In From Admin"
-    ) {
-      setNewTime(
-        record.punchIn.slice(
-          0,
-          5
-        )
-      );
+    if (record?.punchIn && record.punchIn !== "Punch In From Admin") {
+      setNewTime(record.punchIn.slice(0, 5));
     } else {
       setNewTime("");
     }
   };
 
-  const updatePunchInTime =
-    async (
-      employeeId
-    ) => {
+  const updatePunchInTime = async (employeeId) => {
+    if (!newTime) {
+      toast.error("Please select punch in time");
 
-      if (!newTime) {
-        toast.error(
-          "Please select punch in time"
-        );
+      return;
+    }
 
-        return;
+    try {
+      setLoader(true);
+
+      const todayDate = new Date();
+
+      const [hours, minutes] = newTime.split(":");
+
+      const fullDate = new Date(
+        Date.UTC(
+          todayDate.getFullYear(),
+          todayDate.getMonth(),
+          todayDate.getDate(),
+          Number(hours),
+          Number(minutes),
+          0,
+        ),
+      );
+
+      const response = await axios.post(
+        `${BASE_URL2}api/punch/newtime/in/${employeeId}`,
+        {
+          punchInTime: fullDate.toISOString(),
+        },
+      );
+
+      if (response.status === 200) {
+        toast.success("Punch In Time Updated Successfully");
+
+        setActivePunchIn(null);
+        setNewTime("");
+
+        await getEmployeeData();
       }
+    } catch (error) {
+      console.error("Update Punch In Error:", error);
 
-      try {
-        setLoader(true);
-
-        const todayDate =
-          new Date();
-
-        const [
-          hours,
-          minutes,
-        ] =
-          newTime.split(
-            ":"
-          );
-
-        const fullDate =
-          new Date(
-            Date.UTC(
-              todayDate.getFullYear(),
-              todayDate.getMonth(),
-              todayDate.getDate(),
-              Number(hours),
-              Number(minutes),
-              0
-            )
-          );
-
-        const response =
-          await axios.post(
-            `${BASE_URL2}api/punch/newtime/in/${employeeId}`,
-            {
-              punchInTime:
-                fullDate.toISOString(),
-            }
-          );
-
-        if (
-          response.status ===
-          200
-        ) {
-          toast.success(
-            "Punch In Time Updated Successfully"
-          );
-
-          setActivePunchIn(null);
-          setNewTime("");
-
-          await getEmployeeData();
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Update Punch In Error:",
-          error
-        );
-
-        toast.error(
-          error?.response?.data
-            ?.message ||
-          "Unable to update punch in time"
-        );
-
-      } finally {
-        setLoader(false);
-      }
-    };
+      toast.error(
+        error?.response?.data?.message || "Unable to update punch in time",
+      );
+    } finally {
+      setLoader(false);
+    }
+  };
   useEffect(() => {
     getEmployeeData();
     getAllEmployee();
   }, []);
 
-  const totalEmployees =
-    allemployee.length;
+  const totalEmployees = allemployee.length;
 
-  const presentEmployees =
-    data.filter(
-      (item) => {
+  const presentEmployees = data.filter((item) => {
+    const status = String(item?.status || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "");
 
-        const status =
-          String(
-            item?.status ||
-            ""
-          )
-            .trim()
-            .toLowerCase()
-            .replace(
-              /\s+/g,
-              ""
-            );
+    return status === "inoffice" || status === "present";
+  }).length;
 
-        return (
-          status ===
-          "inoffice" ||
-          status ===
-          "present"
-        );
-      }
-    ).length;
+  const absentEmployees = data.filter((item) => {
+    const status = String(item?.status || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "");
 
-  const absentEmployees =
-    data.filter(
-      (item) => {
-
-        const status =
-          String(
-            item?.status ||
-            ""
-          )
-            .trim()
-            .toLowerCase()
-            .replace(
-              /\s+/g,
-              ""
-            );
-
-        return (
-          status ===
-          "absent"
-        );
-      }
-    ).length;
+    return status === "absent";
+  }).length;
 
   const columns = [
     {
-      title:
-        "Employee Id",
-      dataIndex:
-        "employeeId",
-      key:
-        "employeeId",
+      title: "Employee Id",
+      dataIndex: "employeeId",
+      key: "employeeId",
       search: true,
       align: "center",
     },
 
     {
-      title:
-        "Employee Name",
-      dataIndex:
-        "employeeName",
-      key:
-        "employeeName",
+      title: "Employee Name",
+      dataIndex: "employeeName",
+      key: "employeeName",
       search: true,
       align: "center",
     },
 
     {
-      title:
-        "Designation",
-      dataIndex:
-        "employeeDesignation",
-      key:
-        "employeeDesignation",
+      title: "Designation",
+      dataIndex: "employeeDesignation",
+      key: "employeeDesignation",
       search: true,
       align: "center",
     },
 
     {
       title: "In Time",
-      dataIndex:
-        "punchIn",
-      key:
-        "punchIn",
+      dataIndex: "punchIn",
+      key: "punchIn",
       align: "center",
 
-      render: (
-        _,
-        record
-      ) => {
-
-        if (
-          activePunchIn ===
-          record?.employeeId
-        ) {
-
+      render: (_, record) => {
+        if (activePunchIn === record?.employeeId) {
           return (
             <div className="change-time-wrapper">
-
               <input
                 type="time"
                 value={newTime}
-                onChange={(e) =>
-                  setNewTime(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => setNewTime(e.target.value)}
                 className="time-input"
               />
 
               <button
                 type="button"
                 className="save-time-btn"
-                onClick={() =>
-                  updatePunchInTime(
-                    record?.employeeId
-                  )
-                }
-                disabled={
-                  loader
-                }
+                onClick={() => updatePunchInTime(record?.employeeId)}
+                disabled={loader}
               >
-                {loader
-                  ? "Saving..."
-                  : "Save"}
+                {loader ? "Saving..." : "Save"}
               </button>
-
             </div>
           );
         }
 
-        return (
-          <span>
-            {record?.punchIn ||
-              "-"}
-          </span>
-        );
+        return <span>{record?.punchIn || "-"}</span>;
       },
     },
 
     {
       title: "Out Time",
-      dataIndex:
-        "punchOut",
-      key:
-        "punchOut",
+      dataIndex: "punchOut",
+      key: "punchOut",
       align: "center",
 
-      render: (
-        _,
-        record
-      ) => (
-        <span>
-          {record?.punchOut ||
-            "-"}
-        </span>
-      ),
+      render: (_, record) => <span>{record?.punchOut || "-"}</span>,
     },
 
     {
@@ -1319,120 +1060,76 @@ const Attendance = () => {
 
     {
       title: "Action",
-      dataIndex:
-        "Action",
-      key:
-        "Action",
+      dataIndex: "Action",
+      key: "Action",
       align: "center",
 
-      render: (
-        _,
-        record
-      ) => {
+      render: (_, record) => {
+        const menuItems = [];
 
-        const menuItems =
-          [];
-
-        if (
-          record?.punchIn
-        ) {
-
+        if (record?.punchIn) {
           menuItems.push({
             key: "1",
 
-            label:
-              "Remove Punch In",
+            label: "Remove Punch In",
 
-            onClick: () =>
-              removePunchIn(
-                record?.employeeId
-              ),
+            onClick: () => removePunchIn(record?.employeeId),
           });
 
           menuItems.push({
             key: "2",
 
-            label:
-              "Change Punch In Time",
+            label: "Change Punch In Time",
 
-            onClick: () =>
-              changePunchInTime(
-                record
-              ),
+            onClick: () => changePunchInTime(record),
           });
         }
 
         menuItems.push({
           key: "3",
 
-          label:
-            "Mark Present",
+          label: "Mark Present",
 
-          onClick: () =>
-            markPresent(
-              record?.employeeId
-            ),
+          onClick: () => markPresent(record?.employeeId),
         });
 
         menuItems.push({
           key: "4",
 
-          label:
-            "Mark Absent",
+          label: "Mark Absent",
 
-          onClick: () =>
-            markAbsent(
-              record?.employeeId
-            ),
+          onClick: () => markAbsent(record?.employeeId),
         });
 
         menuItems.push({
           key: "5",
 
-          label:
-            "Mark Half Day",
+          label: "Mark Half Day",
 
-          onClick: () =>
-            markHalfDay(
-              record?.employeeId
-            ),
+          onClick: () => markHalfDay(record?.employeeId),
         });
 
         return (
           <div className="dropdown_parent">
-
             <Dropdown
               menu={{
-                items:
-                  menuItems,
+                items: menuItems,
               }}
-              trigger={[
-                "click",
-              ]}
+              trigger={["click"]}
               placement="bottomRight"
             >
-
-              <button
-                type="button"
-                className="three-dot-btn"
-              >
+              <button type="button" className="three-dot-btn">
                 <HiOutlineDotsHorizontal />
               </button>
-
             </Dropdown>
 
             <button
               type="button"
               className="calendar-btn"
-              onClick={() =>
-                handleCalendar(
-                  record
-                )
-              }
+              onClick={() => handleCalendar(record)}
             >
               <SlCalender />
             </button>
-
           </div>
         );
       },
@@ -1444,91 +1141,57 @@ const Attendance = () => {
       title="Today's Attendance"
       breadcrumbs={[
         {
-          label:
-            "Dashboard",
-          link:
-            "/dashboard",
+          label: "Dashboard",
+          link: "/dashboard",
         },
 
         {
-          label:
-            "Attendance",
+          label: "Attendance",
         },
       ]}
     >
-
-      { }
+      {}
 
       {!showPreviousAttendance && !showEmployeeAttendance && (
         <div className="top-parent">
-
-          <h1>
-            Today's Attendance
-          </h1>
+          <h1>Today's Attendance</h1>
 
           <div className="btn-group">
-
-            { }
+            {}
 
             <div className="count">
-
               Total Employee:
-
-              <span>
-                {
-                  totalEmployees
-                }
-              </span>
-
+              <span>{totalEmployees}</span>
             </div>
 
-            { }
+            {}
 
             <div className="count">
-
               Present Employee:
-
-              <span>
-                {
-                  presentEmployees
-                }
-              </span>
-
+              <span>{presentEmployees}</span>
             </div>
 
-            { }
+            {}
 
             <div className="count">
-
               Absent Employee:
-
-              <span>
-                {
-                  absentEmployees
-                }
-              </span>
-
+              <span>{absentEmployees}</span>
             </div>
 
-            { }
+            {}
 
             <button
               type="button"
               className="attendance-link"
-              onClick={
-                handleAddPreviousAttendance
-              }
+              onClick={handleAddPreviousAttendance}
             >
-
               <span>
                 <FaPlus />
               </span>
-
               Add Previous Attendance
-
             </button>
 
-            { }
+            {}
 
             <button
               type="button"
@@ -1540,7 +1203,6 @@ const Attendance = () => {
               </span>
               View Previous Attendance
             </button>
-
           </div>
         </div>
       )}
@@ -1557,7 +1219,10 @@ const Attendance = () => {
             </button>
 
             <div className="previous-view-title">
-              <h1 className="empname">Check Employee Attendance -  <span> {selectedEmployee?.employeeName} </span></h1>
+              <h1 className="empname">
+                Check Employee Attendance -{" "}
+                <span> {selectedEmployee?.employeeName} </span>
+              </h1>
             </div>
           </div>
 
@@ -1569,13 +1234,8 @@ const Attendance = () => {
                 onChange={handleEmployeeMonthChange}
               >
                 {Array.from({ length: 12 }, (_, index) => (
-                  <option
-                    key={index + 1}
-                    value={index + 1}
-                  >
-                    {dayjs()
-                      .month(index)
-                      .format("MMMM")}
+                  <option key={index + 1} value={index + 1}>
+                    {dayjs().month(index).format("MMMM")}
                   </option>
                 ))}
               </select>
@@ -1596,13 +1256,9 @@ const Attendance = () => {
             data={employeeAttendanceList.map((item, index) => ({
               ...item,
               employeeId:
-                item?.employeeId ||
-                selectedEmployee?.employeeId ||
-                "",
+                item?.employeeId || selectedEmployee?.employeeId || "",
               employeeName:
-                item?.employeeName ||
-                selectedEmployee?.employeeName ||
-                "",
+                item?.employeeName || selectedEmployee?.employeeName || "",
               employeeDesignation:
                 item?.employeeDesignation ||
                 selectedEmployee?.employeeDesignation ||
@@ -1654,7 +1310,6 @@ const Attendance = () => {
             >
               {previousAttendanceLoading ? "Searching..." : "Search Attendance"}
             </button>
-
           </div>
 
           <Table_Comp
@@ -1667,46 +1322,28 @@ const Attendance = () => {
           />
         </>
       ) : (
-        <Table_Comp
-          columns={columns}
-          data={data}
-          loading={loader}
-        />
+        <Table_Comp columns={columns} data={data} loading={loader} />
       )}
 
-      { }
+      {}
 
       <Modal
-        open={
-          showAttendanceModal
-        }
-
-        onCancel={
-          handleCloseAttendanceModal
-        }
-
+        open={showAttendanceModal}
+        onCancel={handleCloseAttendanceModal}
         footer={null}
-
         centered
-
         width={430}
-
         title="Add Attendance"
       >
-
         <div className="previous-attendance-form">
-
-          { }
+          {}
 
           <div className="form-group">
-
             <div className="employee-checkbox-dropdown">
               <button
                 type="button"
                 className="employee-select-button"
-                onClick={() =>
-                  setEmployeeDropdownOpen((prev) => !prev)
-                }
+                onClick={() => setEmployeeDropdownOpen((prev) => !prev)}
               >
                 <span>{getSelectedEmployeeText()}</span>
                 <span className="employee-select-arrow">⌄</span>
@@ -1728,19 +1365,14 @@ const Attendance = () => {
                             selectedEmployees.length < allemployee.length;
                         }
                       }}
-                      onChange={() =>
-                        handleEmployeeCheckboxChange("ALL")
-                      }
+                      onChange={() => handleEmployeeCheckboxChange("ALL")}
                     />
                     <span>All Employee</span>
                   </label>
 
                   <div className="employee-option-list">
                     {allemployee.map((item) => (
-                      <label
-                        className="employee-option"
-                        key={item.empId}
-                      >
+                      <label className="employee-option" key={item.empId}>
                         <span className="employee-option-left">
                           <input
                             type="checkbox"
@@ -1759,10 +1391,9 @@ const Attendance = () => {
                 </div>
               )}
             </div>
-
           </div>
 
-          { }
+          {}
 
           {attendanceHistoryLoading && (
             <div className="attendance-loading">
@@ -1770,44 +1401,23 @@ const Attendance = () => {
             </div>
           )}
 
-          { }
+          {}
 
           <div className="form-group">
-
             <DatePicker
               className="previous-attendance-datepicker"
-
               placeholder="dd-mm-yyyy"
-
               format="DD-MM-YYYY"
-
-              open={
-                datePickerOpen
-              }
-
-              onOpenChange={(
-                open
-              ) => {
-
-                setDatePickerOpen(
-                  open
-                );
-
+              open={datePickerOpen}
+              onOpenChange={(open) => {
+                setDatePickerOpen(open);
               }}
-
               value={
-                previousAttendance.date
-                  ? dayjs(
-                    previousAttendance.date
-                  )
-                  : null
+                previousAttendance.date ? dayjs(previousAttendance.date) : null
               }
-
               disabled={
-                !previousAttendance.employeeId ||
-                attendanceHistoryLoading
+                !previousAttendance.employeeId || attendanceHistoryLoading
               }
-
               onChange={(date) => {
                 if (!date) {
                   setPreviousAttendance((prev) => ({
@@ -1820,42 +1430,27 @@ const Attendance = () => {
                   return;
                 }
 
-                const selectedDate =
-                  date.format("YYYY-MM-DD");
+                const selectedDate = date.format("YYYY-MM-DD");
 
-                const existingRecord =
-                  previousAttendanceData.find((item) => {
-                    if (!item?.date) {
-                      return false;
-                    }
+                const existingRecord = previousAttendanceData.find((item) => {
+                  if (!item?.date) {
+                    return false;
+                  }
 
-                    const apiDate =
-                      String(item.date).split("T")[0];
+                  const apiDate = String(item.date).split("T")[0];
 
-                    return apiDate === selectedDate;
-                  });
+                  return apiDate === selectedDate;
+                });
 
-                const existingStatus =
-                  existingRecord?.status
-                    ? String(existingRecord.status)
-                      .trim()
-                      .toUpperCase()
-                    : "";
+                const existingStatus = existingRecord?.status
+                  ? String(existingRecord.status).trim().toUpperCase()
+                  : "";
 
-                console.log(
-                  "Selected Date:",
-                  selectedDate
-                );
+                console.log("Selected Date:", selectedDate);
 
-                console.log(
-                  "Existing Attendance:",
-                  existingRecord
-                );
+                console.log("Existing Attendance:", existingRecord);
 
-                console.log(
-                  "Existing Status:",
-                  existingStatus
-                );
+                console.log("Existing Status:", existingStatus);
 
                 setPreviousAttendance((prev) => ({
                   ...prev,
@@ -1865,120 +1460,69 @@ const Attendance = () => {
 
                 setDatePickerOpen(false);
               }}
-
-              cellRender={(
-                current,
-                info
-              ) => {
-
-                const status =
-                  getAttendanceStatusByDate(
-                    current
-                  );
+              cellRender={(current, info) => {
+                const status = getAttendanceStatusByDate(current);
 
                 return (
                   <div className="attendance-calendar-cell">
-
                     {info?.originNode}
 
-                    { }
+                    {}
 
-                    {status ===
-                      "FULL_DAY" && (
-                        <span className="attendance-dot full-day-dot">
-                          ●
-                        </span>
-                      )}
+                    {status === "FULL_DAY" && (
+                      <span className="attendance-dot full-day-dot">●</span>
+                    )}
 
-                    { }
+                    {}
 
-                    {status ===
-                      "HALF_DAY" && (
-                        <span className="attendance-dot half-day-dot">
-                          ●
-                        </span>
-                      )}
+                    {status === "HALF_DAY" && (
+                      <span className="attendance-dot half-day-dot">●</span>
+                    )}
 
-                    { }
+                    {}
 
-                    {status ===
-                      "ABSENT" && (
-                        <span className="attendance-dot absent-day-dot">
-                          ●
-                        </span>
-                      )}
-
+                    {status === "ABSENT" && (
+                      <span className="attendance-dot absent-day-dot">●</span>
+                    )}
                   </div>
                 );
               }}
             />
-
           </div>
 
-          { }
+          {}
 
           <div className="form-group">
-
             <select
-              value={
-                previousAttendance.status
-              }
+              value={previousAttendance.status}
+              onChange={(e) => {
+                setPreviousAttendance((prev) => ({
+                  ...prev,
 
-              onChange={(
-                e
-              ) => {
-
-                setPreviousAttendance(
-                  (
-                    prev
-                  ) => ({
-                    ...prev,
-
-                    status:
-                      e.target.value,
-                  })
-                );
-
+                  status: e.target.value,
+                }));
               }}
             >
+              <option value="">Select Status</option>
 
-              <option value="">
-                Select Status
-              </option>
+              <option value="FULL_DAY">FULL_DAY</option>
 
-              <option value="FULL_DAY">
-                FULL_DAY
-              </option>
+              <option value="HALF_DAY">HALF_DAY</option>
 
-              <option value="HALF_DAY">
-                HALF_DAY
-              </option>
-
-              <option value="ABSENT">
-                ABSENT
-              </option>
-
+              <option value="ABSENT">ABSENT</option>
             </select>
-
           </div>
 
           <button
             type="button"
             className="submit-attendance-btn"
             onClick={adjustPreviousAttendance}
-            disabled={
-              attendanceHistoryLoading
-            }
+            disabled={attendanceHistoryLoading}
           >
-            {attendanceHistoryLoading
-              ? "Updating..."
-              : "Submit"}
+            {attendanceHistoryLoading ? "Updating..." : "Submit"}
           </button>
-
         </div>
-
       </Modal>
-
     </MainPanel>
   );
 };

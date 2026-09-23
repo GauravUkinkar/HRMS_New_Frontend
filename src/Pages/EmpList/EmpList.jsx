@@ -273,7 +273,13 @@ const EmpList = () => {
   ];
   // JSX
   return (
-    <MainPanel>
+    <MainPanel
+      title="Employee List"
+                breadcrumbs={[
+                    { label: "Dashboard", link: "/dashboard" },
+                    { label: "Employee List" },
+                ]}
+    >
       <div className="emp-list">
         <div className="page-header">
           <h2>Employees</h2>
