@@ -1100,3 +1100,381 @@
     font-size: 10px;
   }
 }
+
+/* ============================================================
+   EMPLOYEE ATTENDANCE - CALENDAR VIEW
+   Matches the employee attendance screen shown in the reference.
+   ============================================================ */
+
+.employee-attendance-page {
+  width: 100%;
+  padding: 55px 0 30px;
+  box-sizing: border-box;
+}
+
+/* ---------- Header ---------- */
+
+.employee-attendance-header {
+  width: 100%;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 28px;
+  box-sizing: border-box;
+}
+
+.employee-attendance-back {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+
+  min-width: 84px;
+  height: 34px;
+  padding: 0 18px;
+
+  border: none;
+  border-radius: 5px;
+
+  background: #e9e9e9;
+  color: #222;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.employee-attendance-back:hover {
+  background: #dcdcdc;
+}
+
+.employee-attendance-back:focus {
+  outline: none;
+}
+
+.employee-attendance-header h1 {
+  width: 100%;
+  margin: 0;
+  padding: 0 120px;
+
+  text-align: center;
+
+  color: #111;
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+
+  box-sizing: border-box;
+}
+
+.employee-attendance-header h1 span {
+  color: #008c9e;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* ---------- Month / Year card ---------- */
+
+.attendance-filter {
+  width: 100%;
+  min-height: 94px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+
+  padding: 18px;
+
+  margin-bottom: 36px;
+
+  background: #fff;
+  border: 1px solid #e1e1e1;
+  border-radius: 9px;
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+
+  box-sizing: border-box;
+}
+
+.attendance-filter-field {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.attendance-filter-field label {
+  display: block;
+
+  color: #111;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+.attendance-filter-field select,
+.attendance-filter-field input {
+  width: 100%;
+  height: 36px;
+
+  padding: 0 12px;
+
+  border: 1px solid #d8d8d8;
+  border-radius: 5px;
+
+  background: #fff;
+  color: #555;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  outline: none;
+  box-sizing: border-box;
+
+  transition: 0.2s ease;
+}
+
+.attendance-filter-field select {
+  cursor: pointer;
+}
+
+.attendance-filter-field input {
+  appearance: textfield;
+}
+
+.attendance-filter-field input::-webkit-outer-spin-button,
+.attendance-filter-field input::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.attendance-filter-field select:focus,
+.attendance-filter-field input:focus {
+  border-color: #008c9e;
+  box-shadow: 0 0 0 2px rgba(0, 140, 158, 0.08);
+}
+
+/* ---------- Attendance table ---------- */
+
+.monthly-attendance-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.monthly-attendance-table {
+  width: 100%;
+  min-width: 1100px;
+  font-family: inherit;
+}
+
+/* Header */
+
+.monthly-attendance-table .ant-table {
+  font-size: 13px;
+}
+
+.monthly-attendance-table .ant-table-container {
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+}
+
+.monthly-attendance-table .ant-table-thead > tr > th {
+  height: 49px;
+
+  padding: 0 12px;
+
+  background: #002b3e !important;
+  color: #fff !important;
+
+  border: 1px solid #e4e8ea !important;
+  border-top: none !important;
+
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+
+  white-space: nowrap;
+}
+
+.monthly-attendance-table .ant-table-thead > tr > th:first-child {
+  border-left: none !important;
+}
+
+.monthly-attendance-table .ant-table-thead > tr > th:last-child {
+  border-right: none !important;
+}
+
+/* Rows */
+
+.monthly-attendance-table .ant-table-tbody > tr > td {
+  height: 55px;
+
+  padding: 0 12px;
+
+  background: #fff !important;
+  color: #111;
+
+  border: 1px solid #eeeeee !important;
+
+  font-size: 13px;
+  font-weight: 400;
+
+  text-align: center;
+  white-space: nowrap;
+}
+
+.monthly-attendance-table .ant-table-tbody > tr:hover > td {
+  background: #fff !important;
+}
+
+.monthly-attendance-table .ant-table-tbody > tr:last-child > td {
+  border-bottom: 1px solid #eeeeee !important;
+}
+
+/* Admin punch text */
+
+.monthly-attendance-table .admin-punch-text {
+  color: #111;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* Status */
+
+.monthly-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 62px;
+  min-height: 25px;
+  padding: 3px 10px;
+
+  border-radius: 15px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.monthly-status.full-day-status {
+  min-width: auto;
+  padding: 0;
+
+  background: transparent;
+  color: #008c9e;
+
+  border-radius: 0;
+}
+
+.monthly-status.half-day-status {
+  background: #fff3e0;
+  color: #f57c00;
+
+  border-radius: 16px;
+}
+
+.monthly-status.absent-status {
+  background: #fff0f0;
+  color: #e53935;
+
+  border-radius: 16px;
+}
+
+/* Loading */
+
+.monthly-attendance-table-wrapper .ant-spin-container {
+  min-height: 120px;
+}
+
+.monthly-attendance-table-wrapper .ant-empty {
+  margin: 35px 0;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+  .employee-attendance-page {
+    padding-top: 40px;
+  }
+
+  .employee-attendance-header h1 {
+    padding: 0 105px;
+    font-size: 25px;
+  }
+
+  .employee-attendance-header h1 span {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 768px) {
+  .employee-attendance-page {
+    padding: 25px 0 20px;
+  }
+
+  .employee-attendance-header {
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .employee-attendance-back {
+    position: static;
+    transform: none;
+    align-self: flex-start;
+  }
+
+  .employee-attendance-header h1 {
+    padding: 0;
+    text-align: left;
+    font-size: 24px;
+  }
+
+  .employee-attendance-header h1 span {
+    font-size: 17px;
+  }
+
+  .attendance-filter {
+    grid-template-columns: 1fr;
+    gap: 13px;
+    padding: 15px;
+    margin-bottom: 25px;
+  }
+
+  .attendance-filter-field select,
+  .attendance-filter-field input {
+    height: 40px;
+  }
+
+  .monthly-attendance-table {
+    min-width: 1000px;
+  }
+}
+
+@media (max-width: 480px) {
+  .employee-attendance-header h1 {
+    font-size: 21px;
+  }
+
+  .employee-attendance-header h1 span {
+    display: inline;
+    font-size: 15px;
+  }
+
+  .attendance-filter {
+    padding: 13px;
+  }
+}
