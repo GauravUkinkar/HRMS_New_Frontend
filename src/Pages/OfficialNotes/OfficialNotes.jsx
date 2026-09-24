@@ -32,7 +32,7 @@ const OfficialNotes = () => {
   // ==========================================================
   // NOTES STATE
   // ==========================================================
-
+const [showAllRecipients, setShowAllRecipients] = useState(false);
   const [notes, setNotes] = useState([]);
   const [notesLoading, setNotesLoading] = useState(false);
   const [notesError, setNotesError] = useState("");
@@ -1774,7 +1774,7 @@ const OfficialNotes = () => {
               {/* TITLE */}
 
               <div className="note-details-field">
-                <div className="note-details-label">TITLE</div>
+                <div className="note-details-label">Title</div>
 
                 <div className="note-details-title-value">
                   {selectedNote.title || "-"}
@@ -1784,7 +1784,7 @@ const OfficialNotes = () => {
               {/* MESSAGE */}
 
               <div className="note-details-field">
-                <div className="note-details-label">MESSAGE</div>
+                <div className="note-details-label">Message</div>
 
                 <div
                   className="note-details-message"
@@ -1796,58 +1796,80 @@ const OfficialNotes = () => {
 
               {/* SEND TO */}
 
-              <div className="note-details-field">
-                <div className="note-details-label">SEND TO</div>
+            {/* SEND TO */}
 
-                <div className="note-details-recipients">
-                  {(() => {
-                    const recipientIds = selectedNote.recipientUids || [];
+<div className="note-details-field">
+  <div className="note-details-label">Sent to</div>
 
-                    if (recipientIds.length === 0) {
-                      return (
-                        <span className="note-recipient-chip">
-                          No recipients
-                        </span>
-                      );
-                    }
+  <div className="note-details-recipients">
+    {(() => {
+      const recipientIds = selectedNote.recipientUids || [];
 
-                    const recipientNames = recipientIds.map((recipientId) => {
-                      const employee = employees.find(
-                        (item) =>
-                          String(item.employeeId) === String(recipientId),
-                      );
+      if (recipientIds.length === 0) {
+        return (
+          <span className="note-recipient-chip">
+            No recipients
+          </span>
+        );
+      }
 
-                      return (
-                        employee?.employeeName || `Employee ${recipientId}`
-                      );
-                    });
+      const recipientNames = recipientIds
+        .map((recipientId) => {
+          const employee = employees.find(
+            (item) =>
+              String(item.employeeId) === String(recipientId)
+          );
 
-                    const visibleRecipients = recipientNames.slice(0, 3);
+          return employee?.employeeName || `Employee ${recipientId}`;
+        })
+        .filter(Boolean);
 
-                    const remainingCount =
-                      recipientNames.length - visibleRecipients.length;
+      const visibleRecipients = recipientNames.slice(0, 3);
 
-                    return (
-                      <>
-                        {visibleRecipients.map((name, index) => (
-                          <span
-                            key={`${name}-${index}`}
-                            className="note-recipient-chip"
-                          >
-                            {name}
-                          </span>
-                        ))}
+      const remainingCount =
+        recipientNames.length - visibleRecipients.length;
 
-                        {remainingCount > 0 && (
-                          <span className="note-recipient-more">
-                            +{remainingCount}
-                          </span>
-                        )}
-                      </>
-                    );
-                  })()}
-                </div>
-              </div>
+      return (
+        <>
+          {/* FIRST 3 EMPLOYEES */}
+          {(showAllRecipients
+            ? recipientNames
+            : visibleRecipients
+          ).map((name, index) => (
+            <span
+              key={`${name}-${index}`}
+              className="note-recipient-chip"
+            >
+              {name}
+            </span>
+          ))}
+
+          {/* +17 BUTTON */}
+          {!showAllRecipients && remainingCount > 0 && (
+            <button
+              type="button"
+              className="note-recipient-toggle"
+              onClick={() => setShowAllRecipients(true)}
+            >
+              +{remainingCount}
+            </button>
+          )}
+
+          {/* SHOW LESS */}
+          {showAllRecipients && recipientNames.length > 3 && (
+            <button
+              type="button"
+              className="note-recipient-toggle"
+              onClick={() => setShowAllRecipients(false)}
+            >
+              Show less
+            </button>
+          )}
+        </>
+      );
+    })()}
+  </div>
+</div>
             </div>
 
             {/* ==================================================

@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Table, Avatar, Tag, Space } from "antd";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import {
   SearchOutlined,
   EyeOutlined,
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+
 import { FaPlus } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
 import "./EmpList.scss";
@@ -67,6 +72,11 @@ const EmpList = () => {
       console.log("Employees:", employees);
     } catch (error) {
       console.log(error.response?.data || error);
+
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to load employees"
+      );
     }
   };
 
@@ -75,7 +85,7 @@ const EmpList = () => {
   // ==========================================
   const handleDeleteEmployee = async (uid) => {
     if (!uid) {
-      console.error("Employee ID is missing");
+      toast.error("Employee ID is missing");
       return;
     }
 
@@ -95,8 +105,13 @@ const EmpList = () => {
 
       console.log("Delete Employee Response:", response.data);
 
-      alert("Employee deleted successfully");
+      // SUCCESS TOAST
+      toast.success("Employee deleted successfully", {
+        position: "top-right",
+        autoClose: 3000,
+      });
 
+      // Refresh employee list
       getAllEmployee();
     } catch (error) {
       console.error(
@@ -104,9 +119,14 @@ const EmpList = () => {
         error.response?.data || error
       );
 
-      alert(
-        error.response?.data?.message ||
-          "Failed to delete employee"
+      // ERROR TOAST
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to delete employee",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
       );
     }
   };
@@ -121,6 +141,9 @@ const EmpList = () => {
   ) => {
     if (!employeeId) {
       setEmployeeAttendanceList([]);
+
+      toast.error("Employee ID is missing");
+
       return;
     }
 
@@ -162,9 +185,13 @@ const EmpList = () => {
 
       setEmployeeAttendanceList([]);
 
-      alert(
+      toast.error(
         error?.response?.data?.message ||
-          "Unable to load employee attendance"
+          "Unable to load employee attendance",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
       );
     } finally {
       setEmployeeAttendanceLoading(false);
@@ -559,199 +586,217 @@ const EmpList = () => {
   // JSX
   // ==========================================
   return (
-    <MainPanel
-      title={
-        showEmployeeAttendance
-          ? "Employee Attendance"
-          : "Employee List"
-      }
-      breadcrumbs={[
-        {
-          label: "Dashboard",
-          link: "/",
-        },
-        {
-          label: showEmployeeAttendance
+    <>
+      {/* ==========================================
+          REACT TOASTIFY CONTAINER
+      ========================================== */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+
+      <MainPanel
+        title={
+          showEmployeeAttendance
             ? "Employee Attendance"
-            : "Employee List",
-        },
-      ]}
-    >
+            : "Employee List"
+        }
+        breadcrumbs={[
+          {
+            label: "Dashboard",
+            link: "/",
+          },
+          {
+            label: showEmployeeAttendance
+              ? "Employee Attendance"
+              : "Employee List",
+          },
+        ]}
+      >
 
-      {/* =====================================================
-          EMPLOYEE ATTENDANCE SECTION
-      ===================================================== */}
-      {showEmployeeAttendance ? (
-        <div className="employee-attendance-page">
+        {/* =====================================================
+            EMPLOYEE ATTENDANCE SECTION
+        ===================================================== */}
+        {showEmployeeAttendance ? (
+          <div className="employee-attendance-page">
 
-          {/* HEADER */}
-          <div className="attendance-header">
+            {/* HEADER */}
+            <div className="attendance-header">
 
-            <button
-              type="button"
-              className="attendance-back-btn"
-              onClick={closeEmployeeAttendance}
-            >
-              ← Back
-            </button>
-
-            <h1 className="empname">
-              Check Employee Attendance -{" "}
-              <span>
-                {selectedEmployee?.name || ""}
-              </span>
-            </h1>
-
-          </div>
-
-          {/* MONTH + YEAR */}
-          <div className="employee-month-search">
-
-            <div className="month-field">
-              <label>Month</label>
-
-              <select
-                value={selectedMonth}
-                onChange={
-                  handleEmployeeMonthChange
-                }
+              <button
+                type="button"
+                className="attendance-back-btn"
+                onClick={closeEmployeeAttendance}
               >
-                {Array.from(
-                  { length: 12 },
-                  (_, index) => (
-                    <option
-                      key={index + 1}
-                      value={index + 1}
-                    >
-                      {dayjs()
-                        .month(index)
-                        .format("MMMM")}
-                    </option>
-                  )
-                )}
-              </select>
-            </div>
+                ← Back
+              </button>
 
-            <div className="year-field">
-              <label>Year</label>
-
-              <input
-                type="number"
-                value={selectedYear}
-                onChange={
-                  handleEmployeeYearChange
-                }
-              />
-            </div>
-
-          </div>
-
-          {/* ATTENDANCE TABLE */}
-          <Table
-            columns={employeeAttendanceColumns}
-            dataSource={employeeAttendanceList.map(
-              (item, index) => ({
-                ...item,
-
-                employeeId:
-                  item?.employeeId ||
-                  selectedEmployee?.empId ||
-                  "",
-
-                employeeName:
-                  item?.employeeName ||
-                  selectedEmployee?.name ||
-                  "",
-
-                employeeDesignation:
-                  item?.employeeDesignation ||
-                  selectedEmployee?.designation ||
-                  "",
-
-                key: `${
-                  item?.date || index
-                }-${index}`,
-              })
-            )}
-            loading={employeeAttendanceLoading}
-            bordered
-            scroll={{ x: "max-content" }}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-            }}
-          />
-
-        </div>
-      ) : (
-
-        /* =====================================================
-           NORMAL EMPLOYEE LIST SECTION
-        ===================================================== */
-        <div className="emp-list">
-
-          {/* ==================================================
-              SINGLE ROW HEADER
-          ================================================== */}
-          <div className="employee-list-header">
-
-            {/* BACK BUTTON */}
-            <button
-              type="button"
-              className="employee-list-back-btn"
-              onClick={() => navigate("/")}
-            >
-              ← Back
-            </button>
-
-            {/* EMPLOYEES TITLE */}
-            <h2>Employees</h2>
-
-            {/* RIGHT SIDE */}
-            <div className="employee-list-actions">
-
-              {/* TOTAL EMPLOYEE */}
-              <div className="count">
-                Total Number Of Employee:{" "}
+              <h1 className="empname">
+                Check Employee Attendance -{" "}
                 <span>
-                  {allemployee.length}
+                  {selectedEmployee?.name || ""}
                 </span>
+              </h1>
+
+            </div>
+
+            {/* MONTH + YEAR */}
+            <div className="employee-month-search">
+
+              <div className="month-field">
+                <label>Month</label>
+
+                <select
+                  value={selectedMonth}
+                  onChange={
+                    handleEmployeeMonthChange
+                  }
+                >
+                  {Array.from(
+                    { length: 12 },
+                    (_, index) => (
+                      <option
+                        key={index + 1}
+                        value={index + 1}
+                      >
+                        {dayjs()
+                          .month(index)
+                          .format("MMMM")}
+                      </option>
+                    )
+                  )}
+                </select>
               </div>
 
-              {/* ADD EMPLOYEE */}
-              <Link to="/addEmployee">
-                <span>
-                  <FaPlus />
-                </span>
+              <div className="year-field">
+                <label>Year</label>
 
-                Add Employee
-              </Link>
+                <input
+                  type="number"
+                  value={selectedYear}
+                  onChange={
+                    handleEmployeeYearChange
+                  }
+                />
+              </div>
 
             </div>
 
+            {/* ATTENDANCE TABLE */}
+            <Table
+              columns={employeeAttendanceColumns}
+              dataSource={employeeAttendanceList.map(
+                (item, index) => ({
+                  ...item,
+
+                  employeeId:
+                    item?.employeeId ||
+                    selectedEmployee?.empId ||
+                    "",
+
+                  employeeName:
+                    item?.employeeName ||
+                    selectedEmployee?.name ||
+                    "",
+
+                  employeeDesignation:
+                    item?.employeeDesignation ||
+                    selectedEmployee?.designation ||
+                    "",
+
+                  key: `${
+                    item?.date || index
+                  }-${index}`,
+                })
+              )}
+              loading={employeeAttendanceLoading}
+              bordered
+              scroll={{ x: "max-content" }}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+              }}
+            />
+
           </div>
+        ) : (
 
-          {/* EMPLOYEE TABLE */}
-          <Table
-            columns={columns}
-            dataSource={allemployee}
-            bordered
-            scroll={{ x: "max-content" }}
-            pagination={{
-              pageSize: 5,
-              showSizeChanger: true,
-            }}
-            rowClassName={(_, index) =>
-              index % 2 === 0
-                ? "table-row-light"
-                : "table-row-dark"
-            }
-          />
+          /* =====================================================
+             NORMAL EMPLOYEE LIST SECTION
+          ===================================================== */
+          <div className="emp-list">
 
-        </div>
-      )}
+            {/* ==================================================
+                SINGLE ROW HEADER
+            ================================================== */}
+            <div className="employee-list-header">
 
-    </MainPanel>
+              {/* BACK BUTTON */}
+              <button
+                type="button"
+                className="employee-list-back-btn"
+                onClick={() => navigate("/")}
+              >
+                ← Back
+              </button>
+
+              {/* EMPLOYEES TITLE */}
+              <h2>Employees</h2>
+
+              {/* RIGHT SIDE */}
+              <div className="employee-list-actions">
+
+                {/* TOTAL EMPLOYEE */}
+                <div className="count">
+                  Total Number Of Employee:{" "}
+                  <span>
+                    {allemployee.length}
+                  </span>
+                </div>
+
+                {/* ADD EMPLOYEE */}
+                <Link to="/addEmployee">
+                  <span>
+                    <FaPlus />
+                  </span>
+
+                  Add Employee
+                </Link>
+
+              </div>
+
+            </div>
+
+            {/* EMPLOYEE TABLE */}
+            <Table
+              columns={columns}
+              dataSource={allemployee}
+              bordered
+              scroll={{ x: "max-content" }}
+              pagination={{
+                pageSize: 5,
+                showSizeChanger: true,
+              }}
+              rowClassName={(_, index) =>
+                index % 2 === 0
+                  ? "table-row-light"
+                  : "table-row-dark"
+              }
+            />
+
+          </div>
+        )}
+
+      </MainPanel>
+    </>
   );
 };
 
