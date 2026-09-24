@@ -10,94 +10,190 @@
   // ==========================================
 
   .page-header {
+    width: 100%;
+
     display: flex;
-    justify-content: space-between;
     align-items: center;
 
+    gap: 20px;
 
-    h2 {
-      font-size: 28px;
-      font-weight: 700;
-    }
-   .rightside {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-    .MuiFormControl-root {
-    height: 40px;
-    flex-shrink: 0;
-  }
-.MuiSelect-select {
-  background-color: white;
-}
-  .MuiFormControl-root:nth-child(1) {
-    width: 130px;
-  }
+    box-sizing: border-box;
 
-  .MuiFormControl-root:nth-child(2) {
-    width: 100px;
-  }
-   .SelectInput {
-    flex-shrink: 0;
-  }
+    // ==========================================
+    // BACK BUTTON
+    // ==========================================
 
-  .clear-filter-btn {
-    height: 40px;
-    padding: 0 16px;
+    .salary-back-btn {
+      flex-shrink: 0;
 
-    border: 1px solid #0b8b95;
-    border-radius: 5px;
-
-    background: #fff;
-    color: #0b8b95;
-
-    font-size: 14px;
-    font-weight: 500;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
-
-    &:hover {
-      background: #0b8b95;
-      color: #fff;
-    }
-  }
-}
-       .add-salary-btn {
       border: none;
-      outline: none;
 
-      background: #0b8b95;
-      color: #fff;
+      background: #e9e9e9;
 
-      padding: 9px 16px;
+      color: #333;
+
+      padding: 10px 22px;
 
       border-radius: 5px;
 
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 15px;
 
-      font-size: 14px;
       font-weight: 500;
 
       cursor: pointer;
 
-      transition: 0.2s ease;
+      white-space: nowrap;
+
+      transition: 0.3s ease;
 
       &:hover {
-        background: #0a7a85;
+        background: #dcdcdc;
       }
 
-      svg {
-        font-size: 13px;
+      &:focus {
+        outline: none;
       }
     }
 
+    // ==========================================
+    // SALARY MANAGEMENT TITLE
+    // ==========================================
+
+    h2 {
+      margin: 0;
+
+      font-size: 28px;
+
+      font-weight: 700;
+
+      color: #222;
+
+      white-space: nowrap;
     }
 
-   
+    // ==========================================
+    // RIGHT SIDE
+    // ==========================================
+
+    .rightside {
+      margin-left: auto;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      // ========================================
+      // SELECT INPUTS
+      // ========================================
+
+      .MuiFormControl-root {
+        height: 40px;
+
+        flex-shrink: 0;
+      }
+
+      .MuiSelect-select {
+        background-color: white;
+      }
+
+      // MONTH
+
+      .MuiFormControl-root:nth-child(1) {
+        width: 130px;
+      }
+
+      // YEAR
+
+      .MuiFormControl-root:nth-child(2) {
+        width: 100px;
+      }
+
+      .SelectInput {
+        flex-shrink: 0;
+      }
+
+      // ========================================
+      // CLEAR FILTER
+      // ========================================
+
+      .clear-filter-btn {
+        height: 40px;
+
+        padding: 0 16px;
+
+        border: 1px solid #0b8b95;
+
+        border-radius: 5px;
+
+        background: #fff;
+
+        color: #0b8b95;
+
+        font-size: 14px;
+
+        font-weight: 500;
+
+        cursor: pointer;
+
+        white-space: nowrap;
+
+        transition: 0.2s ease;
+
+        &:hover {
+          background: #0b8b95;
+
+          color: #fff;
+        }
+      }
+
+      // ========================================
+      // ADD SALARY
+      // ========================================
+
+      .add-salary-btn {
+        height: 40px;
+
+        border: none;
+
+        outline: none;
+
+        background: #0b8b95;
+
+        color: #fff;
+
+        padding: 0 16px;
+
+        border-radius: 5px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 8px;
+
+        font-size: 14px;
+
+        font-weight: 500;
+
+        cursor: pointer;
+
+        white-space: nowrap;
+
+        transition: 0.2s ease;
+
+        &:hover {
+          background: #0a7a85;
+        }
+
+        svg {
+          font-size: 13px;
+        }
+      }
+    }
   }
 
   // ==========================================
@@ -110,7 +206,6 @@
     border-radius: 10px;
 
     overflow: hidden;
-
   }
 
   // ==========================================
@@ -199,6 +294,21 @@
   // ACTIONS
   // ==========================================
 
+  .view-salary-link {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-decoration: none;
+
+    color: inherit;
+
+    line-height: 1;
+  }
+
+  .viewsalary,
   .edit,
   .delete {
     cursor: pointer;
@@ -206,6 +316,14 @@
     font-size: 16px;
 
     transition: 0.2s ease;
+  }
+
+  .viewsalary {
+    color: #6b7280;
+
+    &:hover {
+      color: #0b8b95;
+    }
   }
 
   .edit {
@@ -263,3 +381,73 @@
       background: #f1f1f1;
     }
   }
+}
+
+// =====================================================
+// RESPONSIVE
+// =====================================================
+
+@media (max-width: 1100px) {
+  .salary-management {
+    .page-header {
+      flex-wrap: wrap;
+
+      .rightside {
+        width: 100%;
+
+        margin-left: 0;
+
+        justify-content: flex-end;
+
+        flex-wrap: wrap;
+      }
+    }
+  }
+}
+
+// =====================================================
+// MOBILE
+// =====================================================
+
+@media (max-width: 768px) {
+  .salary-management {
+    padding: 15px;
+
+    .page-header {
+      flex-direction: column;
+
+      align-items: flex-start;
+
+      gap: 15px;
+
+      .salary-back-btn {
+        align-self: flex-start;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      .rightside {
+        width: 100%;
+
+        margin-left: 0;
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 10px;
+
+        .MuiFormControl-root {
+          width: 100% !important;
+        }
+
+        .clear-filter-btn,
+        .add-salary-btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

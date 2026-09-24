@@ -1,12 +1,16 @@
-
 import React, { useEffect, useState } from "react";
 import { Table, Avatar, Tag, Space } from "antd";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import {
   SearchOutlined,
   EyeOutlined,
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+
 import { FaPlus } from "react-icons/fa";
 import { SlCalender } from "react-icons/sl";
 import "./EmpList.scss";
@@ -23,9 +27,9 @@ const EmpList = () => {
 
   const [allemployee, setAllEmployee] = useState([]);
 
-  // ==============================
+  // ==========================================
   // EMPLOYEE ATTENDANCE STATES
-  // ==============================
+  // ==========================================
   const [showEmployeeAttendance, setShowEmployeeAttendance] =
     useState(false);
 
@@ -40,17 +44,14 @@ const EmpList = () => {
 
   const [selectedYear, setSelectedYear] = useState(dayjs().year());
 
-  // ==============================
+  // ==========================================
   // GET ALL EMPLOYEES
-  // ==============================
+  // ==========================================
   const getAllEmployee = async () => {
     try {
-      const res = await axios.get(
-        `${BASE_URL}Admin/GetAllEmployee`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get(`${BASE_URL}Admin/GetAllEmployee`, {
+        withCredentials: true,
+      });
 
       const employees = res.data.map((item, index) => ({
         key: index + 1,
@@ -70,18 +71,21 @@ const EmpList = () => {
 
       console.log("Employees:", employees);
     } catch (error) {
-      console.log(
-        error.response?.data || error
+      console.log(error.response?.data || error);
+
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to load employees"
       );
     }
   };
 
-  // ==============================
+  // ==========================================
   // DELETE EMPLOYEE
-  // ==============================
+  // ==========================================
   const handleDeleteEmployee = async (uid) => {
     if (!uid) {
-      console.error("Employee ID is missing");
+      toast.error("Employee ID is missing");
       return;
     }
 
@@ -99,32 +103,37 @@ const EmpList = () => {
         }
       );
 
-      console.log(
-        "Delete Employee Response:",
-        response.data
-      );
+      console.log("Delete Employee Response:", response.data);
 
-      alert("Employee deleted successfully");
+      // SUCCESS TOAST
+      toast.success("Employee deleted successfully", {
+        position: "top-right",
+        autoClose: 3000,
+      });
 
       // Refresh employee list
       getAllEmployee();
-
     } catch (error) {
       console.error(
         "Delete Employee Error:",
         error.response?.data || error
       );
 
-      alert(
-        error.response?.data?.message ||
-        "Failed to delete employee"
+      // ERROR TOAST
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to delete employee",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
       );
     }
   };
 
-  // ==============================
+  // ==========================================
   // GET MONTHLY ATTENDANCE
-  // ==============================
+  // ==========================================
   const getEmployeeMonthlyAttendance = async (
     employeeId,
     month,
@@ -132,6 +141,9 @@ const EmpList = () => {
   ) => {
     if (!employeeId) {
       setEmployeeAttendanceList([]);
+
+      toast.error("Employee ID is missing");
+
       return;
     }
 
@@ -154,10 +166,10 @@ const EmpList = () => {
       const attendanceList = Array.isArray(response?.data)
         ? response.data
         : Array.isArray(response?.data?.data)
-          ? response.data.data
-          : Array.isArray(response?.data?.result)
-            ? response.data.result
-            : [];
+        ? response.data.data
+        : Array.isArray(response?.data?.result)
+        ? response.data.result
+        : [];
 
       console.log(
         "Employee Monthly Attendance:",
@@ -165,7 +177,6 @@ const EmpList = () => {
       );
 
       setEmployeeAttendanceList(attendanceList);
-
     } catch (error) {
       console.error(
         "Employee Monthly Attendance Error:",
@@ -174,33 +185,39 @@ const EmpList = () => {
 
       setEmployeeAttendanceList([]);
 
-      alert(
+      toast.error(
         error?.response?.data?.message ||
-        "Unable to load employee attendance"
+          "Unable to load employee attendance",
+        {
+          position: "top-right",
+          autoClose: 3000,
+        }
       );
     } finally {
       setEmployeeAttendanceLoading(false);
     }
   };
 
-  // ==============================
+  // ==========================================
   // CALENDAR CLICK
-  // ==============================
+  // ==========================================
   const handleCalendar = async (record) => {
-    console.log(
-      "Calendar Employee:",
-      record
-    );
-
-    setSelectedEmployee(record);
+    console.log("Calendar Employee:", record);
 
     const currentMonth = dayjs().month() + 1;
     const currentYear = dayjs().year();
 
+    // Set selected employee first
+    setSelectedEmployee(record);
+
+    // Set current month and year
     setSelectedMonth(currentMonth);
     setSelectedYear(currentYear);
 
-    // Open employee attendance page
+    // Clear previous attendance data
+    setEmployeeAttendanceList([]);
+
+    // Open attendance section
     setShowEmployeeAttendance(true);
 
     // Load current month attendance
@@ -211,9 +228,9 @@ const EmpList = () => {
     );
   };
 
-  // ==============================
+  // ==========================================
   // MONTH CHANGE
-  // ==============================
+  // ==========================================
   const handleEmployeeMonthChange = async (e) => {
     const month = Number(e.target.value);
 
@@ -226,9 +243,9 @@ const EmpList = () => {
     );
   };
 
-  // ==============================
+  // ==========================================
   // YEAR CHANGE
-  // ==============================
+  // ==========================================
   const handleEmployeeYearChange = async (e) => {
     const year = Number(e.target.value);
 
@@ -241,18 +258,32 @@ const EmpList = () => {
     );
   };
 
-  // ==============================
+  // ==========================================
   // CLOSE EMPLOYEE ATTENDANCE
-  // ==============================
+  // ==========================================
   const closeEmployeeAttendance = () => {
+    console.log("Closing Employee Attendance");
+
+    // First close attendance section
     setShowEmployeeAttendance(false);
+
+    // Clear selected employee
     setSelectedEmployee(null);
+
+    // Clear attendance data
     setEmployeeAttendanceList([]);
+
+    // Reset loading
+    setEmployeeAttendanceLoading(false);
+
+    // Reset month/year
+    setSelectedMonth(dayjs().month() + 1);
+    setSelectedYear(dayjs().year());
   };
 
-  // ==============================
+  // ==========================================
   // EMPLOYEE ATTENDANCE COLUMNS
-  // ==============================
+  // ==========================================
   const employeeAttendanceColumns = [
     {
       title: "Emp Id",
@@ -364,9 +395,9 @@ const EmpList = () => {
     },
   ];
 
-  // ==============================
+  // ==========================================
   // EMPLOYEE LIST TABLE COLUMNS
-  // ==============================
+  // ==========================================
   const columns = [
     {
       title: (
@@ -485,9 +516,9 @@ const EmpList = () => {
       ),
     },
 
-    // ==============================
+    // ==========================================
     // ACTIONS
-    // ==============================
+    // ==========================================
     {
       title: "Actions",
       key: "actions",
@@ -544,212 +575,229 @@ const EmpList = () => {
     },
   ];
 
-  // ==============================
+  // ==========================================
   // USE EFFECT
-  // ==============================
+  // ==========================================
   useEffect(() => {
     getAllEmployee();
   }, []);
 
-  // ==============================
+  // ==========================================
   // JSX
-  // ==============================
+  // ==========================================
   return (
-    <MainPanel
-      title={
-        showEmployeeAttendance
-          ? "Employee Attendance"
-          : "Employee List"
-      }
-      breadcrumbs={[
-        {
-          label: "Dashboard",
-          link: "/dashboard",
-        },
-        {
-          label: showEmployeeAttendance
-            ? "Employee Attendance"
-            : "Employee List",
-        },
-      ]}
-    >
-
+    <>
       {/* ==========================================
-          EMPLOYEE ATTENDANCE PAGE
+          REACT TOASTIFY CONTAINER
       ========================================== */}
-      {showEmployeeAttendance ? (
-        <div className="employee-attendance-page">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
 
-          {/* HEADER */}
-          <div className="previous-view-header">
+      <MainPanel
+        title={
+          showEmployeeAttendance
+            ? "Employee Attendance"
+            : "Employee List"
+        }
+        breadcrumbs={[
+          {
+            label: "Dashboard",
+            link: "/",
+          },
+          {
+            label: showEmployeeAttendance
+              ? "Employee Attendance"
+              : "Employee List",
+          },
+        ]}
+      >
 
-            <button
-              type="button"
-              className="previous-view-back"
-              onClick={closeEmployeeAttendance}
-            >
-              ← Back
-            </button>
+        {/* =====================================================
+            EMPLOYEE ATTENDANCE SECTION
+        ===================================================== */}
+        {showEmployeeAttendance ? (
+          <div className="employee-attendance-page">
 
-            <div className="previous-view-title">
+            {/* HEADER */}
+            <div className="attendance-header">
+
+              <button
+                type="button"
+                className="attendance-back-btn"
+                onClick={closeEmployeeAttendance}
+              >
+                ← Back
+              </button>
+
               <h1 className="empname">
                 Check Employee Attendance -{" "}
                 <span>
-                  {selectedEmployee?.name}
+                  {selectedEmployee?.name || ""}
                 </span>
               </h1>
+
             </div>
 
+            {/* MONTH + YEAR */}
+            <div className="employee-month-search">
+
+              <div className="month-field">
+                <label>Month</label>
+
+                <select
+                  value={selectedMonth}
+                  onChange={
+                    handleEmployeeMonthChange
+                  }
+                >
+                  {Array.from(
+                    { length: 12 },
+                    (_, index) => (
+                      <option
+                        key={index + 1}
+                        value={index + 1}
+                      >
+                        {dayjs()
+                          .month(index)
+                          .format("MMMM")}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+
+              <div className="year-field">
+                <label>Year</label>
+
+                <input
+                  type="number"
+                  value={selectedYear}
+                  onChange={
+                    handleEmployeeYearChange
+                  }
+                />
+              </div>
+
+            </div>
+
+            {/* ATTENDANCE TABLE */}
+            <Table
+              columns={employeeAttendanceColumns}
+              dataSource={employeeAttendanceList.map(
+                (item, index) => ({
+                  ...item,
+
+                  employeeId:
+                    item?.employeeId ||
+                    selectedEmployee?.empId ||
+                    "",
+
+                  employeeName:
+                    item?.employeeName ||
+                    selectedEmployee?.name ||
+                    "",
+
+                  employeeDesignation:
+                    item?.employeeDesignation ||
+                    selectedEmployee?.designation ||
+                    "",
+
+                  key: `${
+                    item?.date || index
+                  }-${index}`,
+                })
+              )}
+              loading={employeeAttendanceLoading}
+              bordered
+              scroll={{ x: "max-content" }}
+              pagination={{
+                pageSize: 10,
+                showSizeChanger: true,
+              }}
+            />
+
           </div>
+        ) : (
 
-          {/* MONTH + YEAR */}
-          <div className="employee-month-search">
+          /* =====================================================
+             NORMAL EMPLOYEE LIST SECTION
+          ===================================================== */
+          <div className="emp-list">
 
-            <div className="month-field">
-              <label>Month</label>
+            {/* ==================================================
+                SINGLE ROW HEADER
+            ================================================== */}
+            <div className="employee-list-header">
 
-              <select
-                value={selectedMonth}
-                onChange={
-                  handleEmployeeMonthChange
-                }
+              {/* BACK BUTTON */}
+              <button
+                type="button"
+                className="employee-list-back-btn"
+                onClick={() => navigate("/")}
               >
-                {Array.from(
-                  { length: 12 },
-                  (_, index) => (
-                    <option
-                      key={index + 1}
-                      value={index + 1}
-                    >
-                      {dayjs()
-                        .month(index)
-                        .format("MMMM")}
-                    </option>
-                  )
-                )}
-              </select>
+                ← Back
+              </button>
+
+              {/* EMPLOYEES TITLE */}
+              <h2>Employees</h2>
+
+              {/* RIGHT SIDE */}
+              <div className="employee-list-actions">
+
+                {/* TOTAL EMPLOYEE */}
+                <div className="count">
+                  Total Number Of Employee:{" "}
+                  <span>
+                    {allemployee.length}
+                  </span>
+                </div>
+
+                {/* ADD EMPLOYEE */}
+                <Link to="/addEmployee">
+                  <span>
+                    <FaPlus />
+                  </span>
+
+                  Add Employee
+                </Link>
+
+              </div>
+
             </div>
 
-            <div className="year-field">
-              <label>Year</label>
-
-              <input
-                type="number"
-                value={selectedYear}
-                onChange={
-                  handleEmployeeYearChange
-                }
-              />
-            </div>
+            {/* EMPLOYEE TABLE */}
+            <Table
+              columns={columns}
+              dataSource={allemployee}
+              bordered
+              scroll={{ x: "max-content" }}
+              pagination={{
+                pageSize: 5,
+                showSizeChanger: true,
+              }}
+              rowClassName={(_, index) =>
+                index % 2 === 0
+                  ? "table-row-light"
+                  : "table-row-dark"
+              }
+            />
 
           </div>
+        )}
 
-      
-
-          {/* ATTENDANCE TABLE */}
-          <Table
-            columns={employeeAttendanceColumns}
-            dataSource={employeeAttendanceList.map(
-              (item, index) => ({
-                ...item,
-
-                employeeId:
-                  item?.employeeId ||
-                  selectedEmployee?.empId ||
-                  "",
-
-                employeeName:
-                  item?.employeeName ||
-                  selectedEmployee?.name ||
-                  "",
-
-                employeeDesignation:
-                  item?.employeeDesignation ||
-                  selectedEmployee?.designation ||
-                  "",
-
-                key: `${
-                  item?.date || index
-                }-${index}`,
-              })
-            )}
-            loading={employeeAttendanceLoading}
-            bordered
-            scroll={{ x: "max-content" }}
-            pagination={{
-              pageSize: 10,
-              showSizeChanger: true,
-            }}
-          />
-
-        </div>
-      ) : (
-
-        /* ==========================================
-           NORMAL EMPLOYEE LIST PAGE
-        ========================================== */
-   <div className="emp-list">
-
-  <div className="page-header">
-
-    {/* BACK BUTTON */}
-    <button
-      type="button"
-      className="previous-view-back"
-      onClick={() => navigate("/")}
-    >
-      ← Back
-    </button>
-
-    {/* EMPLOYEE TITLE + BUTTONS */}
-    <div className="employee-list-heading">
-
-      <h2>Employees</h2>
-
-      <div className="btn-group">
-
-        <div className="count">
-          Total Number Of Employee:{" "}
-          <span>
-            {allemployee.length}
-          </span>
-        </div>
-
-        <Link to="/addEmployee">
-          <span>
-            <FaPlus />
-          </span>{" "}
-          Add Employee
-        </Link>
-
-      </div>
-
-    </div>
-
-  </div>
-
-          <Table
-            columns={columns}
-            dataSource={allemployee}
-            bordered
-            scroll={{ x: "max-content" }}
-            pagination={{
-              pageSize: 5,
-              showSizeChanger: true,
-            }}
-            rowClassName={(_, index) =>
-              index % 2 === 0
-                ? "table-row-light"
-                : "table-row-dark"
-            }
-          />
-
-        </div>
-      )}
-
-    </MainPanel>
+      </MainPanel>
+    </>
   );
 };
 
 export default EmpList;
-

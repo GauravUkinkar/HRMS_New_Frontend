@@ -1,46 +1,73 @@
-import React from "react";
+import React, { useContext, useRef } from "react";
 import "./Payslip.scss";
-import logo from "../../../src/assets/offer-logo-pan.png";
-import watermark from "../../assets/pan-watermark.webp";
+
 import { SlCalender } from "react-icons/sl";
 import { IoMdDownload } from "react-icons/io";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { useLocation } from "react-router-dom";
-import html2pdf from "html2pdf.js";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
+import panWatermark from "../../assets/pan-watermark.webp";
+import panLogo from "../../assets/offer-logo-pan.png";
+
+import indianJourneyWatermark from "../../assets/tij-watermark.png";
+import indianJourneyLogo from "../../assets/tij-logo.png";
+
+import akkaWatermark from "../../assets/akka-foundation.png";
+import akkaLogo from "../../assets/akka-foundation.png";
+
+import nvmWatermark from "../../assets/nvm-watermark.png";
+import nvmLogo from "../../assets/nvm-logo.png";
+
+import { UserContext } from "../../../Context";
 
 const Payslip = () => {
-  const downloadPDF = () => {
-  const element = document.querySelector(".payslip-container");
+  const location = useLocation();
+  const { user } = useContext(UserContext);
 
-  if (!element) return;
+  const payslip = location.state?.payslip;
 
-  const options = {
-    margin: 0,
-    filename: `Payslip-${payslip?.employeeId || "Employee"}-${payslip?.month || ""}-${payslip?.year || ""}.pdf`,
-    image: {
-      type: "jpeg",
-      quality: 0.98,
+
+  const companyName = (
+    payslip?.companyName ||
+    user?.companyName ||
+    ""
+  ).trim();
+
+
+  const companyConfig = {
+    "Pandoza Solutions Pvt Ltd": {
+      logo: panLogo,
+      watermark: panWatermark,
+
     },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff",
+
+    "Akka Foundation": {
+      logo: akkaLogo,
+      watermark: akkaWatermark,
+
     },
-    jsPDF: {
-      unit: "mm",
-      format: "a4",
-      orientation: "portrait",
+
+    "The Indian Journey": {
+      logo: indianJourneyLogo,
+      watermark: indianJourneyWatermark,
+    
+    
+    },
+
+    "NVM Infratech": {
+      logo: nvmLogo,
+      watermark: nvmWatermark,
+
     },
   };
 
-  html2pdf()
-    .set(options)
-    .from(element)
-    .save();
-};
-  const location = useLocation();
 
-  const payslip = location.state?.payslip;
+  const currentCompany = companyConfig[companyName];
+
+  const printRef = useRef(null);
+
 
   const formatAmount = (value) => {
     const amount = Number(value || 0);
@@ -51,33 +78,116 @@ const Payslip = () => {
     });
   };
 
+
   const formatMonth = (month, year) => {
     if (!month || !year) return "-";
 
     return `${month.substring(0, 3)} ${year}`;
   };
 
+
+  const handleDownload = async () => {
+    const input = printRef.current;
+
+    if (!input) return;
+
+    try {
+      const canvas = await html2canvas(input, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const imgProps = pdf.getImageProperties(imgData);
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+
+      const pdfHeight =
+        (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        0,
+        pdfWidth,
+        pdfHeight
+      );
+
+      pdf.save(
+        `Payslip-${payslip?.employeeId || "Employee"}-${payslip?.month || ""}-${payslip?.year || ""}.pdf`
+      );
+    } catch (error) {
+      console.error("PDF Download Error:", error);
+    }
+  };
+
+
+  if (!currentCompany) {
+    return (
+      <MainPanel>
+        <div className="main-container">
+          <div className="payslip-container">
+            <p>
+              Company configuration not found for:{" "}
+              <strong>
+                {companyName || "Unknown Company"}
+              </strong>
+            </p>
+          </div>
+        </div>
+      </MainPanel>
+    );
+  }
+
+
   return (
     <MainPanel>
       <div className="main-container">
-        <div className="payslip-container">
 
+        <div
+          className="payslip-container"
+          ref={printRef}
+        >
+
+          {/* WATERMARK */}
           <div className="watermark">
-            <img src={watermark} alt="watermark" />
+            <img
+              src={currentCompany.watermark}
+              alt={`${companyName} Watermark`}
+            />
           </div>
 
           {/* HEADER */}
           <div className="header">
+
             <div className="logo">
-              <img src={logo} alt="Logo" />
+              <img
+                src={currentCompany.logo}
+                alt={`${companyName} Logo`}
+              />
             </div>
 
             <div className="month">
-              <p>Payslip for the month</p>
+
+              <p>
+                Payslip for the month
+              </p>
+
               <h3>
-                {formatMonth(payslip?.month, payslip?.year)}
+                {formatMonth(
+                  payslip?.month,
+                  payslip?.year
+                )}
               </h3>
+
             </div>
+
           </div>
 
           {/* EMPLOYEE SUMMARY */}
@@ -85,18 +195,42 @@ const Payslip = () => {
 
             <div className="left">
 
-              <h4>EMPLOYEE SUMMARY</h4>
+              <h4>
+                EMPLOYEE SUMMARY
+              </h4>
 
               <div className="personal-info">
 
                 <div className="left-info">
-                  <p>Employee Name</p>
-                  <p>Employee ID</p>
-                  <p>Pay Date</p>
-                  <p>Bank Name</p>
-                  <p>Account No.</p>
-                  <p>PAN No.</p>
-                  <p>UAN No.</p>
+
+                  <p>
+                    Employee Name
+                  </p>
+
+                  <p>
+                    Employee ID
+                  </p>
+
+                  <p>
+                    Pay Date
+                  </p>
+
+                  <p>
+                    Bank Name
+                  </p>
+
+                  <p>
+                    Account No.
+                  </p>
+
+                  <p>
+                    PAN No.
+                  </p>
+
+                  <p>
+                    UAN No.
+                  </p>
+
                 </div>
 
                 <div className="right-info">
@@ -134,18 +268,33 @@ const Payslip = () => {
                 </div>
 
               </div>
+
             </div>
 
             {/* NET PAY */}
             <div className="right">
 
-              <div className="netpay">
+              <div
+                className="netpay"
+                style={{
+                  backgroundColor:
+                    currentCompany.color,
+
+                  color:
+                    currentCompany.textColor,
+                }}
+              >
 
                 <h2>
-                  Rs {formatAmount(payslip?.netSalary)}
+                  Rs{" "}
+                  {formatAmount(
+                    payslip?.netSalary
+                  )}
                 </h2>
 
-                <p>Employee Net Pay</p>
+                <p>
+                  Employee Net Pay
+                </p>
 
               </div>
 
@@ -156,7 +305,8 @@ const Payslip = () => {
                   <SlCalender className="calender" />
 
                   <p>
-                    Paid Days : {payslip?.presentDay || 0}
+                    Paid Days :{" "}
+                    {payslip?.presentDay || 0}
                   </p>
 
                 </div>
@@ -166,7 +316,8 @@ const Payslip = () => {
                   <SlCalender className="calender" />
 
                   <p>
-                    LOP Days : {payslip?.absentDays || 0}
+                    LOP Days :{" "}
+                    {payslip?.absentDays || 0}
                   </p>
 
                 </div>
@@ -183,11 +334,20 @@ const Payslip = () => {
             {/* EARNINGS */}
             <div className="table-card">
 
-              <h4>EARNINGS</h4>
+              <h4>
+                EARNINGS
+              </h4>
 
               <div className="table-header">
-                <span>Particulars</span>
-                <span>Amount (Rs)</span>
+
+                <span>
+                  Particulars
+                </span>
+
+                <span>
+                  Amount (Rs)
+                </span>
+
               </div>
 
               <div className="middle">
@@ -195,41 +355,74 @@ const Payslip = () => {
                 <div className="basic-earning">
 
                   <div className="row">
-                    <span>Basic</span>
+
                     <span>
-                      {formatAmount(payslip?.basicSalary)}
+                      Basic
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.basicSalary
+                      )}
+                    </span>
+
                   </div>
 
                   <div className="row">
-                    <span>Dearness Allowance</span>
+
                     <span>
-                      {formatAmount(payslip?.da)}
+                      Dearness Allowance
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.da
+                      )}
+                    </span>
+
                   </div>
 
                   <div className="row">
-                    <span>HRA</span>
+
                     <span>
-                      {formatAmount(payslip?.hra)}
+                      HRA
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.hra
+                      )}
+                    </span>
+
                   </div>
 
                   <div className="row">
-                    <span>Other Allowance</span>
+
                     <span>
-                      {formatAmount(payslip?.otherAllowance)}
+                      Other Allowance
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.otherAllowance
+                      )}
+                    </span>
+
                   </div>
 
                 </div>
 
                 <div className="total">
 
-                  <span>GROSS EARNINGS</span>
+                  <span>
+                    GROSS EARNINGS
+                  </span>
 
                   <span>
-                    Rs {formatAmount(payslip?.grossSalary)}
+                    Rs{" "}
+                    {formatAmount(
+                      payslip?.grossSalary
+                    )}
                   </span>
 
                 </div>
@@ -241,11 +434,20 @@ const Payslip = () => {
             {/* DEDUCTIONS */}
             <div className="table-card">
 
-              <h4>DEDUCTION</h4>
+              <h4>
+                DEDUCTION
+              </h4>
 
               <div className="table-header">
-                <span>Particulars</span>
-                <span>Amount (Rs)</span>
+
+                <span>
+                  Particulars
+                </span>
+
+                <span>
+                  Amount (Rs)
+                </span>
+
               </div>
 
               <div className="middle">
@@ -253,72 +455,135 @@ const Payslip = () => {
                 <div className="basic-earning">
 
                   <div className="row">
-                    <span>Professional Tax</span>
+
                     <span>
-                      {formatAmount(payslip?.professionalTax)}
+                      Professional Tax
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.professionalTax
+                      )}
+                    </span>
+
                   </div>
 
                   <div className="row">
-                    <span>Employee PF Share</span>
+
                     <span>
-                      {formatAmount(payslip?.employeePf)}
+                      Employee PF Share
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.employeePf
+                      )}
+                    </span>
+
                   </div>
 
                   <div className="row">
-                    <span>Employee ESIC</span>
+
                     <span>
-                      {formatAmount(payslip?.employeeEsic)}
+                      Employee ESIC
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.employeeEsic
+                      )}
+                    </span>
+
                   </div>
 
                   <div className="row">
-                    <span>Advance Salary</span>
+
                     <span>
-                      {formatAmount(payslip?.salaryAdvance)}
+                      Advance Salary
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.salaryAdvance
+                      )}
+                    </span>
+
                   </div>
 
                   <div className="row">
-                    <span>Loss of Pay</span>
+
                     <span>
-                      {formatAmount(payslip?.lop)}
+                      Loss of Pay
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.lop
+                      )}
+                    </span>
+
                   </div>
 
                   <div className="row">
-                    <span>Other Deduction</span>
+
                     <span>
-                      {formatAmount(payslip?.otherDiduction)}
+                      Other Deduction
                     </span>
+
+                    <span>
+                      {formatAmount(
+                        payslip?.otherDiduction
+                      )}
+                    </span>
+
                   </div>
 
                   <div className="row">
-                    <span>Insurance</span>
+
+                    <span>
+                      Insurance
+                    </span>
+
                     <span>
                       {formatAmount(
                         payslip?.insuranceCorporation
                       )}
                     </span>
+
                   </div>
 
                 </div>
 
                 <div className="total">
 
-                  <span>TOTAL DEDUCTIONS</span>
+                  <span>
+                    TOTAL DEDUCTIONS
+                  </span>
 
                   <span>
                     Rs{" "}
                     {formatAmount(
-                      Number(payslip?.employeePf || 0) +
-                        Number(payslip?.employeeEsic || 0) +
-                        Number(payslip?.professionalTax || 0) +
-                        Number(payslip?.salaryAdvance || 0) +
-                        Number(payslip?.lop || 0) +
-                        Number(payslip?.otherDiduction || 0) +
-                        Number(payslip?.insuranceCorporation || 0)
+                      Number(
+                        payslip?.employeePf || 0
+                      ) +
+                      Number(
+                        payslip?.employeeEsic || 0
+                      ) +
+                      Number(
+                        payslip?.professionalTax || 0
+                      ) +
+                      Number(
+                        payslip?.salaryAdvance || 0
+                      ) +
+                      Number(
+                        payslip?.lop || 0
+                      ) +
+                      Number(
+                        payslip?.otherDiduction || 0
+                      ) +
+                      Number(
+                        payslip?.insuranceCorporation || 0
+                      )
                     )}
                   </span>
 
@@ -335,7 +600,9 @@ const Payslip = () => {
 
             <div className="total-final">
 
-              <h4>TOTAL NETPAYABLE</h4>
+              <h4>
+                TOTAL NETPAYABLE
+              </h4>
 
               <p>
                 Gross Earnings - Total Deduction
@@ -346,22 +613,31 @@ const Payslip = () => {
             <div className="total-amount">
 
               <h2>
-                Rs {formatAmount(payslip?.netSalary)}
+                Rs{" "}
+                {formatAmount(
+                  payslip?.netSalary
+                )}
               </h2>
 
             </div>
 
           </div>
 
-          {/* DOWNLOAD */}
-<div className="download">
-  <button onClick={() => window.print()}>
-    <IoMdDownload />
-    Download PDF
-  </button>
-</div>
+          {/* DOWNLOAD BUTTON */}
+          <div className="download">
+
+            <button
+              onClick={handleDownload}
+            >
+              <IoMdDownload />
+
+              Download PDF
+            </button>
+
+          </div>
 
         </div>
+
       </div>
     </MainPanel>
   );
