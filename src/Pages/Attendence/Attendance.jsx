@@ -3,7 +3,6 @@ import "./Attendance.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import Table_Comp from "../../comp/table/Table";
 import { useNavigate } from "react-router-dom";
-
 import { Dropdown, Modal, DatePicker, Table } from "antd";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { SlCalender } from "react-icons/sl";
@@ -17,7 +16,6 @@ const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 
 const Attendance = () => {
   const navigate = useNavigate();
-
   // ============================================================
   // ADD PREVIOUS ATTENDANCE
   // ============================================================
@@ -1562,18 +1560,20 @@ const Attendance = () => {
         // =====================================================
         <>
           <div className="top-parent">
-            <div className="previous-view-header">
-              <button
-                type="button"
-                className="previous-view-back"
-                onClick={() => navigate("/")}
-              >
-                ← Back
-              </button>
+           
+              <div className="previous-view-header">
+             <button
+  type="button"
+  className="previous-view-back"
+  onClick={() => navigate("/")}
+>
+  ← Back
+</button>
 
-              <div className="previous-view-title">
-                <h1>Today's Attendance</h1>
-              </div>
+                <div className="previous-view-title">
+                  <h1>Today's Attendance</h1>
+                </div>
+             
             </div>
 
             <div className="btn-group">

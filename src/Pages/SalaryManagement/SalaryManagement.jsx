@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import "./SalaryManagement.scss";
 
@@ -18,7 +17,12 @@ import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+
+import {
+  useNavigate,
+  Link,
+} from "react-router-dom";
+
 import { toast } from "react-toastify";
 
 const SalaryManagement = () => {
@@ -261,23 +265,6 @@ const SalaryManagement = () => {
   const clearFilters = () => {
     setSelectedMonth("");
     setSelectedYear("");
-  };
-
-  // ==========================================
-  // VIEW PAYSLIP
-  // ==========================================
-
-  const handleViewSalary = (record) => {
-    console.log(
-      "Selected Salary Record:",
-      record
-    );
-
-    navigate("/Payslip", {
-      state: {
-        salary: record,
-      },
-    });
   };
 
   // ==========================================
@@ -532,15 +519,19 @@ const SalaryManagement = () => {
         <Space size="middle">
 
           {/* VIEW PAYSLIP */}
-          <FaEye
-            className="viewsalary"
-            title="View Payslip"
-            onClick={() =>
-              handleViewSalary(record)
-            }
-          />
+
+          <Link
+            to="/Payslip"
+            className="view-salary-link"
+          >
+            <FaEye
+              className="viewsalary"
+              title="View Payslip"
+            />
+          </Link>
 
           {/* EDIT SALARY */}
+
           <EditOutlined
             className="edit"
             title="Edit Salary"
@@ -557,6 +548,7 @@ const SalaryManagement = () => {
           />
 
           {/* DELETE SALARY */}
+
           <DeleteOutlined
             className="delete"
             title="Delete Salary"
@@ -583,13 +575,12 @@ const SalaryManagement = () => {
     <MainPanel>
       <div className="salary-management">
 
-        {/* ========================================
-            HEADER
-        ======================================== */}
+        {/* HEADER */}
 
         <div className="page-header">
 
           {/* BACK BUTTON */}
+
           <button
             type="button"
             className="salary-back-btn"
@@ -601,14 +592,17 @@ const SalaryManagement = () => {
           </button>
 
           {/* TITLE */}
+
           <h2>
             Salary Management
           </h2>
 
           {/* FILTERS + ADD SALARY */}
+
           <div className="rightside">
 
             {/* MONTH */}
+
             <SelectInput
               label="Month"
               name="month"
@@ -630,6 +624,7 @@ const SalaryManagement = () => {
             </SelectInput>
 
             {/* YEAR */}
+
             <SelectInput
               label="Year"
               name="year"
@@ -651,6 +646,7 @@ const SalaryManagement = () => {
             </SelectInput>
 
             {/* CLEAR */}
+
             {(selectedMonth ||
               selectedYear) && (
               <button
@@ -665,6 +661,7 @@ const SalaryManagement = () => {
             )}
 
             {/* ADD SALARY */}
+
             <button
               type="button"
               className="add-salary-btn"
@@ -681,9 +678,7 @@ const SalaryManagement = () => {
           </div>
         </div>
 
-        {/* ========================================
-            SALARY TABLE
-        ======================================== */}
+        {/* SALARY TABLE */}
 
         <Table
           columns={columns}
@@ -721,4 +716,3 @@ const SalaryManagement = () => {
 };
 
 export default SalaryManagement;
-
