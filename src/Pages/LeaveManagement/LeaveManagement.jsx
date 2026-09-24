@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Table, Space, Input, Button, message } from "antd";
-import { DeleteOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+    DeleteOutlined,
+    EyeOutlined,
+    SearchOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 import "./LeaveManagement.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
-import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const LeaveManagement = () => {
-    const navigate = useNavigate();
     const [leaveData, setLeaveData] = useState([]);
     const [statusFilter, setStatusFilter] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -53,7 +55,6 @@ const LeaveManagement = () => {
 
             const leaves = response.data?.data || [];
 
-            // Reverse the array to show new requests at the top/first page
             const reversedLeaves = [...leaves].reverse();
 
             const formattedData = reversedLeaves.map((item) => ({
@@ -65,12 +66,15 @@ const LeaveManagement = () => {
                 leaveType: item.leaveReason || "-",
                 reason: item.leaveReason || "-",
                 days: item.totalleaveDays || 0,
+
                 from: item.leaveDates?.length
                     ? item.leaveDates[0]?.date || "-"
                     : "-",
+
                 to: item.leaveDates?.length
                     ? item.leaveDates[item.leaveDates.length - 1]?.date || "-"
                     : "-",
+
                 leaveDates: item.leaveDates || [],
                 entryDate: item.entryDate || null,
                 status: normalizeStatus(item.approved),
@@ -137,6 +141,7 @@ const LeaveManagement = () => {
                 "APPROVE/REJECT ERROR",
                 error.response?.data || error
             );
+
             console.error("STATUS CODE", error.response?.status);
             console.error("REQUEST URL", error.config?.url);
             console.error("REQUEST PARAMS", error.config?.params);
@@ -153,12 +158,14 @@ const LeaveManagement = () => {
     const handleApprove = (record) => {
         console.log("APPROVE RECORD", record);
         console.log("APPROVE LID", record.lid);
+
         handleLeaveStatus(record.lid, "approved");
     };
 
     const handleReject = (record) => {
         console.log("REJECT RECORD", record);
         console.log("REJECT LID", record.lid);
+
         handleLeaveStatus(record.lid, "rejected");
     };
 
@@ -185,17 +192,21 @@ const LeaveManagement = () => {
             );
 
             console.log("DELETE LEAVE RESPONSE:", response.data);
+
             message.success("Leave deleted successfully");
+
             await getAllLeaves();
         } catch (error) {
             console.error(
                 "DELETE LEAVE ERROR:",
                 error.response?.data || error
             );
+
             console.error("DELETE STATUS:", error.response?.status);
 
             message.error(
-                error.response?.data?.message || "Failed to delete leave"
+                error.response?.data?.message ||
+                    "Failed to delete leave"
             );
         } finally {
             setActionLoading(null);
@@ -231,24 +242,32 @@ const LeaveManagement = () => {
                             e.target.value ? [e.target.value] : []
                         )
                     }
-                    onPressEnter={() => handleSearch(selectedKeys, confirm)}
+                    onPressEnter={() =>
+                        handleSearch(selectedKeys, confirm)
+                    }
                     style={{
                         marginBottom: 8,
                         display: "block",
                         width: 220,
                     }}
                 />
+
                 <Space>
                     <Button
                         type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm)}
+                        onClick={() =>
+                            handleSearch(selectedKeys, confirm)
+                        }
                         icon={<SearchOutlined />}
                         size="small"
                     >
                         Search
                     </Button>
+
                     <Button
-                        onClick={() => handleReset(clearFilters, confirm)}
+                        onClick={() =>
+                            handleReset(clearFilters, confirm)
+                        }
                         size="small"
                     >
                         Reset
@@ -256,6 +275,7 @@ const LeaveManagement = () => {
                 </Space>
             </div>
         ),
+
         filterIcon: (filtered) => (
             <SearchOutlined
                 style={{
@@ -263,16 +283,23 @@ const LeaveManagement = () => {
                 }}
             />
         ),
+
         onFilter: (value, record) => {
             const recordValue = record[dataIndex];
-            if (recordValue === undefined || recordValue === null) {
+
+            if (
+                recordValue === undefined ||
+                recordValue === null
+            ) {
                 return false;
             }
+
             return recordValue
                 .toString()
                 .toLowerCase()
                 .includes(value.toString().toLowerCase());
         },
+
         filterDropdownProps: {
             onOpenChange: (visible) => {
                 if (visible) {
@@ -297,7 +324,9 @@ const LeaveManagement = () => {
     ).length;
 
     const filteredLeaveData = statusFilter
-        ? leaveData.filter((item) => item.status === statusFilter)
+        ? leaveData.filter(
+              (item) => item.status === statusFilter
+          )
         : leaveData;
 
     const columns = [
@@ -307,35 +336,49 @@ const LeaveManagement = () => {
             key: "employeeName",
             width: 220,
             fixed: "left",
-            ...getColumnSearchProps("employeeName", "Search employee name"),
+            ...getColumnSearchProps(
+                "employeeName",
+                "Search employee name"
+            ),
         },
+
         {
             title: "Employee ID",
             dataIndex: "employeeId",
             key: "employeeId",
             width: 160,
             fixed: "left",
-            ...getColumnSearchProps("employeeId", "Search employee ID"),
+            ...getColumnSearchProps(
+                "employeeId",
+                "Search employee ID"
+            ),
         },
+
         {
             title: "Leave Type",
             dataIndex: "leaveType",
             key: "leaveType",
             width: 160,
-            ...getColumnSearchProps("leaveType", "Search leave type"),
+            ...getColumnSearchProps(
+                "leaveType",
+                "Search leave type"
+            ),
         },
+
         {
             title: "From",
             dataIndex: "from",
             key: "from",
             width: 140,
         },
+
         {
             title: "To",
             dataIndex: "to",
             key: "to",
             width: 140,
         },
+
         {
             title: "Days",
             dataIndex: "days",
@@ -343,11 +386,13 @@ const LeaveManagement = () => {
             width: 100,
             align: "center",
         },
+
         {
             title: "Reason",
             dataIndex: "reason",
             key: "reason",
             width: 220,
+
             render: (reason) => (
                 <span
                     title={reason}
@@ -362,14 +407,20 @@ const LeaveManagement = () => {
                     {reason || "-"}
                 </span>
             ),
-            ...getColumnSearchProps("reason", "Search reason"),
+
+            ...getColumnSearchProps(
+                "reason",
+                "Search reason"
+            ),
         },
+
         {
             title: "Status",
             dataIndex: "status",
             key: "status",
             width: 250,
             align: "center",
+
             render: (status, record) => {
                 const currentStatus = status
                     ?.toString()
@@ -383,21 +434,32 @@ const LeaveManagement = () => {
                                 className="approve-action-btn"
                                 size="small"
                                 loading={
-                                    actionLoading === `${record.lid}-approved`
+                                    actionLoading ===
+                                    `${record.lid}-approved`
                                 }
-                                disabled={actionLoading !== null}
-                                onClick={() => handleApprove(record)}
+                                disabled={
+                                    actionLoading !== null
+                                }
+                                onClick={() =>
+                                    handleApprove(record)
+                                }
                             >
                                 Approve
                             </Button>
+
                             <Button
                                 className="reject-action-btn"
                                 size="small"
                                 loading={
-                                    actionLoading === `${record.lid}-rejected`
+                                    actionLoading ===
+                                    `${record.lid}-rejected`
                                 }
-                                disabled={actionLoading !== null}
-                                onClick={() => handleReject(record)}
+                                disabled={
+                                    actionLoading !== null
+                                }
+                                onClick={() =>
+                                    handleReject(record)
+                                }
                             >
                                 Reject
                             </Button>
@@ -407,35 +469,44 @@ const LeaveManagement = () => {
 
                 if (currentStatus === "approved") {
                     return (
-                        <span className="approved-status">Approved</span>
+                        <span className="approved-status">
+                            Approved
+                        </span>
                     );
                 }
 
                 if (currentStatus === "rejected") {
                     return (
-                        <span className="rejected-status">Rejected</span>
+                        <span className="rejected-status">
+                            Rejected
+                        </span>
                     );
                 }
 
                 return null;
             },
         },
+
         {
             title: "Actions",
             key: "actions",
             width: 120,
             fixed: "right",
+
             render: (_, record) => (
                 <Space size="middle">
                     <EyeOutlined
                         className="view-action-icon"
                         onClick={() =>
-                            navigate(`/EmployeeLeaves/${record.employeeId}`)
+                            window.location.href = `/EmployeeLeaves/${record.employeeId}`
                         }
                     />
+
                     <DeleteOutlined
                         className="delete-action-icon"
-                        onClick={() => handleDelete(record)}
+                        onClick={() =>
+                            handleDelete(record)
+                        }
                     />
                 </Space>
             ),
@@ -445,39 +516,71 @@ const LeaveManagement = () => {
     return (
         <MainPanel>
             <div className="leave-list">
+
+                {/* BACK BUTTON */}
+             <button
+    type="button"
+    className="leave-back-btn"
+    onClick={() => {
+        window.location.href = "/";
+    }}
+>
+    ← Back
+</button>
+
+                {/* PAGE HEADER */}
                 <div className="page-header">
+
                     <h2>Leave Management</h2>
+
                     <div className="btn-group">
+
                         <div
                             className={`pending ${
-                                statusFilter === "Pending" ? "active-filter" : ""
+                                statusFilter === "Pending"
+                                    ? "active-filter"
+                                    : ""
                             }`}
-                            onClick={() => setStatusFilter("Pending")}
+                            onClick={() =>
+                                setStatusFilter("Pending")
+                            }
                         >
                             <span>Pending Leaves</span>
                             <span>{pendingCount}</span>
                         </div>
+
                         <div
                             className={`approved ${
-                                statusFilter === "Approved" ? "active-filter" : ""
+                                statusFilter === "Approved"
+                                    ? "active-filter"
+                                    : ""
                             }`}
-                            onClick={() => setStatusFilter("Approved")}
+                            onClick={() =>
+                                setStatusFilter("Approved")
+                            }
                         >
                             <span>Approved Leaves</span>
                             <span>{approvedCount}</span>
                         </div>
+
                         <div
                             className={`rejected ${
-                                statusFilter === "Rejected" ? "active-filter" : ""
+                                statusFilter === "Rejected"
+                                    ? "active-filter"
+                                    : ""
                             }`}
-                            onClick={() => setStatusFilter("Rejected")}
+                            onClick={() =>
+                                setStatusFilter("Rejected")
+                            }
                         >
                             <span>Rejected Leaves</span>
                             <span>{rejectedCount}</span>
                         </div>
+
                     </div>
                 </div>
 
+                {/* TABLE */}
                 <Table
                     loading={loading}
                     columns={columns}
@@ -489,12 +592,20 @@ const LeaveManagement = () => {
                     pagination={{
                         pageSize: 10,
                         showSizeChanger: true,
-                        pageSizeOptions: ["10", "20", "50", "100"],
+                        pageSizeOptions: [
+                            "10",
+                            "20",
+                            "50",
+                            "100",
+                        ],
                     }}
                     rowClassName={(_record, index) =>
-                        index % 2 === 0 ? "table-row-light" : "table-row-dark"
+                        index % 2 === 0
+                            ? "table-row-light"
+                            : "table-row-dark"
                     }
                 />
+
             </div>
         </MainPanel>
     );

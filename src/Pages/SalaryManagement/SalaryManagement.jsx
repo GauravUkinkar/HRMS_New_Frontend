@@ -1,8 +1,8 @@
+
 import React, { useEffect, useState } from "react";
 import "./SalaryManagement.scss";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
-
 
 import { Avatar, Space, Table } from "antd";
 
@@ -22,7 +22,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const SalaryManagement = () => {
-   const navigate = useNavigate();
+  const navigate = useNavigate();
+
   const [salaryData, setSalaryData] = useState([]);
   const [loader, setLoader] = useState(false);
 
@@ -65,6 +66,9 @@ const SalaryManagement = () => {
     (_, index) => currentYear - index
   );
 
+  // ==========================================
+  // GET SALARY
+  // ==========================================
 
   const getSalary = async () => {
     try {
@@ -86,13 +90,20 @@ const SalaryManagement = () => {
           return {
             key: item.data.sid || index + 1,
 
-            employeeName: item.data.employeeName || "N/A",
-            employeeId: item.data.employeeId || "N/A",
+            employeeName:
+              item.data.employeeName || "N/A",
 
-            month: item.data.month || "N/A",
-            year: item.data.year || "N/A",
+            employeeId:
+              item.data.employeeId || "N/A",
 
-            grossSalary: item.data.grossSalary ?? 0,
+            month:
+              item.data.month || "N/A",
+
+            year:
+              item.data.year || "N/A",
+
+            grossSalary:
+              item.data.grossSalary ?? 0,
 
             totalWorkingDay:
               item.data.totalWorkingDay ?? 0,
@@ -103,9 +114,11 @@ const SalaryManagement = () => {
             absentDays:
               item.data.absentDays ?? 0,
 
-            lop: item.data.lop ?? 0,
+            lop:
+              item.data.lop ?? 0,
 
-            da: item.data.da ?? 0,
+            da:
+              item.data.da ?? 0,
 
             employeePf:
               item.data.employeePf ?? 0,
@@ -157,48 +170,73 @@ const SalaryManagement = () => {
       setLoader(false);
     }
   };
+
+  // ==========================================
+  // DELETE SALARY
+  // ==========================================
+
   const deleteSalary = async (record) => {
-    try{
+    try {
       console.log("Deleting Salary:", record);
 
       const response = await axios.delete(
         `${BASE_URL}admin/deleteNewSalary`,
         {
           params: {
-            sId:record.key,
+            sId: record.key,
           },
-          withCredentials:true,
+          withCredentials: true,
         }
       );
-      console.log("Deleye Salary Response:",response.data);
+
+      console.log(
+        "Delete Salary Response:",
+        response.data
+      );
 
       toast.success(
         response.data?.responseMessage ||
-        "Salary Deleted Successfully!"
+          "Salary Deleted Successfully!"
       );
+
       getSalary();
-    } catch(err){
-      console.error("DELETE SALARY ERROR:",err);
-      console.error("Status:",err.response?.status);
-      console.error("Response:",err.response?.data);
+    } catch (err) {
+      console.error(
+        "DELETE SALARY ERROR:",
+        err
+      );
+
+      console.error(
+        "Status:",
+        err.response?.status
+      );
+
+      console.error(
+        "Response:",
+        err.response?.data
+      );
 
       toast.error(
-        err.response?.data?.responseMessage||
-        "Unable to delete salary"
-
+        err.response?.data?.responseMessage ||
+          "Unable to delete salary"
       );
     }
   };
 
+  // ==========================================
+  // USE EFFECT
+  // ==========================================
 
   useEffect(() => {
     getSalary();
   }, []);
 
+  // ==========================================
+  // FILTER SALARY DATA
+  // ==========================================
 
-
-  const filteredSalaryData = salaryData.filter(
-    (salary) => {
+  const filteredSalaryData =
+    salaryData.filter((salary) => {
       const monthMatch =
         !selectedMonth ||
         String(salary.month)
@@ -214,17 +252,37 @@ const SalaryManagement = () => {
           String(selectedYear).trim();
 
       return monthMatch && yearMatch;
-    }
-  );
+    });
 
-
+  // ==========================================
+  // CLEAR FILTERS
+  // ==========================================
 
   const clearFilters = () => {
     setSelectedMonth("");
     setSelectedYear("");
   };
 
+  // ==========================================
+  // VIEW PAYSLIP
+  // ==========================================
 
+  const handleViewSalary = (record) => {
+    console.log(
+      "Selected Salary Record:",
+      record
+    );
+
+    navigate("/Payslip", {
+      state: {
+        salary: record,
+      },
+    });
+  };
+
+  // ==========================================
+  // TABLE COLUMNS
+  // ==========================================
 
   const columns = [
     {
@@ -236,23 +294,22 @@ const SalaryManagement = () => {
       fixed: "left",
 
       render: (name) => {
-        const employeeName = name || "N/A";
+        const employeeName =
+          name || "N/A";
 
         const nameParts =
-          employeeName.trim().split(" ");
+          employeeName
+            .trim()
+            .split(" ");
 
         const initials =
           nameParts.length > 1
             ? `${nameParts[0][0]}${
-                nameParts[nameParts.length - 1][0]
+                nameParts[
+                  nameParts.length - 1
+                ][0]
               }`
             : nameParts[0]?.[0] || "?";
-
-
-
-  
-
-
 
         return (
           <Space>
@@ -260,7 +317,9 @@ const SalaryManagement = () => {
               {initials.toUpperCase()}
             </Avatar>
 
-            <span>{employeeName}</span>
+            <span>
+              {employeeName}
+            </span>
           </Space>
         );
       },
@@ -459,72 +518,97 @@ const SalaryManagement = () => {
       ),
     },
 
-
+    // ==========================================
+    // ACTIONS
+    // ==========================================
 
     {
-  title: "Actions",
-  key: "actions",
-  width: 120,
-  fixed: "right",
+      title: "Actions",
+      key: "actions",
+      width: 120,
+      fixed: "right",
 
-  render: (_, record) => (
-    <Space size="middle">
+      render: (_, record) => (
+        <Space size="middle">
 
-      {/* VIEW SALARY SLIP */}
-      <FaEye
-        className="viewsalary"
-        onClick={() => {
-          console.log("Selected Salary Record:", record);
+          {/* VIEW PAYSLIP */}
+          <FaEye
+            className="viewsalary"
+            title="View Payslip"
+            onClick={() =>
+              handleViewSalary(record)
+            }
+          />
 
-          navigate("/Payslip", {
-            state: {
-              salary: record,
-            },
-          });
-        }}
-      />
+          {/* EDIT SALARY */}
+          <EditOutlined
+            className="edit"
+            title="Edit Salary"
+            onClick={() => {
+              console.log(
+                "FULL RECORD:",
+                record
+              );
 
-      {/* EDIT SALARY */}
-      <EditOutlined
-        className="edit"
-        onClick={() => {
-          console.log("FULL RECORD:", record);
+              navigate(
+                `/editSalary/${record.key}`
+              );
+            }}
+          />
 
-          navigate(`/editSalary/${record.key}`);
-        }}
-      />
+          {/* DELETE SALARY */}
+          <DeleteOutlined
+            className="delete"
+            title="Delete Salary"
+            onClick={() => {
+              deleteSalary(record);
 
-      {/* DELETE SALARY */}
-      <DeleteOutlined
-        className="delete"
-        onClick={() => {
-          deleteSalary(record);
+              console.log(
+                "Delete Salary:",
+                record
+              );
+            }}
+          />
 
-          console.log("Delete Salary:", record);
-        }}
-      />
-
-    </Space>
-  ),
-},
+        </Space>
+      ),
+    },
   ];
 
-
+  // ==========================================
+  // JSX
+  // ==========================================
 
   return (
     <MainPanel>
       <div className="salary-management">
 
-
+        {/* ========================================
+            HEADER
+        ======================================== */}
 
         <div className="page-header">
 
-          <h2>Salary Management</h2>
+          {/* BACK BUTTON */}
+          <button
+            type="button"
+            className="salary-back-btn"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            ← Back
+          </button>
 
+          {/* TITLE */}
+          <h2>
+            Salary Management
+          </h2>
+
+          {/* FILTERS + ADD SALARY */}
           <div className="rightside">
 
             {/* MONTH */}
-
             <SelectInput
               label="Month"
               name="month"
@@ -545,8 +629,7 @@ const SalaryManagement = () => {
               ))}
             </SelectInput>
 
-     
-
+            {/* YEAR */}
             <SelectInput
               label="Year"
               name="year"
@@ -567,27 +650,29 @@ const SalaryManagement = () => {
               ))}
             </SelectInput>
 
-     
-
+            {/* CLEAR */}
             {(selectedMonth ||
               selectedYear) && (
               <button
                 type="button"
                 className="clear-filter-btn"
-                onClick={clearFilters}
+                onClick={
+                  clearFilters
+                }
               >
                 Clear
               </button>
             )}
 
-      
-
+            {/* ADD SALARY */}
             <button
               type="button"
               className="add-salary-btn"
-              onClick={() => navigate("/addSalary")}
-        
-              
+              onClick={() =>
+                navigate(
+                  "/addSalary"
+                )
+              }
             >
               <FaPlus />
               Add Salary
@@ -596,11 +681,15 @@ const SalaryManagement = () => {
           </div>
         </div>
 
-
+        {/* ========================================
+            SALARY TABLE
+        ======================================== */}
 
         <Table
           columns={columns}
-          dataSource={filteredSalaryData}
+          dataSource={
+            filteredSalaryData
+          }
           bordered
           loading={loader}
           scroll={{
@@ -616,7 +705,10 @@ const SalaryManagement = () => {
               "50",
             ],
           }}
-          rowClassName={(_, index) =>
+          rowClassName={(
+            _,
+            index
+          ) =>
             index % 2 === 0
               ? "table-row-light"
               : "table-row-dark"
@@ -629,3 +721,4 @@ const SalaryManagement = () => {
 };
 
 export default SalaryManagement;
+
