@@ -496,18 +496,16 @@ const [showAllRecipients, setShowAllRecipients] = useState(false);
     }
   };
 
-const handleToggleNote = (note) => {
-  setSelectedNote(note);
-  setShowNoteDetailsModal(true);
-  setExpandedNoteId(null);
-  setShowAllRecipients(false);
-};
+  const handleToggleNote = (note) => {
+    setSelectedNote(note);
+    setShowNoteDetailsModal(true);
+    setExpandedNoteId(null);
+  };
 
-const handleCloseNoteDetails = () => {
-  setShowNoteDetailsModal(false);
-  setSelectedNote(null);
-  setShowAllRecipients(false);
-};
+  const handleCloseNoteDetails = () => {
+    setShowNoteDetailsModal(false);
+    setSelectedNote(null);
+  };
   // ==========================================================
   // CHECK EDIT ALLOWED
   // ==========================================================
@@ -1776,7 +1774,7 @@ const handleCloseNoteDetails = () => {
               {/* TITLE */}
 
               <div className="note-details-field">
-                <div className="note-details-label">TITLE</div>
+                <div className="note-details-label">Title</div>
 
                 <div className="note-details-title-value">
                   {selectedNote.title || "-"}
@@ -1786,7 +1784,7 @@ const handleCloseNoteDetails = () => {
               {/* MESSAGE */}
 
               <div className="note-details-field">
-                <div className="note-details-label">MESSAGE</div>
+                <div className="note-details-label">Message</div>
 
                 <div
                   className="note-details-message"
@@ -1798,8 +1796,10 @@ const handleCloseNoteDetails = () => {
 
               {/* SEND TO */}
 
-            <div className="note-details-field">
-  <div className="note-details-label">SEND TO</div>
+            {/* SEND TO */}
+
+<div className="note-details-field">
+  <div className="note-details-label">Sent to</div>
 
   <div className="note-details-recipients">
     {(() => {
@@ -1813,25 +1813,29 @@ const handleCloseNoteDetails = () => {
         );
       }
 
-      const recipientNames = recipientIds.map((recipientId) => {
-        const employee = employees.find(
-          (item) =>
-            String(item.employeeId) === String(recipientId)
-        );
+      const recipientNames = recipientIds
+        .map((recipientId) => {
+          const employee = employees.find(
+            (item) =>
+              String(item.employeeId) === String(recipientId)
+          );
 
-        return employee?.employeeName || `Employee ${recipientId}`;
-      });
+          return employee?.employeeName || `Employee ${recipientId}`;
+        })
+        .filter(Boolean);
 
-      const visibleRecipients = showAllRecipients
-        ? recipientNames
-        : recipientNames.slice(0, 3);
+      const visibleRecipients = recipientNames.slice(0, 3);
 
       const remainingCount =
-        recipientNames.length - 3;
+        recipientNames.length - visibleRecipients.length;
 
       return (
         <>
-          {visibleRecipients.map((name, index) => (
+          {/* FIRST 3 EMPLOYEES */}
+          {(showAllRecipients
+            ? recipientNames
+            : visibleRecipients
+          ).map((name, index) => (
             <span
               key={`${name}-${index}`}
               className="note-recipient-chip"
@@ -1840,6 +1844,7 @@ const handleCloseNoteDetails = () => {
             </span>
           ))}
 
+          {/* +17 BUTTON */}
           {!showAllRecipients && remainingCount > 0 && (
             <button
               type="button"
@@ -1850,13 +1855,14 @@ const handleCloseNoteDetails = () => {
             </button>
           )}
 
+          {/* SHOW LESS */}
           {showAllRecipients && recipientNames.length > 3 && (
             <button
               type="button"
               className="note-recipient-toggle"
               onClick={() => setShowAllRecipients(false)}
             >
-              Show Less
+              Show less
             </button>
           )}
         </>
