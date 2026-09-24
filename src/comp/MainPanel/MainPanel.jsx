@@ -157,34 +157,72 @@ const handlePunchIn = async () => {
 
   if (punchingIn) return;
 
-  const punchInUrl = `${ATTENDANCE_URL}api/punch/in/${employeeId}/false`;
+  // Check possible designation field names
+  const employeeDesignation =
+    userDetails?.employeeDesignation ||
+    userDetails?.designation ||
+    userDetails?.employeeDesignationName ||
+    userDetails?.jobTitle ||
+    "";
+
+  if (!employeeDesignation.trim()) {
+    console.error(
+      "Employee designation is missing from userDetails:",
+      userDetails
+    );
+
+    toast.error("Employee designation not found");
+    return;
+  }
+
+  const punchInUrl = `${attendanceBaseUrl}api/punch/in/${employeeId}/false`;
+
   const payload = {
-    employeeName: userDetails?.employeeName || "",
-    employeeDesignation: userDetails?.employeeDesignation || "",
+    employeeName:
+      userDetails?.employeeName || "",
+
+    employeeDesignation:
+      employeeDesignation,
   };
 
-
   console.log("ATTENDANCE_URL:", ATTENDANCE_URL);
-  console.log("employeeId:", employeeId);
+  console.log("EMPLOYEE ID:", employeeId);
+  console.log("EMPLOYEE NAME:", userDetails?.employeeName);
+  console.log(
+    "EMPLOYEE DESIGNATION:",
+    employeeDesignation
+  );
   console.log("FINAL URL:", punchInUrl);
- 
+  console.log("PUNCH IN PAYLOAD:", payload);
 
   try {
     setPunchingIn(true);
 
-    const response = await axios.post(punchInUrl, payload, {
-      withCredentials: true,
-      headers:{
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.post(
+      punchInUrl,
+      payload,
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    console.log("PUNCH IN RESPONSE:", response.data);
-    console.log("PUNCH IN STATUS:", response.status);
+    console.log(
+      "PUNCH IN RESPONSE:",
+      response.data
+    );
+
+    console.log(
+      "PUNCH IN STATUS:",
+      response.status
+    );
 
     if (response.status === 200) {
       toast.success(
-        response?.data?.message || "Start Your Day successful!",
+        response?.data?.message ||
+          "Start Your Day successful!",
         {
           position: "top-right",
           autoClose: 3000,
@@ -194,10 +232,25 @@ const handlePunchIn = async () => {
       await getTodayPunchDetails(employeeId);
     }
   } catch (error) {
-    console.error("PUNCH IN ERROR:", error);
-    console.error("STATUS:", error?.response?.status);
-    console.error("RESPONSE:", error?.response?.data);
-    console.error("REQUEST URL:", error?.config?.url);
+    console.error(
+      "PUNCH IN ERROR:",
+      error
+    );
+
+    console.error(
+      "STATUS:",
+      error?.response?.status
+    );
+
+    console.error(
+      "RESPONSE:",
+      error?.response?.data
+    );
+
+    console.error(
+      "REQUEST URL:",
+      error?.config?.url
+    );
 
     toast.error(
       error?.response?.data?.message ||
