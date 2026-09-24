@@ -1185,6 +1185,23 @@
   font-size: 18px;
   font-weight: 700;
 }
+.note-recipient-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  color: #087782;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
 
 // ============================================================
 // FOOTER

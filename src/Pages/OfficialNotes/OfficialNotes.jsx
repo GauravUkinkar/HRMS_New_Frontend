@@ -32,7 +32,7 @@ const OfficialNotes = () => {
   // ==========================================================
   // NOTES STATE
   // ==========================================================
-
+const [showAllRecipients, setShowAllRecipients] = useState(false);
   const [notes, setNotes] = useState([]);
   const [notesLoading, setNotesLoading] = useState(false);
   const [notesError, setNotesError] = useState("");
@@ -496,16 +496,18 @@ const OfficialNotes = () => {
     }
   };
 
-  const handleToggleNote = (note) => {
-    setSelectedNote(note);
-    setShowNoteDetailsModal(true);
-    setExpandedNoteId(null);
-  };
+const handleToggleNote = (note) => {
+  setSelectedNote(note);
+  setShowNoteDetailsModal(true);
+  setExpandedNoteId(null);
+  setShowAllRecipients(false);
+};
 
-  const handleCloseNoteDetails = () => {
-    setShowNoteDetailsModal(false);
-    setSelectedNote(null);
-  };
+const handleCloseNoteDetails = () => {
+  setShowNoteDetailsModal(false);
+  setSelectedNote(null);
+  setShowAllRecipients(false);
+};
   // ==========================================================
   // CHECK EDIT ALLOWED
   // ==========================================================
@@ -1796,58 +1798,72 @@ const OfficialNotes = () => {
 
               {/* SEND TO */}
 
-              <div className="note-details-field">
-                <div className="note-details-label">SEND TO</div>
+            <div className="note-details-field">
+  <div className="note-details-label">SEND TO</div>
 
-                <div className="note-details-recipients">
-                  {(() => {
-                    const recipientIds = selectedNote.recipientUids || [];
+  <div className="note-details-recipients">
+    {(() => {
+      const recipientIds = selectedNote.recipientUids || [];
 
-                    if (recipientIds.length === 0) {
-                      return (
-                        <span className="note-recipient-chip">
-                          No recipients
-                        </span>
-                      );
-                    }
+      if (recipientIds.length === 0) {
+        return (
+          <span className="note-recipient-chip">
+            No recipients
+          </span>
+        );
+      }
 
-                    const recipientNames = recipientIds.map((recipientId) => {
-                      const employee = employees.find(
-                        (item) =>
-                          String(item.employeeId) === String(recipientId),
-                      );
+      const recipientNames = recipientIds.map((recipientId) => {
+        const employee = employees.find(
+          (item) =>
+            String(item.employeeId) === String(recipientId)
+        );
 
-                      return (
-                        employee?.employeeName || `Employee ${recipientId}`
-                      );
-                    });
+        return employee?.employeeName || `Employee ${recipientId}`;
+      });
 
-                    const visibleRecipients = recipientNames.slice(0, 3);
+      const visibleRecipients = showAllRecipients
+        ? recipientNames
+        : recipientNames.slice(0, 3);
 
-                    const remainingCount =
-                      recipientNames.length - visibleRecipients.length;
+      const remainingCount =
+        recipientNames.length - 3;
 
-                    return (
-                      <>
-                        {visibleRecipients.map((name, index) => (
-                          <span
-                            key={`${name}-${index}`}
-                            className="note-recipient-chip"
-                          >
-                            {name}
-                          </span>
-                        ))}
+      return (
+        <>
+          {visibleRecipients.map((name, index) => (
+            <span
+              key={`${name}-${index}`}
+              className="note-recipient-chip"
+            >
+              {name}
+            </span>
+          ))}
 
-                        {remainingCount > 0 && (
-                          <span className="note-recipient-more">
-                            +{remainingCount}
-                          </span>
-                        )}
-                      </>
-                    );
-                  })()}
-                </div>
-              </div>
+          {!showAllRecipients && remainingCount > 0 && (
+            <button
+              type="button"
+              className="note-recipient-toggle"
+              onClick={() => setShowAllRecipients(true)}
+            >
+              +{remainingCount}
+            </button>
+          )}
+
+          {showAllRecipients && recipientNames.length > 3 && (
+            <button
+              type="button"
+              className="note-recipient-toggle"
+              onClick={() => setShowAllRecipients(false)}
+            >
+              Show Less
+            </button>
+          )}
+        </>
+      );
+    })()}
+  </div>
+</div>
             </div>
 
             {/* ==================================================
