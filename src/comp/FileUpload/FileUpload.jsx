@@ -37,15 +37,15 @@ const FileUpload = ({
           borderColor: error
             ? "#dc2626"
             : file
-            ? "#22c55e"
-            : "black",
+              ? "#22c55e"
+              : "black",
           height: "56px",
           textTransform: "none",
           backgroundColor: error
             ? "#fef2f2"
             : file
-            ? "#f0fdf4"
-            : "transparent",
+              ? "#f0fdf4"
+              : "transparent",
           "&:hover": {
             borderColor: error
               ? "#dc2626"
@@ -53,8 +53,8 @@ const FileUpload = ({
             backgroundColor: error
               ? "#fef2f2"
               : file
-              ? "#f0fdf4"
-              : "transparent",
+                ? "#f0fdf4"
+                : "transparent",
           },
         }}
       >
