@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState, useRef } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
+import BirthdayPopup from "../../comp/BirthdayPopup/BirthdayPopup";
 import "./Empdashboard.scss";
 import Calender from "../../comp/Calender/Calender";
 import { UserContext } from "../../../Context";
@@ -598,7 +599,8 @@ const EmployeeDash = () => {
 
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
-
+  const [showBirthdayPopup, setShowBirthdayPopup] = useState(false);
+  const [birthdayNotification, setBirthdayNotification] = useState(null);
   const displayedNotifications = showUnread
     ? unreadNotifications
     : notifications;
@@ -615,6 +617,16 @@ const EmployeeDash = () => {
     return plainText.length > 80
       ? `${plainText.substring(0, 80)}...`
       : plainText;
+  };
+
+  const isBirthdayNotification = (notification) => {
+    const title = String(notification?.title || "").toLowerCase();
+    const message = String(notification?.message || "").toLowerCase();
+
+    return (
+      title.includes("happy birthday") ||
+      message.includes("happy birthday")
+    );
   };
 
   const handleNotificationClick = async (notification) => {
@@ -648,6 +660,17 @@ const EmployeeDash = () => {
       console.log("NOTIFICATION DATA:", notificationData);
 
       setNotifications(notificationData);
+
+      const birthdayNotificationData = notificationData.find(
+        (notification) =>
+          !notification?.isRead &&
+          isBirthdayNotification(notification)
+      );
+
+      if (birthdayNotificationData) {
+        setBirthdayNotification(birthdayNotificationData);
+        setShowBirthdayPopup(true);
+      }
     } catch (error) {
       console.error("Notification API Error:", error);
       console.error("Status:", error?.response?.status);
@@ -713,6 +736,14 @@ const EmployeeDash = () => {
     } finally {
       setNotificationLoader(false);
     }
+  };
+  const handleBirthdayPopupClose = async () => {
+    if (birthdayNotification?.id) {
+      await markNotificationAsRead(birthdayNotification.id);
+    }
+
+    setShowBirthdayPopup(false);
+    setBirthdayNotification(null);
   };
 
   const markNotificationAsRead = async (notificationId) => {
@@ -898,6 +929,14 @@ const EmployeeDash = () => {
     getNotifications();
     getNotificationCount();
     getBirthdayEmployees();
+  }, []);
+  useEffect(() => {
+    const notificationTimer = setInterval(() => {
+      getNotifications();
+      getNotificationCount();
+    }, 10000);
+
+    return () => clearInterval(notificationTimer);
   }, []);
   useEffect(() => {
     getAllLeaveRecords();
@@ -1550,6 +1589,12 @@ const EmployeeDash = () => {
           </div>
         </div>
       </MainPanel>
+      <BirthdayPopup
+        open={showBirthdayPopup}
+        notification={birthdayNotification}
+        employee={user}
+        onClose={handleBirthdayPopupClose}
+      />
     </>
   );
 };
