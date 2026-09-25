@@ -81,7 +81,9 @@ const Attendance = () => {
 
   const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1);
 
-  const [selectedYear, setSelectedYear] = useState(dayjs().year());
+ const [selectedYear, setSelectedYear] = useState(
+  String(dayjs().year())
+);
 
   // ============================================================
   // ADD PREVIOUS ATTENDANCE
@@ -451,32 +453,40 @@ const Attendance = () => {
   };
 
   const handleEmployeeMonthChange = async (e) => {
-    const month = Number(e.target.value);
+  const month = Number(e.target.value);
 
-    setSelectedMonth(month);
+  setSelectedMonth(month);
 
-    await getEmployeeMonthlyAttendance(
-      selectedEmployee?.employeeId,
-      month,
-      selectedYear,
-    );
-  };
+  await getEmployeeMonthlyAttendance(
+    selectedEmployee?.employeeId,
+    month,
+    Number(selectedYear)
+  );
+};
 
-  const handleEmployeeYearChange = async (e) => {
-    const year = Number(e.target.value);
+const handleEmployeeYearChange = async (e) => {
+  const value = e.target.value;
 
-    if (!year || year < 2000 || year > 2100) {
+  if (value.length > 4) {
+    return;
+  }
+
+  setSelectedYear(value);
+
+  if (value.length === 4) {
+    const year = Number(value);
+
+    if (year < 2000 || year > 2100) {
       return;
     }
-
-    setSelectedYear(year);
 
     await getEmployeeMonthlyAttendance(
       selectedEmployee?.employeeId,
       selectedMonth,
-      year,
+      year
     );
-  };
+  }
+};
 
   const closeEmployeeAttendance = () => {
     setShowEmployeeAttendance(false);
@@ -870,121 +880,130 @@ const Attendance = () => {
     return record?.status?.toString().trim().toUpperCase() || null;
   };
 
+
+
+  const getAttendanceForSelectedDate = async (date) => {
+  if (!date) {
+    return [];
+  }
+
+  try {
+    const response = await axios.get(
+      `${BASE_URL2}api/punch/getPreviousAttendence`,
+      {
+        params: {
+          startDate: date,
+          endDate: date,
+        },
+      }
+    );
+
+    if (Array.isArray(response?.data?.data)) {
+      return response.data.data;
+    }
+
+    if (Array.isArray(response?.data)) {
+      return response.data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("Selected Date Attendance Error:", error);
+    return [];
+  }
+};
   // ============================================================
   // ADJUST PREVIOUS ATTENDANCE
   // ============================================================
 
   const adjustPreviousAttendance = async () => {
-    const { employeeId, date, status } = previousAttendance;
+  const { employeeId, date, status } = previousAttendance;
 
-    if (!selectedEmployees.length) {
-      toast.error("Please select employee");
-      return;
-    }
+  if (!selectedEmployees.length) {
+    toast.error("Please select employee");
+    return;
+  }
 
-    if (!date) {
-      toast.error("Please select date");
-      return;
-    }
+  if (!date) {
+    toast.error("Please select date");
+    return;
+  }
 
-    if (!status) {
-      toast.error("Please select status");
-      return;
-    }
+  if (!status) {
+    toast.error("Please select status");
+    return;
+  }
 
-    try {
-      setAttendanceHistoryLoading(true);
+  try {
+    setAttendanceHistoryLoading(true);
 
-      const isBulk =
-        selectedEmployees.length > 1 ||
-        employeeId === "ALL" ||
-        employeeId === "MULTIPLE";
+    const isBulk =
+      selectedEmployees.length > 1 ||
+      employeeId === "ALL" ||
+      employeeId === "MULTIPLE";
 
-      if (isBulk) {
-        const employees = allemployee
-          .filter((item) => selectedEmployees.includes(item?.empId))
-          .map((item) => ({
-            employeeId: item?.empId || "",
-            attendanceType: status,
-            employeeName: item?.name || "",
-            employeeDesignation: item?.designation || "",
-          }))
-          .filter((item) => item.employeeId);
+    if (isBulk) {
+      let eligibleEmployees = [];
 
-        if (!employees.length) {
-          toast.error("No employees selected");
-          return;
-        }
+      if (employeeId === "ALL") {
+        const attendanceForDate = await getAttendanceForSelectedDate(date);
 
-        const response = await axios.post(
-          `${BASE_URL2}api/punch/bulkAdjustment`,
-          {
-            date,
-            employee: employees,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          },
+        const eligibleEmployeeIds = new Set(
+          attendanceForDate
+            .filter((item) => {
+              const attendanceStatus = String(item?.status || "")
+                .trim()
+                .toUpperCase();
+
+              return attendanceStatus !== "ABSENT";
+            })
+            .map((item) => String(item?.employeeId || "").trim())
+            .filter(Boolean)
         );
 
-        if (response?.status === 200 && response?.data?.success !== false) {
-          toast.success(
-            response?.data?.message || "Attendance adjustment completed",
-          );
-
-          await getEmployeeData();
-
-          setPreviousAttendance({
-            employeeId: "",
-            date: "",
-            status: "",
-          });
-
-          setSelectedEmployees([]);
-          setPreviousAttendanceData([]);
-          setEmployeeDropdownOpen(false);
-          setDatePickerOpen(false);
-          setShowAttendanceModal(false);
-        } else {
-          throw new Error(
-            response?.data?.message || "Unable to update attendance",
-          );
-        }
-
-        return;
+        eligibleEmployees = allemployee.filter((item) =>
+          eligibleEmployeeIds.has(String(item?.empId || "").trim())
+        );
+      } else {
+        eligibleEmployees = allemployee.filter((item) =>
+          selectedEmployees.includes(item?.empId)
+        );
       }
 
-      const selectedEmployeeData = allemployee.find(
-        (item) => String(item?.empId || "") === String(employeeId),
-      );
+      const employees = eligibleEmployees
+        .map((item) => ({
+          employeeId: item?.empId || "",
+          attendanceType: status,
+          employeeName: item?.name || "",
+          employeeDesignation: item?.designation || "",
+        }))
+        .filter((item) => item.employeeId);
 
-      if (!selectedEmployeeData) {
-        toast.error("Selected employee not found");
+      if (!employees.length) {
+        toast.error("No eligible employees found for selected date");
         return;
       }
 
       const response = await axios.post(
-        `${BASE_URL2}api/punch/adjust/${employeeId}`,
+        `${BASE_URL2}api/punch/bulkAdjustment`,
         {
           date,
-          attendanceType: status,
-          employeeName: selectedEmployeeData.name || "",
-          employeeDesignation: selectedEmployeeData.designation || "",
+          employee: employees,
         },
         {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
 
       if (response?.status === 200 && response?.data?.success !== false) {
-        toast.success("Previous Attendance Updated Successfully");
+        toast.success(
+          response?.data?.message || "Attendance adjustment completed"
+        );
 
-        await getEmployeeData();
-        await getPreviousAttendance(employeeId);
+        const employeesList = await getAllEmployee();
+        await getEmployeeData(employeesList);
 
         setPreviousAttendance({
           employeeId: "",
@@ -999,21 +1018,71 @@ const Attendance = () => {
         setShowAttendanceModal(false);
       } else {
         throw new Error(
-          response?.data?.message || "Unable to update previous attendance",
+          response?.data?.message || "Unable to update attendance"
         );
       }
-    } catch (error) {
-      console.error("Adjust Previous Attendance Error:", error);
 
-      toast.error(
-        error?.response?.data?.message ||
-        error?.message ||
-        "Unable to update previous attendance",
-      );
-    } finally {
-      setAttendanceHistoryLoading(false);
+      return;
     }
-  };
+
+    const selectedEmployeeData = allemployee.find(
+      (item) => String(item?.empId || "") === String(employeeId)
+    );
+
+    if (!selectedEmployeeData) {
+      toast.error("Selected employee not found");
+      return;
+    }
+
+    const response = await axios.post(
+      `${BASE_URL2}api/punch/adjust/${employeeId}`,
+      {
+        date,
+        attendanceType: status,
+        employeeName: selectedEmployeeData.name || "",
+        employeeDesignation: selectedEmployeeData.designation || "",
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response?.status === 200 && response?.data?.success !== false) {
+      toast.success("Previous Attendance Updated Successfully");
+
+      await getEmployeeData();
+      await getPreviousAttendance(employeeId);
+
+      setPreviousAttendance({
+        employeeId: "",
+        date: "",
+        status: "",
+      });
+
+      setSelectedEmployees([]);
+      setPreviousAttendanceData([]);
+      setEmployeeDropdownOpen(false);
+      setDatePickerOpen(false);
+      setShowAttendanceModal(false);
+    } else {
+      throw new Error(
+        response?.data?.message || "Unable to update previous attendance"
+      );
+    }
+  } catch (error) {
+    console.error("Adjust Previous Attendance Error:", error);
+
+    toast.error(
+      error?.response?.data?.message ||
+        error?.message ||
+        "Unable to update previous attendance"
+    );
+  } finally {
+    setAttendanceHistoryLoading(false);
+  }
+};
 
   // ============================================================
   // MARK PRESENT
