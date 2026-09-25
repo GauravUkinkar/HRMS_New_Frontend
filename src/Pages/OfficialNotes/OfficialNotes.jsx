@@ -1877,13 +1877,7 @@ const [showAllRecipients, setShowAllRecipients] = useState(false);
       ================================================== */}
 
             <div className="note-details-modal-footer">
-              <button
-                type="button"
-                className="note-details-close-btn"
-                onClick={handleCloseNoteDetails}
-              >
-                 Close 
-              </button>
+          
             </div>
           </div>
         </div>
