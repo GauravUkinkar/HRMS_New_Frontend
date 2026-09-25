@@ -18,10 +18,7 @@ import axios from "axios";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
 
-import {
-  useNavigate,
-  Link,
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { toast } from "react-toastify";
 
@@ -91,24 +88,58 @@ const SalaryManagement = () => {
         .map((item, index) => {
           if (!item?.data) return null;
 
+          /*
+           * IMPORTANT:
+           * Keep ALL fields returned by the API.
+           *
+           * Earlier we were manually selecting only some
+           * fields, so companyName, basicSalary, HRA,
+           * bank details, PAN, UAN etc. were getting lost.
+           */
+
           return {
+            ...item.data,
+
             key: item.data.sid || index + 1,
 
+            // Employee information
             employeeName:
               item.data.employeeName || "N/A",
 
             employeeId:
               item.data.employeeId || "N/A",
 
+            // Company
+            companyName:
+              item.data.companyName ||
+              item.data.company ||
+              item.data.company_name ||
+              "",
+
+            // Salary period
             month:
               item.data.month || "N/A",
 
             year:
               item.data.year || "N/A",
 
+            // Earnings
             grossSalary:
               item.data.grossSalary ?? 0,
 
+            basicSalary:
+              item.data.basicSalary ?? 0,
+
+            da:
+              item.data.da ?? 0,
+
+            hra:
+              item.data.hra ?? 0,
+
+            otherAllowance:
+              item.data.otherAllowance ?? 0,
+
+            // Attendance
             totalWorkingDay:
               item.data.totalWorkingDay ?? 0,
 
@@ -121,9 +152,7 @@ const SalaryManagement = () => {
             lop:
               item.data.lop ?? 0,
 
-            da:
-              item.data.da ?? 0,
-
+            // Deductions
             employeePf:
               item.data.employeePf ?? 0,
 
@@ -139,17 +168,39 @@ const SalaryManagement = () => {
             otherDiduction:
               item.data.otherDiduction ?? 0,
 
-            otherAllowance:
-              item.data.otherAllowance ?? 0,
-
             professionalTax:
               item.data.professionalTax ?? 0,
 
             insuranceCorporation:
               item.data.insuranceCorporation ?? 0,
 
+            // Net salary
             netSalary:
               item.data.netSalary ?? 0,
+
+            // Employee personal/payment information
+            paydate:
+              item.data.paydate ??
+              item.data.payDate ??
+              "",
+
+            bankName:
+              item.data.bankName ?? "",
+
+            accountNumber:
+              item.data.accountNumber ??
+              item.data.accountNo ??
+              "",
+
+            panNumber:
+              item.data.panNumber ??
+              item.data.panNo ??
+              "",
+
+            uanNo:
+              item.data.uanNo ??
+              item.data.uanNumber ??
+              "",
           };
         })
         .filter(Boolean);
@@ -170,9 +221,38 @@ const SalaryManagement = () => {
         "ERROR:",
         error.response?.data
       );
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+          "Unable to fetch salary data"
+      );
     } finally {
       setLoader(false);
     }
+  };
+
+  // ==========================================
+  // VIEW PAYSLIP
+  // ==========================================
+
+  const handleViewPayslip = (record) => {
+    console.log(
+      "FULL PAYSLIP RECORD:",
+      record
+    );
+
+    /*
+     * Send the complete selected employee salary
+     * record to the Payslip page.
+     */
+
+    navigate("/Payslip", {
+      state: {
+        payslip: {
+          ...record,
+        },
+      },
+    });
   };
 
   // ==========================================
@@ -181,7 +261,10 @@ const SalaryManagement = () => {
 
   const deleteSalary = async (record) => {
     try {
-      console.log("Deleting Salary:", record);
+      console.log(
+        "Deleting Salary:",
+        record
+      );
 
       const response = await axios.delete(
         `${BASE_URL}admin/deleteNewSalary`,
@@ -252,8 +335,10 @@ const SalaryManagement = () => {
 
       const yearMatch =
         !selectedYear ||
-        String(salary.year).trim() ===
-          String(selectedYear).trim();
+        String(salary.year)
+          .trim() ===
+          String(selectedYear)
+            .trim();
 
       return monthMatch && yearMatch;
     });
@@ -520,15 +605,16 @@ const SalaryManagement = () => {
 
           {/* VIEW PAYSLIP */}
 
-          <Link
-            to="/Payslip"
+          <button
+            type="button"
             className="view-salary-link"
+            onClick={() =>
+              handleViewPayslip(record)
+            }
+            title="View Payslip"
           >
-            <FaEye
-              className="viewsalary"
-              title="View Payslip"
-            />
-          </Link>
+            <FaEye className="viewsalary" />
+          </button>
 
           {/* EDIT SALARY */}
 
