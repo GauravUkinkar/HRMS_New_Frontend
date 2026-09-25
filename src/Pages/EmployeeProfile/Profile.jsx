@@ -123,7 +123,9 @@ const Profile = () => {
             : "Admin Dashboard"
         }
       >
-        <button className="btn1"><IoMdArrowBack />Back</button>
+        <Link to="/">
+        <button className="btn1"><IoMdArrowBack />Back</button></Link>
+        
 
         {loader && <p>loading.....</p>}
         <div className="bottom-side">

@@ -8,6 +8,9 @@ import { MdOutlinePreview } from "react-icons/md";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import { IoMdArrowBack } from "react-icons/io";
+
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
@@ -298,17 +301,25 @@ const Empviewdoc = () => {
 
   return (
     <MainPanel
-      title="View Uploaded Documents"
+              title={
+          String(user?.role || user?.crmRole || "")
+            .trim()
+            .toUpperCase() === "EMPLOYEE"
+            ? "Employee Dashboard"
+            : "Admin Dashboard"
+        }
       breadcrumbs={[
         {
           label: "Dashboard",
-          link: "/dashboard",
+          link: "/",
         },
         {
           label: "View Documents",
         },
       ]}
     >
+              <Link to="/">
+        <button className="btn1"><IoMdArrowBack />Back</button></Link>
       <div className="view-doc">
         {/* HEADER */}
 

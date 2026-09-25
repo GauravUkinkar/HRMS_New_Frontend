@@ -1,10 +1,14 @@
 .payslip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
     background-color: var(--accent2);
+    border-radius: 5px;
 
     h2 {
       color: white;

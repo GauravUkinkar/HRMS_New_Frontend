@@ -1107,7 +1107,7 @@ const EmployeeDash = () => {
                   <div className="buttons">
                     {punchInTime && !punchOutTime ? (
                       <button
-                        className="btn1"
+                        className="btn"
                         onClick={confirmPunchOut}
                         disabled={punchingOut}
                       >
@@ -1115,7 +1115,7 @@ const EmployeeDash = () => {
                       </button>
                     ) : !punchInTime ? (
                       <button
-                        className="btn1"
+                        className="btn"
                         onClick={handlePunchIn}
                         disabled={punchingIn}
                       >
@@ -1123,7 +1123,7 @@ const EmployeeDash = () => {
                       </button>
                     ) : (
                       <button
-                        className="btn1"
+                        className="btn"
                         disabled
                       >
                         Day Ended

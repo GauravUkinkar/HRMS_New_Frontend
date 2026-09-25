@@ -7,6 +7,8 @@ import "./EmpLeave.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../../Context";
+import { IoMdArrowBack } from "react-icons/io";
+
 
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
@@ -336,7 +338,22 @@ const LeaveManagement = () => {
   ];
 
   return (
-    <MainPanel>
+    <MainPanel
+                  breadcrumbs={[
+          { label: "Dashboard", link: "/" },
+          { label: "Leave Management" },
+        ]}
+        
+        title={
+          String(user?.role || user?.crmRole || "")
+            .trim()
+            .toUpperCase() === "EMPLOYEE"
+            ? "Employee Dashboard"
+            : "Admin Dashboard"
+        }
+    >
+              <Link to="/">
+              <button className="btn1"><IoMdArrowBack />Back</button></Link>
       <div className="leave-list">
         <div className="page-header">
           <h2>Leave Management</h2>

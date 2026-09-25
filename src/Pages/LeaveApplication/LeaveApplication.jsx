@@ -12,6 +12,11 @@ import {
   Tooltip,
 } from "recharts";
 import { toast } from "react-toastify";
+import { IoMdArrowBack } from "react-icons/io";
+import { Link } from "react-router-dom";
+
+
+
 
 const DatePicker = DatePickerModule?.default || DatePickerModule;
 
@@ -285,7 +290,22 @@ const formatEntryDate = () => {
 
 
   return (
-    <MainPanel>
+    <MainPanel
+                  breadcrumbs={[
+          { label: "Dashboard", link: "/dashboard" },
+          { label: "Leave Management" },
+        ]}
+        
+        title={
+          String(user?.role || user?.crmRole || "")
+            .trim()
+            .toUpperCase() === "EMPLOYEE"
+            ? "Employee Dashboard"
+            : "Admin Dashboard"
+        }
+    >
+              <Link to="/">
+        <button className="btn1"><IoMdArrowBack />Back</button></Link>
       <div className="leave-container">
 
 

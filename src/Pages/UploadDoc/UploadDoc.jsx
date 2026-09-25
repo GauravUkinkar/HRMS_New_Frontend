@@ -5,6 +5,8 @@ import FileUpload from "../../comp/FileUpload/FileUpload";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { UserContext } from "../../../Context";
+import { Link } from "react-router-dom";
+import { IoMdArrowBack } from "react-icons/io";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
@@ -234,15 +236,22 @@ const UploadDoc = () => {
   };
 
   return (
+    
     <MainPanel
+                  breadcrumbs={[
+          { label: "Dashboard", link: "/dashboard" },
+          { label: "Upload Documents" },
+        ]}
       title={
         String(user?.role || user?.crmRole || "")
           .trim()
           .toUpperCase() === "EMPLOYEE"
           ? "Employee Dashboard"
-          : "Admin Dashboard"
+          : "Upload Documents"
       }
     >
+              <Link to="/">
+        <button className="btn1"><IoMdArrowBack />Back</button></Link>
       <div className="upload-parent">
         <h1>
           {hasExistingDocuments

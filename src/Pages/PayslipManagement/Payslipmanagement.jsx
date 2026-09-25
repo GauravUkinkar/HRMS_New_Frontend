@@ -7,6 +7,10 @@ import { UserContext } from "../../../Context";
 import { IoEyeOutline } from "react-icons/io5";
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
+import { IoMdArrowBack } from "react-icons/io";
+import { Link } from "react-router-dom";
+
+
 const Payslipmanagement = () => {
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
@@ -309,7 +313,16 @@ const getPayslip = async (month, year) => {
         { label: "Dashboard", link: "/dashboard" },
         { label: "PayslipManagement" },
       ]}
+              title={
+          String(user?.role || user?.crmRole || "")
+            .trim()
+            .toUpperCase() === "EMPLOYEE"
+            ? "Employee Dashboard"
+            : "Admin Dashboard"
+        }
     >
+              <Link to="/">
+              <button className="btn1"><IoMdArrowBack />Back</button></Link>
       <div className="payslip-list">
         <div className="page-header">
           <h2>Salary Slip</h2>

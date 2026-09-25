@@ -21,6 +21,10 @@ import nvmWatermark from "../../assets/nvm-watermark.png";
 import nvmLogo from "../../assets/nvm-logo.png";
 
 import { UserContext } from "../../../Context";
+import { IoMdArrowBack } from "react-icons/io";
+import { Link } from "react-router-dom";
+
+
 
 const Payslip = () => {
   const location = useLocation();
@@ -130,7 +134,9 @@ const Payslip = () => {
 
   if (!currentCompany) {
     return (
-      <MainPanel>
+      <MainPanel
+      
+      >
         <div className="main-container">
           <div className="payslip-container">
             <p>
@@ -147,7 +153,22 @@ const Payslip = () => {
 
 
   return (
-    <MainPanel>
+    <MainPanel
+                  breadcrumbs={[
+          { label: "Dashboard", link: "/dashboard" },
+          { label: "Salary Slip" },
+        ]}
+        
+        title={
+          String(user?.role || user?.crmRole || "")
+            .trim()
+            .toUpperCase() === "EMPLOYEE"
+            ? "Employee Dashboard"
+            : "Admin Dashboard"
+        }
+    >
+              <Link to="/">
+              <button className="btn1"><IoMdArrowBack />Back</button></Link>
       <div className="main-container">
 
         <div

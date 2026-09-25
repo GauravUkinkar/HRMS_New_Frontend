@@ -9,11 +9,15 @@
   background-color: var(--accent2);
   color: white;
   cursor: pointer;
+  text-decoration: none;
  
   &:hover{
     transform: translateY(-5px);
     transition: var(--trans);
   }
+}
+a{
+  text-decoration: none;
 }
 .bottom-side {
   width: 100%;
