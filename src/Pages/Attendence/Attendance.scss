@@ -5,6 +5,7 @@
   align-items: center;
   padding: 20px 10px;
   box-sizing: border-box;
+  flex-direction: column;
 
   h1 {
     font-size: 28px;
@@ -41,9 +42,25 @@
 
     white-space: nowrap;
 
+    cursor: pointer;
+    transition: 0.2s ease;
+
     span {
       font-size: 15px;
       font-weight: 700;
+    }
+
+    &:hover {
+      background: #f1fafa;
+    }
+
+    &.active {
+      background: #008c9e;
+      color: #fff;
+    }
+
+    &.active span {
+      color: #fff;
     }
   }
 }
@@ -341,7 +358,7 @@
   display: flex;
 
   align-items: center;
-
+justify-content: space-between;
   margin-bottom: 25px;
 
   position: relative;
