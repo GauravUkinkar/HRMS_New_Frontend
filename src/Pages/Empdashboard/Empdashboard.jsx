@@ -737,6 +737,14 @@ const EmployeeDash = () => {
       setNotificationLoader(false);
     }
   };
+  const handleBirthdayPopupClose = async () => {
+    if (birthdayNotification?.id) {
+      await markNotificationAsRead(birthdayNotification.id);
+    }
+
+    setShowBirthdayPopup(false);
+    setBirthdayNotification(null);
+  };
 
   const markNotificationAsRead = async (notificationId) => {
     try {
@@ -1585,7 +1593,7 @@ const EmployeeDash = () => {
         open={showBirthdayPopup}
         notification={birthdayNotification}
         employee={user}
-        onClose={() => setShowBirthdayPopup(false)}
+        onClose={handleBirthdayPopupClose}
       />
     </>
   );
