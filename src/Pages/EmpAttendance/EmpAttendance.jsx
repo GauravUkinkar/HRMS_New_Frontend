@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 
 const Attendance = () => {
-  const [allemployee] = useState([]);
+  const [allemployee, setAllEmployee] = useState([]);
 
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
@@ -16,38 +16,107 @@ const Attendance = () => {
   const [showEmployeeAttendance] = useState(false);
   const [selectedEmployee] = useState(null);
   const [employeeAttendanceList] = useState([]);
-  const [employeeAttendanceLoading] =
-    useState(false);
+  const [employeeAttendanceLoading] = useState(false);
 
+  const getAllEmployee = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_USER_BACKEND_URL}Admin/GetAllEmployee`,
+        {
+          withCredentials: true,
+        },
+      );
 
+      const rawEmployees = Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.data?.data)
+          ? response.data.data
+          : [];
+
+      const employees = rawEmployees.map((item, index) => {
+        const employee = item?.data || item;
+
+        return {
+          key: index + 1,
+          employeeId: employee?.employeeId || "",
+          employeeName: employee?.employeeName || "",
+          employeeDesignation:
+            employee?.employeeDesignation || employee?.designation || "",
+        };
+      });
+
+      setAllEmployee(employees);
+
+      console.log("ALL EMPLOYEES:", employees);
+      console.log("TOTAL EMPLOYEES:", employees.length);
+    } catch (error) {
+      console.error("Get All Employee Error:", error?.response?.data || error);
+
+      setAllEmployee([]);
+    }
+  };
   const getEmployeeData = async () => {
     try {
       setLoader(true);
       const response = await axios.get(`${BASE_URL2}api/punch/details`);
 
-      const tableData =
-        response?.data?.data
-          ?.sort(
-            (a, b) => new Date(a?.punchIn || 0) - new Date(b?.punchIn || 0),
-          )
-          .map((item, index) => ({
-            key: item?.employeeId || index,
-            employeeId: item?.employeeId || "",
-            employeeName: item?.employeeName?.toUpperCase() || "",
-            employeeDesignation:item?.employeeDesignation?.toUpperCase() || "",
-            punchIn: item?.punchInByAdmin
-              ? "Punch In From Admin"
-              : item?.punchIn
-                ? item.punchIn.split("T")[1]?.replace("Z", "").slice(0, 8)
-                : "",
-            punchOut: item?.punchOutByAdmin
-              ? "Punch Out From Admin"
-              : item?.punchOut
-                ? item.punchOut.split("T")[1]?.replace("Z", "").slice(0, 8)
-                : "",
-            status: item?.status || "Absent",
-          })) || [];
+const tableData =
+  response?.data?.data
+    ?.sort(
+      (a, b) =>
+        new Date(a?.punchIn || 0) -
+        new Date(b?.punchIn || 0)
+    )
+    .map((item, index) => {
+      let status = String(item?.status || "")
+        .trim()
+        .toUpperCase();
 
+      if (item?.punchIn) {
+        status = "IN Office";
+      } else if (status === "HALF_DAY") {
+        status = "HALF_DAY";
+      } else if (
+        status === "FULL_DAY" ||
+        status === "PRESENT"
+      ) {
+        status = "PRESENT";
+      } else {
+        status = "ABSENT";
+      }
+
+      return {
+        key: item?.employeeId || index,
+
+        employeeId: item?.employeeId || "",
+
+        employeeName:
+          item?.employeeName?.toUpperCase() || "",
+
+        employeeDesignation:
+          item?.employeeDesignation?.toUpperCase() || "",
+
+        punchIn: item?.punchInByAdmin
+          ? "Punch In From Admin"
+          : item?.punchIn
+            ? item.punchIn
+                .split("T")[1]
+                ?.replace("Z", "")
+                .slice(0, 8)
+            : "",
+
+        punchOut: item?.punchOutByAdmin
+          ? "Punch Out From Admin"
+          : item?.punchOut
+            ? item.punchOut
+                .split("T")[1]
+                ?.replace("Z", "")
+                .slice(0, 8)
+            : "",
+
+        status,
+      };
+    }) || [];
       setData(tableData);
 
       console.log("TODAY ATTENDANCE:", tableData);
@@ -155,33 +224,38 @@ const Attendance = () => {
     },
   ];
 
-
-
-
   useEffect(() => {
-   
     getEmployeeData();
+    getAllEmployee();
   }, []);
 
   const totalEmployees = allemployee.length;
 
-  const presentEmployees = data.filter((item) => {
-    const status = String(item?.status || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "");
+  const presentEmployeeIds = new Set(
+    data
+      .filter((item) => {
+        const status = String(item?.status || "")
+          .trim()
+          .toLowerCase()
+          .replace(/[\s_-]+/g, "");
 
-    return status === "inoffice" || status === "present";
-  }).length;
+        const hasPunchIn =
+          Boolean(item?.punchIn) && item?.punchIn !== "Punch In From Admin";
 
-  const absentEmployees = data.filter((item) => {
-    const status = String(item?.status || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, "");
+        return (
+          hasPunchIn ||
+          status === "inoffice" ||
+          status === "present" ||
+          status === "fullday"
+        );
+      })
+      .map((item) => String(item?.employeeId || "").trim())
+      .filter(Boolean),
+  );
 
-    return status === "absent";
-  }).length;
+  const presentEmployees = presentEmployeeIds.size;
+
+  const absentEmployees = Math.max(totalEmployees - presentEmployees, 0);
 
   const columns = [
     {
@@ -213,7 +287,6 @@ const Attendance = () => {
       dataIndex: "punchIn",
       key: "punchIn",
       align: "center",
-
     },
 
     {
@@ -304,10 +377,6 @@ const Attendance = () => {
 
       {showEmployeeAttendance ? (
         <>
-
-
-   
-
           <Table_Comp
             columns={employeeAttendanceColumns}
             data={employeeAttendanceList.map((item, index) => ({
@@ -327,9 +396,7 @@ const Attendance = () => {
         </>
       ) : showPreviousAttendance ? (
         <>
-          <Table_Comp
-            columns={previousAttendanceColumns}
-          />
+          <Table_Comp columns={previousAttendanceColumns} />
         </>
       ) : (
         <Table_Comp columns={columns} data={data} loading={loader} />
