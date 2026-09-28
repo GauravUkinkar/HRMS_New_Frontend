@@ -7,11 +7,9 @@ on:
 
 jobs:
   build-and-deploy:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -27,12 +25,13 @@ jobs:
       - name: Build Vite application
         run: npm run build
 
-           - name: Deploy to MilesWeb
+      - name: Deploy to MilesWeb
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
+          port: 21
           local-dir: ./dist/
-          server-dir: /home/dcehizyg/public_html/hrms2/
+          server-dir: /public_html/hrms2/
