@@ -68,6 +68,9 @@ const SalaryManagement = lazy(() =>
 const OfferLetter = lazy(() =>
   import("./Pages/OfferLetter/OfferLetter")
 );
+const JoiningLetter = lazy(() =>
+  import("./Pages/JoiningLetter/JoiningLetter")
+);
 const WarningLetter = lazy(() =>
   import("./Pages/WarningLetter/WarningLetter")
 );
@@ -292,6 +295,13 @@ export const routes = [
     name: "OfferLetter",
     path: "/offerLetter",
     comp: OfferLetter,
+    adminonly: true,
+    employeeonly: false,
+  },
+    {
+    name: "JoiningLetter",
+    path: "/joiningLetter",
+    comp: JoiningLetter,
     adminonly: true,
     employeeonly: false,
   },

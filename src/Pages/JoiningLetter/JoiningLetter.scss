@@ -1,0 +1,928 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
+
+.joiningleter-parent {
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-family: "Quicksand", sans-serif !important;
+
+  &,
+  * {
+    font-family: "Quicksand", sans-serif !important;
+  }
+
+
+  .joiningleter-cont {
+
+    width: 100%;
+
+    display: flex;
+
+    gap: 30px;
+
+
+    /* =====================================================
+       LEFT FORM
+    ===================================================== */
+
+    .left-joining {
+
+      width: 40%;
+
+      padding: 20px;
+
+      background: #e9f0f0;
+
+      height: 650px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: flex-start;
+
+      flex-direction: column;
+
+      gap: 30px;
+
+    }
+
+
+    /* =====================================================
+       RIGHT PREVIEW
+    ===================================================== */
+
+    .right-joining {
+
+      width: 60%;
+
+
+      .joining-pages-wrapper {
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 20px;
+
+
+        /* =================================================
+           JOINING PDF PAGE
+        ================================================= */
+
+        .joining-pdf-page {
+
+          position: relative;
+
+          width: 700px;
+
+          height: 1120px;
+
+          padding: 20px 40px;
+
+          box-sizing: border-box;
+
+          background: #fff;
+
+          overflow: hidden;
+
+
+          /* ===============================================
+             WATERMARK
+          =============================================== */
+
+          .joining-water-mark {
+
+            position: absolute;
+
+            width: 90%;
+
+            max-width: 630px;
+
+            height: auto;
+
+            max-height: 700px;
+
+            left: 50%;
+
+            top: 50%;
+
+            transform:
+              translate(
+                -50%,
+                -50%
+              );
+
+            opacity: 0.1;
+
+            object-fit: contain;
+
+            z-index: 0;
+
+            pointer-events: none;
+
+          }
+
+
+          /* ===============================================
+             HEADER
+          =============================================== */
+
+          .joining-header {
+
+            position: relative;
+
+            z-index: 2;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            min-height: 70px;
+
+
+            .joining-date {
+
+              font-size: 16px;
+
+              font-weight: 500;
+
+            }
+
+
+            .joining-logo {
+
+              display: flex;
+
+              justify-content: flex-end;
+
+              align-items: center;
+
+
+              img {
+
+                height: 60px;
+
+                width: auto;
+
+                max-width: 220px;
+
+                object-fit: contain;
+
+                display: block;
+
+              }
+
+            }
+
+          }
+
+
+          /* ===============================================
+             HEADING
+          =============================================== */
+
+          .joining-heading {
+
+            position: relative;
+
+            z-index: 2;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            margin-top: 25px;
+
+            margin-bottom: 35px;
+
+
+            h3 {
+
+              margin: 0;
+
+              font-size: 20px;
+
+              font-weight: 700;
+
+              text-decoration: underline;
+
+              text-align: center;
+
+            }
+
+          }
+
+
+          /* ===============================================
+             CONTENT
+          =============================================== */
+
+          .joining-content {
+
+            position: relative;
+
+            z-index: 2;
+
+            color: #111;
+
+
+            p {
+
+              font-size: 16px;
+
+              line-height: 1.65;
+
+              letter-spacing: 0.2px;
+
+              margin: 0 0 22px;
+
+            }
+
+
+            strong {
+
+              font-weight: 700;
+
+            }
+
+
+            .employee-name {
+
+              margin-bottom: 30px;
+
+              font-size: 17px;
+
+            }
+
+
+            /* =============================================
+               SIGNATURE
+            ============================================= */
+
+            .joining-signature {
+
+              margin-top: 45px;
+
+
+              p {
+
+                margin-bottom: 8px;
+
+              }
+
+
+              .signature-gap {
+
+                height: 45px;
+
+              }
+
+            }
+
+          }
+
+
+          /* ===============================================
+             EMPLOYEE DETAILS
+          =============================================== */
+
+          .joining-details {
+
+            position: relative;
+
+            z-index: 2;
+
+            margin-top: 25px;
+
+            padding: 15px 20px;
+
+            border: 1px solid #222;
+
+
+            p {
+
+              margin: 6px 0;
+
+              font-size: 14px;
+
+              line-height: 1.5;
+
+            }
+
+          }
+
+
+          /* ===============================================
+             FOOTER
+          =============================================== */
+
+          .joining-footer {
+
+            position: absolute;
+
+            z-index: 2;
+
+            bottom: 0;
+
+            left: 50%;
+
+            transform:
+              translateX(-50%);
+
+            width: 100%;
+
+            margin: 0;
+
+            padding: 10px 0;
+
+            border-top:
+              1px solid var(--accent);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: #00000063;
+
+            font-size: 13px;
+
+            text-align: center;
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   1400px
+========================================================= */
+
+@media (max-width: 1400px) {
+
+  .joiningleter-parent {
+
+    .joiningleter-cont {
+
+      gap: 20px;
+
+
+      .left-joining {
+
+        width: 35%;
+
+      }
+
+
+      .right-joining {
+
+        width: 65%;
+
+
+        .joining-pages-wrapper {
+
+          .joining-pdf-page {
+
+            width:
+              min(
+                700px,
+                90%
+              );
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   1100px
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .joiningleter-parent {
+
+    align-items: stretch;
+
+
+    .joiningleter-cont {
+
+      flex-direction: column;
+
+      align-items: center;
+
+      gap: 30px;
+
+
+      .left-joining {
+
+        width: 90%;
+
+        height: auto;
+
+        min-height: 400px;
+
+        padding: 20px;
+
+      }
+
+
+      .right-joining {
+
+        width: 100%;
+
+
+        .joining-pages-wrapper {
+
+          width: 100%;
+
+
+          .joining-pdf-page {
+
+            width:
+              min(
+                700px,
+                calc(100% - 40px)
+              );
+
+            box-sizing: border-box;
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   768px
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .joiningleter-parent {
+
+    .joiningleter-cont {
+
+      padding: 20px 0;
+
+      gap: 20px;
+
+
+      .left-joining {
+
+        width:
+          calc(100% - 30px);
+
+        padding: 15px;
+
+        min-height: 350px;
+
+        gap: 20px;
+
+      }
+
+
+      .right-joining {
+
+        width: 100%;
+
+
+        .joining-pages-wrapper {
+
+          gap: 15px;
+
+
+          .joining-pdf-page {
+
+            width:
+              calc(100% - 30px);
+
+            height: auto;
+
+            min-height: 0;
+
+            aspect-ratio:
+              700 / 1120;
+
+            padding:
+              15px 25px;
+
+            box-sizing: border-box;
+
+
+            .joining-header {
+
+              .joining-date {
+
+                font-size: 12px;
+
+              }
+
+
+              .joining-logo {
+
+                img {
+
+                  height: 45px;
+
+                }
+
+              }
+
+            }
+
+
+            .joining-heading {
+
+              margin-top: 15px;
+
+              margin-bottom: 20px;
+
+
+              h3 {
+
+                font-size: 18px;
+
+              }
+
+            }
+
+
+            .joining-content {
+
+              p {
+
+                font-size: 13px;
+
+                line-height: 18px;
+
+                margin-bottom: 15px;
+
+              }
+
+
+              .employee-name {
+
+                margin-bottom: 20px;
+
+              }
+
+
+              .joining-signature {
+
+                margin-top: 25px;
+
+
+                .signature-gap {
+
+                  height: 25px;
+
+                }
+
+              }
+
+            }
+
+
+            .joining-details {
+
+              margin-top: 15px;
+
+              padding: 10px 15px;
+
+
+              p {
+
+                font-size: 11px;
+
+                line-height: 15px;
+
+              }
+
+            }
+
+
+            .joining-footer {
+
+              font-size: 10px;
+
+              padding: 7px 0;
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   576px
+========================================================= */
+
+@media (max-width: 576px) {
+
+  .joiningleter-parent {
+
+    width: 100%;
+
+    overflow-x: hidden;
+
+
+    .joiningleter-cont {
+
+      width: 100%;
+
+      padding: 15px 0;
+
+      gap: 20px;
+
+
+      .left-joining {
+
+        width:
+          calc(100% - 20px);
+
+        padding: 12px;
+
+        min-height: 300px;
+
+        gap: 15px;
+
+        box-sizing: border-box;
+
+      }
+
+
+      .right-joining {
+
+        width: 100%;
+
+
+        .joining-pages-wrapper {
+
+          width: 100%;
+
+          gap: 12px;
+
+
+          .joining-pdf-page {
+
+            width:
+              calc(100% - 20px);
+
+            padding:
+              12px 15px;
+
+            aspect-ratio:
+              700 / 1120;
+
+            box-sizing: border-box;
+
+
+            .joining-water-mark {
+
+              width: 85%;
+
+            }
+
+
+            .joining-header {
+
+              min-height: 40px;
+
+
+              .joining-date {
+
+                font-size: 9px;
+
+              }
+
+
+              .joining-logo {
+
+                img {
+
+                  height: 35px;
+
+                }
+
+              }
+
+            }
+
+
+            .joining-heading {
+
+              margin-top: 10px;
+
+              margin-bottom: 15px;
+
+
+              h3 {
+
+                font-size: 15px;
+
+              }
+
+            }
+
+
+            .joining-content {
+
+              p {
+
+                font-size: 10px;
+
+                line-height: 14px;
+
+                margin-bottom: 10px;
+
+              }
+
+
+              .employee-name {
+
+                margin-bottom: 15px;
+
+              }
+
+
+              .joining-signature {
+
+                margin-top: 18px;
+
+
+                p {
+
+                  margin-bottom: 4px;
+
+                }
+
+
+                .signature-gap {
+
+                  height: 18px;
+
+                }
+
+              }
+
+            }
+
+
+            .joining-details {
+
+              margin-top: 10px;
+
+              padding: 7px 10px;
+
+
+              p {
+
+                font-size: 8px;
+
+                line-height: 11px;
+
+              }
+
+            }
+
+
+            .joining-footer {
+
+              padding: 5px 0;
+
+              font-size: 8px;
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   400px
+========================================================= */
+
+@media (max-width: 400px) {
+
+  .joiningleter-parent {
+
+    .joiningleter-cont {
+
+      .left-joining {
+
+        width:
+          calc(100% - 15px);
+
+        padding: 10px;
+
+      }
+
+
+      .right-joining {
+
+        .joining-pages-wrapper {
+
+          .joining-pdf-page {
+
+            width:
+              calc(100% - 10px);
+
+            padding:
+              10px 12px;
+
+
+            .joining-content {
+
+              p {
+
+                font-size: 9px;
+
+                line-height: 12px;
+
+                margin-bottom: 8px;
+
+              }
+
+            }
+
+
+            .joining-details {
+
+              p {
+
+                font-size: 7px;
+
+                line-height: 9px;
+
+              }
+
+            }
+
+
+            .joining-footer {
+
+              font-size: 7px;
+
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}

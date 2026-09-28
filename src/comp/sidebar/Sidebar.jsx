@@ -133,7 +133,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
         },
         {
           name: "Generate Joining Letter",
-          link: "/addEmployee",
+          link: "/joiningLetter",
         },
         {
           name: "Generate Employee ID Card",
@@ -157,11 +157,11 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
         },
         {
           name: "Generate Warning Letter",
-          link: "/addEmployee",
+          link: "/warningLetter",
         },
         {
           name: "Generate Termination Letter",
-          link: "/addEmployee",
+          link: "/terminationLetter",
         },
         {
           name: "Generate Internship Letter",

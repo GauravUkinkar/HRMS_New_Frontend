@@ -493,12 +493,10 @@ const formatEntryDate = () => {
                   setLeaveReason(e.target.value)
                 }
                 disabled={submitting}
-                maxLength={50}
+               
               />
 
-              <small className="character-count">
-                {leaveReason.length}/50
-              </small>
+      
 
          
 
