@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainPanel from "../../comp/MainPanel/MainPanel";
-import SelectInput from "../../comp/SelectInput/SelectInput";
+import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
-import Input from "../../comp/Input/Input";
+import Input from "../../comp/input/Input";
 import axios from "axios";
 import { toast } from "react-toastify";
 
