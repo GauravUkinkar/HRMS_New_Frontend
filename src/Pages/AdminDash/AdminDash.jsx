@@ -1183,9 +1183,9 @@ const AdminDash = () => {
                     <span>Team Status</span>
                   </div>
                   
-                  <Link to="#" className="view-all">
+                  {/* <Link to="#" className="view-all">
                     View All →
-                  </Link>
+                  </Link> */}
                 </div>
 
                 <div className="team-list">
