@@ -35,4 +35,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp
           local-dir: ./dist/
-          server-dir: /home/dcehizyg/public_html/hrms2/
+          server-dir: /home/dcehizyg/public_html/hrms2.pandozasolutions.com/
