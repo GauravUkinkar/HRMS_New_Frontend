@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 
 const Attendance = () => {
-  const [totalEmployees, setTotalEmployee] = useState(0);
+  const [totalEmployees, setTotalEmployees] = useState(0);
 
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
@@ -217,31 +217,29 @@ const tableData =
 
  
 
-  const presentEmployeeIds = new Set(
-    data
-      .filter((item) => {
-        const status = String(item?.status || "")
-          .trim()
-          .toLowerCase()
-          .replace(/[\s_-]+/g, "");
+const presentEmployeeIds = new Set(
+  data
+    .filter((item) => {
+      const status = String(item?.status || "")
+        .trim()
+        .toUpperCase();
 
-        const hasPunchIn =
-          Boolean(item?.punchIn) && item?.punchIn !== "Punch In From Admin";
+      return (
+        status === "IN OFFICE" ||
+        status === "PRESENT" ||
+        status === "FULL_DAY"
+      );
+    })
+    .map((item) => String(item?.employeeId || "").trim())
+    .filter(Boolean)
+);
 
-        return (
-          hasPunchIn ||
-          status === "inoffice" ||
-          status === "present" ||
-          status === "fullday"
-        );
-      })
-      .map((item) => String(item?.employeeId || "").trim())
-      .filter(Boolean),
-  );
+const presentEmployees = presentEmployeeIds.size;
 
-  const presentEmployees = presentEmployeeIds.size;
-
-  const absentEmployees = Math.max(totalEmployees - presentEmployees, 0);
+const absentEmployees = Math.max(
+  Number(totalEmployees) - presentEmployees,
+  0
+);
 
   const columns = [
     {
@@ -382,7 +380,7 @@ const tableData =
         </>
       ) : showPreviousAttendance ? (
         <>
-          <Table_Comp columns={previousAttendanceColumns} />
+      
         </>
       ) : (
         <Table_Comp columns={columns} data={data} loading={loader} />
