@@ -247,31 +247,33 @@
         }
       }
     }
-    .download {
+     .download {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    button {
+      border: 1px solid var(--accent2);
+      color: var(--white);
+      background: var(--accent2);
+      padding: 10px 15px;
+      border-radius: 5px;
       display: flex;
       align-items: center;
       justify-content: center;
-      button {
-        border: 1px solid var(--accent2);
-        color: var(--white);
-        background: var(--accent2);
-        padding: 10px 15px;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        font-size: 12px;
-        cursor: pointer;
+      gap: 6px;
+      font-size: 12px;
+      cursor: pointer;
 
-        &:hover {
-          background: #326b72;
-          color: var(--white);
-        }
+      &:hover {
+        background: #326b72;
+        color: var(--white);
       }
     }
   }
-  @media print {
+}
+
+@media print {
   @page {
     size: A4 portrait;
     margin: 0;
@@ -283,7 +285,6 @@
     background: white !important;
   }
 
-  // Hide everything except the payslip
   body * {
     visibility: hidden;
   }
@@ -310,7 +311,6 @@
     display: none !important;
   }
 
-  // Prevent table/content from splitting
   .summary,
   .tables,
   .table-card,
