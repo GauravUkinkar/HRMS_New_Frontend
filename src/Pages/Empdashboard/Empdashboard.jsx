@@ -704,6 +704,7 @@ const EmployeeDash = () => {
     }
   };
 
+
   //load unread all notification
 
   const getUnreadNotifications = async () => {
@@ -930,14 +931,7 @@ const EmployeeDash = () => {
     getNotificationCount();
     getBirthdayEmployees();
   }, []);
-  useEffect(() => {
-    const notificationTimer = setInterval(() => {
-      getNotifications();
-      getNotificationCount();
-    }, 10000);
 
-    return () => clearInterval(notificationTimer);
-  }, []);
   useEffect(() => {
     getAllLeaveRecords();
   }, [user]);
