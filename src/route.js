@@ -83,7 +83,7 @@ const ExperienceLetter = lazy(() =>
   import("./Pages/ExperienceLetter/ExperienceLetter")
 );
 const ReleavingLetter = lazy(() =>
-  import("./Pages/ReleavingLetter/releavingLetter")
+  import("./Pages/ReleavingLetter/ReleavingLetter")
 );
 const InternshipLetter = lazy(() =>
   import("./Pages/InternshipLetter/Internshipletter")
