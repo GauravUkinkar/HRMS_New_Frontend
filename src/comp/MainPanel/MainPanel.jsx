@@ -520,39 +520,46 @@ const isAdmin = userRole === "ADMIN";
           <div className="right-side">
             {/* ================= EMPLOYEE CLOCK ================= */}
             {isEmployee && (
-              <div
-                className={`real-time-clock ${
-                  punchInTime
-                    ? "day-started"
-                    : "day-not-started"
-                }`}
-                onClick={() => {
-                  if (!punchInTime && !punchingIn) {
-                    handlePunchIn();
-                  } else if (punchInTime) {
-                    setShowPunchModal(true);
-                  }
-                }}
-              >
-                <div className="icon">
-                  <BsClockHistory />
-                </div>
+<div
+  className={`real-time-clock ${
+    punchOutTime
+      ? "day-ended"
+      : punchInTime
+      ? "day-started"
+      : "day-not-started"
+  }`}
+  onClick={() => {
+    if (!punchInTime && !punchingIn) {
+      handlePunchIn();
+    } else if (punchInTime) {
+      setShowPunchModal(true);
+    }
+  }}
+>
+  <div className="icon">
+    <BsClockHistory />
+  </div>
 
-                <div className="right">
-                  {punchInTime ? (
-                    <>
-                      <p>Day Started</p>
-                      <span>{formatTime(punchInTime)}</span>
-                    </>
-                  ) : (
-                    <p>
-                      {punchingIn
-                        ? "Starting Your Day..."
-                        : "Start Your Day"}
-                    </p>
-                  )}
-                </div>
-              </div>
+  <div className="right">
+    {punchOutTime ? (
+      <>
+        <p>Day Ended</p>
+        <span>{formatTime(punchOutTime)}</span>
+      </>
+    ) : punchInTime ? (
+      <>
+        <p>Day Started</p>
+        <span>{formatTime(punchInTime)}</span>
+      </>
+    ) : (
+      <p>
+        {punchingIn
+          ? "Starting Your Day..."
+          : "Start Your Day"}
+      </p>
+    )}
+  </div>
+</div>
             )}
 {/* ================= USER ================= */}
 <div
