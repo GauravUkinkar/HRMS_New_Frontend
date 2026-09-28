@@ -15,32 +15,30 @@
     justify-content: center;
     gap: 16px;
     position: relative;
-.watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 
-  width: 420px;
-  height: 420px;
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 420px;
+      height: 420px;
+      z-index: 0;
+      opacity: 0.2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
 
-  z-index: 0;
-  opacity: 0.20;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        display: block;
+      }
+    }
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  pointer-events: none;
-
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    display: block;
-  }
-}
     .header {
       display: flex;
       justify-content: space-between;
@@ -48,9 +46,11 @@
       padding: 15px;
       border-radius: 5px;
       border: 1px solid #d8d5d5;
-      .logo{
+
+      .logo {
         height: 80px;
-        img{
+
+        img {
           height: 100%;
         }
       }
@@ -98,7 +98,6 @@
             justify-content: center;
             gap: 10px;
             font-size: 14px;
-
           }
         }
       }
@@ -125,7 +124,6 @@
           flex-direction: column;
           justify-content: center;
           align-items: start;
-
           border-radius: 5px;
 
           .day {
@@ -155,7 +153,6 @@
         background: var(--white);
         padding: 10px;
         width: 50%;
-
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -173,6 +170,7 @@
             font-size: 14px;
           }
         }
+
         .middle {
           display: flex;
           flex-direction: column;
@@ -184,7 +182,6 @@
           .basic-earning {
             display: flex;
             flex-direction: column;
-
             width: 100%;
             gap: 10px;
             justify-content: space-between;
@@ -194,6 +191,7 @@
               justify-content: space-between;
             }
           }
+
           .total {
             display: flex;
             border: 1px solid var(--accent2);
@@ -211,11 +209,13 @@
         }
       }
     }
+
     .net-total {
       display: flex;
       justify-content: space-between;
       border-radius: 5px;
       border: 1px solid #d8d5d5;
+
       .total-final {
         width: 60%;
         padding: 14px;
@@ -227,11 +227,13 @@
         h4 {
           color: var(--accent2);
         }
+
         p {
           color: var(--black);
           font-size: 12px;
         }
       }
+
       .total-amount {
         background: var(--accent2);
         width: 40%;
@@ -247,10 +249,12 @@
         }
       }
     }
+
     .download {
       display: flex;
       align-items: center;
       justify-content: center;
+
       button {
         border: 1px solid var(--accent2);
         color: var(--white);
@@ -271,7 +275,9 @@
       }
     }
   }
-  @media print {
+}
+
+@media print {
   @page {
     size: A4 portrait;
     margin: 0;
@@ -283,7 +289,6 @@
     background: white !important;
   }
 
-  // Hide everything except the payslip
   body * {
     visibility: hidden;
   }
@@ -310,7 +315,6 @@
     display: none !important;
   }
 
-  // Prevent table/content from splitting
   .summary,
   .tables,
   .table-card,
@@ -318,5 +322,4 @@
     break-inside: avoid;
     page-break-inside: avoid;
   }
-}
 }
