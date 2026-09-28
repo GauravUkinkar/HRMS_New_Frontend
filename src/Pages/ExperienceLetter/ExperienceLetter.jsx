@@ -4,19 +4,71 @@ import "./ExperienceLetter.scss";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
 import Input from "../../comp/input/Input";
+
 import {
   FaGlobe,
   FaLocationDot,
   FaPhoneVolume,
 } from "react-icons/fa6";
+
 import { Link } from "react-router-dom";
 import { IoIosMail } from "react-icons/io";
+
 import PanLogo from "../../assets/pan-watermark.webp";
 import logo_pan from "../../assets/offer-logo-pan.png";
+
+import indianJourneyWatermark from "../../assets/tij-watermark.png";
+import indianJourneyLogo from "../../assets/tij-logo.png";
+
+import akkaWatermark from "../../assets/akka-foundation.png";
+import akkaLogo from "../../assets/akka-foundation.png";
+
+import nvmWatermark from "../../assets/nvm-watermark.png";
+import nvmLogo from "../../assets/nvm-logo.png";
+
 import right_corner from "../../assets/right-corner.png";
 import left_corner from "../../assets/left-corner.png";
+
 import axios from "axios";
 import { toast } from "react-toastify";
+
+const companyConfig = {
+  "The Indian Journey": {
+    logo: indianJourneyLogo,
+    watermark: indianJourneyWatermark,
+    address:
+      "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
+    contact: "+91 76666 01972",
+    location: "Pune",
+  },
+
+  "Pandoza Solutions Pvt.Ltd.": {
+    logo: logo_pan,
+    watermark: PanLogo,
+    address:
+      "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
+    contact: "+91 76666 01972",
+    location: "Pune",
+  },
+
+  "Akka Foundation": {
+    logo: akkaLogo,
+    watermark: akkaWatermark,
+    address:
+      "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
+    contact: "+91 76666 01972",
+    location: "Pune",
+  },
+
+  "Nvm Infratech Pvt.Ltd": {
+    logo: nvmLogo,
+    watermark: nvmWatermark,
+    address:
+      "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
+    contact: "+91 76666 01972",
+    location: "Pune",
+  },
+};
 
 const ExperienceLetter = () => {
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
@@ -36,9 +88,9 @@ const ExperienceLetter = () => {
     hrManagerName: "",
   });
 
-  // ==========================================
-  // GET EMPLOYEES BY COMPANY
-  // ==========================================
+  const selectedCompany =
+    companyConfig[formData.companyName] ||
+    companyConfig["Pandoza Solutions Pvt.Ltd."];
 
   useEffect(() => {
     const getEmployeesByCompany = async () => {
@@ -60,20 +112,31 @@ const ExperienceLetter = () => {
           }
         );
 
-        console.log("FULL API RESPONSE:", response.data);
+        console.log(
+          "FULL API RESPONSE:",
+          response.data
+        );
 
         if (response.data?.status === "OK") {
-          const employeeData = response.data?.data || [];
+          const employeeData =
+            response.data?.data || [];
 
           const employeeList = employeeData
             .map((item) => item?.data || item)
             .filter(Boolean);
 
-          console.log("EMPLOYEE LIST:", employeeList);
+          console.log(
+            "EMPLOYEE LIST:",
+            employeeList
+          );
 
           console.log(
             "EMPLOYEE LIST JSON:",
-            JSON.stringify(employeeList, null, 2)
+            JSON.stringify(
+              employeeList,
+              null,
+              2
+            )
           );
 
           setEmployee(employeeList);
@@ -81,7 +144,8 @@ const ExperienceLetter = () => {
           setEmployee([]);
 
           toast.error(
-            response.data?.responseMessage || "No Employees found"
+            response.data?.responseMessage ||
+              "No Employees found"
           );
         }
       } catch (error) {
@@ -103,7 +167,8 @@ const ExperienceLetter = () => {
         setEmployee([]);
 
         toast.error(
-          error.response?.data?.responseMessage ||
+          error.response?.data
+            ?.responseMessage ||
             error.response?.data?.message ||
             "Unable to fetch employees"
         );
@@ -114,10 +179,6 @@ const ExperienceLetter = () => {
 
     getEmployeesByCompany();
   }, [formData.companyName, BASE_URL]);
-
-  // ==========================================
-  // FORMAT DATE
-  // ==========================================
 
   const formatDateForInput = (dateString) => {
     if (!dateString) return "";
@@ -130,10 +191,6 @@ const ExperienceLetter = () => {
 
     return date.toISOString().split("T")[0];
   };
-
-  // ==========================================
-  // EMPLOYEE CHANGE
-  // ==========================================
 
   const handleEmployeeChange = (e) => {
     const employeeName = e.target.value;
@@ -162,16 +219,12 @@ const ExperienceLetter = () => {
 
     setFormData((prev) => ({
       ...prev,
-
       employeeName:
         selectedEmployee.employeeName || "",
-
       employeeId:
         selectedEmployee.employeeId || "",
-
       designation:
         selectedEmployee.designation || "",
-
       startDate:
         formatDateForInput(
           selectedEmployee.dateOfJoining
@@ -179,12 +232,20 @@ const ExperienceLetter = () => {
     }));
   };
 
-  // ==========================================
-  // NORMAL INPUT CHANGE
-  // ==========================================
-
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "companyName") {
+      setFormData((prev) => ({
+        ...prev,
+        companyName: value,
+        employeeName: "",
+        employeeId: "",
+        designation: "",
+        startDate: "",
+      }));
+      return;
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -192,14 +253,13 @@ const ExperienceLetter = () => {
     }));
   };
 
-  // ==========================================
-  // SUBMIT
-  // ==========================================
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("FORM DATA:", formData);
+    console.log(
+      "FORM DATA:",
+      formData
+    );
 
     try {
       setLoading(true);
@@ -215,7 +275,10 @@ const ExperienceLetter = () => {
         documentName: "Experience Letter",
       };
 
-      console.log("API PAYLOAD:", payload);
+      console.log(
+        "API PAYLOAD:",
+        payload
+      );
 
       const response = await axios.post(
         `${BASE_URL}Admin/addOfficialLetter`,
@@ -225,7 +288,10 @@ const ExperienceLetter = () => {
         }
       );
 
-      console.log("API RESPONSE:", response);
+      console.log(
+        "API RESPONSE:",
+        response
+      );
 
       if (response.data?.status === "OK") {
         toast.success(
@@ -233,10 +299,10 @@ const ExperienceLetter = () => {
         );
 
         setFormData({
-          issuedDate: new Date()
-            .toISOString()
-            .split("T")[0],
-
+          issuedDate:
+            new Date()
+              .toISOString()
+              .split("T")[0],
           companyName: "",
           employeeName: "",
           employeeId: "",
@@ -252,7 +318,10 @@ const ExperienceLetter = () => {
         );
       }
     } catch (error) {
-      console.error("API ERROR:", error);
+      console.error(
+        "API ERROR:",
+        error
+      );
 
       console.error(
         "API ERROR RESPONSE:",
@@ -265,7 +334,8 @@ const ExperienceLetter = () => {
       );
 
       toast.error(
-        error.response?.data?.responseMessage ||
+        error.response?.data
+          ?.responseMessage ||
           error.response?.data?.message ||
           "Something went wrong while adding experience letter"
       );
@@ -273,10 +343,6 @@ const ExperienceLetter = () => {
       setLoading(false);
     }
   };
-
-  // ==========================================
-  // FORMAT PREVIEW DATE
-  // ==========================================
 
   const formatPreviewDate = (date) => {
     if (!date) return "DD-MM-YYYY";
@@ -295,18 +361,10 @@ const ExperienceLetter = () => {
       <MainPanel>
         <div className="experienceletter-parent parent">
           <div className="experienceletter-cont cont">
-
-            {/* ======================================
-                LEFT FORM
-            ====================================== */}
-
             <form
               className="left-experience"
               onSubmit={handleSubmit}
             >
-
-              {/* LETTER DATE */}
-
               <Input
                 label="Experience-Letter Date"
                 type="date"
@@ -317,8 +375,6 @@ const ExperienceLetter = () => {
                 onChange={handleChange}
                 required
               />
-
-              {/* COMPANY */}
 
               <SelectInput
                 name="companyName"
@@ -331,20 +387,18 @@ const ExperienceLetter = () => {
                   The Indian Journey
                 </MenuItem>
 
-                <MenuItem value="Pandoza Solutions Pvt Ltd">
-                  Pandoza Solutions Pvt Ltd
+                <MenuItem value="Pandoza Solutions Pvt.Ltd.">
+                  Pandoza Solutions Pvt.Ltd.
                 </MenuItem>
 
                 <MenuItem value="Akka Foundation">
                   Akka Foundation
                 </MenuItem>
 
-                <MenuItem value="Nvm Infratech Pvt Ltd">
-                  Nvm Infratech Pvt Ltd
+                <MenuItem value="Nvm Infratech Pvt.Ltd">
+                  Nvm Infratech Pvt.Ltd
                 </MenuItem>
               </SelectInput>
-
-              {/* EMPLOYEE */}
 
               <SelectInput
                 label="Employee Name"
@@ -377,8 +431,6 @@ const ExperienceLetter = () => {
                 )}
               </SelectInput>
 
-              {/* DESIGNATION */}
-
               <Input
                 label="Designation"
                 name="designation"
@@ -386,8 +438,6 @@ const ExperienceLetter = () => {
                 onChange={handleChange}
                 required
               />
-
-              {/* JOINING DATE */}
 
               <Input
                 label="Joining Date"
@@ -398,8 +448,6 @@ const ExperienceLetter = () => {
                 required
               />
 
-              {/* RELIEVING DATE */}
-
               <Input
                 label="Relieving Date"
                 name="endDate"
@@ -409,8 +457,6 @@ const ExperienceLetter = () => {
                 required
               />
 
-              {/* HR MANAGER */}
-
               <Input
                 label="Hr Manager Name"
                 name="hrManagerName"
@@ -418,8 +464,6 @@ const ExperienceLetter = () => {
                 onChange={handleChange}
                 required
               />
-
-              {/* SUBMIT */}
 
               <button
                 className="btn"
@@ -432,34 +476,21 @@ const ExperienceLetter = () => {
               </button>
             </form>
 
-            {/* ======================================
-                RIGHT EXPERIENCE LETTER PREVIEW
-            ====================================== */}
-
             <div className="right-experience">
-
               <div className="experience-pdf-page">
-
-                {/* LEFT CORNER */}
-
                 <img
                   className="leftcorner"
                   src={left_corner}
                   alt="left-corner"
                 />
 
-                {/* WATERMARK */}
-
                 <img
                   className="pan-water-mark"
-                  src={PanLogo}
-                  alt="PanLogo"
+                  src={selectedCompany.watermark}
+                  alt="Company Watermark"
                 />
 
-                {/* TOP */}
-
                 <div className="top">
-
                   <div className="date">
                     Date:
                     {formatPreviewDate(
@@ -469,35 +500,29 @@ const ExperienceLetter = () => {
 
                   <div className="logo">
                     <img
-                      src={logo_pan}
-                      alt="OfferLogoPan"
+                      src={selectedCompany.logo}
+                      alt={
+                        formData.companyName ||
+                        "Company Logo"
+                      }
                     />
                   </div>
-
                 </div>
-
-                {/* HEADING */}
 
                 <div className="heading">
                   <h3>Experience Letter</h3>
                 </div>
 
-                {/* EMPLOYEE NAME */}
-
                 <div className="name">
-
                   <p>Dear</p>
 
                   <h4>
                     {formData.employeeName ||
                       "Employee Name"}
                   </h4>
-
                 </div>
 
                 <div className="gap"></div>
-
-                {/* FIRST PARAGRAPH */}
 
                 <p>
                   This is to certify that{" "}
@@ -532,8 +557,6 @@ const ExperienceLetter = () => {
 
                 <div className="gap"></div>
 
-                {/* SECOND PARAGRAPH */}
-
                 <p>
                   During his tenure with the
                   organization, he was responsible for
@@ -544,8 +567,6 @@ const ExperienceLetter = () => {
 
                 <div className="gap"></div>
 
-                {/* THIRD PARAGRAPH */}
-
                 <p>
                   We found him to be sincere,
                   hardworking, dedicated, and committed
@@ -555,8 +576,6 @@ const ExperienceLetter = () => {
                 </p>
 
                 <div className="gap"></div>
-
-                {/* FOURTH PARAGRAPH */}
 
                 <p>
                   We truly appreciate your performance
@@ -572,8 +591,6 @@ const ExperienceLetter = () => {
 
                 <div className="gap"></div>
 
-                {/* FIFTH PARAGRAPH */}
-
                 <p>
                   We wish him all the very best for his
                   future endeavors.
@@ -582,8 +599,6 @@ const ExperienceLetter = () => {
                 <div className="gap"></div>
 
                 <div className="gap"></div>
-
-                {/* SIGNATURE */}
 
                 <p>Thanking you,</p>
 
@@ -610,53 +625,57 @@ const ExperienceLetter = () => {
                     "HR Manager"}
                 </p>
 
-                {/* ======================================
-                    FOOTER
-                ====================================== */}
-
                 <div className="footer">
-
-                  <Link className="left">
-
+                  <Link
+                    className="left"
+                    to="#"
+                    onClick={(e) =>
+                      e.preventDefault()
+                    }
+                  >
                     <div className="icon">
                       <FaLocationDot />
                     </div>
 
                     <div className="address">
-
                       <h4>
                         {formData.companyName ||
                           "Pandoza Solutions Pvt. Ltd."}
                       </h4>
 
                       <p>
-                        214, 10 BIZ PARK,
+                        {selectedCompany.address}
                         <br />
-                        VIMANNAGAR, PUNE – 411014
-                        <br />
-                        CONTACT: +91 76666 01972
+                        CONTACT:{" "}
+                        {selectedCompany.contact}
                       </p>
-
                     </div>
-
                   </Link>
 
                   <div className="right">
-
-                    <Link className="contact">
-
+                    <Link
+                      className="contact"
+                      to="#"
+                      onClick={(e) =>
+                        e.preventDefault()
+                      }
+                    >
                       <div className="icon">
                         <FaPhoneVolume />
                       </div>
 
                       <p>
-                        +91 7666601972
+                        {selectedCompany.contact}
                       </p>
-
                     </Link>
 
-                    <Link className="mail">
-
+                    <Link
+                      className="mail"
+                      to="#"
+                      onClick={(e) =>
+                        e.preventDefault()
+                      }
+                    >
                       <div className="icon">
                         <IoIosMail />
                       </div>
@@ -664,34 +683,32 @@ const ExperienceLetter = () => {
                       <p>
                         info@pandozasolutions.com
                       </p>
-
                     </Link>
 
-                    <Link className="globe">
-
+                    <Link
+                      className="globe"
+                      to="#"
+                      onClick={(e) =>
+                        e.preventDefault()
+                      }
+                    >
                       <div className="icon">
                         <FaGlobe />
                       </div>
 
                       <p>
-                        +91 7666601972
+                        {selectedCompany.location}
                       </p>
-
                     </Link>
 
                     <img
                       src={right_corner}
                       alt="right-corner"
                     />
-
                   </div>
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
         </div>
       </MainPanel>
