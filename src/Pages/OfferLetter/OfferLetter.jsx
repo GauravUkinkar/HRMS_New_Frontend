@@ -12,8 +12,8 @@ import indianJourneyLogo from "../../assets/tij-logo.png";
 import akkaWatermark from "../../assets/akka-foundation.png";
 import akkaLogo from "../../assets/akka-foundation.png";
 
-import nvmWatermark from "../../assets/nvm-watermark.webp";
-import nvmLogo from "../../assets/nvm-logo.webp";
+import nvmWatermark from "../../assets/nvm-watermark.png";
+import nvmLogo from "../../assets/nvm-logo.png";
 
 import Input from "../../comp/input/Input";
 import SelectInput from "../../comp/selectInput/SelectInput";
@@ -159,7 +159,7 @@ const OfferLetter = () => {
 
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
- 
+
 
   const pdfRef = useRef(null);
   const [loading, setLoading] = useState(false);
