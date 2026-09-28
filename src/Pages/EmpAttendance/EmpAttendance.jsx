@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 
 const Attendance = () => {
-  const [allemployee, setAllEmployee] = useState([]);
+  const [totalEmployees, setTotalEmployee] = useState(0);
 
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
@@ -18,43 +18,29 @@ const Attendance = () => {
   const [employeeAttendanceList] = useState([]);
   const [employeeAttendanceLoading] = useState(false);
 
-  const getAllEmployee = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_USER_BACKEND_URL}Admin/GetAllEmployee`,
-        {
-          withCredentials: true,
-        },
-      );
+const getAllEmployee = async () => {
+  try {
+    const response = await axios.get(
+      `${import.meta.env.VITE_USER_BACKEND_URL}AuthController/getTotalEmployeeCount`,
+      {
+        withCredentials: true,
+      }
+    );
 
-      const rawEmployees = Array.isArray(response?.data)
-        ? response.data
-        : Array.isArray(response?.data?.data)
-          ? response.data.data
-          : [];
+    const total = Number(response?.data?.data || 0);
 
-      const employees = rawEmployees.map((item, index) => {
-        const employee = item?.data || item;
+    setTotalEmployees(total);
 
-        return {
-          key: index + 1,
-          employeeId: employee?.employeeId || "",
-          employeeName: employee?.employeeName || "",
-          employeeDesignation:
-            employee?.employeeDesignation || employee?.designation || "",
-        };
-      });
+    console.log("TOTAL EMPLOYEES:", total);
+  } catch (error) {
+    console.error(
+      "Get Total Employee Error:",
+      error?.response?.data || error
+    );
 
-      setAllEmployee(employees);
-
-      console.log("ALL EMPLOYEES:", employees);
-      console.log("TOTAL EMPLOYEES:", employees.length);
-    } catch (error) {
-      console.error("Get All Employee Error:", error?.response?.data || error);
-
-      setAllEmployee([]);
-    }
-  };
+    setTotalEmployees(0);
+  }
+};
   const getEmployeeData = async () => {
     try {
       setLoader(true);
@@ -229,7 +215,7 @@ const tableData =
     getAllEmployee();
   }, []);
 
-  const totalEmployees = allemployee.length;
+ 
 
   const presentEmployeeIds = new Set(
     data
