@@ -58,11 +58,7 @@ const UploadDoc = () => {
   const hasExistingDocuments = documentKeys.some((key) => {
     const value = availableDocuments?.[key];
 
-    return (
-      value !== null &&
-      value !== undefined &&
-      String(value).trim() !== ""
-    );
+    return value !== null && value !== undefined && String(value).trim() !== "";
   });
 
   const getEmployeeDocuments = async () => {
@@ -78,7 +74,7 @@ const UploadDoc = () => {
         `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`,
         {
           withCredentials: true,
-        }
+        },
       );
 
       if (response?.data?.status === "OK" && response?.data?.data) {
@@ -87,10 +83,7 @@ const UploadDoc = () => {
         setAvailableDocuments({});
       }
     } catch (error) {
-      console.error(
-        "Get Documents Error:",
-        error?.response?.data || error
-      );
+      console.error("Get Documents Error:", error?.response?.data || error);
 
       setAvailableDocuments({});
     } finally {
@@ -117,8 +110,7 @@ const UploadDoc = () => {
     if (file.size > maxFileSize) {
       setErrors((prev) => ({
         ...prev,
-        [name]:
-          "File size exceeded. Maximum allowed file size is 2 MB.",
+        [name]: "File size exceeded. Maximum allowed file size is 2 MB.",
       }));
 
       setDocuments((prev) => ({
@@ -147,7 +139,7 @@ const UploadDoc = () => {
     }
 
     const selectedDocuments = Object.entries(documents).filter(
-      ([, file]) => file instanceof File
+      ([, file]) => file instanceof File,
     );
 
     if (selectedDocuments.length === 0) {
@@ -156,19 +148,14 @@ const UploadDoc = () => {
     }
 
     if (!hasExistingDocuments) {
-      const requiredDocuments = [
-        "adharCard",
-        "panCard",
-      ];
+      const requiredDocuments = ["adharCard", "panCard"];
 
       const missingDocuments = requiredDocuments.filter(
-        (documentName) => !documents[documentName]
+        (documentName) => !documents[documentName],
       );
 
       if (missingDocuments.length > 0) {
-        toast.error(
-          "Please upload Aadhar Card and PAN Card"
-        );
+        toast.error("Please upload Aadhar Card and PAN Card");
         return;
       }
     }
@@ -188,25 +175,18 @@ const UploadDoc = () => {
 
       const method = hasExistingDocuments ? "put" : "post";
 
-      const response = await axios[method](
-        apiUrl,
-        formData,
-        {
-          params: {
-            uId: uid,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axios[method](apiUrl, formData, {
+        params: {
+          uId: uid,
+        },
+        withCredentials: true,
+      });
 
-      if (
-        response?.status === 200 ||
-        response?.status === 201
-      ) {
+      if (response?.status === 200 || response?.status === 201) {
         toast.success(
           hasExistingDocuments
             ? "Documents updated successfully"
-            : "Documents uploaded successfully"
+            : "Documents uploaded successfully",
         );
 
         setDocuments(initialDocuments);
@@ -215,10 +195,7 @@ const UploadDoc = () => {
         await getEmployeeDocuments();
       }
     } catch (error) {
-      console.error(
-        "Documents Error:",
-        error?.response?.data || error
-      );
+      console.error("Documents Error:", error?.response?.data || error);
 
       const backendMessage =
         error?.response?.data?.responseMessage ||
@@ -228,7 +205,7 @@ const UploadDoc = () => {
         backendMessage ||
           (hasExistingDocuments
             ? "Failed to update documents"
-            : "Failed to upload documents")
+            : "Failed to upload documents"),
       );
     } finally {
       setUpdating(false);
@@ -236,12 +213,11 @@ const UploadDoc = () => {
   };
 
   return (
-    
     <MainPanel
-                  breadcrumbs={[
-          { label: "Dashboard", link: "/dashboard" },
-          { label: "Upload Documents" },
-        ]}
+      breadcrumbs={[
+        { label: "Dashboard", link: "/dashboard" },
+        { label: "Upload Documents" },
+      ]}
       title={
         String(user?.role || user?.crmRole || "")
           .trim()
@@ -250,19 +226,19 @@ const UploadDoc = () => {
           : "Upload Documents"
       }
     >
-              <Link to="/">
-        <button className="btn1"><IoMdArrowBack />Back</button></Link>
+      <Link to="/">
+        <button className="btn1">
+          <IoMdArrowBack />
+          Back
+        </button>
+      </Link>
       <div className="upload-parent">
         <h1>
-          {hasExistingDocuments
-            ? "Update Documents"
-            : "Upload Documents"}
+          {hasExistingDocuments ? "Update Documents" : "Upload Documents"}
         </h1>
 
         {loadingDocuments ? (
-          <div className="document-loading">
-            Loading Documents...
-          </div>
+          <div className="document-loading">Loading Documents...</div>
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="inputs">
@@ -270,27 +246,17 @@ const UploadDoc = () => {
                 <FileUpload
                   label="Aadhar Card"
                   required={!hasExistingDocuments}
-                  file={
-                    documents.adharCard ||
-                    availableDocuments?.adharCard
-                  }
+                  file={documents.adharCard || availableDocuments?.adharCard}
                   error={errors.adharCard}
-                  onChange={(e) =>
-                    handleFileChange("adharCard", e)
-                  }
+                  onChange={(e) => handleFileChange("adharCard", e)}
                 />
 
                 <FileUpload
                   label="PAN Card"
                   required={!hasExistingDocuments}
-                  file={
-                    documents.panCard ||
-                    availableDocuments?.panCard
-                  }
+                  file={documents.panCard || availableDocuments?.panCard}
                   error={errors.panCard}
-                  onChange={(e) =>
-                    handleFileChange("panCard", e)
-                  }
+                  onChange={(e) => handleFileChange("panCard", e)}
                 />
               </div>
 
@@ -302,9 +268,7 @@ const UploadDoc = () => {
                     availableDocuments?.tenthCertificate
                   }
                   error={errors.tenthCertificate}
-                  onChange={(e) =>
-                    handleFileChange("tenthCertificate", e)
-                  }
+                  onChange={(e) => handleFileChange("tenthCertificate", e)}
                 />
 
                 <FileUpload
@@ -314,9 +278,7 @@ const UploadDoc = () => {
                     availableDocuments?.twelfthCertificate
                   }
                   error={errors.twelfthCertificate}
-                  onChange={(e) =>
-                    handleFileChange("twelfthCertificate", e)
-                  }
+                  onChange={(e) => handleFileChange("twelfthCertificate", e)}
                 />
               </div>
 
@@ -328,9 +290,7 @@ const UploadDoc = () => {
                     availableDocuments?.degreeCertificate
                   }
                   error={errors.degreeCertificate}
-                  onChange={(e) =>
-                    handleFileChange("degreeCertificate", e)
-                  }
+                  onChange={(e) => handleFileChange("degreeCertificate", e)}
                 />
 
                 <FileUpload
@@ -340,9 +300,7 @@ const UploadDoc = () => {
                     availableDocuments?.diplomaCertificate
                   }
                   error={errors.diplomaCertificate}
-                  onChange={(e) =>
-                    handleFileChange("diplomaCertificate", e)
-                  }
+                  onChange={(e) => handleFileChange("diplomaCertificate", e)}
                 />
               </div>
 
@@ -354,9 +312,7 @@ const UploadDoc = () => {
                     availableDocuments?.experianceLetter
                   }
                   error={errors.experianceLetter}
-                  onChange={(e) =>
-                    handleFileChange("experianceLetter", e)
-                  }
+                  onChange={(e) => handleFileChange("experianceLetter", e)}
                 />
 
                 <FileUpload
@@ -366,9 +322,7 @@ const UploadDoc = () => {
                     availableDocuments?.relevingLetter
                   }
                   error={errors.relevingLetter}
-                  onChange={(e) =>
-                    handleFileChange("relevingLetter", e)
-                  }
+                  onChange={(e) => handleFileChange("relevingLetter", e)}
                 />
               </div>
 
@@ -376,25 +330,19 @@ const UploadDoc = () => {
                 <FileUpload
                   label="Salary Slip 1"
                   file={
-                    documents.salarySlip1 ||
-                    availableDocuments?.salarySlip1
+                    documents.salarySlip1 || availableDocuments?.salarySlip1
                   }
                   error={errors.salarySlip1}
-                  onChange={(e) =>
-                    handleFileChange("salarySlip1", e)
-                  }
+                  onChange={(e) => handleFileChange("salarySlip1", e)}
                 />
 
                 <FileUpload
                   label="Salary Slip 2"
                   file={
-                    documents.salarySlip2 ||
-                    availableDocuments?.salarySlip2
+                    documents.salarySlip2 || availableDocuments?.salarySlip2
                   }
                   error={errors.salarySlip2}
-                  onChange={(e) =>
-                    handleFileChange("salarySlip2", e)
-                  }
+                  onChange={(e) => handleFileChange("salarySlip2", e)}
                 />
               </div>
 
@@ -402,25 +350,19 @@ const UploadDoc = () => {
                 <FileUpload
                   label="Salary Slip 3"
                   file={
-                    documents.salarySlip3 ||
-                    availableDocuments?.salarySlip3
+                    documents.salarySlip3 || availableDocuments?.salarySlip3
                   }
                   error={errors.salarySlip3}
-                  onChange={(e) =>
-                    handleFileChange("salarySlip3", e)
-                  }
+                  onChange={(e) => handleFileChange("salarySlip3", e)}
                 />
 
                 <FileUpload
                   label="Bank Statement"
                   file={
-                    documents.bankStatement ||
-                    availableDocuments?.bankStatement
+                    documents.bankStatement || availableDocuments?.bankStatement
                   }
                   error={errors.bankStatement}
-                  onChange={(e) =>
-                    handleFileChange("bankStatement", e)
-                  }
+                  onChange={(e) => handleFileChange("bankStatement", e)}
                 />
               </div>
 
@@ -431,42 +373,30 @@ const UploadDoc = () => {
                     documents.latestEducationCertificateOrDegree ||
                     availableDocuments?.latestEducationCertificateOrDegree
                   }
-                  error={
-                    errors.latestEducationCertificateOrDegree
-                  }
+                  error={errors.latestEducationCertificateOrDegree}
                   onChange={(e) =>
-                    handleFileChange(
-                      "latestEducationCertificateOrDegree",
-                      e
-                    )
+                    handleFileChange("latestEducationCertificateOrDegree", e)
                   }
                 />
 
                 <FileUpload
                   label="Employee Image"
                   file={
-                    documents.employeeImage ||
-                    availableDocuments?.employeeImage
+                    documents.employeeImage || availableDocuments?.employeeImage
                   }
                   error={errors.employeeImage}
-                  onChange={(e) =>
-                    handleFileChange("employeeImage", e)
-                  }
+                  onChange={(e) => handleFileChange("employeeImage", e)}
                 />
               </div>
 
-              <button
-                type="submit"
-                className="btn"
-                disabled={updating}
-              >
+              <button type="submit" className="btn" disabled={updating}>
                 {updating
                   ? hasExistingDocuments
                     ? "Updating..."
                     : "Uploading..."
                   : hasExistingDocuments
-                  ? "Update Documents"
-                  : "Upload Documents"}
+                    ? "Update Documents"
+                    : "Upload Documents"}
               </button>
             </div>
           </form>

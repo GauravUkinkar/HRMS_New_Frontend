@@ -17,6 +17,7 @@ import { IoIosNotifications } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { HiOutlineDocumentCheck } from "react-icons/hi2";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
@@ -190,6 +191,13 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
       link: "/payslipManagement",
       employeeOnly: true,
     },
+    {
+      icon: <HiOutlineDocumentCheck />,
+      name: "ViewApprovals",
+      link: "/viewApprovals",
+      
+
+    }
   ];
 
   const canShowMenu = (item) => {

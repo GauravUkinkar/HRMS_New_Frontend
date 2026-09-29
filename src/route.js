@@ -49,6 +49,12 @@ const AdminDash = lazy(() =>
 const Generatesalary = lazy(() =>
   import("./Pages/Generatesalary/Generatesalary")
 );
+const ApprovalLetter = lazy(() =>
+  import("./Pages/ApprovalLetter/ApprovalLetter")
+);
+const ViewApprovals = lazy(() =>
+  import("./Pages/ViewApprovals/ViewApproval")
+);
 
 const Attendance = lazy(() =>
   import("./Pages/Attendence/Attendance")
@@ -372,5 +378,18 @@ export const routes = [
     comp: Leave_details,
     adminonly: true,
     employeeonly: false,
+  },
+    {
+    name: "ApprovalLetter",
+    path: "/approvalLetter",
+    comp: ApprovalLetter,
+    adminonly: false,
+    employeeonly: true,
+  },
+      {
+    name: "ViewApprovals",
+    path: "/viewApprovals",
+    comp: ViewApprovals,
+
   },
 ];
