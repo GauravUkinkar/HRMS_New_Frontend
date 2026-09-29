@@ -5,7 +5,7 @@ import FileUpload from "../../comp/FileUpload/FileUpload";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { UserContext } from "../../../Context";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoMdArrowBack } from "react-icons/io";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
@@ -45,6 +45,7 @@ const documentKeys = [
 ];
 
 const UploadDoc = () => {
+   const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
   const [documents, setDocuments] = useState(initialDocuments);
@@ -213,6 +214,7 @@ const UploadDoc = () => {
   };
 
   return (
+    
     <MainPanel
       breadcrumbs={[
         { label: "Dashboard", link: "/dashboard" },
@@ -226,13 +228,17 @@ const UploadDoc = () => {
           : "Upload Documents"
       }
     >
-      <Link to="/">
-        <button className="btn1">
-          <IoMdArrowBack />
-          Back
-        </button>
-      </Link>
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            ← Back
+          </button>
       <div className="upload-parent">
+        
         <h1>
           {hasExistingDocuments ? "Update Documents" : "Upload Documents"}
         </h1>

@@ -139,7 +139,28 @@ const ApprovalLetter = () => {
   }, [user]);
 
   return (
-    <MainPanel>
+    <MainPanel
+          breadcrumbs={[
+        { label: "Dashboard", link: "/dashboard" },
+        { label: "Approval Letter" },
+      ]}
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "EMPLOYEE"
+          ? "Employee Dashboard"
+          : "Approval Letter"
+      }
+    >
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            ← Back
+          </button>
       <div className="approvalletter-parent parent">
         <div className="approvalletter-cont cont">
           <div className="letter-box">

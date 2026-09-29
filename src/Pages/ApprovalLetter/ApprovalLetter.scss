@@ -16,7 +16,7 @@
     .letter-box {
       width: 100%;
       display: flex;
-      gap: 100px;
+      gap: var(--unit);
 
       // flex-direction: column;
       .left-form {
@@ -62,83 +62,86 @@
         }
       }
 
-.right-letter {
-  width: 794px;
-  min-height: 1123px;
-  padding: 60px 65px;
-  box-sizing: border-box;
+      .right-letter {
+        margin: 0 !important;
+        width: 40%;
+        padding: 20px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        justify-content: center;
+        background-color: white;
 
-  background: #ffffff;
-  color: #000000;
+        .date {
+          display: flex;
+          align-items: flex-end;
+          justify-content: flex-end;
+        }
+        .main-info {
+          text-align: start;
+          padding: 20px 0px 0px 0px;
+          letter-spacing: 0px;
+          word-spacing: 1px;
+        }
+        .subject {
+          font-weight: bold;
+          text-align: start;
+          letter-spacing: 0px;
+          word-spacing: 1px;
+        }
 
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
+        .sic-editor-data {
+          p {
+            text-align: left;
+            width: 100%;
+            letter-spacing: 0px;
+            word-spacing: 1px;
+          }
 
-  position: absolute;
-  left: -99999px;
-  top: 0;
+          figure {
+            table,
+            th,
+            td {
+              border: 1px solid black;
+            }
 
-  overflow: hidden;
+            table {
+              th,
+              td {
+                padding: 10px;
+              }
+            }
+          }
+        }
 
-  .date {
-    text-align: right;
-    margin-bottom: 35px;
-  }
+        .bottomsection {
+          display: flex;
+          justify-content: space-between;
+          text-align: "center";
+        }
 
-  .main-info {
-    margin-bottom: 30px;
-    line-height: 1.6;
-  }
+        .user {
+          margin-bottom: 80px;
+        }
 
-  .subject {
-    font-weight: 600;
-    margin-bottom: 25px;
-  }
+        .user,
+        .approvar,
+        .finance {
+          display: flex;
+          justify-content: flex-end;
+          flex-direction: column;
+          align-items: flex-end;
 
-  .sic-editor-data {
-    line-height: 1.7;
-    margin-bottom: 50px;
-
-    p {
-      margin: 0 0 12px;
-    }
-
-    ul,
-    ol {
-      padding-left: 25px;
-    }
-  }
-
-  .user {
-    margin-top: 40px;
-
-    span {
-      display: block;
-      margin-top: 5px;
-      font-weight: 600;
-    }
-  }
-
-  .bottomsection {
-    margin-top: 100px;
-
-    display: flex;
-    justify-content: space-between;
-    gap: 50px;
-
-    .approvar,
-    .finance {
-      display: flex;
-      flex-direction: column;
-
-      span {
-        margin-top: 5px;
-        font-weight: 600;
+          span {
+            font-weight: 600;
+          }
+        }
+        .approvar {
+          justify-content: flex-start;
+          align-items: flex-start;
+        }
       }
-    }
-  }
-}
     }
   }
 }

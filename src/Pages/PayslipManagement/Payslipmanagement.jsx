@@ -321,8 +321,15 @@ const getPayslip = async (month, year) => {
             : "Admin Dashboard"
         }
     >
-              <Link to="/">
-              <button className="btn1"><IoMdArrowBack />Back</button></Link>
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            ← Back
+          </button>
       <div className="payslip-list">
         <div className="page-header">
           <h2>Salary Slip</h2>

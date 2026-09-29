@@ -352,8 +352,15 @@ const LeaveManagement = () => {
             : "Admin Dashboard"
         }
     >
-              <Link to="/">
-              <button className="btn1"><IoMdArrowBack />Back</button></Link>
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            ← Back
+          </button>
       <div className="leave-list">
         <div className="page-header">
           <h2>Leave Management</h2>

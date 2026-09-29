@@ -608,12 +608,15 @@ const handleDownloadPDF = async () => {
           : "Approval Letters"
       }
     >
-      <Link to="/">
-        <button className="btn1">
-          <IoMdArrowBack />
-          Back
-        </button>
-      </Link>
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            ← Back
+          </button>
       
         <div className="page-header">
           <h2>Approval Letters</h2>

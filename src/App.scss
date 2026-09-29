@@ -79,6 +79,38 @@ body {
     transform: translateY(-10px);
   }
 }
+   .back-btn {
+      flex-shrink: 0;
+
+      border: none;
+
+      background: #e9e9e9;
+
+      color: #333;
+
+      padding: 10px 22px;
+
+      border-radius: 5px;
+
+      font-size: 15px;
+
+      font-weight: 500;
+
+      cursor: pointer;
+
+      white-space: nowrap;
+
+      transition: 0.3s ease;
+      margin-bottom: 10px;
+
+      &:hover {
+        background: #dcdcdc;
+      }
+
+      &:focus {
+        outline: none;
+      }
+    }
 
 @media only screen and (max-width: 900px) {
   .form-row {

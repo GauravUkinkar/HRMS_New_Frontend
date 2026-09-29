@@ -318,8 +318,15 @@ const Empviewdoc = () => {
         },
       ]}
     >
-              <Link to="/">
-        <button className="btn1"><IoMdArrowBack />Back</button></Link>
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            ← Back
+          </button>
       <div className="view-doc">
         {/* HEADER */}
 
