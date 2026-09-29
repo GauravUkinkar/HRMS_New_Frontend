@@ -11,7 +11,7 @@ import { LuChartNoAxesCombined } from "react-icons/lu";
 import { LuListChecks } from "react-icons/lu";
 import { LuUsers } from "react-icons/lu";
 import { Table, Tag } from "antd";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LuBell, LuCheck } from "react-icons/lu";
 import { LuCake, LuSend } from "react-icons/lu";
 import axios from "axios";
@@ -22,6 +22,7 @@ const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 const BASE_URL3 = import.meta.env.VITE_TEAM_URL;
 const AdminDash = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const quotes = [
     "Great teams build great organizations.",
     "Success is the result of teamwork and dedication.",
@@ -536,6 +537,49 @@ const AdminDash = () => {
       : plainText;
   };
 
+  const handleNotificationDetails = (notification) => {
+    if (!notification) return;
+
+    const type = String(notification?.type || "")
+      .trim()
+      .toLowerCase();
+
+    setShowNotificationModal(false);
+
+    switch (type) {
+      case "birthday":
+        navigate("/birthday");
+        break;
+
+      case "leave":
+      case "leave_request":
+      case "leaverequest":
+        navigate("/LeaveManagement");
+        break;
+
+      case "attendance":
+        navigate("/attendance");
+        break;
+
+      case "Document":
+      case "Document-Upload":
+      case "document-upload":
+        navigate("/Viewdoc");
+        break;
+
+      case "salary":
+        navigate("/SalaryManagement");
+        break;
+
+      case "task":
+        navigate("/TaskManagement");
+        break;
+
+      default:
+        break;
+    }
+  };
+
   const handleNotificationClick = async (notification) => {
     // Open popup
     setSelectedNotification(notification);
@@ -607,49 +651,49 @@ const AdminDash = () => {
 
   //load unread all notification 
 
- const getUnreadNotifications = async () => {
-  try {
-    setNotificationLoader(true);
+  const getUnreadNotifications = async () => {
+    try {
+      setNotificationLoader(true);
 
-    const response = await axios.get(
-      `${BASE_URL_USER}Notification/my/UnreadNotifications`,
-      {
-        withCredentials: true,
-      }
-    );
+      const response = await axios.get(
+        `${BASE_URL_USER}Notification/my/UnreadNotifications`,
+        {
+          withCredentials: true,
+        }
+      );
 
-    console.log(
-      "UNREAD NOTIFICATION API RESPONSE:",
-      response.data
-    );
+      console.log(
+        "UNREAD NOTIFICATION API RESPONSE:",
+        response.data
+      );
 
-    const unreadData = Array.isArray(response.data)
-      ? response.data
+      const unreadData = Array.isArray(response.data)
+        ? response.data
           .map((item) => item?.data)
           .filter(Boolean)
-      : [];
+        : [];
 
-    console.log(
-      "NORMALIZED UNREAD NOTIFICATIONS:",
-      unreadData
-    );
+      console.log(
+        "NORMALIZED UNREAD NOTIFICATIONS:",
+        unreadData
+      );
 
-    setUnreadNotifications(unreadData);
-    setShowUnread(true);
+      setUnreadNotifications(unreadData);
+      setShowUnread(true);
 
-  } catch (error) {
+    } catch (error) {
 
-    console.error(
-      "Unread Notification API Error:",
-      error?.response?.data || error
-    );
+      console.error(
+        "Unread Notification API Error:",
+        error?.response?.data || error
+      );
 
-    setUnreadNotifications([]);
+      setUnreadNotifications([]);
 
-  } finally {
-    setNotificationLoader(false);
-  }
-};
+    } finally {
+      setNotificationLoader(false);
+    }
+  };
 
   const markNotificationAsRead = async (notificationId) => {
     try {
@@ -676,7 +720,6 @@ const AdminDash = () => {
     }
   };
 
-  //Birthday Wish API Integration
   // Birthday API Integration
   const [birthday, setBirthday] = useState([]);
   const [birthdayLoader, setBirthdayLoader] = useState(false);
@@ -1065,7 +1108,7 @@ const AdminDash = () => {
                     <LuListChecks />
                     <span>Leave Requests</span>
                   </div>
-                  
+
                   <Link to="/LeaveManagement" className="view-all">
                     View All →
                   </Link>
@@ -1182,7 +1225,7 @@ const AdminDash = () => {
                     <LuUsers />
                     <span>Team Status</span>
                   </div>
-                  
+
                   {/* <Link to="#" className="view-all">
                     View All →
                   </Link> */}
@@ -1409,12 +1452,19 @@ const AdminDash = () => {
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="notification-modal-header">
-                      <h3>
-                        {selectedNotification?.title || "Notification"}
-                      </h3>
+                      <div>
+                        <h3>
+                          {selectedNotification?.title || "Notification"}
+                        </h3>
+
+                        <span className="notification-modal-type">
+                          {selectedNotification?.type || "Notification"}
+                        </span>
+                      </div>
 
                       <button
                         type="button"
+                        className="notification-modal-close"
                         onClick={() => setShowNotificationModal(false)}
                       >
                         ×
@@ -1438,6 +1488,27 @@ const AdminDash = () => {
 
                       <div className="notification-full-message">
                         {stripHtml(selectedNotification?.message || "")}
+                      </div>
+
+                      <div className="notification-modal-actions">
+                        <button
+                          type="button"
+                          className="notification-modal-cancel"
+                          onClick={() => setShowNotificationModal(false)}
+                        >
+                          Close
+                        </button>
+
+                        <button
+                          type="button"
+                          className="notification-modal-details"
+                          onClick={() =>
+                            handleNotificationDetails(selectedNotification)
+                          }
+                        >
+                          View Details
+                          <span>→</span>
+                        </button>
                       </div>
                     </div>
                   </div>

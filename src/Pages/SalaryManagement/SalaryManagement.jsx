@@ -235,25 +235,359 @@ const SalaryManagement = () => {
   // VIEW PAYSLIP
   // ==========================================
 
-  const handleViewPayslip = (record) => {
-    console.log(
-      "FULL PAYSLIP RECORD:",
-      record
+ // ==========================================
+// VIEW PAYSLIP
+// ==========================================
+
+const handleViewPayslip = async (record) => {
+  try {
+    setLoader(true);
+
+    console.log("SELECTED SALARY RECORD:", record);
+
+    const employeeId = record?.employeeId;
+    const year = record?.year;
+    const selectedMonth = record?.month;
+
+    if (!employeeId || !year) {
+      toast.error("Employee ID or Year is missing");
+      return;
+    }
+
+    // =========================================================
+    // GET COMPLETE PAYSLIP DATA FROM API
+    // =========================================================
+
+    const response = await axios.get(
+      `${BASE_URL}admin/getByYearAndEmployeeId`,
+      {
+        params: {
+          year: year,
+          employeeId: employeeId,
+        },
+        withCredentials: true,
+      }
     );
 
-    /*
-     * Send the complete selected employee salary
-     * record to the Payslip page.
-     */
+    console.log("RAW PAYSLIP API RESPONSE:", response.data);
+
+    // =========================================================
+    // SUPPORT BOTH POSSIBLE API RESPONSE FORMATS
+    //
+    // Format 1:
+    // [
+    //   {
+    //     status: "OK",
+    //     data: { ... }
+    //   }
+    // ]
+    //
+    // Format 2:
+    // {
+    //   status: "OK",
+    //   data: { ... }
+    // }
+    // =========================================================
+
+    const salaryList = Array.isArray(response.data)
+      ? response.data
+      : response.data?.data
+      ? [response.data]
+      : [];
+
+    if (salaryList.length === 0) {
+      toast.error("Payslip data not found");
+      return;
+    }
+
+    // =========================================================
+    // FIND THE EXACT EMPLOYEE + YEAR + MONTH RECORD
+    // =========================================================
+
+    const matchingSalary =
+      salaryList.find((item) => {
+        const data = item?.data;
+
+        return (
+          String(data?.employeeId || "").trim() ===
+            String(employeeId).trim() &&
+          String(data?.year || "").trim() ===
+            String(year).trim() &&
+          String(data?.month || "")
+            .trim()
+            .toLowerCase() ===
+            String(selectedMonth || "")
+              .trim()
+              .toLowerCase()
+        );
+      }) ||
+      salaryList.find((item) => {
+        const data = item?.data;
+
+        return (
+          String(data?.employeeId || "").trim() ===
+          String(employeeId).trim()
+        );
+      }) ||
+      salaryList[0];
+
+    const apiPayslip = matchingSalary?.data;
+
+    if (!apiPayslip) {
+      toast.error("Payslip data not found");
+      return;
+    }
+
+    // =========================================================
+    // IMPORTANT:
+    // Do NOT allow empty values from one object to overwrite
+    // valid values from the other object.
+    // =========================================================
+
+    const firstNonEmpty = (...values) => {
+      return values.find(
+        (value) =>
+          value !== undefined &&
+          value !== null &&
+          String(value).trim() !== ""
+      );
+    };
+
+    const payslipData = {
+      // Keep every field returned by the API
+      ...record,
+      ...apiPayslip,
+
+      // Employee
+      employeeName: firstNonEmpty(
+        apiPayslip.employeeName,
+        record.employeeName,
+        ""
+      ),
+
+      employeeId: firstNonEmpty(
+        apiPayslip.employeeId,
+        record.employeeId,
+        employeeId
+      ),
+
+      // Salary period
+      month: firstNonEmpty(
+        apiPayslip.month,
+        record.month,
+        selectedMonth,
+        ""
+      ),
+
+      year: firstNonEmpty(
+        apiPayslip.year,
+        record.year,
+        year,
+        ""
+      ),
+
+      // Company
+      // Your API response currently returns companyName: null,
+      // so use the salary record if available and finally the
+      // actual company configured in this payslip module.
+      companyName: firstNonEmpty(
+        apiPayslip.companyName,
+        apiPayslip.company,
+        apiPayslip.company_name,
+        record.companyName,
+        record.company,
+        record.company_name,
+        "Pandoza Solutions Pvt Ltd"
+      ),
+
+      // Payment / employee details
+      paydate: firstNonEmpty(
+        apiPayslip.paydate,
+        apiPayslip.payDate,
+        record.paydate,
+        record.payDate,
+        ""
+      ),
+
+      bankName: firstNonEmpty(
+        apiPayslip.bankName,
+        record.bankName,
+        ""
+      ),
+
+      accountNumber: firstNonEmpty(
+        apiPayslip.accountNumber,
+        apiPayslip.accountNo,
+        record.accountNumber,
+        record.accountNo,
+        ""
+      ),
+
+      // THIS FIXES YOUR PAN NUMBER ISSUE
+      panNumber: firstNonEmpty(
+        apiPayslip.panNumber,
+        apiPayslip.panNo,
+        apiPayslip.pan,
+        record.panNumber,
+        record.panNo,
+        record.pan,
+        ""
+      ),
+
+      uanNo: firstNonEmpty(
+        apiPayslip.uanNo,
+        apiPayslip.uanNumber,
+        record.uanNo,
+        record.uanNumber,
+        ""
+      ),
+
+      // Attendance
+      totalWorkingDay: firstNonEmpty(
+        apiPayslip.totalWorkingDay,
+        record.totalWorkingDay,
+        0
+      ),
+
+      presentDay: firstNonEmpty(
+        apiPayslip.presentDay,
+        record.presentDay,
+        0
+      ),
+
+      absentDays: firstNonEmpty(
+        apiPayslip.absentDays,
+        record.absentDays,
+        0
+      ),
+
+      lop: firstNonEmpty(
+        apiPayslip.lop,
+        record.lop,
+        0
+      ),
+
+      // Earnings
+      grossSalary: firstNonEmpty(
+        apiPayslip.grossSalary,
+        record.grossSalary,
+        0
+      ),
+
+      basicSalary: firstNonEmpty(
+        apiPayslip.basicSalary,
+        record.basicSalary,
+        0
+      ),
+
+      da: firstNonEmpty(
+        apiPayslip.da,
+        record.da,
+        0
+      ),
+
+      hra: firstNonEmpty(
+        apiPayslip.hra,
+        record.hra,
+        0
+      ),
+
+      otherAllowance: firstNonEmpty(
+        apiPayslip.otherAllowance,
+        record.otherAllowance,
+        0
+      ),
+
+      // Deductions
+      professionalTax: firstNonEmpty(
+        apiPayslip.professionalTax,
+        record.professionalTax,
+        0
+      ),
+
+      employeePf: firstNonEmpty(
+        apiPayslip.employeePf,
+        record.employeePf,
+        0
+      ),
+
+      employerPf: firstNonEmpty(
+        apiPayslip.employerPf,
+        record.employerPf,
+        0
+      ),
+
+      employeeEsic: firstNonEmpty(
+        apiPayslip.employeeEsic,
+        record.employeeEsic,
+        0
+      ),
+
+      salaryAdvance: firstNonEmpty(
+        apiPayslip.salaryAdvance,
+        record.salaryAdvance,
+        0
+      ),
+
+      otherDiduction: firstNonEmpty(
+        apiPayslip.otherDiduction,
+        record.otherDiduction,
+        0
+      ),
+
+      insuranceCorporation: firstNonEmpty(
+        apiPayslip.insuranceCorporation,
+        record.insuranceCorporation,
+        0
+      ),
+
+      netSalary: firstNonEmpty(
+        apiPayslip.netSalary,
+        record.netSalary,
+        0
+      ),
+    };
+
+    // =========================================================
+    // DEBUG - CHECK EXACT DATA BEFORE OPENING PAYSLIP
+    // =========================================================
+
+    console.log("FINAL PAYSLIP DATA SENT TO PAYSLIP PAGE:", payslipData);
+    console.log("FINAL COMPANY:", payslipData.companyName);
+    console.log("FINAL PAN:", payslipData.panNumber);
+    console.log("FINAL ACCOUNT:", payslipData.accountNumber);
+    console.log("FINAL PAY DATE:", payslipData.paydate);
+
+    // =========================================================
+    // OPEN PAYSLIP
+    // =========================================================
 
     navigate("/Payslip", {
       state: {
-        payslip: {
-          ...record,
-        },
+        payslip: payslipData,
       },
     });
-  };
+  } catch (error) {
+    console.error("VIEW PAYSLIP ERROR:", error);
+
+    console.error(
+      "STATUS:",
+      error.response?.status
+    );
+
+    console.error(
+      "API ERROR:",
+      error.response?.data
+    );
+
+    toast.error(
+      error.response?.data?.responseMessage ||
+        "Unable to fetch payslip"
+    );
+  } finally {
+    setLoader(false);
+  }
+};
 
   // ==========================================
   // DELETE SALARY
@@ -606,15 +940,13 @@ const SalaryManagement = () => {
           {/* VIEW PAYSLIP */}
 
           <button
-            type="button"
-            className="view-salary-link"
-            onClick={() =>
-              handleViewPayslip(record)
-            }
-            title="View Payslip"
-          >
-            <FaEye className="viewsalary" />
-          </button>
+  type="button"
+  className="view-salary-link"
+  onClick={() => handleViewPayslip(record)}
+  title="View Payslip"
+>
+  <FaEye className="viewsalary" />
+</button>
 
           {/* EDIT SALARY */}
 

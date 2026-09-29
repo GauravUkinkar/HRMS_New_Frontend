@@ -3,7 +3,6 @@
   height: 100%;
   display: flex;
   gap: 20px;
-  padding: 10px 5px;
   //main left side data
   .left-side {
     width: 80%;
@@ -110,7 +109,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        
+
         .heading {
           display: flex;
           align-items: center;
@@ -127,25 +126,25 @@
               font-weight: 700;
             }
           }
-         .attendance-filters{
-          display: flex;
-          align-items: center;
-          gap: 10px;
-  
- .month-select {
-            border: 1px solid #077c87;
-            background: #fff;
-            border-radius: 5px;
-            padding: 8px 30px 8px 12px;
-            font-size: 14px;
-            color: #374151;
-            cursor: pointer;
-            outline: none;
-            &:focus {
-              border-color: #20ad9b;
+          .attendance-filters {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            .month-select {
+              border: 1px solid #077c87;
+              background: #fff;
+              border-radius: 5px;
+              padding: 8px 30px 8px 12px;
+              font-size: 14px;
+              color: #374151;
+              cursor: pointer;
+              outline: none;
+              &:focus {
+                border-color: #20ad9b;
+              }
             }
           }
-         }
         }
 
         .attendance-chart {
@@ -209,24 +208,24 @@
               font-weight: 700;
             }
           }
-           .view-all {
-          border: none;
-          background: transparent;
-          color: #003a42;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          text-decoration: none;
-          transition: var(--trans);
-          background: rgba(0, 142, 137, 0.082);
-          padding: 5px 20px;
-          border-radius: 5px;
-          border: 1px solid #003a42;
-          &:hover {
-            background: #003a42;
-            color: white;
+          .view-all {
+            border: none;
+            background: transparent;
+            color: #003a42;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--trans);
+            background: rgba(0, 142, 137, 0.082);
+            padding: 5px 20px;
+            border-radius: 5px;
+            border: 1px solid #003a42;
+            &:hover {
+              background: #003a42;
+              color: white;
+            }
           }
-        }
 
           .month-select {
             border: 1px solid #077c87;
@@ -624,67 +623,255 @@
       .notification-modal-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.45);
+        z-index: 99999;
+
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 9999;
+
         padding: 20px;
+
+        background: rgba(8, 31, 38, 0.62);
+
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
       }
 
       .notification-modal {
-        width: 100%;
-        max-width: 550px;
-        background: #fff;
-        border-radius: 5px;
-        box-shadow: var(--shadow);
+        width: min(520px, 95vw);
+
         overflow: hidden;
+
+        background: #ffffff;
+
+        border-radius: 14px;
+
+        box-shadow:
+          0 25px 70px rgba(0, 0, 0, 0.25),
+          0 8px 25px rgba(0, 140, 158, 0.12);
+
+        animation: notificationModalShow 0.25s ease;
       }
 
       .notification-modal-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
+
         padding: 18px 20px;
-        border-bottom: 1px solid #eee;
+
+        border-bottom: 1px solid #e8eef0;
+
+        background: #ffffff;
 
         h3 {
           margin: 0;
-          font-size: 18px;
-          font-weight: 600;
-          color: #172033;
+          color: #123842;
+          font-size: 16px;
+          font-weight: 700;
         }
+      }
 
-        button {
-          border: none;
-          background: transparent;
-          font-size: 28px;
-          line-height: 1;
-          cursor: pointer;
-          color: #777;
+      .notification-modal-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
 
-          &:hover {
-            color: #000;
-          }
-        }
+      .notification-modal-icon {
+        width: 40px;
+        height: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 10px;
+
+        background: #e9f8fa;
+
+        color: #008c9e;
+
+        font-size: 19px;
+      }
+
+      .notification-modal-title-wrapper span {
+        display: block;
+
+        margin-top: 3px;
+
+        color: #8a989d;
+
+        font-size: 11px;
+      }
+
+      .notification-modal-close {
+        width: 32px;
+        height: 32px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: 1px solid #e2e8ea;
+        border-radius: 50%;
+
+        background: #ffffff;
+
+        color: #6f8086;
+
+        font-size: 20px;
+
+        cursor: pointer;
+
+        transition: 0.2s ease;
+      }
+
+      .notification-modal-close:hover {
+        background: #008c9e;
+        border-color: #008c9e;
+        color: #ffffff;
       }
 
       .notification-modal-body {
-        padding: 20px;
+        padding: 24px 22px 20px;
       }
 
       .notification-modal-date {
-        margin: 0 0 15px;
-        font-size: 12px;
-        color: #888;
+        margin: 0 0 14px;
+
+        color: #8a989d;
+
+        font-size: 11px;
       }
 
       .notification-full-message {
+        min-height: 100px;
+
+        padding: 16px;
+
+        border: 1px solid #e4edef;
+        border-radius: 9px;
+
+        background: #f8fbfc;
+
+        color: #52656d;
+
         font-size: 14px;
+
         line-height: 1.7;
-        color: #444;
+
         white-space: pre-wrap;
+
         word-break: break-word;
+      }
+
+      .notification-modal-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+
+        gap: 10px;
+
+        margin-top: 20px;
+      }
+
+      .notification-modal-cancel,
+      .notification-modal-details {
+        min-width: 100px;
+        height: 40px;
+
+        padding: 0 18px;
+
+        border-radius: 6px;
+
+        font-size: 13px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: 0.2s ease;
+      }
+
+      .notification-modal-cancel {
+        border: 1px solid #dce5e7;
+
+        background: #ffffff;
+
+        color: #607177;
+      }
+
+      .notification-modal-cancel:hover {
+        border-color: #008c9e;
+        color: #008c9e;
+      }
+
+      .notification-modal-details {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        gap: 9px;
+
+        border: 1px solid #008c9e;
+
+        background: #008c9e;
+
+        color: #ffffff;
+      }
+
+      .notification-modal-details:hover {
+        background: #007888;
+        border-color: #007888;
+      }
+
+      .notification-modal-details span {
+        font-size: 16px;
+
+        transition: transform 0.2s ease;
+      }
+
+      .notification-modal-details:hover span {
+        transform: translateX(4px);
+      }
+
+      @keyframes notificationModalShow {
+        from {
+          opacity: 0;
+          transform: translateY(15px) scale(0.97);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .notification-modal-overlay {
+          padding: 12px;
+        }
+
+        .notification-modal {
+          width: 100%;
+        }
+
+        .notification-modal-header {
+          padding: 15px;
+        }
+
+        .notification-modal-body {
+          padding: 18px 15px;
+        }
+
+        .notification-modal-actions {
+          flex-direction: column-reverse;
+        }
+
+        .notification-modal-cancel,
+        .notification-modal-details {
+          width: 100%;
+        }
       }
 
       .notification-item {
@@ -760,30 +947,19 @@
     //birthday box
     .last-box3 {
       width: 100%;
-      height: 100%;
-
+      height: 50%;
       padding: 15px;
-
       background: #fff;
-
       border-radius: 5px;
-
       box-shadow: var(--shadow);
-
       display: flex;
       flex-direction: column;
-
-      // =========================
-      // HEADER
-      // =========================
 
       .birthday-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-
         padding-bottom: 12px;
-
         border-bottom: 1px solid #edf0f2;
 
         .birthday-title {
@@ -806,80 +982,50 @@
         .view-all {
           border: none;
           background: transparent;
-
           color: #077c87;
-
           font-size: 11px;
           font-weight: 600;
-
           cursor: pointer;
         }
       }
 
-      // =========================
-      // BIRTHDAY LIST
-      // =========================
-
       .birthday-list {
         display: flex;
         flex-direction: column;
-
         gap: 8px;
-
         margin-top: 10px;
-
+        height: 560px;
+        max-height: 560px;
         overflow-y: auto;
+        padding-right: 4px;
       }
-
-      // =========================
-      // BIRTHDAY ITEM
-      // =========================
 
       .birthday-item {
         display: flex;
         align-items: center;
-
         gap: 10px;
-
         padding: 8px;
-
         border-radius: 7px;
-
         background: #f8fafb;
-
         transition: 0.2s ease;
 
         &:hover {
           background: #eef8f9;
         }
 
-        // =========================
-        // AVATAR
-        // =========================
-
         .birthday-avatar {
           width: 35px;
           height: 35px;
-
           flex-shrink: 0;
-
           display: flex;
           align-items: center;
           justify-content: center;
-
           border-radius: 50%;
-
           background: #e8f7f8;
-
           color: #077c87;
-
           font-size: 10px;
           font-weight: 700;
         }
-
-        // =========================
-        // EMPLOYEE INFO
-        // =========================
 
         .birthday-info {
           flex: 1;
@@ -887,12 +1033,9 @@
 
           h4 {
             margin: 0;
-
             font-size: 12px;
             font-weight: 600;
-
             color: #172033;
-
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -900,154 +1043,106 @@
 
           p {
             margin: 3px 0 0;
-
             font-size: 9px;
-
             color: #64748b;
-
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
           }
         }
 
-        // =========================
-        // DATE
-        // =========================
-
         .birthday-date {
           font-size: 9px;
-
           color: #64748b;
-
           white-space: nowrap;
         }
-// =========================
-// TODAY'S BIRTHDAY
-// =========================
 
-&.birthday-today {
-  position: relative;
-  overflow: hidden;
+        &.birthday-today {
+          position: relative;
+          overflow: hidden;
+          background: #fff8e7;
+          border: 1px solid rgba(255, 193, 7, 0.45);
+          animation: birthdayPulse 2s ease-in-out infinite;
 
-  background: #fff8e7;
+          &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
 
-  border: 1px solid rgba(255, 193, 7, 0.45);
+            background:
+              radial-gradient(
+                circle at 10% 20%,
+                rgba(7, 255, 251, 0.075),
+                transparent 25%
+              ),
+              radial-gradient(
+                circle at 90% 80%,
+                rgba(167, 233, 239, 0.12),
+                transparent 25%
+              ),
+              radial-gradient(
+                circle at 50% 50%,
+                rgba(255, 105, 180, 0.08),
+                transparent 30%
+              );
 
-  animation: birthdayPulse 2s ease-in-out infinite;
+            animation: birthdayBackgroundMove 4s ease-in-out infinite alternate;
+            pointer-events: none;
+          }
 
-  // Animated background
-  &::before {
-    content: "";
+          > * {
+            position: relative;
+            z-index: 1;
+          }
 
-    position: absolute;
-    inset: 0;
+          .birthday-info {
+            h4 {
+              color: #172033;
+            }
 
-    background:
-      radial-gradient(
-        circle at 10% 20%,
-        rgba(7, 255, 251, 0.075),
-        transparent 25%
-      ),
-      radial-gradient(
-        circle at 90% 80%,
-        rgba(167, 233, 239, 0.12),
-        transparent 25%
-      ),
-      radial-gradient(
-        circle at 50% 50%,
-        rgba(255, 105, 180, 0.08),
-        transparent 30%
-      );
+            .birthday-today-text {
+              display: block;
+              margin-top: 3px;
+              font-size: 9px;
+              font-weight: 700;
+              color: #d88900;
+              animation: birthdayTextBlink 1.5s ease-in-out infinite;
+            }
+          }
 
-    animation: birthdayBackgroundMove 4s ease-in-out infinite alternate;
+          .birthday-date {
+            color: #d88900;
+            font-weight: 600;
+          }
 
-    pointer-events: none;
-  }
+          .wish-button {
+            animation: wishButtonPulse 1.5s ease-in-out infinite;
 
-  // Keep content above animation
-  > * {
-    position: relative;
-    z-index: 1;
-  }
+            &:hover {
+              background: #056771;
+              transform: scale(1.05);
+            }
 
-
-
-  .birthday-info {
-
-    h4 {
-      color: #172033;
-    }
-
-    .birthday-today-text {
-      display: block;
-
-      margin-top: 3px;
-
-      font-size: 9px;
-
-      font-weight: 700;
-
-      color: #d88900;
-
-      animation: birthdayTextBlink 1.5s ease-in-out infinite;
-    }
-  }
-
-  .birthday-date {
-    color: #d88900;
-    font-weight: 600;
-  }
-
-  .wish-button {
-    animation: wishButtonPulse 1.5s ease-in-out infinite;
-
-    &:hover {
-      background: #056771;
-
-      transform: scale(1.05);
-    }
-
-    &:disabled {
-      opacity: 0.7;
-
-      cursor: not-allowed;
-
-      animation: none;
-    }
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
+            &:disabled {
+              opacity: 0.7;
+              cursor: not-allowed;
+              animation: none;
+            }
+          }
+        }
 
         .wish-button {
           display: flex;
           align-items: center;
           gap: 4px;
-
           border: none;
-
           padding: 6px 8px;
-
           border-radius: 5px;
-
           background: #077c87;
           color: #fff;
-
           font-size: 9px;
           font-weight: 500;
-
           cursor: pointer;
-
           transition: 0.2s ease;
 
           svg {
@@ -1059,10 +1154,6 @@
           }
         }
       }
-
-      // =========================
-      // SCROLLBAR
-      // =========================
 
       .birthday-list::-webkit-scrollbar {
         width: 3px;
@@ -1098,10 +1189,11 @@
           width: 100%;
         }
       }
-      .box4{
+      .box4 {
         flex-direction: column;
-        .box4-left, .box4-right{
-          width:100%;
+        .box4-left,
+        .box4-right {
+          width: 100%;
         }
       }
     }
