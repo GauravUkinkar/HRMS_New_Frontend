@@ -10,7 +10,7 @@ import { IoMdDownload } from "react-icons/io";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -28,12 +28,13 @@ import nvmWatermark from "../../assets/nvm-watermark.png";
 import nvmLogo from "../../assets/nvm-logo.png";
 
 import { UserContext } from "../../../Context";
-import { IoMdArrowBack } from "react-icons/io";
-import { Link } from "react-router-dom";
+
 
 
 
 const Payslip = () => {
+   const navigate = useNavigate();
+
   // ==========================================
   // LOCATION
   // ==========================================
@@ -331,7 +332,7 @@ const Payslip = () => {
             type="button"
             className="back-btn"
             onClick={() =>
-              navigate("/")
+              navigate("/payslipManagement")
             }
           >
             ← Back

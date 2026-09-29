@@ -306,27 +306,41 @@ const handleDownloadPDF = async () => {
   // DELETE APPROVAL
   // =====================================================
 
-  const handleDelete = async (id) => {
-    if (!id) return;
+const handleDelete = async (id) => {
+  if (!id) return;
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this approval?",
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this approval?",
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    const response = await axios.delete(
+      `${BASE_URL}Admin/DeleteApproval?aId=${id}`,
+      {
+        withCredentials: true,
+      },
     );
 
-    if (!confirmDelete) return;
+    if (response.status === 200 || response.status === 204) {
+      toast.success("Approval deleted successfully");
 
-    try {
-      // Add your delete API here when available.
-
-      console.log("Delete Approval ID:", id);
-
-      toast.info("Delete API is not connected yet");
-    } catch (error) {
-      console.log(error);
-
-      toast.error("Failed to delete approval");
+      // Remove deleted row immediately from table
+      setData((prev) => prev.filter((item) => item.id !== id));
     }
-  };
+  } catch (error) {
+    console.log(
+      "Delete Approval Error:",
+      error.response?.data || error,
+    );
+
+    toast.error(
+      error.response?.data?.message ||
+        "Failed to delete approval",
+    );
+  }
+};
 
   // =====================================================
   // GET DATA ON PAGE LOAD

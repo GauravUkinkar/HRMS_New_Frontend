@@ -12,17 +12,18 @@ import {
   Tooltip,
 } from "recharts";
 import { toast } from "react-toastify";
-import { IoMdArrowBack } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 
 
 
 const DatePicker = DatePickerModule?.default || DatePickerModule;
-
 const BASE_URL1 = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const LeaveApplication = () => {
+ const navigate = useNavigate();
+
   const { user } = useContext(UserContext);
   const [leaveRecords, setLeaveRecords] = useState([]);
   const [leaveLoader, setLeaveLoader] = useState(false);
@@ -304,8 +305,15 @@ const formatEntryDate = () => {
             : "Admin Dashboard"
         }
     >
-              <Link to="/">
-        <button className="btn1"><IoMdArrowBack />Back</button></Link>
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() =>
+              navigate("/empLeaveManagement")
+            }
+          >
+            ← Back
+          </button>
       <div className="leave-container">
 
 

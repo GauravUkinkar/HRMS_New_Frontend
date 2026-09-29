@@ -8,8 +8,8 @@ import { MdOutlinePreview } from "react-icons/md";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { IoMdArrowBack } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+
 
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
@@ -23,7 +23,7 @@ const Empviewdoc = () => {
 
   // Logged-in employee ID
   const employeeId = user?.employeeId;
-
+ const navigate = useNavigate();
   const [documents, setDocuments] = useState({});
   const [loadingDocuments, setLoadingDocuments] = useState(false);
 
