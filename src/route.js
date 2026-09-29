@@ -5,6 +5,7 @@ import EditEmployee from "./Pages/AddEmployee/EditEmployee";
 import EditSalary from "./Pages/AddSalary/EditSalary";
 import UserList from "./Pages/UserList/UserList";
 
+
 import Leave_details from "./Pages/LeaveManagement/Leave_details";
 
 const Payslip = lazy(() =>
@@ -51,6 +52,9 @@ const Generatesalary = lazy(() =>
 );
 const ApprovalLetter = lazy(() =>
   import("./Pages/ApprovalLetter/ApprovalLetter")
+);
+const EditApproval = lazy(() =>
+  import("./Pages/ApprovalLetter/EditApproval")
 );
 const ViewApprovals = lazy(() =>
   import("./Pages/ViewApprovals/ViewApproval")
@@ -383,6 +387,13 @@ export const routes = [
     name: "ApprovalLetter",
     path: "/approvalLetter",
     comp: ApprovalLetter,
+    adminonly: false,
+    employeeonly: true,
+  },
+      {
+    name: "EditApproval",
+    path: "/editApproval/:id",
+    comp: EditApproval,
     adminonly: false,
     employeeonly: true,
   },
