@@ -16,7 +16,7 @@ import { LuListChecks } from "react-icons/lu";
 import { LuUsers } from "react-icons/lu";
 import { Table, Tag } from "antd";
 import { FaCalendarAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LuBell, LuCheck } from "react-icons/lu";
 import { LuCake, LuSend } from "react-icons/lu";
 import { toast } from "react-toastify";
@@ -25,6 +25,7 @@ const BASE_URL1 = import.meta.env.VITE_SALARY_BACKEND_URL;
 const BASE_URL_USER = import.meta.env.VITE_USER_BACKEND_URL;
 const EmployeeDash = () => {
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
   const quotes = [
     "Great teams build great organizations.",
     "Success is the result of teamwork and dedication.",
@@ -244,7 +245,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to punch in. Please try again.",
+        "Unable to punch in. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -353,7 +354,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to punch out. Please try again.",
+        "Unable to punch out. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -608,6 +609,76 @@ const EmployeeDash = () => {
       title.includes("happy birthday") || message.includes("happy birthday")
     );
   };
+  const getNotificationType = (notification) => {
+    return String(
+      notification?.type ||
+      notification?.notificationType ||
+      notification?.category ||
+      notification?.module ||
+      ""
+    )
+      .trim()
+      .toUpperCase();
+  };
+
+  const handleNotificationDetails = (notification) => {
+    if (!notification) return;
+
+    const type = getNotificationType(notification);
+
+    if (notification?.redirectUrl) {
+      setShowNotificationModal(false);
+      navigate(notification.redirectUrl);
+      return;
+    }
+
+    if (notification?.url) {
+      setShowNotificationModal(false);
+      navigate(notification.url);
+      return;
+    }
+
+    switch (type) {
+      case "BIRTHDAY":
+      case "BIRTHDAY_WISH":
+      case "BIRTHDAY_NOTIFICATION":
+        setShowNotificationModal(false);
+        return;
+
+      case "LEAVE":
+      case "LEAVE_APPLICATION":
+      case "LEAVE_NOTIFICATION":
+        setShowNotificationModal(false);
+        navigate("/empLeaveManagement");
+        return;
+
+      case "ATTENDANCE":
+      case "ATTENDANCE_NOTIFICATION":
+        setShowNotificationModal(false);
+        navigate("/empAttendance");
+        return;
+
+      case "TASK":
+      case "CRM":
+      case "CRM_TASK":
+        setShowNotificationModal(false);
+        window.open(
+          "https://newcrm.diwise.in/",
+          "_blank",
+          "noopener,noreferrer"
+        );
+        return;
+
+      case "PROFILE":
+      case "PROFILE_UPDATE":
+        setShowNotificationModal(false);
+        navigate(`/profile/${user?.employeeId}`);
+        return;
+
+      default:
+        toast.info("No details page is available for this notification.");
+    }
+  };
 
   const handleNotificationClick = async (notification) => {
     // Open popup
@@ -836,17 +907,17 @@ const EmployeeDash = () => {
         (a, b) =>
           new Date(
             b.entryDate ||
-              b.entry_date ||
-              b.startingDate ||
-              b.starting_date ||
-              0,
+            b.entry_date ||
+            b.startingDate ||
+            b.starting_date ||
+            0,
           ) -
           new Date(
             a.entryDate ||
-              a.entry_date ||
-              a.startingDate ||
-              a.starting_date ||
-              0,
+            a.entry_date ||
+            a.startingDate ||
+            a.starting_date ||
+            0,
           ),
       );
 
@@ -1178,10 +1249,10 @@ const EmployeeDash = () => {
                         render: (date) =>
                           date
                             ? new Date(date).toLocaleDateString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              })
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
                             : "--",
                       },
 
@@ -1324,9 +1395,8 @@ const EmployeeDash = () => {
                   ) : (
                     displayedNotifications.map((notification) => (
                       <div
-                        className={`notification-item ${
-                          notification?.isRead ? "read" : "unread"
-                        }`}
+                        className={`notification-item ${notification?.isRead ? "read" : "unread"
+                          }`}
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
                       >
@@ -1344,15 +1414,15 @@ const EmployeeDash = () => {
                           <span className="notification-date">
                             {notification?.createdAt
                               ? new Date(notification.createdAt).toLocaleString(
-                                  "en-IN",
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  },
-                                )
+                                "en-IN",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
                               : "--"}
                           </span>
                         </div>
@@ -1375,10 +1445,25 @@ const EmployeeDash = () => {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="notification-modal-header">
-                        <h3>{selectedNotification?.title || "Notification"}</h3>
+                        <div className="notification-modal-title-wrapper">
+                          <div className="notification-modal-icon">
+                            <LuBell />
+                          </div>
+
+                          <div>
+                            <h3>
+                              {selectedNotification?.title || "Notification"}
+                            </h3>
+
+                            <span>
+                              Notification
+                            </span>
+                          </div>
+                        </div>
 
                         <button
                           type="button"
+                          className="notification-modal-close"
                           onClick={() => setShowNotificationModal(false)}
                         >
                           ×
@@ -1389,19 +1474,44 @@ const EmployeeDash = () => {
                         <p className="notification-modal-date">
                           {selectedNotification?.createdAt
                             ? new Date(
-                                selectedNotification.createdAt,
-                              ).toLocaleString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                              selectedNotification.createdAt
+                            ).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                             : "--"}
                         </p>
 
                         <div className="notification-full-message">
-                          {stripHtml(selectedNotification?.message || "")}
+                          {stripHtml(
+                            selectedNotification?.message || ""
+                          )}
+                        </div>
+
+                        <div className="notification-modal-actions">
+                          <button
+                            type="button"
+                            className="notification-modal-cancel"
+                            onClick={() => setShowNotificationModal(false)}
+                          >
+                            Close
+                          </button>
+
+                          <button
+                            type="button"
+                            className="notification-modal-details"
+                            onClick={() =>
+                              handleNotificationDetails(
+                                selectedNotification
+                              )
+                            }
+                          >
+                            View Details
+                            <span>→</span>
+                          </button>
                         </div>
                       </div>
                     </div>
