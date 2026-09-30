@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Table, Avatar, Tag, Space } from "antd";
 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { UserContext } from "../../../Context";
 
 import {
   SearchOutlined,
@@ -24,6 +25,7 @@ const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 
 const EmpList = () => {
   const navigate = useNavigate();
+  const { user } = useContext(UserContext);
 
   const [allemployee, setAllEmployee] = useState([]);
 
@@ -604,23 +606,28 @@ const EmpList = () => {
       />
 
       <MainPanel
-        title={
-          showEmployeeAttendance
-            ? "Employee Attendance"
-            : "Employee List"
-        }
-        breadcrumbs={[
-          {
-            label: "Dashboard",
-            link: "/",
-          },
-          {
-            label: showEmployeeAttendance
-              ? "Employee Attendance"
-              : "Employee List",
-          },
+                  breadcrumbs={[
+          { label: "Dashboard", link: "/dashboard" },
+          { label: "Employees List" },
         ]}
+        
+        title={
+          String(user?.role || user?.crmRole || "")
+            .trim()
+            .toUpperCase() === "ADMIN"
+            ? "Admin Dashboard"
+            : "Admin Dashboard"
+        }
       >
+                      <button
+                type="button"
+                className="back-btn"
+                         onClick={() =>
+              navigate("/")
+            }
+              >
+                ← Back
+              </button>
 
         {/* =====================================================
             EMPLOYEE ATTENDANCE SECTION
@@ -630,14 +637,6 @@ const EmpList = () => {
 
             {/* HEADER */}
             <div className="attendance-header">
-
-              <button
-                type="button"
-                className="attendance-back-btn"
-                onClick={closeEmployeeAttendance}
-              >
-                ← Back
-              </button>
 
               <h1 className="empname">
                 Check Employee Attendance -{" "}
@@ -740,13 +739,7 @@ const EmpList = () => {
             <div className="employee-list-header">
 
               {/* BACK BUTTON */}
-              <button
-                type="button"
-                className="employee-list-back-btn"
-                onClick={() => navigate("/")}
-              >
-                ← Back
-              </button>
+
 
               {/* EMPLOYEES TITLE */}
               <h2>Employees</h2>

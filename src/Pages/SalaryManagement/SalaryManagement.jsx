@@ -1,30 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./SalaryManagement.scss";
-
 import MainPanel from "../../comp/MainPanel/MainPanel";
-
 import { Avatar, Space, Table } from "antd";
-
 import { FaEye } from "react-icons/fa";
-
 import {
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-
 import { FaPlus } from "react-icons/fa6";
-
 import axios from "axios";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
-
 import { useNavigate } from "react-router-dom";
-
 import { toast } from "react-toastify";
+import { UserContext } from "../../../Context";
+
 
 const SalaryManagement = () => {
   const navigate = useNavigate();
-
+  const { user } = useContext(UserContext);
   const [salaryData, setSalaryData] = useState([]);
   const [loader, setLoader] = useState(false);
 
@@ -990,26 +984,34 @@ const handleViewPayslip = async (record) => {
   // ==========================================
 
   return (
-    <MainPanel>
-      <div className="salary-management">
-
-        {/* HEADER */}
-
-        <div className="page-header">
-
-          {/* BACK BUTTON */}
-
-          <button
+    <MainPanel
+                    breadcrumbs={[
+        { label: "Dashboard", link: "/dashboard" },
+        { label: "Salary Management" },
+      ]}
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "ADMIN"
+          ? "Admin Dashboard"
+          : " "
+      }
+    >
+                              <button
             type="button"
-            className="salary-back-btn"
+            className="back-btn"
             onClick={() =>
               navigate("/")
             }
           >
             ← Back
           </button>
+      <div className="salary-management">
 
-          {/* TITLE */}
+
+
+        <div className="page-header">
+
 
           <h2>
             Salary Management

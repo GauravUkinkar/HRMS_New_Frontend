@@ -8,6 +8,7 @@ import { MdOutlinePreview } from "react-icons/md";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
@@ -19,6 +20,7 @@ const Viewdoc = () => {
 
   const [loadingEmployees, setLoadingEmployees] = useState(false);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
+  const navigate = useNavigate();
 
   const [previewFile, setPreviewFile] = useState("");
   const [previewName, setPreviewName] = useState("");
@@ -619,7 +621,7 @@ const Viewdoc = () => {
 
   return (
     <MainPanel
-      title="View Uploaded Documents"
+      title="Admin Dashboard"
       breadcrumbs={[
         {
           label: "Dashboard",
@@ -630,6 +632,15 @@ const Viewdoc = () => {
         },
       ]}
     >
+                            <button
+                type="button"
+                className="back-btn"
+                         onClick={() =>
+              navigate("/")
+            }
+              >
+                ← Back
+              </button>
       <div className="view-doc">
         <h1>View Documents</h1>
 

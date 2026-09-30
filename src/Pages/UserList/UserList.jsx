@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { Space, Table } from "antd";
@@ -9,11 +9,13 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SearchOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./userlist.scss";
+import { UserContext } from "../../../Context";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const UserList = () => {
     const navigate = useNavigate();
+  const { user } = useContext(UserContext);
 
     const [alluser, setAllUser] = useState([]);
     const [showDeletedUsers, setShowDeletedUsers] = useState(false);
@@ -326,32 +328,35 @@ const UserList = () => {
     return (
         <>
             <MainPanel
-                title="User List"
-                breadcrumbs={[
-                    {
-                        label: "Dashboard",
-                        link: "/dashboard",
-                    },
-                    {
-                        label: "User List",
-                    },
-                ]}
+                  breadcrumbs={[
+          { label: "Dashboard", link: "/dashboard" },
+          { label: "User List" },
+        ]}
+        
+        title={
+          String(user?.role || user?.crmRole || "")
+            .trim()
+            .toUpperCase() === "ADMIN"
+            ? "Admin Dashboard"
+            : ""
+        }
             >
-                <div className="user-list">
-
-                    {/* PAGE HEADER */}
-                    <div className="page-header">
-
-                        {/* BACK BUTTON */}
-                        <button
+                                        <button
                             type="button"
-                            className="previous-view-back"
+                            className="back-btn"
                             onClick={() =>
                                 navigate("/")
                             }
                         >
                             ← Back
                         </button>
+                <div className="user-list">
+
+                    {/* PAGE HEADER */}
+                    <div className="page-header">
+
+                        {/* BACK BUTTON */}
+
 
                         {/* PAGE TITLE */}
                         <h2>

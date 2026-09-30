@@ -1,29 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./Empviewdoc.scss";
-import { UserContext } from "../../../Context";
 
+import { UserContext } from "../../../Context";
 import { GrDocumentPdf } from "react-icons/gr";
 import { IoMdDownload } from "react-icons/io";
 import { MdOutlinePreview } from "react-icons/md";
-
 import MainPanel from "../../comp/MainPanel/MainPanel";
+
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
-
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const Empviewdoc = () => {
-  // =====================================================
-  // GET LOGGED-IN USER FROM CONTEXT
-  // =====================================================
-
   const { user } = useContext(UserContext);
 
-  // Logged-in employee ID
-  const employeeId = user?.employeeId;
- const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   const [documents, setDocuments] = useState({});
   const [loadingDocuments, setLoadingDocuments] = useState(false);
 
@@ -31,68 +26,28 @@ const Empviewdoc = () => {
   const [previewName, setPreviewName] = useState("");
 
   // =====================================================
-  // GET EMPLOYEE DOCUMENTS
+  // GET EMPLOYEE ID
   // =====================================================
 
-  const getEmployeeDocuments = async () => {
-    try {
-      // Employee ID is required
-      if (!employeeId) {
-        console.log("Employee ID not available");
-        setDocuments({});
-        return;
-      }
+  // Admin:
+  // /Empviewdoc?employeeId=PSPL1173
+  //
+  // Employee:
+  // uses logged-in user's employeeId
 
-      setLoadingDocuments(true);
+  const selectedEmployeeId = searchParams.get("employeeId");
 
-      setDocuments({});
-      setPreviewFile("");
-      setPreviewName("");
-
-      console.log("Getting documents for Employee ID:", employeeId);
-
-      // =====================================================
-      // GET DOCUMENTS USING LOGGED-IN EMPLOYEE ID
-      // =====================================================
-
-      const res = await axios.get(
-        `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`,
-        {
-          withCredentials: true,
-        },
-      );
-
-      console.log("Employee Documents API Response:", res.data);
-
-      // =====================================================
-      // STORE DOCUMENTS
-      // =====================================================
-
-      if (res.data?.status === "OK" && res.data?.data) {
-        setDocuments(res.data.data);
-
-        console.log("Documents:", res.data.data);
-      } else {
-        setDocuments({});
-      }
-    } catch (error) {
-      console.error("Get Documents Error:", error.response?.data || error);
-
-      setDocuments({});
-    } finally {
-      setLoadingDocuments(false);
-    }
-  };
+  const employeeId = selectedEmployeeId || user?.employeeId;
 
   // =====================================================
-  // LOAD DOCUMENTS WHEN EMPLOYEE ID IS AVAILABLE
+  // LOG USER + EMPLOYEE ID
   // =====================================================
 
   useEffect(() => {
-    if (employeeId) {
-      getEmployeeDocuments();
-    }
-  }, [employeeId]);
+    console.log("Logged-in User:", user);
+    console.log("Selected Employee ID:", selectedEmployeeId);
+    console.log("Final Employee ID:", employeeId);
+  }, [user, selectedEmployeeId, employeeId]);
 
   // =====================================================
   // DOCUMENT LIST
@@ -162,20 +117,108 @@ const Empviewdoc = () => {
   ];
 
   // =====================================================
-  // ONLY SHOW UPLOADED DOCUMENTS
+  // GET EMPLOYEE DOCUMENTS
   // =====================================================
 
-  const availableDocuments = documentList.filter((document, index, array) => {
-    const file = documents?.[document.key];
+  const getEmployeeDocuments = async () => {
+    if (!employeeId) {
+      console.log("Employee ID not available");
 
-    // Don't show empty documents
-    if (file === null || file === undefined || String(file).trim() === "") {
-      return false;
+      setDocuments({});
+      setPreviewFile("");
+      setPreviewName("");
+
+      return;
     }
 
-    // Remove duplicate document names
-    return array.findIndex((item) => item.name === document.name) === index;
-  });
+    try {
+      setLoadingDocuments(true);
+
+      setDocuments({});
+      setPreviewFile("");
+      setPreviewName("");
+
+      const url = `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`;
+
+      console.log("====================================");
+      console.log("Getting Employee Documents");
+      console.log("Employee ID:", employeeId);
+      console.log("Documents API URL:", url);
+      console.log("====================================");
+
+      const res = await axios.get(url, {
+        withCredentials: true,
+      });
+
+      console.log("Employee Documents API Response:", res.data);
+
+      if (res.data?.status === "OK" && res.data?.data) {
+        setDocuments(res.data.data);
+
+        console.log("Documents:", res.data.data);
+      } else {
+        setDocuments({});
+
+        console.log("No documents found");
+      }
+    } catch (error) {
+      console.error(
+        "Get Documents Error:",
+        error?.response?.status,
+        error?.response?.data || error
+      );
+
+      setDocuments({});
+
+      if (error?.response?.status === 401) {
+        toast.error("Unauthorized. Please login again.");
+      } else if (error?.response?.status === 403) {
+        toast.error("You don't have permission to view these documents.");
+      } else if (error?.response?.status === 404) {
+        toast.error("Documents not found.");
+      } else {
+        toast.error("Unable to load employee documents.");
+      }
+    } finally {
+      setLoadingDocuments(false);
+    }
+  };
+
+  // =====================================================
+  // LOAD DOCUMENTS
+  // =====================================================
+
+  useEffect(() => {
+    if (employeeId) {
+      getEmployeeDocuments();
+    }
+  }, [employeeId]);
+
+  // =====================================================
+  // ONLY SHOW AVAILABLE DOCUMENTS
+  // =====================================================
+
+  const availableDocuments = documentList.filter(
+    (document, index, array) => {
+      const file = documents?.[document.key];
+
+      // Don't show empty documents
+      if (
+        file === null ||
+        file === undefined ||
+        String(file).trim() === ""
+      ) {
+        return false;
+      }
+
+      // Remove duplicate document names
+      return (
+        array.findIndex(
+          (item) => item.name === document.name
+        ) === index
+      );
+    }
+  );
 
   // =====================================================
   // CREATE FILE URL
@@ -186,13 +229,19 @@ const Empviewdoc = () => {
       return "";
     }
 
-    // Already a complete URL
-    if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
-      return filePath;
+    const filePathString = String(filePath).trim();
+
+    // Already complete URL
+    if (
+      filePathString.startsWith("http://") ||
+      filePathString.startsWith("https://")
+    ) {
+      return filePathString;
     }
 
-    const baseUrl = BASE_URL.replace(/\/+$/, "");
-    const path = String(filePath).replace(/^\/+/, "");
+    const baseUrl = String(BASE_URL || "").replace(/\/+$/, "");
+
+    const path = filePathString.replace(/^\/+/, "");
 
     return `${baseUrl}/${path}`;
   };
@@ -205,10 +254,11 @@ const Empviewdoc = () => {
     const fileUrl = getFileUrl(filePath);
 
     if (!fileUrl) {
-      alert("Document not available");
+      toast.error("Document not available.");
       return;
     }
 
+    console.log("Preview Document:", documentName);
     console.log("Preview URL:", fileUrl);
 
     setPreviewFile(fileUrl);
@@ -219,72 +269,93 @@ const Empviewdoc = () => {
   // DOWNLOAD DOCUMENT
   // =====================================================
 
- const handleDownload = async (filePath, documentName) => {
-  try {
-    if (!employeeId) {
-      alert("Employee ID not available");
-      return;
+  const handleDownload = async (filePath, documentName) => {
+    try {
+      if (!employeeId) {
+        toast.error("Employee ID not available.");
+        return;
+      }
+
+      if (!filePath) {
+        toast.error("Document not available.");
+        return;
+      }
+
+      const filePathString = String(filePath);
+
+      // Get filename from URL/path
+      const fileName = filePathString
+        .split("/")
+        .pop()
+        .split("\\")
+        .pop();
+
+      if (!fileName || !fileName.includes(".")) {
+        toast.error("Invalid document file.");
+        return;
+      }
+
+      const downloadUrl = `${BASE_URL}uploadDoc/download/${employeeId}/${encodeURIComponent(
+        fileName
+      )}`;
+
+      console.log("Download URL:", downloadUrl);
+
+      const response = await axios.get(downloadUrl, {
+        responseType: "blob",
+        withCredentials: true,
+      });
+
+      const blob = new Blob([response.data], {
+        type:
+          response.headers["content-type"] ||
+          "application/octet-stream",
+      });
+
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+
+      link.href = blobUrl;
+      link.download = fileName;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(blobUrl);
+
+      toast.success(`${documentName} downloaded successfully.`);
+    } catch (error) {
+      console.error(
+        "Download Error:",
+        error?.response?.data || error
+      );
+
+      if (error?.response?.status === 401) {
+        toast.error("Unauthorized. Please login again.");
+      } else if (error?.response?.status === 403) {
+        toast.error(
+          "You don't have permission to download this document."
+        );
+      } else if (error?.response?.status === 404) {
+        toast.error("Document file not found.");
+      } else {
+        toast.error("Unable to download document.");
+      }
     }
-
-    if (!filePath) {
-      alert("Document not available");
-      return;
-    }
-
-    const filePathString = String(filePath);
-
-    const fileName = filePathString
-      .split("/")
-      .pop()
-      .split("\\")
-      .pop();
-
-    if (!fileName || !fileName.includes(".")) {
-      alert("Invalid document file");
-      return;
-    }
-
-    const downloadUrl = `${BASE_URL}uploadDoc/download/${employeeId}/${fileName}`;
-
-    const response = await axios.get(downloadUrl, {
-      responseType: "blob",
-      withCredentials: true,
-    });
-
-    const blob = new Blob([response.data], {
-      type:
-        response.headers["content-type"] ||
-        "application/octet-stream",
-    });
-
-    const blobUrl = window.URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-
-    link.href = blobUrl;
-    link.download = fileName;
-
-    document.body.appendChild(link);
-    link.click();
-
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error(
-      "Download Error:",
-      error.response?.data || error
-    );
-
-    alert("Unable to download document");
-  }
-};
+  };
 
   // =====================================================
   // CHECK IMAGE
   // =====================================================
 
   const isImageFile = (fileUrl) => {
-    return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(fileUrl);
+    return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(
+      fileUrl
+    );
   };
 
   // =====================================================
@@ -296,18 +367,27 @@ const Empviewdoc = () => {
   };
 
   // =====================================================
+  // CLOSE PREVIEW
+  // =====================================================
+
+  const closePreview = () => {
+    setPreviewFile("");
+    setPreviewName("");
+  };
+
+  // =====================================================
   // JSX
   // =====================================================
 
   return (
     <MainPanel
-              title={
-          String(user?.role || user?.crmRole || "")
-            .trim()
-            .toUpperCase() === "EMPLOYEE"
-            ? "Employee Dashboard"
-            : "Admin Dashboard"
-        }
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "EMPLOYEE"
+          ? "Employee Dashboard"
+          : "Admin Dashboard"
+      }
       breadcrumbs={[
         {
           label: "Dashboard",
@@ -318,122 +398,171 @@ const Empviewdoc = () => {
         },
       ]}
     >
-          <button
-            type="button"
-            className="back-btn"
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            ← Back
-          </button>
+      {/* BACK BUTTON */}
+
+      <button
+        type="button"
+        className="back-btn"
+        onClick={() => navigate(-1)}
+      >
+        ← Back
+      </button>
+
       <div className="view-doc">
         {/* HEADER */}
 
-        <h1>My Documents</h1>
+        <h1>
+          {selectedEmployeeId
+            ? "Employee Documents"
+            : "My Documents"}
+        </h1>
+
+        {/* EMPLOYEE ID */}
+
+        {employeeId && (
+          <div className="document-employee-id">
+            Employee ID: <strong>{employeeId}</strong>
+          </div>
+        )}
 
         <div className="view-doc-bottom">
           {/* LOADING */}
 
           {loadingDocuments && (
-            <div className="document-loading">Loading Documents...</div>
+            <div className="document-loading">
+              Loading Documents...
+            </div>
+          )}
+
+          {/* NO EMPLOYEE ID */}
+
+          {!loadingDocuments && !employeeId && (
+            <div className="no-documents">
+              Employee ID not available.
+            </div>
           )}
 
           {/* NO DOCUMENTS */}
 
-          {!loadingDocuments && availableDocuments.length === 0 && (
-            <div className="no-documents">No documents uploaded.</div>
-          )}
+          {!loadingDocuments &&
+            employeeId &&
+            availableDocuments.length === 0 && (
+              <div className="no-documents">
+                No documents uploaded.
+              </div>
+            )}
 
           {/* DOCUMENTS */}
 
-          {!loadingDocuments && availableDocuments.length > 0 && (
-            <div className="document-preview-wrapper">
-              {/* DOCUMENT LIST */}
+          {!loadingDocuments &&
+            employeeId &&
+            availableDocuments.length > 0 && (
+              <div className="document-preview-wrapper">
+                {/* DOCUMENT LIST */}
 
-              <div className="document-list">
-                {availableDocuments.map((document) => {
-                  const filePath = documents[document.key];
+                <div className="document-list">
+                  {availableDocuments.map((document) => {
+                    const filePath =
+                      documents?.[document.key];
 
-                  return (
-                    <div className="document-card" key={document.key}>
-                      <GrDocumentPdf className="pdf-icon" />
+                    return (
+                      <div
+                        className="document-card"
+                        key={document.key}
+                      >
+                        <GrDocumentPdf className="pdf-icon" />
 
-                      <p>{document.name}</p>
+                        <p>{document.name}</p>
 
-                      <div className="btn-parent">
-                        {/* PREVIEW */}
+                        <div className="btn-parent">
+                          {/* PREVIEW */}
+
+                          <button
+                            type="button"
+                            className="pre"
+                            onClick={() =>
+                              handlePreview(
+                                filePath,
+                                document.name
+                              )
+                            }
+                          >
+                            <MdOutlinePreview />
+                            Preview
+                          </button>
+
+                          {/* DOWNLOAD */}
+
+                          <button
+                            type="button"
+                            className="down"
+                            onClick={() =>
+                              handleDownload(
+                                filePath,
+                                document.name
+                              )
+                            }
+                          >
+                            <IoMdDownload />
+                            Download
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* PREVIEW SECTION */}
+
+                <div className="preview-section">
+                  {previewFile ? (
+                    <>
+                      {/* PREVIEW HEADER */}
+
+                      <div className="preview-header">
+                        <h2>{previewName}</h2>
 
                         <button
                           type="button"
-                          className="pre"
-                          onClick={() => handlePreview(filePath, document.name)}
+                          onClick={closePreview}
                         >
-                          <MdOutlinePreview />
-                          Preview
-                        </button>
-
-                        {/* DOWNLOAD */}
-
-                        <button
-                          type="button"
-                          className="down"
-                          onClick={() =>
-                            handleDownload(filePath, document.name)
-                          }
-                        >
-                          <IoMdDownload />
-                          Download
+                          Close
                         </button>
                       </div>
+
+                      {/* PREVIEW CONTENT */}
+
+                      <div className="preview-content">
+                        {isImageFile(previewFile) ? (
+                          <img
+                            src={previewFile}
+                            alt={previewName}
+                          />
+                        ) : isPdfFile(previewFile) ? (
+                          <iframe
+                            src={previewFile}
+                            title={previewName}
+                          />
+                        ) : (
+                          <iframe
+                            src={previewFile}
+                            title={previewName}
+                          />
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="preview-empty">
+                      <MdOutlinePreview />
+
+                      <p>
+                        Select Preview to view the document
+                      </p>
                     </div>
-                  );
-                })}
+                  )}
+                </div>
               </div>
-
-              {/* PREVIEW SECTION */}
-
-              <div className="preview-section">
-                {previewFile ? (
-                  <>
-                    {/* PREVIEW HEADER */}
-
-                    <div className="preview-header">
-                      <h2>{previewName}</h2>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPreviewFile("");
-                          setPreviewName("");
-                        }}
-                      >
-                        Close
-                      </button>
-                    </div>
-
-                    {/* PREVIEW CONTENT */}
-
-                    <div className="preview-content">
-                      {isImageFile(previewFile) ? (
-                        <img src={previewFile} alt={previewName} />
-                      ) : isPdfFile(previewFile) ? (
-                        <iframe src={previewFile} title={previewName} />
-                      ) : (
-                        <iframe src={previewFile} title={previewName} />
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="preview-empty">
-                    <MdOutlinePreview />
-
-                    <p>Select Preview to view the document</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+            )}
         </div>
       </div>
     </MainPanel>

@@ -18,16 +18,16 @@ import {
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-import panWatermark from "../../assets/pan-watermark.webp";
+
 import panLogo from "../../assets/offer-logo-pan.png";
 
-import indianJourneyWatermark from "../../assets/tij-watermark.png";
+
 import indianJourneyLogo from "../../assets/tij-logo.png";
 
-import akkaWatermark from "../../assets/akka-foundation.png";
+
 import akkaLogo from "../../assets/akka-foundation.png";
 
-import nvmWatermark from "../../assets/nvm-watermark.png";
+
 import nvmLogo from "../../assets/nvm-logo.png";
 
 import { UserContext } from "../../../Context";
@@ -45,28 +45,28 @@ const Payslip = () => {
   const companyConfig = {
     "Pandoza Solutions Pvt Ltd": {
       logo: panLogo,
-      watermark: panWatermark,
+
       color: "#1119e8",
       textColor: "#ffffff",
     },
 
     "Akka Foundation": {
       logo: akkaLogo,
-      watermark: akkaWatermark,
+
       color: "#0b8b95",
       textColor: "#ffffff",
     },
 
     "The Indian Journey": {
       logo: indianJourneyLogo,
-      watermark: indianJourneyWatermark,
+
       color: "#0b8b95",
       textColor: "#ffffff",
     },
 
     "NVM Infratech": {
       logo: nvmLogo,
-      watermark: nvmWatermark,
+
       color: "#0b8b95",
       textColor: "#ffffff",
     },
@@ -524,14 +524,6 @@ const Payslip = () => {
           className="payslip-container"
           ref={printRef}
         >
-          <div className="watermark">
-            <img
-              src={
-                currentCompany.watermark
-              }
-              alt={`${companyKey} Watermark`}
-            />
-          </div>
 
           <div className="payslip-header">
             <div className="logo">
