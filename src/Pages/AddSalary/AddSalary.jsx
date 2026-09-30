@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import Input from "../../comp/input/Input";
 import SelectInput from "../../comp/selectInput/SelectInput";
@@ -9,9 +9,13 @@ import { ValidateSalary } from "../../validators/SalaryValidate";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../../comp/Loader/Loader";
+import { UserContext } from "../../../Context";
+import { useNavigate } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const AddSalary = () => {
+     const navigate = useNavigate();
+  const { user } = useContext(UserContext);
   const [employees, setEmployees] = useState([]);
   const [loader, setLoader]=useState(false);
   const formObj = {
@@ -86,7 +90,29 @@ const AddSalary = () => {
 
   return (
     <>
-      <MainPanel>
+      <MainPanel
+            breadcrumbs={[
+        { label: "Dashboard", link: "/dashboard" },
+        { label: "Add Salary" },
+      ]}
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "ADMIN"
+          ? "Admin Dashboard"
+          : "Add Salary"
+      }
+      >
+
+                  <button
+            type="button"
+            className="back-btn"
+            onClick={() =>
+              navigate("/salaryManagement")
+            }
+          >
+            ← Back
+          </button>
         {loader && <Loader/>}
         <form onSubmit={handleSubmit} className="salary-parent">
           <h1>Generate Salary Slip</h1>

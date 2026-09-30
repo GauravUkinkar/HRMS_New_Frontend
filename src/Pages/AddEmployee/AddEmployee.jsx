@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import SelectInput from "../../comp/selectInput/SelectInput";
@@ -6,6 +6,7 @@ import { MenuItem } from "@mui/material";
 import Input from "../../comp/input/Input";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { UserContext } from "../../../Context";
 
 import "./AddEmployee.scss";
 
@@ -13,6 +14,7 @@ const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const AddEmployee = () => {
   const navigate = useNavigate();
+  const { user } = useContext(UserContext);
 
   const [teams, setTeams] = useState([]);
 
@@ -193,27 +195,27 @@ const AddEmployee = () => {
 
   return (
     <MainPanel
-      title="Add Employee"
       breadcrumbs={[
-        {
-          label: "Dashboard",
-          link: "/dashboard",
-        },
-        {
-          label: "Add Employee",
-        },
+        { label: "Dashboard", link: "/dashboard" },
+        { label: "Add Employee" },
       ]}
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "ADMIN"
+          ? "Admin Dashboard"
+          : ""
+      }
     >
+      <button
+        type="button"
+        className="previous-view-back"
+        onClick={() => navigate("/empList")}
+      >
+        ← Back
+      </button>
       <form className="employee-parent" onSubmit={addEmployee}>
         {/* BACK BUTTON */}
-
-        <button
-          type="button"
-          className="previous-view-back"
-          onClick={() => navigate("/")}
-        >
-          ← Back
-        </button>
 
         {/* ================= EMPLOYEE DETAILS ================= */}
 

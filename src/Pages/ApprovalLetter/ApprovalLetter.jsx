@@ -153,8 +153,8 @@ const ApprovalLetter = () => {
           ""
         )
           .trim()
-          .toUpperCase() === "EMPLOYEE"
-          ? "Employee Dashboard"
+          .toUpperCase() === "ADMIN"
+          ? "Admin Dashboard"
           : "Approval Letter"
       }
     >
@@ -165,7 +165,7 @@ const ApprovalLetter = () => {
       <button
         type="button"
         className="back-btn"
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/viewApprovals")}
       >
         ← Back
       </button>

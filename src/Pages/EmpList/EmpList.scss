@@ -28,45 +28,7 @@
     box-sizing: border-box;
   }
 
-  // ===================================================
-  // BACK BUTTON
-  // ===================================================
 
-  .employee-list-back-btn {
-    flex-shrink: 0;
-
-    border: none;
-
-    background: #e9e9e9;
-
-    color: #333;
-
-    padding: 10px 22px;
-
-    border-radius: 5px;
-
-    font-size: 15px;
-
-    font-weight: 500;
-
-    cursor: pointer;
-
-    transition: 0.3s ease;
-
-    white-space: nowrap;
-
-    &:hover {
-      background: #dcdcdc;
-    }
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  // ===================================================
-  // EMPLOYEES HEADING
-  // ===================================================
 
   .employee-list-header h2 {
     margin: 0;

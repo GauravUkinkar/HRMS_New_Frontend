@@ -5,11 +5,12 @@ import Table_Comp from "../../comp/table/Table";
 import axios from "axios";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
+import  useNavigate from "react-router-dom";
 const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 
 const Attendance = () => {
   const [totalEmployees, setTotalEmployees] = useState(0);
-
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
   const [showPreviousAttendance] = useState(false);
@@ -329,10 +330,19 @@ const absentEmployees = Math.max(
       ]}
     >
       {}
-
+          <button
+            type="button"
+            className="back-btn"
+            onClick={() =>
+              navigate("/")
+            }
+          >
+            ← Back
+          </button>
       {!showPreviousAttendance && !showEmployeeAttendance && (
         <div className="top-parent">
           <h1>Today's Attendance</h1>
+          
 
           <div className="btn-group">
             {}

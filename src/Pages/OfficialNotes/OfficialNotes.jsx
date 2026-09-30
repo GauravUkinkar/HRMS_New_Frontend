@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { UserContext } from "../../../Context";
 
 import { FaPlus } from "react-icons/fa";
 import {
@@ -17,6 +18,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 import "./OfficialNotes.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
+import { useNavigate } from "react-router-dom";
 
 // ============================================================
 // API CONFIGURATION
@@ -29,9 +31,8 @@ const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 // ============================================================
 
 const OfficialNotes = () => {
-  // ==========================================================
-  // NOTES STATE
-  // ==========================================================
+  const navigate = useNavigate();
+  const { user } = useContext(UserContext);
 const [showAllRecipients, setShowAllRecipients] = useState(false);
   const [notes, setNotes] = useState([]);
   const [notesLoading, setNotesLoading] = useState(false);
@@ -1216,7 +1217,29 @@ const [showAllRecipients, setShowAllRecipients] = useState(false);
   // ==========================================================
 
   return (
-    <MainPanel>
+    <MainPanel
+                      breadcrumbs={[
+          { label: "Dashboard", link: "/dashboard" },
+          { label: "Employees List" },
+        ]}
+        
+        title={
+          String(user?.role || user?.crmRole || "")
+            .trim()
+            .toUpperCase() === "ADMIN"
+            ? "Admin Dashboard"
+            : "Admin Dashboard"
+        }
+    >
+                            <button
+                type="button"
+                className="back-btn"
+                         onClick={() =>
+              navigate("/")
+            }
+              >
+                ← Back
+              </button>
       <div className="official-notes-page">
         {/* ==================================================
             PAGE HEADER

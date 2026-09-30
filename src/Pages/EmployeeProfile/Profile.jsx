@@ -4,18 +4,17 @@ import "./Profile.scss";
 import maleUser from "../../assets/manuser.webp";
 import femaleUser from "../../assets/women_user.png";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { SlDocs } from "react-icons/sl";
 import { MdOutlineEditNote } from "react-icons/md";
 import axios from "axios";
 import { UserContext } from "../../../Context";
-import { IoMdArrowBack } from "react-icons/io";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 const Profile = () => {
   const { user } = useContext(UserContext);
   const [loader, setLoader] = useState(false);
-
+  const navigate = useNavigate();
   // Sensitive information visibility
   const [showAadhar, setShowAadhar] = useState(false);
   const [showPan, setShowPan] = useState(false);
@@ -110,11 +109,10 @@ const Profile = () => {
   return (
     <>
       <MainPanel
-              breadcrumbs={[
+        breadcrumbs={[
           { label: "Dashboard", link: "/dashboard" },
           { label: "Employee Profile" },
         ]}
-        
         title={
           String(user?.role || user?.crmRole || "")
             .trim()
@@ -123,13 +121,16 @@ const Profile = () => {
             : "Admin Dashboard"
         }
       >
-        <Link to="/">
-        <button className="btn1"><IoMdArrowBack />Back</button></Link>
-        
+        <button
+          type="button"
+          className="back-btn"
+          onClick={() => navigate("/")}
+        >
+          ← Back
+        </button>
 
         {loader && <p>loading.....</p>}
         <div className="bottom-side">
-
           {/* LEFT SIDE */}
           <div className="left-side">
             <div className="img-group">
@@ -232,9 +233,11 @@ const Profile = () => {
                 <p className="value">{employeeprofile?.bloodGroup || "N/A"}</p>
               </div>
             </div>
-            
+
             <div className="btn-groups">
-              <Link to="/Empviewdoc">
+              <Link
+                to={`/Empviewdoc?employeeId=${employeeprofile?.employeeId}`}
+              >
                 <SlDocs />
                 <span>View Document</span>
               </Link>
@@ -242,13 +245,19 @@ const Profile = () => {
               {String(user?.role || user?.crmRole || "")
                 .trim()
                 .toUpperCase() !== "EMPLOYEE" && (
-                <Link to="#">
-                  <MdOutlineEditNote />
-                  <span>Edit Details</span>
-                </Link>
+<div
+  className="edit"
+  onClick={() => {
+    navigate(
+      `/editEmployee/${employeeprofile?.employeeId}`
+    );
+  }}
+>
+  <MdOutlineEditNote />
+  <span>Edit Details</span>
+</div>
               )}
             </div>
-            
           </div>
 
           {/* RIGHT SIDE */}

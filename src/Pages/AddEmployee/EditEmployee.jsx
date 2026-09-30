@@ -121,193 +121,130 @@ const EditEmployee = () => {
   // GET EMPLOYEE
   // =====================================================
 
-  const getEmployee = async () => {
-    try {
-      setLoading(true);
+const getEmployee = async () => {
+  try {
+    setLoading(true);
 
-      console.log(
-        "Getting Employee:",
-        employeeId
-      );
+    console.log("Getting Employee ID:", employeeId);
 
-      const response = await axios.get(
-        `${BASE_URL}Admin/GetEmployeeById/${employeeId}`,
-        {
-          withCredentials: true,
-        }
-      );
-
-      console.log(
-        "Employee API Response:",
-        response.data
-      );
-
-      const employee =
-        response.data?.data ||
-        response.data;
-
-      if (!employee) {
-        toast.error(
-          "Employee data not found"
-        );
-
-        return;
+    const response = await axios.get(
+      `${BASE_URL}Admin/GetEmployeeById/${employeeId}`,
+      {
+        withCredentials: true,
       }
+    );
 
-      setEmployeeData({
-        eid: employee.eid,
-        employeeName: employee.employeeName || "",
-        employeeId: employee.employeeId
-          ? String(employee.employeeId).replace(/^PSPL/i, "")
-          : "",
+    console.log("Employee API Response:", response.data);
+    console.log("Employee API Data:", response.data?.data);
 
-        employeeStatus:
-          employee.employeeStatus ||
-          "Active",
+    const employee = response.data?.data || response.data;
 
-        gender: employee.gender || "",
-        designation: employee.designation || "",
-        department: employee.department || "",
-
-        employementType:
-          employee.employementType || "",
-
-        dateOfJoining:
-          formatDate(
-            employee.dateOfJoining
-          ),
-
-        dateOfLiving:
-          formatDate(
-            employee.dateOfLiving
-          ),
-
-        contactNumber:
-          employee.contactNumber || "",
-
-        ifscCode:
-          employee.ifscCode || "",
-
-        dateOfBirth:
-          formatDate(
-            employee.dateOfBirth
-          ),
-
-        bloodGroup:
-          employee.bloodGroup || "",
-
-        teamName:
-          employee.teamName || "",
-
-
-        aadharNumber:
-          employee.aadharNumber || "",
-
-        panNumber:
-          employee.panNumber || "",
-
-        accountNumber:
-          employee.accountNumber || "",
-
-        costtoCompany:
-          employee.costtoCompany ?? "",
-
-        employeeSalary:
-          employee.employeeSalary ?? "",
-
-        bankName:
-          employee.bankName || "",
-
-        companyName:
-          employee.companyName || "",
-
-        diduction:
-          employee.diduction ?? "",
-
-        currentAddress:
-          employee.currentAddress ||
-          employee.address ||
-          "",
-
-        permanentAddress:
-          employee.permanentAddress || "",
-
-        uanNo:
-          employee.uanNo || "",
-
-        policyNumber:
-          employee.policyNumber || "",
-
-        insuranceCompany:
-          employee.insuranceCompany || "",
-
-        emergencyContactNumber:
-          employee.emergencyContactNumber ||
-          "",
-
-        emergencyContactName:
-          employee.emergencyContactName ||
-          "",
-
-        emergencyContactRelation:
-          employee.emergencyContactRelation ||
-          "",
-
-        emergencyContactCurrentAddress:
-          employee.emergencyContactCurrentAddress ||
-          "",
-
-        emergencyContactPermanentAddress:
-          employee.emergencyContactPermanentAddress ||
-          "",
-
-        status:
-          employee.status ||
-          "",
-
-        esicNumber:
-          employee.esicNumber || "",
-
-        editableAccess:
-          employee.editableAccess ??
-          true,
-
-        email:
-          employee.email || "",
-
-        password:
-          employee.password || "",
-
-        role:
-          employee.role || "",
-
-        crmRole:
-          employee.crmRole || "N/A",
-
-        managerName:
-          employee.managerName || "",
-
-        employee_image: null,
-      });
-
-      setExistingImage(
-        employee.image ||
-        employee.employee_image ||
-        ""
-      );
-    } catch (error) {
-      console.error(
-        "Get Employee Error:",
-        error.response?.data || error
-      );
-
-      toast.error(
-        "Unable to load employee details"
-      );
-    } finally {
-      setLoading(false);
+    if (!employee) {
+      toast.error("Employee data not found");
+      return;
     }
-  };
+
+    setEmployeeData({
+      eid: employee.eid || "",
+
+      employeeName: employee.employeeName || "",
+
+      // KEEP FULL EMPLOYEE ID
+      employeeId: employee.employeeId || employeeId,
+
+      employeeStatus: employee.employeeStatus || "Active",
+
+      gender: employee.gender || "",
+      designation: employee.designation || "",
+      department: employee.department || "",
+
+      employementType: employee.employementType || "",
+
+      dateOfJoining: formatDate(employee.dateOfJoining),
+      dateOfLiving: formatDate(employee.dateOfLiving),
+
+      contactNumber: employee.contactNumber || "",
+      ifscCode: employee.ifscCode || "",
+      dateOfBirth: formatDate(employee.dateOfBirth),
+
+      bloodGroup: employee.bloodGroup || "",
+
+      teamName: employee.teamName || "",
+
+      aadharNumber: employee.aadharNumber || "",
+      panNumber: employee.panNumber || "",
+      accountNumber: employee.accountNumber || "",
+
+      costtoCompany: employee.costtoCompany ?? "",
+      employeeSalary: employee.employeeSalary ?? "",
+
+      bankName: employee.bankName || "",
+      companyName: employee.companyName || "",
+
+      diduction: employee.diduction ?? "",
+
+      currentAddress:
+        employee.currentAddress ||
+        employee.address ||
+        "",
+
+      permanentAddress: employee.permanentAddress || "",
+
+      uanNo: employee.uanNo || "",
+      policyNumber: employee.policyNumber || "",
+      insuranceCompany: employee.insuranceCompany || "",
+
+      emergencyContactNumber:
+        employee.emergencyContactNumber || "",
+
+      emergencyContactName:
+        employee.emergencyContactName || "",
+
+      emergencyContactRelation:
+        employee.emergencyContactRelation || "",
+
+      emergencyContactCurrentAddress:
+        employee.emergencyContactCurrentAddress || "",
+
+      emergencyContactPermanentAddress:
+        employee.emergencyContactPermanentAddress || "",
+
+      status: employee.status || "ACTIVE",
+
+      esicNumber: employee.esicNumber || "",
+
+      editableAccess:
+        employee.editableAccess ?? true,
+
+      email: employee.email || "",
+      password: employee.password || "",
+
+      role: employee.role || "",
+
+      crmRole: employee.crmRole || "",
+
+      managerName: employee.managerName || "",
+      teamName: employee.teamName || "",
+
+      employee_image: null,
+    });
+
+    setExistingImage(
+      employee.image ||
+      employee.employee_image ||
+      ""
+    );
+  } catch (error) {
+    console.error(
+      "Get Employee Error:",
+      error.response?.data || error
+    );
+
+    toast.error("Unable to load employee details");
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     if (employeeId) {

@@ -43,7 +43,7 @@ import {
 
 const ViewApproval = () => {
   const navigate = useNavigate();
-
+const [statusLoader, setStatusLoader] = useState(false);
   const { user } = useContext(UserContext);
 
   // =====================================================
@@ -249,92 +249,86 @@ const ViewApproval = () => {
   // CHANGE MAM STATUS
   // =====================================================
 
-  const changemamStatus = async (
-    e,
-    id
-  ) => {
-    try {
-      const value =
-        e.target.value;
+const changemamStatus = async (e, id) => {
+  try {
+    const value = e.target.value;
 
-      if (!value) return;
+    if (!value) return;
 
-      const response =
-        await axios.post(
-          `${BASE_URL}Admin/ChangeStatusForMam?aId=${id}&status=${value}`,
-          {},
-          {
-            withCredentials: true,
-          }
-        );
+    setStatusLoader(true);
 
-      if (response.status === 200) {
-        toast.success(
-          "Mam status updated successfully"
-        );
-
-        setEdit(null);
-
-        getApprovalData();
+    const response = await axios.post(
+      `${BASE_URL}Admin/ChangeStatusForMam?aId=${id}&status=${value}`,
+      {},
+      {
+        withCredentials: true,
       }
+    );
 
-    } catch (error) {
-      console.log(error);
+    if (response.status === 200) {
+      setEdit(null);
 
-      toast.error(
-        error.response?.data?.message ||
-        "Failed to update Mam status"
+      await getApprovalData();
+
+      toast.success(
+        "Mam status updated successfully"
       );
     }
-  };
+  } catch (error) {
+    console.log(error);
+
+    toast.error(
+      error.response?.data?.message ||
+      "Failed to update Mam status"
+    );
+  } finally {
+    setStatusLoader(false);
+  }
+};
 
   // =====================================================
   // CHANGE FINANCE STATUS
   // =====================================================
 
-  const changeFinanceStatus = async (
-    e,
-    id
-  ) => {
-    try {
-      const value =
-        e.target.value;
+const changeFinanceStatus = async (e, id) => {
+  try {
+    const value = e.target.value;
 
-      if (!value) return;
+    if (!value) return;
 
-      const response =
-        await axios.post(
-          `${BASE_URL}Admin/ChangeStatusForFinance?aId=${id}&status=${value}`,
-          {},
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`,
-            },
+    setStatusLoader(true);
 
-            withCredentials: true,
-          }
-        );
-
-      if (response.status === 200) {
-        toast.success(
-          "Finance status updated successfully"
-        );
-
-        setEdit(null);
-
-        getApprovalData();
+    const response = await axios.post(
+      `${BASE_URL}Admin/ChangeStatusForFinance?aId=${id}&status=${value}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
       }
+    );
 
-    } catch (error) {
-      console.log(error);
+    if (response.status === 200) {
+      setEdit(null);
 
-      toast.error(
-        error.response?.data?.message ||
-        "Failed to update Finance status"
+      await getApprovalData();
+
+      toast.success(
+        "Finance status updated successfully"
       );
     }
-  };
+  } catch (error) {
+    console.log(error);
+
+    toast.error(
+      error.response?.data?.message ||
+      "Failed to update Finance status"
+    );
+  } finally {
+    setStatusLoader(false);
+  }
+};
 
   // =====================================================
   // CHANGE OVERALL STATUS
@@ -849,19 +843,14 @@ const ViewApproval = () => {
             edit ===
             record.id ? (
 
-            <SelectInput
-              label="Select Option"
-              value={
-                record.approvebByMam ||
-                ""
-              }
-              onChange={(e) =>
-                changemamStatus(
-                  e,
-                  record.id
-                )
-              }
-            >
+<SelectInput
+  label="Select Option"
+  value={record.approvebByMam || ""}
+  onChange={(e) =>
+    changemamStatus(e, record.id)
+  }
+  disabled={statusLoader}
+>
               <MenuItem value="Approved">
                 Approved
               </MenuItem>
@@ -918,19 +907,14 @@ const ViewApproval = () => {
             edit ===
             record.id ? (
 
-            <SelectInput
-              label="Select Option"
-              value={
-                record.approvedByFinance ||
-                ""
-              }
-              onChange={(e) =>
-                changeFinanceStatus(
-                  e,
-                  record.id
-                )
-              }
-            >
+<SelectInput
+  label="Select Option"
+  value={record.approvedByFinance || ""}
+  onChange={(e) =>
+    changeFinanceStatus(e, record.id)
+  }
+  disabled={statusLoader}
+>
               <MenuItem value="Approved">
                 Approved
               </MenuItem>
@@ -1136,8 +1120,8 @@ const ViewApproval = () => {
         )
           .trim()
           .toUpperCase() ===
-          "EMPLOYEE"
-          ? "Employee Dashboard"
+          "ADMIN"
+          ? "Admin Dashboard"
           : "Approval Letters"
       }
     >
@@ -1166,11 +1150,13 @@ const ViewApproval = () => {
           Approval Letters
         </h2>
 
-        <Link to="/approvalLetter">
-          <button className="btn">
-            Add Letter
-          </button>
-        </Link>
+{String(user?.role || user?.crmRole || "").trim().toUpperCase() === "EMPLOYEE" && (
+  <Link to="/approvalLetter">
+    <button className="btn">
+      Add Letter
+    </button>
+  </Link>
+)}
 
       </div>
 

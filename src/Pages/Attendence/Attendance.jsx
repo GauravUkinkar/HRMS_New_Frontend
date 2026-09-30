@@ -1544,7 +1544,7 @@ const handleEmployeeYearChange = async (e) => {
 
   return (
     <MainPanel
-      title="Employee Attendance"
+      title="Admin Dashboard"
       breadcrumbs={[
         {
           label: "Dashboard",

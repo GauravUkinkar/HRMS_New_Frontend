@@ -245,7 +245,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-        "Unable to punch in. Please try again.",
+          "Unable to punch in. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -354,7 +354,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-        "Unable to punch out. Please try again.",
+          "Unable to punch out. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -612,10 +612,10 @@ const EmployeeDash = () => {
   const getNotificationType = (notification) => {
     return String(
       notification?.type ||
-      notification?.notificationType ||
-      notification?.category ||
-      notification?.module ||
-      ""
+        notification?.notificationType ||
+        notification?.category ||
+        notification?.module ||
+        "",
     )
       .trim()
       .toUpperCase();
@@ -665,7 +665,7 @@ const EmployeeDash = () => {
         window.open(
           "https://newcrm.diwise.in/",
           "_blank",
-          "noopener,noreferrer"
+          "noopener,noreferrer",
         );
         return;
 
@@ -907,17 +907,17 @@ const EmployeeDash = () => {
         (a, b) =>
           new Date(
             b.entryDate ||
-            b.entry_date ||
-            b.startingDate ||
-            b.starting_date ||
-            0,
+              b.entry_date ||
+              b.startingDate ||
+              b.starting_date ||
+              0,
           ) -
           new Date(
             a.entryDate ||
-            a.entry_date ||
-            a.startingDate ||
-            a.starting_date ||
-            0,
+              a.entry_date ||
+              a.startingDate ||
+              a.starting_date ||
+              0,
           ),
       );
 
@@ -1191,9 +1191,14 @@ const EmployeeDash = () => {
                     <span>CRM Entries</span>
                   </div>
 
-                  <Link to="https://newcrm.diwise.in/" className="view-all">
+                  <a
+                    href="https://newcrm.diwise.in/"
+                    className="view-all"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     View All →
-                  </Link>
+                  </a>
                 </div>
 
                 <div className="crm-table">
@@ -1249,10 +1254,10 @@ const EmployeeDash = () => {
                         render: (date) =>
                           date
                             ? new Date(date).toLocaleDateString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
                             : "--",
                       },
 
@@ -1395,8 +1400,9 @@ const EmployeeDash = () => {
                   ) : (
                     displayedNotifications.map((notification) => (
                       <div
-                        className={`notification-item ${notification?.isRead ? "read" : "unread"
-                          }`}
+                        className={`notification-item ${
+                          notification?.isRead ? "read" : "unread"
+                        }`}
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
                       >
@@ -1414,15 +1420,15 @@ const EmployeeDash = () => {
                           <span className="notification-date">
                             {notification?.createdAt
                               ? new Date(notification.createdAt).toLocaleString(
-                                "en-IN",
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                },
-                              )
+                                  "en-IN",
+                                  {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  },
+                                )
                               : "--"}
                           </span>
                         </div>
@@ -1455,9 +1461,7 @@ const EmployeeDash = () => {
                               {selectedNotification?.title || "Notification"}
                             </h3>
 
-                            <span>
-                              Notification
-                            </span>
+                            <span>Notification</span>
                           </div>
                         </div>
 
@@ -1474,21 +1478,19 @@ const EmployeeDash = () => {
                         <p className="notification-modal-date">
                           {selectedNotification?.createdAt
                             ? new Date(
-                              selectedNotification.createdAt
-                            ).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
+                                selectedNotification.createdAt,
+                              ).toLocaleString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
                             : "--"}
                         </p>
 
                         <div className="notification-full-message">
-                          {stripHtml(
-                            selectedNotification?.message || ""
-                          )}
+                          {stripHtml(selectedNotification?.message || "")}
                         </div>
 
                         <div className="notification-modal-actions">
@@ -1504,9 +1506,7 @@ const EmployeeDash = () => {
                             type="button"
                             className="notification-modal-details"
                             onClick={() =>
-                              handleNotificationDetails(
-                                selectedNotification
-                              )
+                              handleNotificationDetails(selectedNotification)
                             }
                           >
                             View Details
