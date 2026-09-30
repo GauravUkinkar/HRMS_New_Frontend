@@ -121,12 +121,19 @@ const AddEmployee = () => {
   const getTeams = async () => {
     try {
       const response = await axios.get(
-        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams"
+        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams",
       );
 
-      setTeams(response.data || []);
+      const teamData = (response.data || [])
+        .map((item) => item?.data)
+        .filter(Boolean);
+
+      console.log("Teams:", teamData);
+
+      setTeams(teamData);
     } catch (error) {
       console.error("Error fetching teams:", error);
+      toast.error("Failed to load teams");
     }
   };
 
@@ -158,16 +165,10 @@ const AddEmployee = () => {
 
       const formData = new FormData();
 
-      formData.append(
-        "employeeDto",
-        JSON.stringify(employeeDto)
-      );
+      formData.append("employeeDto", JSON.stringify(employeeDto));
 
       if (values.employee_image) {
-        formData.append(
-          "image",
-          values.employee_image
-        );
+        formData.append("image", values.employee_image);
       }
 
       const response = await axios.post(
@@ -175,27 +176,18 @@ const AddEmployee = () => {
         formData,
         {
           withCredentials: true,
-        }
+        },
       );
 
-      console.log(
-        "Add Employee Response:",
-        response.data
-      );
+      console.log("Add Employee Response:", response.data);
 
       toast.success("Employee added successfully!");
 
-      navigate("/");
+      navigate("/empList");
     } catch (error) {
-      console.error(
-        "Add Employee Error:",
-        error.response?.data || error
-      );
+      console.error("Add Employee Error:", error.response?.data || error);
 
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to add employee"
-      );
+      toast.error(error.response?.data?.message || "Failed to add employee");
     }
   };
 
@@ -212,10 +204,7 @@ const AddEmployee = () => {
         },
       ]}
     >
-      <form
-        className="employee-parent"
-        onSubmit={addEmployee}
-      >
+      <form className="employee-parent" onSubmit={addEmployee}>
         {/* BACK BUTTON */}
 
         <button
@@ -232,15 +221,11 @@ const AddEmployee = () => {
           <h1>Employee Details</h1>
 
           <div className="top-section">
-
             <div className="employee-details-inputs">
-
               <div className="inputs">
-
                 {/* ROW 1 */}
 
                 <div className="input-row">
-
                   <Input
                     label="Employee ID"
                     name="employeeId"
@@ -266,13 +251,9 @@ const AddEmployee = () => {
                     value={values.employeeStatus}
                     onChange={handleChange}
                   >
-                    <MenuItem value="Active">
-                      Active
-                    </MenuItem>
+                    <MenuItem value="Active">Active</MenuItem>
 
-                    <MenuItem value="Inactive">
-                      Inactive
-                    </MenuItem>
+                    <MenuItem value="Inactive">Inactive</MenuItem>
                   </SelectInput>
 
                   <SelectInput
@@ -281,42 +262,28 @@ const AddEmployee = () => {
                     value={values.role}
                     onChange={handleChange}
                   >
-                    <MenuItem value="Admin">
-                      Admin
-                    </MenuItem>
+                    <MenuItem value="Admin">Admin</MenuItem>
 
-                    <MenuItem value="Employee">
-                      Employee
-                    </MenuItem>
+                    <MenuItem value="Employee">Employee</MenuItem>
                   </SelectInput>
-
                 </div>
 
                 {/* ROW 2 */}
 
                 <div className="input-row">
-
                   <SelectInput
                     label="Employee Type"
                     name="employementType"
                     value={values.employementType}
                     onChange={handleChange}
                   >
-                    <MenuItem value="Full Time">
-                      Full Time
-                    </MenuItem>
+                    <MenuItem value="Full Time">Full Time</MenuItem>
 
-                    <MenuItem value="Part Time">
-                      Part Time
-                    </MenuItem>
+                    <MenuItem value="Part Time">Part Time</MenuItem>
 
-                    <MenuItem value="Intern">
-                      Intern
-                    </MenuItem>
+                    <MenuItem value="Intern">Intern</MenuItem>
 
-                    <MenuItem value="Contract">
-                      Contract
-                    </MenuItem>
+                    <MenuItem value="Contract">Contract</MenuItem>
                   </SelectInput>
 
                   <Input
@@ -334,13 +301,11 @@ const AddEmployee = () => {
                     value={values.dateOfJoining}
                     onChange={handleChange}
                   />
-
                 </div>
 
                 {/* ROW 3 */}
 
                 <div className="input-row">
-
                   <Input
                     label="Last Working Day"
                     name="dateOfLiving"
@@ -364,34 +329,26 @@ const AddEmployee = () => {
                     onChange={handleChange}
                     placeholder="Designation"
                   />
-
                 </div>
-
               </div>
             </div>
 
             {/* EMPLOYEE PHOTO */}
 
             <div className="employee-photo-upload">
-
               <div className="employee-photo-preview">
-
                 {values.employee_image ? (
                   <img
-                    src={URL.createObjectURL(
-                      values.employee_image
-                    )}
+                    src={URL.createObjectURL(values.employee_image)}
                     alt="Employee"
                   />
                 ) : (
                   <span>Photo</span>
                 )}
-
               </div>
 
               <label className="photo-upload-btn">
                 Upload Photo
-
                 <input
                   type="file"
                   accept="image/*"
@@ -399,24 +356,19 @@ const AddEmployee = () => {
                   onChange={handleImageChange}
                 />
               </label>
-
             </div>
-
           </div>
         </div>
 
         {/* ================= PERSONAL DETAILS ================= */}
 
         <div className="personaldetails">
-
           <h1>Personal Details</h1>
 
           <div className="inputs">
-
             {/* ROW 1 */}
 
             <div className="input-row">
-
               <Input
                 label="Employee Name"
                 name="employeeName"
@@ -432,17 +384,11 @@ const AddEmployee = () => {
                 value={values.gender}
                 onChange={handleChange}
               >
-                <MenuItem value="Male">
-                  Male
-                </MenuItem>
+                <MenuItem value="Male">Male</MenuItem>
 
-                <MenuItem value="Female">
-                  Female
-                </MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
 
-                <MenuItem value="Other">
-                  Other
-                </MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
               </SelectInput>
 
               <Input
@@ -463,13 +409,11 @@ const AddEmployee = () => {
                 error={errors.email}
                 placeholder="Email"
               />
-
             </div>
 
             {/* ROW 2 */}
 
             <div className="input-row">
-
               <Input
                 label="Date of Birth"
                 name="dateOfBirth"
@@ -500,45 +444,27 @@ const AddEmployee = () => {
                 value={values.bloodGroup}
                 onChange={handleChange}
               >
-                <MenuItem value="A+">
-                  A+
-                </MenuItem>
+                <MenuItem value="A+">A+</MenuItem>
 
-                <MenuItem value="A-">
-                  A-
-                </MenuItem>
+                <MenuItem value="A-">A-</MenuItem>
 
-                <MenuItem value="B+">
-                  B+
-                </MenuItem>
+                <MenuItem value="B+">B+</MenuItem>
 
-                <MenuItem value="B-">
-                  B-
-                </MenuItem>
+                <MenuItem value="B-">B-</MenuItem>
 
-                <MenuItem value="O+">
-                  O+
-                </MenuItem>
+                <MenuItem value="O+">O+</MenuItem>
 
-                <MenuItem value="O-">
-                  O-
-                </MenuItem>
+                <MenuItem value="O-">O-</MenuItem>
 
-                <MenuItem value="AB+">
-                  AB+
-                </MenuItem>
+                <MenuItem value="AB+">AB+</MenuItem>
 
-                <MenuItem value="AB-">
-                  AB-
-                </MenuItem>
+                <MenuItem value="AB-">AB-</MenuItem>
               </SelectInput>
-
             </div>
 
             {/* ROW 3 */}
 
             <div className="input-row">
-
               <Input
                 label="Current Address"
                 name="currentAddress"
@@ -554,22 +480,17 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Permanent Address"
               />
-
             </div>
-
           </div>
         </div>
 
         {/* ================= EMERGENCY DETAILS ================= */}
 
         <div className="emergencydetails">
-
           <h1>Emergency Details</h1>
 
           <div className="inputs">
-
             <div className="input-row">
-
               <Input
                 label="Emergency Contact Name"
                 name="emergencyContactName"
@@ -593,11 +514,9 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Relation"
               />
-
             </div>
 
             <div className="input-row">
-
               <Input
                 label="Current Address"
                 name="emergencyContactCurrentAddress"
@@ -613,22 +532,17 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Permanent Address"
               />
-
             </div>
-
           </div>
         </div>
 
         {/* ================= SALARY DETAILS ================= */}
 
         <div className="salarydetails">
-
           <h1>Salary Details</h1>
 
           <div className="inputs">
-
             <div className="input-row">
-
               <Input
                 label="Bank Name"
                 name="bankName"
@@ -660,11 +574,9 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Employee Salary"
               />
-
             </div>
 
             <div className="input-row">
-
               <Input
                 label="Cost to Company"
                 name="costtoCompany"
@@ -696,11 +608,9 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="ESIC Number"
               />
-
             </div>
 
             <div className="input-row">
-
               <Input
                 label="Policy Number"
                 name="policyNumber"
@@ -716,22 +626,17 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Insurance Company"
               />
-
             </div>
-
           </div>
         </div>
 
         {/* ================= CRM DETAILS ================= */}
 
         <div className="crmdetails">
-
           <h1>CRM Details</h1>
 
           <div className="inputs">
-
             <div className="input-row">
-
               <Input
                 label="CRM Role"
                 name="crmRole"
@@ -747,45 +652,27 @@ const AddEmployee = () => {
                 onChange={handleChange}
                 placeholder="Manager Name"
               />
-
               <SelectInput
                 label="Team Name"
                 name="teamName"
                 value={values.teamName}
                 onChange={handleChange}
               >
-                {teams.map((team, index) => (
-                  <MenuItem
-                    key={
-                      team?.teamId ||
-                      team?.id ||
-                      index
-                    }
-                    value={
-                      team?.teamName ||
-                      team?.name
-                    }
-                  >
-                    {team?.teamName ||
-                      team?.name}
+                {teams.map((team) => (
+                  <MenuItem key={team.id} value={team.name}>
+                    {team.name}
                   </MenuItem>
                 ))}
               </SelectInput>
-
             </div>
-
           </div>
         </div>
 
         {/* ================= SUBMIT ================= */}
 
-        <button
-          type="submit"
-          className="submit-btn"
-        >
+        <button type="submit" className="submit-btn">
           Add Employee
         </button>
-
       </form>
     </MainPanel>
   );
