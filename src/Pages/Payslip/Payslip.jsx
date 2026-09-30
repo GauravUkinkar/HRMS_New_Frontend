@@ -209,7 +209,7 @@ const Payslip = () => {
       if (num >= 100) {
         result +=
           ones[
-            Math.floor(num / 100)
+          Math.floor(num / 100)
           ] +
           " Hundred ";
 
@@ -256,9 +256,8 @@ const Payslip = () => {
     const year = payslip?.year;
 
     if (!payDate) {
-      return `${month || ""} ${
-        year || ""
-      }`.trim();
+      return `${month || ""} ${year || ""
+        }`.trim();
     }
 
     if (
@@ -266,10 +265,9 @@ const Payslip = () => {
         String(payDate).trim()
       )
     ) {
-      return `${payDate} ${
-        String(month || "")
+      return `${payDate} ${String(month || "")
           .toUpperCase()
-      } ${year || ""}`.trim();
+        } ${year || ""}`.trim();
     }
 
     const parsedDate =
@@ -446,13 +444,10 @@ const Payslip = () => {
       );
 
       pdf.save(
-        `Payslip-${
-          payslip?.employeeId ||
-          "Employee"
-        }-${
-          payslip?.month || ""
-        }-${
-          payslip?.year || ""
+        `Payslip-${payslip?.employeeId ||
+        "Employee"
+        }-${payslip?.month || ""
+        }-${payslip?.year || ""
         }.pdf`
       );
     } catch (error) {
@@ -502,7 +497,7 @@ const Payslip = () => {
         )
           .trim()
           .toUpperCase() ===
-        "EMPLOYEE"
+          "EMPLOYEE"
           ? "Employee Dashboard"
           : "Admin Dashboard"
       }
@@ -657,7 +652,7 @@ const Payslip = () => {
             <div className="right">
               <div
                 className="netpay"
-               
+
               >
                 <h2>
                   ₹{" "}
