@@ -1,96 +1,245 @@
-import React, { useEffect, useRef, useState, useContext } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useContext,
+} from "react";
+
 import "./ViewApprovals.scss";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
-import { Table, Space, Tag, Avatar } from "antd";
-import { MdEdit, MdDelete } from "react-icons/md";
+
+import {
+  Table,
+  Space,
+  Tag,
+  Avatar,
+} from "antd";
+
+import {
+  MdEdit,
+  MdDelete,
+} from "react-icons/md";
+
 import { FaDownload } from "react-icons/fa";
+
 import axios from "axios";
+
 import { UserContext } from "../../../Context";
 
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { toast } from "react-toastify";
-import SelectInput from "../../comp/selectInput/SelectInput";
-import { MenuItem } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-import { IoMdArrowBack } from "react-icons/io";
 
+import { toast } from "react-toastify";
+
+import SelectInput from "../../comp/selectInput/SelectInput";
+
+import { MenuItem } from "@mui/material";
+
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
 
 const ViewApproval = () => {
   const navigate = useNavigate();
+
   const { user } = useContext(UserContext);
 
+  // =====================================================
+  // STATES
+  // =====================================================
+
   const [data, setData] = useState([]);
+
   const [edit, setEdit] = useState(null);
+
   const [values, setValues] = useState({});
+
   const [loader, setLoader] = useState(false);
+
   const [isPdf, setIsPdf] = useState(false);
 
-  const pdfRef = useRef();
+  // =====================================================
+  // PDF REF
+  // =====================================================
+
+  const pdfRef = useRef(null);
+
+  // =====================================================
+  // TOKEN
+  // =====================================================
 
   const token = localStorage.getItem("token");
 
-  const BASE_URL = import.meta.env.VITE_APPROVAL_BACKEND_URL;
+  // =====================================================
+  // BASE URL
+  // =====================================================
+
+  const BASE_URL =
+    import.meta.env.VITE_APPROVAL_BACKEND_URL;
+
+  // =====================================================
+  // DATE FORMATTER
+  // =====================================================
+
+  const formatApprovalDate = (dateValue) => {
+    if (!dateValue) return "";
+
+    // Handle values such as:
+    // 2026-09-30
+    // 2026-09-30T00:00:00
+    // 2026-09-30T00:00:00.000Z
+
+    const dateOnly = String(dateValue)
+      .split("T")[0];
+
+    const parts = dateOnly.split("-");
+
+    if (parts.length !== 3) {
+      return dateValue;
+    }
+
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+
+    if (
+      !year ||
+      !month ||
+      !day
+    ) {
+      return dateValue;
+    }
+
+    // Important:
+    // Do NOT use new Date("2026-09-30")
+    // directly because timezone conversion
+    // can sometimes change the displayed date.
+
+    const date = new Date(
+      year,
+      month - 1,
+      day
+    );
+
+    if (isNaN(date.getTime())) {
+      return dateValue;
+    }
+
+    return date.toLocaleDateString(
+      "en-US",
+      {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }
+    );
+  };
 
   // =====================================================
   // GET APPROVAL DATA
   // =====================================================
 
   const getApprovalData = async () => {
+    if (!user?.uid) {
+      return;
+    }
+
     try {
       setLoader(true);
 
       let response;
 
+      // ================================================
+      // ADMIN
+      // ================================================
+
       if (user?.role === "ADMIN") {
-        response = await axios.get(`${BASE_URL}Admin/GetAllApproval`, {
-          withCredentials: true,
-        });
-      } else {
         response = await axios.get(
-          `${BASE_URL}employee/GetApprovalByForUseruid?uid=${user?.uid}`,
+          `${BASE_URL}Admin/GetAllApproval`,
           {
             withCredentials: true,
-          },
+          }
         );
       }
 
-      console.log("Approval API Response:", response.data);
+      // ================================================
+      // EMPLOYEE
+      // ================================================
 
-      const approvalData = response.data?.data || [];
+      else {
+        response = await axios.get(
+          `${BASE_URL}employee/GetApprovalByForUseruid?uid=${user.uid}`,
+          {
+            withCredentials: true,
+          }
+        );
+      }
 
-      const formattedData = [...approvalData].reverse().map((item, index) => ({
-        id: item.aid,
-        index: index + 1,
-        key: item.aid,
+      console.log(
+        "Approval API Response:",
+        response.data
+      );
 
-        date: item.date,
-        name: item.name,
-        subject: item.subject,
-        content: item.content,
+      const approvalData =
+        response?.data?.data || [];
 
-        StartDate: item.startDate,
-        EndDate: item.endDate,
+      // ================================================
+      // FORMAT DATA
+      // ================================================
 
-        Recurring: item.recuring,
+      const formattedData = [
+        ...approvalData,
+      ]
+        .reverse()
+        .map((item, index) => ({
+          id: item.aid,
 
-        price: item.price,
+          index: index + 1,
 
-        approvebByMam: item.approvebByMam,
+          key: item.aid,
 
-        approvedByFinance: item.approvedByFinance,
+          date: item.date,
 
-        status: item.overAllStatus,
-      }));
+          name: item.name,
+
+          subject: item.subject,
+
+          content: item.content,
+
+          StartDate: item.startDate,
+
+          EndDate: item.endDate,
+
+          Recurring: item.recuring,
+
+          price: item.price,
+
+          approvebByMam:
+            item.approvebByMam,
+
+          approvedByFinance:
+            item.approvedByFinance,
+
+          status:
+            item.overAllStatus,
+        }));
 
       setData(formattedData);
+
     } catch (error) {
-      console.log("Get Approval Error:", error.response?.data || error);
+      console.log(
+        "Get Approval Error:",
+        error.response?.data || error
+      );
 
       toast.error(
-        error.response?.data?.message || "Failed to get approval data",
+        error.response?.data?.message ||
+        "Failed to get approval data"
       );
+
     } finally {
       setLoader(false);
     }
@@ -100,31 +249,41 @@ const ViewApproval = () => {
   // CHANGE MAM STATUS
   // =====================================================
 
-  const changemamStatus = async (e, id) => {
+  const changemamStatus = async (
+    e,
+    id
+  ) => {
     try {
-      const value = e.target.value;
+      const value =
+        e.target.value;
 
       if (!value) return;
 
-      const response = await axios.post(
-        `${BASE_URL}Admin/ChangeStatusForMam?aId=${id}&status=${value}`,
-        {},
-        {
-          withCredentials: true,
-        },
-      );
+      const response =
+        await axios.post(
+          `${BASE_URL}Admin/ChangeStatusForMam?aId=${id}&status=${value}`,
+          {},
+          {
+            withCredentials: true,
+          }
+        );
 
       if (response.status === 200) {
-        toast.success("Mam status updated successfully");
+        toast.success(
+          "Mam status updated successfully"
+        );
 
         setEdit(null);
+
         getApprovalData();
       }
+
     } catch (error) {
       console.log(error);
 
       toast.error(
-        error.response?.data?.message || "Failed to update Mam status",
+        error.response?.data?.message ||
+        "Failed to update Mam status"
       );
     }
   };
@@ -133,33 +292,46 @@ const ViewApproval = () => {
   // CHANGE FINANCE STATUS
   // =====================================================
 
-  const changeFinanceStatus = async (e, id) => {
+  const changeFinanceStatus = async (
+    e,
+    id
+  ) => {
     try {
-      const value = e.target.value;
+      const value =
+        e.target.value;
 
       if (!value) return;
 
-      const response = await axios.post(
-        `${BASE_URL}Admin/ChangeStatusForFinance?aId=${id}&status=${value}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const response =
+        await axios.post(
+          `${BASE_URL}Admin/ChangeStatusForFinance?aId=${id}&status=${value}`,
+          {},
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+
+            withCredentials: true,
+          }
+        );
 
       if (response.status === 200) {
-        toast.success("Finance status updated successfully");
+        toast.success(
+          "Finance status updated successfully"
+        );
 
         setEdit(null);
+
         getApprovalData();
       }
+
     } catch (error) {
       console.log(error);
 
       toast.error(
-        error.response?.data?.message || "Failed to update Finance status",
+        error.response?.data?.message ||
+        "Failed to update Finance status"
       );
     }
   };
@@ -168,31 +340,41 @@ const ViewApproval = () => {
   // CHANGE OVERALL STATUS
   // =====================================================
 
-  const changeoverStatus = async (e, id) => {
+  const changeoverStatus = async (
+    e,
+    id
+  ) => {
     try {
-      const value = e.target.value;
+      const value =
+        e.target.value;
 
       if (!value) return;
 
-      const response = await axios.post(
-        `${BASE_URL}Admin/FinalStatus?aId=${id}&status=${value}`,
-        {},
-        {
-          withCredentials: true,
-        },
-      );
+      const response =
+        await axios.post(
+          `${BASE_URL}Admin/FinalStatus?aId=${id}&status=${value}`,
+          {},
+          {
+            withCredentials: true,
+          }
+        );
 
       if (response.status === 200) {
-        toast.success("Approval status updated successfully");
+        toast.success(
+          "Approval status updated successfully"
+        );
 
         setEdit(null);
+
         getApprovalData();
       }
+
     } catch (error) {
       console.log(error);
 
       toast.error(
-        error.response?.data?.message || "Failed to update approval status",
+        error.response?.data?.message ||
+        "Failed to update approval status"
       );
     }
   };
@@ -201,507 +383,992 @@ const ViewApproval = () => {
   // GET APPROVAL BY ID
   // =====================================================
 
-  const getApprovalDataById = async (id) => {
-    try {
-      const response = await axios.get(
-        `${BASE_URL}authController/GetApproval?aId=${id}`,
-        {
-          withCredentials: true,
-        },
-      );
+  const getApprovalDataById =
+    async (id) => {
+      try {
+        const response =
+          await axios.get(
+            `${BASE_URL}authController/GetApproval?aId=${id}`,
+            {
+              withCredentials: true,
+            }
+          );
 
-      console.log("Approval By ID:", response.data);
+        console.log(
+          "Approval By ID:",
+          response.data
+        );
 
-      setValues(response.data?.data || {});
+        setValues(
+          response?.data?.data || {}
+        );
 
-      if (response.status === 200) {
-        setIsPdf(true);
+        if (response.status === 200) {
+          setIsPdf(true);
 
-        setTimeout(() => {
-          handleDownloadPDF();
-        }, 500);
+          // Give React time to render
+          // the A4 PDF element.
+          setTimeout(() => {
+            handleDownloadPDF();
+          }, 800);
+        }
+
+      } catch (error) {
+        console.log(
+          "Get Approval By ID Error:",
+          error.response?.data ||
+          error
+        );
+
+        toast.error(
+          "Failed to generate approval letter"
+        );
       }
-    } catch (error) {
-      console.log("Get Approval By ID Error:", error.response?.data || error);
-
-      toast.error("Failed to generate approval letter");
-    }
-  };
+    };
 
   // =====================================================
   // DOWNLOAD PDF
   // =====================================================
 
-const handleDownloadPDF = async () => {
-  const input = pdfRef.current;
+  const handleDownloadPDF = async () => {
+    const input = pdfRef.current;
 
-  if (!input) return;
-
-  try {
-    const canvas = await html2canvas(input, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff",
-      logging: false,
-      windowWidth: input.scrollWidth,
-      windowHeight: input.scrollHeight,
-    });
-
-    const imgData = canvas.toDataURL("image/jpeg", 1.0);
-
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-      compress: true,
-    });
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    const margin = 10;
-
-    const availableWidth = pageWidth - margin * 2;
-    const availableHeight = pageHeight - margin * 2;
-
-    const imageRatio = canvas.width / canvas.height;
-
-    let imageWidth = availableWidth;
-    let imageHeight = imageWidth / imageRatio;
-
-    // If content is taller than one A4 page
-    if (imageHeight > availableHeight) {
-      imageHeight = availableHeight;
-      imageWidth = imageHeight * imageRatio;
+    if (!input) {
+      toast.error(
+        "PDF content not ready"
+      );
+      return;
     }
 
-    const x = (pageWidth - imageWidth) / 2;
-    const y = margin;
+    try {
 
-    pdf.addImage(
-      imgData,
-      "JPEG",
-      x,
-      y,
-      imageWidth,
-      imageHeight,
-      undefined,
-      "FAST"
-    );
+      await new Promise(
+        (resolve) => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(resolve);
+          });
+        }
+      );
 
-    pdf.save(
-      `Approval_Letter_${values?.name || "Employee"}.pdf`
-    );
+      const canvas =
+        await html2canvas(
+          input,
+          {
+            scale: 2,
 
-    toast.success("Approval letter downloaded");
-  } catch (error) {
-    console.log("PDF Download Error:", error);
-    toast.error("Failed to download approval letter");
-  } finally {
-    setIsPdf(false);
-  }
-};
+            useCORS: true,
+
+            allowTaint: true,
+
+            backgroundColor:
+              "#ffffff",
+
+            logging: false,
+
+            width: 794,
+
+            height: 1123,
+
+            windowWidth: 794,
+
+            windowHeight: 1123,
+          }
+        );
+
+      const imgData =
+        canvas.toDataURL(
+          "image/jpeg",
+          1
+        );
+
+      const pdf =
+        new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+          compress: true,
+        });
+
+      const pageWidth =
+        pdf.internal.pageSize.getWidth();
+
+      const pageHeight =
+        pdf.internal.pageSize.getHeight();
+
+      pdf.addImage(
+        imgData,
+        "JPEG",
+        0,
+        0,
+        pageWidth,
+        pageHeight,
+        undefined,
+        "FAST"
+      );
+
+      pdf.save(
+        `Approval_Letter_${values?.name ||
+        "Employee"
+        }.pdf`
+      );
+
+      toast.success(
+        "Approval letter downloaded"
+      );
+
+    } catch (error) {
+
+      console.error(
+        "PDF Download Error:",
+        error
+      );
+
+      toast.error(
+        "Failed to download approval letter"
+      );
+
+    } finally {
+      setIsPdf(false);
+    }
+  };
 
   // =====================================================
   // DELETE APPROVAL
   // =====================================================
 
-const handleDelete = async (id) => {
-  if (!id) return;
+  const handleDelete =
+    async (id) => {
 
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this approval?",
-  );
+      if (!id) return;
 
-  if (!confirmDelete) return;
+      const confirmDelete =
+        window.confirm(
+          "Are you sure you want to delete this approval?"
+        );
 
-  try {
-    const response = await axios.delete(
-      `${BASE_URL}Admin/DeleteApproval?aId=${id}`,
-      {
-        withCredentials: true,
-      },
-    );
+      if (!confirmDelete) {
+        return;
+      }
 
-    if (response.status === 200 || response.status === 204) {
-      toast.success("Approval deleted successfully");
+      try {
 
-      // Remove deleted row immediately from table
-      setData((prev) => prev.filter((item) => item.id !== id));
-    }
-  } catch (error) {
-    console.log(
-      "Delete Approval Error:",
-      error.response?.data || error,
-    );
+        const response =
+          await axios.delete(
+            `${BASE_URL}Admin/DeleteApproval?aId=${id}`,
+            {
+              withCredentials: true,
+            }
+          );
 
-    toast.error(
-      error.response?.data?.message ||
-        "Failed to delete approval",
-    );
-  }
-};
+        if (
+          response.status === 200 ||
+          response.status === 204
+        ) {
+
+          toast.success(
+            "Approval deleted successfully"
+          );
+
+          setData(
+            (prev) =>
+              prev.filter(
+                (item) =>
+                  item.id !== id
+              )
+          );
+        }
+
+      } catch (error) {
+
+        console.log(
+          "Delete Approval Error:",
+          error.response?.data ||
+          error
+        );
+
+        toast.error(
+          error.response?.data?.message ||
+          "Failed to delete approval"
+        );
+      }
+    };
 
   // =====================================================
-  // GET DATA ON PAGE LOAD
+  // GET DATA WHEN USER IS READY
   // =====================================================
 
   useEffect(() => {
-    if (user) {
-      getApprovalData();
+
+    if (!user?.uid) {
+      return;
     }
-  }, [user]);
+
+    getApprovalData();
+
+  }, [
+    user?.uid,
+    user?.role,
+  ]);
 
   // =====================================================
   // TABLE COLUMNS
   // =====================================================
 
   const columns = [
+
+    // ================================================
+    // ID
+    // ================================================
+
     {
       title: "Id",
+
       dataIndex: "index",
+
       key: "index",
+
       width: 80,
+
       fixed: "left",
     },
+
+    // ================================================
+    // DATE
+    // ================================================
 
     {
       title: "Date",
+
       dataIndex: "date",
+
       key: "date",
+
       width: 150,
+
+      render: (date) =>
+        formatApprovalDate(date),
     },
 
+    // ================================================
+    // EMPLOYEE NAME
+    // ================================================
+
     {
-      title: "Employee Name",
+      title:
+        "Employee Name",
+
       dataIndex: "name",
+
       key: "name",
+
       width: 220,
+
       fixed: "left",
 
       render: (name) => {
-        const employeeName = name || "N/A";
 
-        const nameParts = employeeName.trim().split(" ").filter(Boolean);
+        const employeeName =
+          name || "N/A";
+
+        const nameParts =
+          employeeName
+            .trim()
+            .split(" ")
+            .filter(Boolean);
 
         let initials = "NA";
 
-        if (nameParts.length === 1) {
-          initials = nameParts[0]?.charAt(0) || "N";
+        if (
+          nameParts.length === 1
+        ) {
+
+          initials =
+            nameParts[0]?.charAt(
+              0
+            ) || "N";
+
         } else {
-          initials = `${nameParts[0]?.charAt(0) || ""}${
-            nameParts[nameParts.length - 1]?.charAt(0) || ""
-          }`;
+
+          initials =
+            `${nameParts[0]?.charAt(
+              0
+            ) || ""
+            }${nameParts[
+              nameParts.length - 1
+            ]?.charAt(0) || ""
+            }`;
         }
 
         return (
           <Space>
-            <Avatar className="avatar">{initials.toUpperCase()}</Avatar>
 
-            <span>{employeeName}</span>
+            <Avatar className="avatar">
+              {initials.toUpperCase()}
+            </Avatar>
+
+            <span>
+              {employeeName}
+            </span>
+
           </Space>
         );
       },
     },
 
+    // ================================================
+    // SUBJECT
+    // ================================================
+
     {
       title: "Subject",
+
       dataIndex: "subject",
+
       key: "subject",
+
       width: 250,
 
-      render: (subject) => subject || "N/A",
+      render: (subject) =>
+        subject || "N/A",
     },
+
+    // ================================================
+    // START DATE
+    // ================================================
 
     {
       title: "Start Date",
+
       dataIndex: "StartDate",
+
       key: "StartDate",
+
       width: 150,
 
-      render: (date) => date || "N/A",
+      render: (date) =>
+        date
+          ? formatApprovalDate(date)
+          : "N/A",
     },
+
+    // ================================================
+    // END DATE
+    // ================================================
 
     {
       title: "End Date",
+
       dataIndex: "EndDate",
+
       key: "EndDate",
+
       width: 150,
 
-      render: (date) => date || "N/A",
+      render: (date) =>
+        date
+          ? formatApprovalDate(date)
+          : "N/A",
     },
+
+    // ================================================
+    // RECURRING
+    // ================================================
 
     {
       title: "Recurring",
-      dataIndex: "Recurring",
+
+      dataIndex:
+        "Recurring",
+
       key: "Recurring",
+
       width: 150,
 
-      render: (value) => <Tag>{value || "No Recurring"}</Tag>,
+      render: (value) => (
+        <Tag>
+          {value ||
+            "No Recurring"}
+        </Tag>
+      ),
     },
+
+    // ================================================
+    // PRICE
+    // ================================================
 
     {
       title: "Price",
+
       dataIndex: "price",
+
       key: "price",
+
       width: 150,
 
       render: (price) => {
-        if (price === null || price === undefined || price === "") {
+
+        if (
+          price === null ||
+          price === undefined ||
+          price === ""
+        ) {
           return "N/A";
         }
 
-        return `₹${Number(price).toLocaleString("en-IN")}`;
+        return `₹${Number(
+          price
+        ).toLocaleString(
+          "en-IN"
+        )}`;
       },
     },
 
+    // ================================================
+    // APPROVED BY MAM
+    // ================================================
+
     {
-      title: "Approved By Mam",
-      dataIndex: "approvebByMam",
-      key: "approvebByMam",
+      title:
+        "Approved By Mam",
+
+      dataIndex:
+        "approvebByMam",
+
+      key:
+        "approvebByMam",
+
       width: 190,
 
-      render: (text, record) => (
+      render: (
+        text,
+        record
+      ) => (
         <>
-          {user?.role === "ADMIN" && edit === record.id ? (
+          {user?.role ===
+            "ADMIN" &&
+            edit ===
+            record.id ? (
+
             <SelectInput
               label="Select Option"
-              value={record.approvebByMam || ""}
-              onChange={(e) => changemamStatus(e, record.id)}
+              value={
+                record.approvebByMam ||
+                ""
+              }
+              onChange={(e) =>
+                changemamStatus(
+                  e,
+                  record.id
+                )
+              }
             >
-              <MenuItem value="Approved">Approved</MenuItem>
+              <MenuItem value="Approved">
+                Approved
+              </MenuItem>
 
-              <MenuItem value="Rejected">Rejected</MenuItem>
+              <MenuItem value="Rejected">
+                Rejected
+              </MenuItem>
             </SelectInput>
+
           ) : (
+
             <Tag
               color={
-                record.approvebByMam === "Approved"
+                record.approvebByMam ===
+                  "Approved"
                   ? "green"
-                  : record.approvebByMam === "Rejected"
+                  : record.approvebByMam ===
+                    "Rejected"
                     ? "red"
                     : "gold"
               }
             >
-              {record.approvebByMam || "Pending"}
+              {record.approvebByMam ||
+                "Pending"}
             </Tag>
           )}
         </>
       ),
     },
+
+    // ================================================
+    // APPROVED BY FINANCE
+    // ================================================
 
     {
-      title: "Approved By Finance",
-      dataIndex: "approvedByFinance",
-      key: "approvedByFinance",
+      title:
+        "Approved By Finance",
+
+      dataIndex:
+        "approvedByFinance",
+
+      key:
+        "approvedByFinance",
+
       width: 200,
 
-      render: (text, record) => (
+      render: (
+        text,
+        record
+      ) => (
         <>
-          {user?.role === "ADMIN" && edit === record.id ? (
+          {user?.role ===
+            "ADMIN" &&
+            edit ===
+            record.id ? (
+
             <SelectInput
               label="Select Option"
-              value={record.approvedByFinance || ""}
-              onChange={(e) => changeFinanceStatus(e, record.id)}
+              value={
+                record.approvedByFinance ||
+                ""
+              }
+              onChange={(e) =>
+                changeFinanceStatus(
+                  e,
+                  record.id
+                )
+              }
             >
-              <MenuItem value="Approved">Approved</MenuItem>
+              <MenuItem value="Approved">
+                Approved
+              </MenuItem>
 
-              <MenuItem value="Rejected">Rejected</MenuItem>
+              <MenuItem value="Rejected">
+                Rejected
+              </MenuItem>
             </SelectInput>
+
           ) : (
+
             <Tag
               color={
-                record.approvedByFinance === "Approved"
+                record.approvedByFinance ===
+                  "Approved"
                   ? "green"
-                  : record.approvedByFinance === "Rejected"
+                  : record.approvedByFinance ===
+                    "Rejected"
                     ? "red"
                     : "gold"
               }
             >
-              {record.approvedByFinance || "Pending"}
+              {record.approvedByFinance ||
+                "Pending"}
             </Tag>
           )}
         </>
       ),
     },
+
+    // ================================================
+    // OVERALL STATUS
+    // ================================================
 
     {
       title: "Status",
+
       dataIndex: "status",
+
       key: "status",
+
       width: 160,
 
-      render: (text, record) => (
+      render: (
+        text,
+        record
+      ) => (
         <>
-          {user?.role === "ADMIN" && edit === record.id ? (
+          {user?.role ===
+            "ADMIN" &&
+            edit ===
+            record.id ? (
+
             <SelectInput
               label="Select Option"
-              value={record.status || ""}
-              onChange={(e) => changeoverStatus(e, record.id)}
+              value={
+                record.status ||
+                ""
+              }
+              onChange={(e) =>
+                changeoverStatus(
+                  e,
+                  record.id
+                )
+              }
             >
-              <MenuItem value="Approved">Approved</MenuItem>
+              <MenuItem value="Approved">
+                Approved
+              </MenuItem>
 
-              <MenuItem value="Rejected">Rejected</MenuItem>
+              <MenuItem value="Rejected">
+                Rejected
+              </MenuItem>
             </SelectInput>
+
           ) : (
+
             <Tag
               color={
-                record.status === "Approved"
+                record.status ===
+                  "Approved"
                   ? "green"
-                  : record.status === "Rejected"
+                  : record.status ===
+                    "Rejected"
                     ? "red"
                     : "gold"
               }
             >
-              {record.status || "Pending"}
+              {record.status ||
+                "Pending"}
             </Tag>
           )}
         </>
       ),
     },
 
-{
-  title: "Actions",
-  key: "actions",
-  width: 160,
-  fixed: "right",
+    // ================================================
+    // ACTIONS
+    // ================================================
 
-  render: (_, record) => (
-    <Space size="middle">
+    {
+      title: "Actions",
 
-      {/* ADMIN EDIT - STATUS */}
-      {user?.role === "ADMIN" && (
-        <MdEdit
-          className="edit"
-          title="Edit Approval Status"
-          onClick={() => setEdit(record.id)}
-        />
-      )}
+      key: "actions",
 
-      {/* EMPLOYEE EDIT - COMPLETE APPROVAL LETTER */}
-      {user?.role === "EMPLOYEE" && (
-        <MdEdit
-          className="edit"
-          title="Edit Approval Letter"
-          onClick={() => navigate(`/editApproval/${record.id}`)}
-        />
-      )}
+      width: 160,
 
-      {/* ADMIN DELETE */}
-      {user?.role === "ADMIN" && (
-        <MdDelete
-          className="delete"
-          title="Delete Approval"
-          onClick={() => handleDelete(record.id)}
-        />
-      )}
+      fixed: "right",
 
-      {/* DOWNLOAD */}
-      <FaDownload
-        className="download"
-        title="Download Approval"
-        onClick={() => getApprovalDataById(record.id)}
-      />
+      render: (
+        _,
+        record
+      ) => (
+        <Space size="middle">
 
-    </Space>
-  ),
-},
+          {/* ADMIN STATUS EDIT */}
+
+          {user?.role ===
+            "ADMIN" && (
+
+              <MdEdit
+                className="edit"
+                title="Edit Approval Status"
+                onClick={() =>
+                  setEdit(
+                    record.id
+                  )
+                }
+              />
+            )}
+
+          {/* EMPLOYEE COMPLETE EDIT */}
+
+          {user?.role ===
+            "EMPLOYEE" && (
+
+              <MdEdit
+                className="edit"
+                title="Edit Approval Letter"
+                onClick={() =>
+                  navigate(
+                    `/editApproval/${record.id}`
+                  )
+                }
+              />
+            )}
+
+          {/* ADMIN DELETE */}
+
+          {user?.role ===
+            "ADMIN" && (
+
+              <MdDelete
+                className="delete"
+                title="Delete Approval"
+                onClick={() =>
+                  handleDelete(
+                    record.id
+                  )
+                }
+              />
+            )}
+
+          {/* DOWNLOAD */}
+
+          <FaDownload
+            className="download"
+            title="Download Approval"
+            onClick={() =>
+              getApprovalDataById(
+                record.id
+              )
+            }
+          />
+
+        </Space>
+      ),
+    },
   ];
+
+  // =====================================================
+  // RETURN
+  // =====================================================
 
   return (
     <MainPanel
       breadcrumbs={[
-        { label: "Dashboard", link: "/dashboard" },
-        { label: "Approval Letters" },
+        {
+          label: "Dashboard",
+          link: "/dashboard",
+        },
+
+        {
+          label:
+            "Approval Letters",
+        },
       ]}
       title={
-        String(user?.role || user?.crmRole || "")
+        String(
+          user?.role ||
+          user?.crmRole ||
+          ""
+        )
           .trim()
-          .toUpperCase() === "EMPLOYEE"
+          .toUpperCase() ===
+          "EMPLOYEE"
           ? "Employee Dashboard"
           : "Approval Letters"
       }
     >
-          <button
-            type="button"
-            className="back-btn"
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            ← Back
+
+      {/* ============================================== */}
+      {/* BACK */}
+      {/* ============================================== */}
+
+      <button
+        type="button"
+        className="back-btn"
+        onClick={() =>
+          navigate("/")
+        }
+      >
+        ← Back
+      </button>
+
+      {/* ============================================== */}
+      {/* PAGE HEADER */}
+      {/* ============================================== */}
+
+      <div className="page-header">
+
+        <h2>
+          Approval Letters
+        </h2>
+
+        <Link to="/approvalLetter">
+          <button className="btn">
+            Add Letter
           </button>
-      
-        <div className="page-header">
-          <h2>Approval Letters</h2>
-          <Link to="/approvalLetter">
-            <button className="btn">Add Letter</button>
-          </Link>
-        </div>
-      
+        </Link>
+
+      </div>
+
+      {/* ============================================== */}
+      {/* TABLE */}
+      {/* ============================================== */}
+
       <div className="parent">
-        <div className="card" style={{ padding: "20px" }}>
+
+        <div
+          className="card"
+          style={{
+            padding: "20px",
+          }}
+        >
+
           <Table
             loading={loader}
+
             columns={columns}
+
             dataSource={data}
+
             bordered
+
             scroll={{
               x: "max-content",
             }}
+
             pagination={{
               pageSize: 10,
+
               showSizeChanger: true,
-              pageSizeOptions: ["10", "20", "50", "100"],
-              showTotal: (total, range) =>
+
+              pageSizeOptions: [
+                "10",
+                "20",
+                "50",
+                "100",
+              ],
+
+              showTotal: (
+                total,
+                range
+              ) =>
                 `${range[0]}-${range[1]} of ${total} approvals`,
             }}
-            rowClassName={(_, index) =>
-              index % 2 === 0 ? "table-row-light" : "table-row-dark"
+
+            rowClassName={(
+              _,
+              index
+            ) =>
+              index % 2 === 0
+                ? "table-row-light"
+                : "table-row-dark"
             }
           />
+
         </div>
 
-        {/* PDF CONTENT */}
+        {/* ============================================ */}
+        {/* PDF A4 CONTENT */}
+        {/* ============================================ */}
 
         {isPdf && (
-          <div className="right-letter" ref={pdfRef}>
-            <div className="date">{values?.date}</div>
 
-            <p className="main-info">
-              To, <br />
-              Prajakta Marwaha <br />
-              Director <br />
-              Pandoza Solutions Pvt Ltd <br />
-              2014 - 2016, 10 Biz Park, Viman Nagar, <br />
-              Pune, Maharashtra 411014
-            </p>
-
-            <p className="subject">Subject: {values?.subject}</p>
+          <div className="pdf-render-wrapper">
 
             <div
-              className="sic-editor-data"
-              dangerouslySetInnerHTML={{
-                __html: values?.content || "",
-              }}
-            />
+              className="right-letter pdf-letter"
+              ref={pdfRef}
+            >
 
-            <div className="user">
-              Your Sincerely <span>{values?.name}</span>
-            </div>
+              {/* ====================================== */}
+              {/* DATE */}
+              {/* ====================================== */}
 
-            <div className="bottomsection">
-              <div className="approvar">
-                To Be Approved By <span>Prajakta Marwaha</span>
+              <div className="date">
+
+                {formatApprovalDate(
+                  values?.date
+                )}
+
               </div>
 
-              <div className="finance">
-                To Be Approved By <span>Finance Department</span>
+              {/* ====================================== */}
+              {/* RECEIVER */}
+              {/* ====================================== */}
+
+              <div className="main-info">
+
+                To,
+                <br />
+
+                Prajakta Marwaha
+                <br />
+
+                Director
+                <br />
+
+                Pandoza Solutions Pvt Ltd
+                <br />
+
+                2014 - 2016, 10 Biz Park,
+                Viman Nagar,
+                <br />
+
+                Pune, Maharashtra 411014
+
               </div>
+
+              {/* ====================================== */}
+              {/* SUBJECT */}
+              {/* ====================================== */}
+
+              <div className="subject">
+
+                Subject:{" "}
+                {values?.subject}
+
+              </div>
+
+              {/* ====================================== */}
+              {/* CONTENT */}
+              {/* ====================================== */}
+
+              <div
+                className="sic-editor-data"
+                dangerouslySetInnerHTML={{
+                  __html:
+                    values?.content ||
+                    "",
+                }}
+              />
+
+              {/* ====================================== */}
+              {/* BOTTOM */}
+              {/* ====================================== */}
+
+              <div className="letter-bottom">
+
+                {/* ==================================== */}
+                {/* SIGNATURE */}
+                {/* ==================================== */}
+
+                <div className="user">
+
+                  <div>
+                    Your Sincerely
+                  </div>
+
+                  <span>
+                    {values?.name}
+                  </span>
+
+                </div>
+
+                {/* ==================================== */}
+                {/* APPROVAL ROW */}
+                {/* ==================================== */}
+
+                <div className="bottomsection">
+
+                  <div className="approvar">
+
+                    <div>
+                      To Be Approved By
+                    </div>
+
+                    <span>
+                      Prajakta Marwaha
+                    </span>
+
+                  </div>
+
+                  <div className="finance">
+
+                    <div>
+                      To Be Approved By
+                    </div>
+
+                    <span>
+                      Finance Department
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
             </div>
+
           </div>
         )}
+
       </div>
+
     </MainPanel>
   );
 };

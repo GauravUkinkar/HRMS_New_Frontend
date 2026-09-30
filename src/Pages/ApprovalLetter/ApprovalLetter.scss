@@ -1,55 +1,228 @@
-@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
-
 .approvalletter-parent {
-  font-family: "Quicksand", sans-serif !important;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  &,
-  * {
-    font-family: "Quicksand", sans-serif !important;
-  }
   .approvalletter-cont {
-    display: flex;
-    width: 100%;
     align-items: center;
     justify-content: center;
-    padding: 100px 10px;
+    width: 100%;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    background: #e9f0f0;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    box-sizing: border-box;
+
+    // ==========================================
+    // HEADER
+    // ==========================================
+
+    h2 {
+      width: 100%;
+      margin: 0;
+      padding: 10px 14px;
+      box-sizing: border-box;
+
+      text-align: left;
+
+      background-color: var(--accent2);
+      color: white;
+
+      font-size: 18px;
+      font-weight: 500;
+
+      border-radius: 5px;
+      box-shadow: var(--shadow);
+    }
+
+    // ==========================================
+    // LETTER BOX
+    // ==========================================
+
     .letter-box {
       width: 100%;
       display: flex;
+      align-items: stretch;
       gap: var(--unit);
 
-      // flex-direction: column;
+      // ========================================
+      // LEFT FORM
+      // ========================================
+
       .left-form {
-        margin: 0 !important;
         background-color: white;
-        width: 60%;
+        width: 50%;
         padding: 20px;
         border-radius: 10px;
+        box-sizing: border-box;
 
         form {
+          width: 100%;
+
           display: flex;
           flex-direction: column;
           gap: 20px;
 
-          input,
+
           textarea {
-            padding: 10px 10px;
+            padding: 10px;
+
             border: 1px solid #ccc;
             border-radius: 5px;
 
-            transition: var(--trans);
+            font-size: 13px;
+
+            outline: none;
+
+            resize: vertical;
 
             &:focus {
-              border-color: #007bff;
+              border-color: #8aa9d8;
               outline: none;
             }
           }
 
+          // ====================================
+          // CKEDITOR
+          // ====================================
+
+          .ck-editor {
+            width: 100%;
+
+            .ck-editor__editable {
+              min-height: 285px;
+              max-height: 285px;
+
+              padding: 14px 12px;
+
+              font-size: 13px;
+              line-height: 1.55;
+
+              color: #555;
+
+              overflow-y: auto;
+
+              // --------------------------------
+              // Paragraph
+              // --------------------------------
+
+              p {
+                margin-top: 0;
+                margin-bottom: 10px;
+
+                text-align: left;
+
+                line-height: 1.55;
+              }
+
+              // --------------------------------
+              // First paragraph
+              // --------------------------------
+
+              p:first-child {
+                margin-bottom: 12px;
+              }
+
+              // --------------------------------
+              // Ordered list
+              // --------------------------------
+
+              ol {
+                margin-top: 5px;
+                margin-bottom: 12px;
+
+                padding-left: 24px;
+
+                li {
+                  margin-bottom: 6px;
+                  padding-left: 2px;
+
+                  line-height: 1.5;
+
+                  p {
+                    margin: 0;
+                    line-height: 1.5;
+                  }
+                }
+              }
+
+              // --------------------------------
+              // Unordered list
+              // --------------------------------
+
+              ul {
+                margin-top: 5px;
+                margin-bottom: 12px;
+
+                padding-left: 24px;
+
+                li {
+                  margin-bottom: 6px;
+
+                  line-height: 1.5;
+                }
+              }
+
+              // --------------------------------
+              // Bold
+              // --------------------------------
+
+              strong {
+                font-weight: 700;
+                color: #333;
+              }
+
+              // --------------------------------
+              // Tables
+              // --------------------------------
+
+              figure.table {
+                width: 100%;
+                margin: 12px 0;
+
+                table {
+                  width: 100% !important;
+
+                  border-collapse: collapse;
+
+                  td,
+                  th {
+                    padding: 7px 8px;
+
+                    border: 1px solid #999;
+
+                    line-height: 1.4;
+                  }
+
+                  th {
+                    font-weight: 600;
+                    background-color: #f5f5f5;
+                  }
+                }
+              }
+            }
+          }
+
+          // ====================================
+          // EDITOR DATA
+          // ====================================
+
           .sic-editor-data {
+            width: 100%;
+
             p {
               text-align: left;
             }
           }
+
+          // ====================================
+          // CKEDITOR TABLE
+          // ====================================
+
           .ck-editor__editable table {
             width: 100% !important;
             border-collapse: collapse;
@@ -59,87 +232,527 @@
               padding: 8px;
             }
           }
+
+          // ====================================
+          // SUBMIT BUTTON
+          // ====================================
+
+          button[type="submit"] {
+            width: 100%;
+
+            min-height: 35px;
+
+            padding: 8px 15px;
+
+            border: none;
+            border-radius: 5px;
+
+            background: #245579;
+            color: #fff;
+
+            font-size: 13px;
+            font-weight: 500;
+
+            cursor: pointer;
+
+            transition: var(--trans);
+
+            &:hover {
+              background: #1c4868;
+            }
+
+            &:active {
+              transform: translateY(1px);
+            }
+          }
         }
       }
 
+      // ========================================
+      // RIGHT LETTER
+      // ========================================
+
       .right-letter {
-        margin: 0 !important;
-        width: 40%;
+        width: 50%;
+
         padding: 20px;
+
         border-radius: 10px;
+
         display: flex;
         flex-direction: column;
+
         gap: 10px;
-        justify-content: center;
+
+        justify-content: flex-start;
+
         background-color: white;
+
+        box-sizing: border-box;
+
+        // ====================================
+        // DATE
+        // ====================================
 
         .date {
           display: flex;
+
           align-items: flex-end;
           justify-content: flex-end;
+
+          margin-bottom: 18px;
+
+          font-size: 12px;
+
+          color: #777;
         }
+
+        // ====================================
+        // MAIN INFORMATION
+        // ====================================
+
         .main-info {
           text-align: start;
-          padding: 20px 0px 0px 0px;
-          letter-spacing: 0px;
+
+          padding: 0;
+
+          letter-spacing: 0;
           word-spacing: 1px;
+
+          font-size: 13px;
+
+          line-height: 1.55;
+
+          color: #777;
+
+          p {
+            margin: 0 0 5px;
+            line-height: 1.55;
+          }
         }
+
+        // ====================================
+        // SUBJECT
+        // ====================================
+
         .subject {
-          font-weight: bold;
+          margin-top: 5px;
+          margin-bottom: 8px;
+
+          font-weight: 600;
+
           text-align: start;
-          letter-spacing: 0px;
+
+          letter-spacing: 0;
           word-spacing: 1px;
+
+          font-size: 13px;
+
+          line-height: 1.5;
+
+          color: #333;
         }
+
+        // ====================================
+        // EDITOR CONTENT / PREVIEW
+        // ====================================
 
         .sic-editor-data {
+          width: 100%;
+
+          font-size: 13px;
+
+          line-height: 1.55;
+
+          color: #777;
+
+          // --------------------------------
+          // Paragraph
+          // --------------------------------
+
           p {
             text-align: left;
+
             width: 100%;
-            letter-spacing: 0px;
+
+            margin-top: 0;
+            margin-bottom: 10px;
+
+            letter-spacing: 0;
             word-spacing: 1px;
+
+            line-height: 1.55;
           }
 
-          figure {
-            table,
-            th,
-            td {
-              border: 1px solid black;
+          // --------------------------------
+          // First paragraph
+          // --------------------------------
+
+          > p:first-child {
+            margin-bottom: 12px;
+          }
+
+          // --------------------------------
+          // Ordered list
+          // --------------------------------
+
+          ol {
+            margin-top: 5px;
+            margin-bottom: 13px;
+
+            padding-left: 23px;
+
+            line-height: 1.5;
+
+            li {
+              margin-bottom: 6px;
+
+              padding-left: 2px;
+
+              line-height: 1.5;
+
+              p {
+                margin: 0;
+
+                line-height: 1.5;
+              }
             }
+          }
+
+          // --------------------------------
+          // Unordered list
+          // --------------------------------
+
+          ul {
+            margin-top: 5px;
+            margin-bottom: 13px;
+
+            padding-left: 23px;
+
+            line-height: 1.5;
+
+            li {
+              margin-bottom: 6px;
+
+              line-height: 1.5;
+            }
+          }
+
+          // --------------------------------
+          // Bold
+          // --------------------------------
+
+          strong {
+            color: #333;
+
+            font-weight: 700;
+          }
+
+          // --------------------------------
+          // Tables
+          // --------------------------------
+
+          figure {
+            margin: 12px 0;
 
             table {
+              width: 100%;
+
+              border-collapse: collapse;
+
+              border: 1px solid #999;
+
               th,
               td {
-                padding: 10px;
+                border: 1px solid #999;
+
+                padding: 7px 8px;
+
+                font-size: 12px;
+
+                line-height: 1.4;
+              }
+
+              th {
+                font-weight: 600;
+
+                background-color: #f5f5f5;
               }
             }
           }
         }
 
+        // ====================================
+        // BOTTOM SECTION
+        // ====================================
+
         .bottomsection {
           display: flex;
           justify-content: space-between;
-          text-align: "center";
+          align-items: flex-end;
+          text-align: center;
+          width: 100%;
+          padding-top: 20px;
         }
 
+        // ====================================
+        // USER SIGNATURE
+        // ====================================
+
         .user {
-          margin-bottom: 80px;
+          // margin-bottom: 80px;
         }
+
+        // ====================================
+        // USER / APPROVER / FINANCE
+        // ====================================
 
         .user,
         .approvar,
         .finance {
           display: flex;
+
           justify-content: flex-end;
+
           flex-direction: column;
+
           align-items: flex-end;
+
+          font-size: 12px;
+
+          color: #777;
 
           span {
             font-weight: 600;
+
+            color: #333;
+
+            margin-top: 3px;
           }
         }
+
+        // ====================================
+        // APPROVER
+        // ====================================
+
         .approvar {
           justify-content: flex-start;
+
           align-items: flex-start;
+
+          text-align: left;
+        }
+
+        // ====================================
+        // FINANCE
+        // ====================================
+
+        .finance {
+          justify-content: flex-start;
+
+          align-items: flex-end;
+
+          text-align: right;
+        }
+      }
+    }
+  }
+}
+
+
+// ==================================================
+// TABLET
+// ==================================================
+
+@media (max-width: 1100px) {
+  .approvalletter-parent {
+    width: 90%;
+
+    .approvalletter-cont {
+      padding: 20px;
+
+      .letter-box {
+        gap: 15px;
+
+        .left-form,
+        .right-letter {
+          width: 50%;
+        }
+      }
+    }
+  }
+}
+
+
+// ==================================================
+// TABLET / SMALL LAPTOP
+// ==================================================
+
+@media (max-width: 900px) {
+  .approvalletter-parent {
+    width: 95%;
+
+    .approvalletter-cont {
+      padding: 16px;
+
+      .letter-box {
+        .left-form {
+          padding: 16px;
+        }
+
+        .right-letter {
+          padding: 16px;
+        }
+      }
+    }
+  }
+}
+
+
+// ==================================================
+// MOBILE
+// ==================================================
+
+@media (max-width: 768px) {
+  .approvalletter-parent {
+    width: 100%;
+
+    .approvalletter-cont {
+      padding: 12px;
+
+      gap: 15px;
+
+      h2 {
+        font-size: 16px;
+      }
+
+      .letter-box {
+        flex-direction: column;
+
+        gap: 15px;
+
+        .left-form,
+        .right-letter {
+          width: 100%;
+        }
+
+        .left-form {
+          padding: 15px;
+
+          form {
+            gap: 15px;
+
+            .ck-editor {
+              .ck-editor__editable {
+                min-height: 250px;
+                max-height: 250px;
+              }
+            }
+          }
+        }
+
+        .right-letter {
+          min-height: 650px;
+
+          padding: 18px;
+
+          .bottomsection {
+            gap: 25px;
+
+            .user,
+            .approvar,
+            .finance {
+              font-size: 12px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+// ==================================================
+// SMALL MOBILE
+// ==================================================
+
+@media (max-width: 480px) {
+  .approvalletter-parent {
+    padding: 5px;
+
+    .approvalletter-cont {
+      padding: 10px;
+
+      h2 {
+        font-size: 15px;
+
+        padding: 9px 12px;
+      }
+
+      .letter-box {
+        .left-form {
+          padding: 12px;
+
+          form {
+            gap: 12px;
+
+            input,
+            select {
+              font-size: 13px;
+            }
+
+            .ck-editor {
+              .ck-editor__editable {
+                min-height: 220px;
+                max-height: 220px;
+
+                font-size: 12px;
+
+                line-height: 1.5;
+
+                ol,
+                ul {
+                  padding-left: 20px;
+
+                  li {
+                    margin-bottom: 5px;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .right-letter {
+          padding: 15px;
+
+          .date {
+            font-size: 11px;
+          }
+
+          .main-info,
+          .subject,
+          .sic-editor-data {
+            font-size: 12px;
+          }
+
+          .bottomsection {
+            flex-direction: column;
+
+            align-items: center;
+
+            gap: 25px;
+
+            .user,
+            .approvar,
+            .finance {
+              align-items: center;
+
+              text-align: center;
+
+              margin-bottom: 0;
+            }
+          }
         }
       }
     }

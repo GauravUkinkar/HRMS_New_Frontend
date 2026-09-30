@@ -1,4 +1,3 @@
-
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./ApprovalLetter.scss";
 import { useContext, useEffect, useRef } from "react";
@@ -14,7 +13,7 @@ import { MenuItem } from "@mui/material";
 import Input from "../../comp/input/Input";
 
 const ApprovalLetter = () => {
-  const pdfRef = useRef();
+  const pdfRef = useRef(null);
 
   const { user } = useContext(UserContext);
 
@@ -22,6 +21,10 @@ const ApprovalLetter = () => {
 
   const BASE_URL =
     import.meta.env.VITE_APPROVAL_BACKEND_URL;
+
+  // =====================================================
+  // FORM OBJECT
+  // =====================================================
 
   const formObj = {
     date: new Date().toISOString().split("T")[0],
@@ -36,7 +39,7 @@ const ApprovalLetter = () => {
   };
 
   // =====================================================
-  // ADD APPROVAL
+  // ADD APPROVAL API
   // =====================================================
 
   const addApprovalApi = async () => {
@@ -53,16 +56,13 @@ const ApprovalLetter = () => {
         recuring: values.recuring,
       };
 
-      console.log(
-        "Approval Payload:",
-        payload
-      );
+      console.log("Approval Payload:", payload);
 
       const response = await axios.post(
         `${BASE_URL}employee/AddApproval`,
         payload,
         {
-            withCredentials:true,
+          withCredentials: true,
         }
       );
 
@@ -71,26 +71,15 @@ const ApprovalLetter = () => {
         response.data
       );
 
-      if (response.status === 200) {
+      if (
+        response.status === 200 ||
+        response.status === 201
+      ) {
         toast.success(
           "Approval added successfully!"
         );
 
-        setValues({
-          date: new Date()
-            .toISOString()
-            .split("T")[0],
-          subject: "",
-          content: "",
-          uid: user?.uid || "",
-          price: "",
-          name: user?.employeeName || "",
-          startDate: "",
-          endDate: "",
-          recuring: "",
-        });
-
-        navigate("/viewApprovals");
+        window.location.replace("/viewApprovals");
       }
     } catch (error) {
       console.log(
@@ -100,10 +89,14 @@ const ApprovalLetter = () => {
 
       toast.error(
         error.response?.data?.message ||
-          "Failed to add approval"
+        "Failed to add approval"
       );
     }
   };
+
+  // =====================================================
+  // FORM HOOK
+  // =====================================================
 
   const {
     handleChange,
@@ -136,39 +129,75 @@ const ApprovalLetter = () => {
           user.employeeName || "",
       }));
     }
-  }, [user]);
+  }, [user, setValues]);
+
+  // =====================================================
+  // COMPONENT
+  // =====================================================
 
   return (
     <MainPanel
-          breadcrumbs={[
-        { label: "Dashboard", link: "/dashboard" },
-        { label: "Approval Letter" },
+      breadcrumbs={[
+        {
+          label: "Dashboard",
+          link: "/dashboard",
+        },
+        {
+          label: "Approval Letter",
+        },
       ]}
       title={
-        String(user?.role || user?.crmRole || "")
+        String(
+          user?.role ||
+          user?.crmRole ||
+          ""
+        )
           .trim()
           .toUpperCase() === "EMPLOYEE"
           ? "Employee Dashboard"
           : "Approval Letter"
       }
     >
-          <button
-            type="button"
-            className="back-btn"
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            ← Back
-          </button>
+      {/* ================================================= */}
+      {/* BACK BUTTON */}
+      {/* ================================================= */}
+
+      <button
+        type="button"
+        className="back-btn"
+        onClick={() => navigate("/")}
+      >
+        ← Back
+      </button>
+
+      {/* ================================================= */}
+      {/* MAIN APPROVAL LETTER */}
+      {/* ================================================= */}
+
       <div className="approvalletter-parent parent">
-        <div className="approvalletter-cont cont">
+        <div className="approvalletter-cont">
+
+          {/* ============================================= */}
+          {/* HEADER */}
+          {/* ============================================= */}
+
+          <h2>
+            Generate Approval Letter
+          </h2>
+
           <div className="letter-box">
 
-            {/* ================= FORM ================= */}
+            {/* =========================================== */}
+            {/* LEFT FORM */}
+            {/* =========================================== */}
 
             <div className="left-form card">
+
               <form onSubmit={handleSubmit}>
+
+                {/* ======================================= */}
+                {/* START DATE */}
+                {/* ======================================= */}
 
                 <Input
                   label="Start Date"
@@ -180,6 +209,10 @@ const ApprovalLetter = () => {
                   onChange={handleChange}
                 />
 
+                {/* ======================================= */}
+                {/* END DATE */}
+                {/* ======================================= */}
+
                 <Input
                   label="End Date"
                   type="date"
@@ -190,6 +223,10 @@ const ApprovalLetter = () => {
                   onChange={handleChange}
                 />
 
+                {/* ======================================= */}
+                {/* SUBJECT */}
+                {/* ======================================= */}
+
                 <Input
                   name="subject"
                   value={
@@ -199,6 +236,10 @@ const ApprovalLetter = () => {
                   label="Subject"
                   placeholder="Subject"
                 />
+
+                {/* ======================================= */}
+                {/* RECURRING */}
+                {/* ======================================= */}
 
                 <SelectInput
                   name="recuring"
@@ -225,6 +266,10 @@ const ApprovalLetter = () => {
                   </MenuItem>
                 </SelectInput>
 
+                {/* ======================================= */}
+                {/* PRICE */}
+                {/* ======================================= */}
+
                 <Input
                   type="text"
                   name="price"
@@ -236,7 +281,12 @@ const ApprovalLetter = () => {
                   placeholder="Price"
                 />
 
+                {/* ======================================= */}
+                {/* CKEDITOR */}
+                {/* ======================================= */}
+
                 <div
+                  className="approval-editor"
                   style={{
                     minHeight: "300px",
                   }}
@@ -272,73 +322,73 @@ const ApprovalLetter = () => {
                   />
                 </div>
 
+                {/* ======================================= */}
+                {/* SUBMIT */}
+                {/* ======================================= */}
+
                 <button
                   type="submit"
                   className="btn"
                 >
                   Submit
                 </button>
+
               </form>
             </div>
 
-            {/* ================= PREVIEW ================= */}
+            {/* =========================================== */}
+            {/* RIGHT LETTER PREVIEW */}
+            {/* =========================================== */}
 
             <div
               className="right-letter card"
               ref={pdfRef}
             >
+
+              {/* ========================================= */}
+              {/* DATE */}
+              {/* ========================================= */}
+
               <div className="date">
                 {values.date}
               </div>
 
+              {/* ========================================= */}
+              {/* RECEIVER INFORMATION */}
+              {/* ========================================= */}
+
               <p className="main-info">
-                To, <br />
-                Prajakta Marwaha <br />
-                Director <br />
-                Pandoza Solutions Pvt Ltd <br />
+                To,
+                <br />
+
+                Prajakta Marwaha
+                <br />
+
+                Director
+                <br />
+
+                Pandoza Solutions Pvt Ltd
+                <br />
+
                 2014 - 2016, 10 Biz Park,
-                Viman Nagar, <br />
+                Viman Nagar,
+                <br />
+
                 Pune, Maharashtra 411014
               </p>
+
+              {/* ========================================= */}
+              {/* SUBJECT */}
+              {/* ========================================= */}
 
               <p className="subject">
                 Subject:{" "}
                 {values.subject}
               </p>
 
-              <p>
-                <strong>
-                  Start Date:
-                </strong>{" "}
-                {values.startDate}
-              </p>
-
-              <p>
-                <strong>
-                  End Date:
-                </strong>{" "}
-                {values.endDate}
-              </p>
-
-              <p>
-                <strong>
-                  Recurring:
-                </strong>{" "}
-                {values.recuring}
-              </p>
-
-              <p>
-                <strong>
-                  Price:
-                </strong>{" "}
-                {values.price
-                  ? `₹${Number(
-                      values.price
-                    ).toLocaleString(
-                      "en-IN"
-                    )}`
-                  : ""}
-              </p>
+              {/* ========================================= */}
+              {/* LETTER CONTENT */}
+              {/* ========================================= */}
 
               <div
                 className="sic-editor-data"
@@ -348,28 +398,70 @@ const ApprovalLetter = () => {
                 }}
               />
 
-              <div className="user">
-                Your Sincerely{" "}
-                <span>
-                  {values.name}
-                </span>
-              </div>
+              {/* ========================================= */}
+              {/* FIXED BOTTOM AREA */}
+              {/* ========================================= */}
 
-              <div className="bottomsection">
-                <div className="approvar">
-                  To Be Approved By{" "}
+              <div className="letter-bottom">
+
+                {/* ======================================= */}
+                {/* SIGNATURE */}
+                {/* ======================================= */}
+
+                <div className="user">
+
+                  <div>
+                    Your Sincerely
+                  </div>
+
                   <span>
-                    Prajakta Marwaha
+                    {values.name}
                   </span>
+
                 </div>
 
-                <div className="finance">
-                  To Be Approved By{" "}
-                  <span>
-                    Finance Department
-                  </span>
+                {/* ======================================= */}
+                {/* APPROVAL SECTION */}
+                {/* ======================================= */}
+
+                <div className="bottomsection">
+
+                  {/* ===================================== */}
+                  {/* APPROVER */}
+                  {/* ===================================== */}
+
+                  <div className="approvar">
+
+                    <div>
+                      To Be Approved By
+                    </div>
+
+                    <span>
+                      Prajakta Marwaha
+                    </span>
+
+                  </div>
+
+                  {/* ===================================== */}
+                  {/* FINANCE */}
+                  {/* ===================================== */}
+
+                  <div className="finance">
+
+                    <div>
+                      To Be Approved By
+                    </div>
+
+                    <span>
+                      Finance Department
+                    </span>
+
+                  </div>
+
                 </div>
+
               </div>
+
             </div>
 
           </div>
@@ -380,4 +472,3 @@ const ApprovalLetter = () => {
 };
 
 export default ApprovalLetter;
-

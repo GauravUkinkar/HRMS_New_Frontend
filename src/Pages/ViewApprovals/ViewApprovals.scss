@@ -1,4 +1,398 @@
-.page-header{
-    display: flex;
-    justify-content: space-between;
+.page-header {
+  display: flex;
+  justify-content: space-between;
+}
+.edit,
+.delete,
+.download {
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+
+  &:hover {
+    transform: scale(1.15);
+    opacity: 0.75;
+  }
+}
+.pdf-render-wrapper {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+
+  width: 794px;
+  height: 1123px;
+
+  background: #fff;
+
+  overflow: hidden;
+
+  z-index: -9999;
+}
+
+/* =====================================================
+   A4 PDF LETTER
+   ===================================================== */
+
+.pdf-letter {
+  width: 794px !important;
+  height: 1123px !important;
+
+  min-width: 794px !important;
+  min-height: 1123px !important;
+
+  max-width: 794px !important;
+  max-height: 1123px !important;
+
+  box-sizing: border-box;
+
+  padding: 30px 22px 28px 22px !important;
+
+  margin: 0 !important;
+
+  background: #fff !important;
+
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  overflow: hidden !important;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  color: #555;
+
+  font-size: 14px;
+
+  line-height: 1.55;
+}
+
+/* =====================================================
+   DATE
+   ===================================================== */
+
+.pdf-letter .date {
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-end;
+
+  margin-bottom: 35px;
+
+  font-size: 14px;
+
+  line-height: 1.4;
+
+  color: #666;
+}
+
+/* =====================================================
+   RECEIVER INFORMATION
+   ===================================================== */
+
+.pdf-letter .main-info {
+  width: 100%;
+
+  margin: 0 0 24px 0;
+
+  padding: 0;
+
+  font-size: 14px;
+
+  line-height: 1.55;
+
+  color: #777;
+
+  text-align: left;
+}
+
+/* =====================================================
+   SUBJECT
+   ===================================================== */
+
+.pdf-letter .subject {
+  width: 100%;
+
+  margin: 0 0 27px 0;
+
+  padding: 0;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  line-height: 1.55;
+
+  color: #333;
+
+  text-align: left;
+}
+
+/* =====================================================
+   CONTENT
+   ===================================================== */
+
+.pdf-letter .sic-editor-data {
+  width: 100%;
+
+  margin: 0;
+
+  padding: 0;
+
+  font-size: 14px;
+
+  line-height: 1.65;
+
+  color: #777;
+
+  text-align: left;
+
+  overflow: visible;
+}
+
+/* =====================================================
+   CONTENT PARAGRAPHS
+   ===================================================== */
+
+.pdf-letter .sic-editor-data p {
+  width: 100%;
+
+  margin: 0 0 16px 0;
+
+  padding: 0;
+
+  font-size: 14px;
+
+  line-height: 1.65;
+
+  color: #777;
+
+  text-align: left;
+}
+
+/* =====================================================
+   FIRST PARAGRAPH
+   ===================================================== */
+
+.pdf-letter .sic-editor-data > p:first-child {
+  margin-top: 0;
+
+  margin-bottom: 17px;
+}
+
+/* =====================================================
+   LIST
+   ===================================================== */
+
+.pdf-letter .sic-editor-data ol,
+.pdf-letter .sic-editor-data ul {
+  margin-top: 8px;
+
+  margin-bottom: 18px;
+
+  padding-left: 25px;
+}
+
+/* =====================================================
+   LIST ITEM
+   ===================================================== */
+
+.pdf-letter .sic-editor-data li {
+  margin-bottom: 8px;
+
+  padding-left: 3px;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+}
+
+/* =====================================================
+   BOLD
+   ===================================================== */
+
+.pdf-letter .sic-editor-data strong {
+  color: #333;
+
+  font-weight: 700;
+}
+
+/* =====================================================
+   TABLE
+   ===================================================== */
+
+.pdf-letter .sic-editor-data figure {
+  width: 100%;
+
+  margin: 15px 0;
+}
+
+.pdf-letter .sic-editor-data table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.pdf-letter .sic-editor-data th,
+.pdf-letter .sic-editor-data td {
+  border: 1px solid #888;
+
+  padding: 8px;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+/* =====================================================
+   BOTTOM AREA
+   ===================================================== */
+
+.pdf-letter .letter-bottom {
+  width: 100%;
+
+  margin-top: auto;
+
+  padding-top: 20px;
+
+  flex-shrink: 0;
+}
+
+/* =====================================================
+   YOUR SINCERELY
+   ===================================================== */
+
+.pdf-letter .user {
+  width: 100%;
+
+  margin: 0 0 75px 0;
+
+  padding: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  justify-content: flex-end;
+
+  text-align: right;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+
+  color: #666;
+}
+
+/* =====================================================
+   NAME
+   ===================================================== */
+
+.pdf-letter .user span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: #333;
+}
+
+/* =====================================================
+   APPROVAL ROW
+   ===================================================== */
+
+.pdf-letter .bottomsection {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-end;
+
+  margin: 0;
+
+  padding: 0;
+}
+
+/* =====================================================
+   APPROVER LEFT
+   ===================================================== */
+
+.pdf-letter .approvar {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  justify-content: flex-start;
+
+  text-align: left;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+
+  color: #666;
+}
+
+/* =====================================================
+   APPROVER NAME
+   ===================================================== */
+
+.pdf-letter .approvar span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: #333;
+}
+
+/* =====================================================
+   FINANCE RIGHT
+   ===================================================== */
+
+.pdf-letter .finance {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-end;
+
+  justify-content: flex-start;
+
+  text-align: right;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+
+  color: #666;
+}
+
+/* =====================================================
+   FINANCE NAME
+   ===================================================== */
+
+.pdf-letter .finance span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: #333;
 }

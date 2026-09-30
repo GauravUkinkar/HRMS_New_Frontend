@@ -11,11 +11,14 @@ import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
 import Input from "../../comp/input/Input";
 
-const BASE_URL = import.meta.env.VITE_APPROVAL_BACKEND_URL;
+const BASE_URL =
+  import.meta.env.VITE_APPROVAL_BACKEND_URL;
 
 const EditApproval = () => {
   const { id } = useParams();
+
   const navigate = useNavigate();
+
   const { user } = useContext(UserContext);
 
   const [values, setValues] = useState({
@@ -32,7 +35,9 @@ const EditApproval = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // ================= GET APPROVAL =================
+  // =====================================================
+  // GET APPROVAL
+  // =====================================================
 
   useEffect(() => {
     const getApproval = async () => {
@@ -46,24 +51,50 @@ const EditApproval = () => {
           }
         );
 
-        console.log("Approval Data:", response.data);
+        console.log(
+          "Approval Data:",
+          response.data
+        );
 
-        const data = response?.data?.data || response?.data || {};
+        const data =
+          response?.data?.data ||
+          response?.data ||
+          {};
 
         setValues({
-          date: data?.date ? data.date.split("T")[0] : "",
-          subject: data?.subject || "",
-          content: data?.content || "",
-          uid: data?.uid || user?.uid || "",
-          price: data?.price ?? "",
-          name: data?.name || user?.employeeName || "",
+          date: data?.date
+            ? data.date.split("T")[0]
+            : "",
+
+          subject:
+            data?.subject || "",
+
+          content:
+            data?.content || "",
+
+          uid:
+            data?.uid ||
+            user?.uid ||
+            "",
+
+          price:
+            data?.price ?? "",
+
+          name:
+            data?.name ||
+            user?.employeeName ||
+            "",
+
           startDate: data?.startDate
             ? data.startDate.split("T")[0]
             : "",
+
           endDate: data?.endDate
             ? data.endDate.split("T")[0]
             : "",
-          recuring: data?.recuring || "",
+
+          recuring:
+            data?.recuring || "",
         });
       } catch (error) {
         console.log(
@@ -73,7 +104,7 @@ const EditApproval = () => {
 
         toast.error(
           error.response?.data?.message ||
-            "Failed to load approval letter"
+          "Failed to load approval letter"
         );
       } finally {
         setLoading(false);
@@ -83,12 +114,21 @@ const EditApproval = () => {
     if (id) {
       getApproval();
     }
-  }, [id, user?.uid, user?.employeeName]);
+  }, [
+    id,
+    user?.uid,
+    user?.employeeName,
+  ]);
 
-  // ================= INPUT CHANGE =================
+  // =====================================================
+  // INPUT CHANGE
+  // =====================================================
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const {
+      name,
+      value,
+    } = e.target;
 
     setValues((prev) => ({
       ...prev,
@@ -96,26 +136,44 @@ const EditApproval = () => {
     }));
   };
 
-  // ================= UPDATE APPROVAL =================
+  // =====================================================
+  // UPDATE APPROVAL
+  // =====================================================
 
   const handleUpdate = async (e) => {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const payload = {
         aid: Number(id),
+
         date: values.date,
+
         subject: values.subject,
+
         content: values.content,
-        uid: Number(values.uid || user?.uid),
+
+        uid: Number(
+          values.uid || user?.uid
+        ),
+
         price: values.price,
+
         name: values.name,
+
         startDate: values.startDate,
+
         endDate: values.endDate,
+
         recuring: values.recuring,
       };
 
-      console.log("Update Approval Payload:", payload);
+      console.log(
+        "Update Approval Payload:",
+        payload
+      );
 
       const response = await axios.post(
         `${BASE_URL}employee/UpdateApprovalByEmployee`,
@@ -125,10 +183,19 @@ const EditApproval = () => {
         }
       );
 
-      console.log("Update Approval Response:", response.data);
+      console.log(
+        "Update Approval Response:",
+        response.data
+      );
 
-      if (response.status === 200 || response.status === 201) {
-        toast.success("Approval letter updated successfully");
+      if (
+        response.status === 200 ||
+        response.status === 201
+      ) {
+        toast.success(
+          "Approval letter updated successfully"
+        );
+
         navigate("/viewApprovals");
       }
     } catch (error) {
@@ -139,70 +206,134 @@ const EditApproval = () => {
 
       toast.error(
         error.response?.data?.message ||
-          "Failed to update approval letter"
+        "Failed to update approval letter"
       );
+    } finally {
+      setLoading(false);
     }
   };
+
+  // =====================================================
+  // UI
+  // =====================================================
 
   return (
     <MainPanel
       breadcrumbs={[
-        { label: "Dashboard", link: "/dashboard" },
-        { label: "Approval Letter" },
-        { label: "Edit Approval Letter" },
+        {
+          label: "Dashboard",
+          link: "/dashboard",
+        },
+        {
+          label: "Approval Letter",
+        },
+        {
+          label: "Edit Approval Letter",
+        },
       ]}
       title={
-        String(user?.role || user?.crmRole || "")
+        String(
+          user?.role ||
+          user?.crmRole ||
+          ""
+        )
           .trim()
           .toUpperCase() === "EMPLOYEE"
-          ? "Employee Dashboard"
+          ? "Employee Approval"
           : "Approval Letter"
       }
     >
+      {/* ================================================= */}
+      {/* BACK BUTTON */}
+      {/* ================================================= */}
+
       <button
         type="button"
         className="back-btn"
-        onClick={() => navigate("/viewApprovals")}
+        onClick={() =>
+          navigate("/viewApprovals")
+        }
       >
         ← Back
       </button>
 
+      {/* ================================================= */}
+      {/* MAIN CONTAINER */}
+      {/* ================================================= */}
+
       <div className="approvalletter-parent parent">
-        <div className="approvalletter-cont cont">
+
+        <div className="approvalletter-cont">
+
+          {/* ============================================= */}
+          {/* HEADER */}
+          {/* ============================================= */}
+
+          <h2>
+            Edit Approval Letter
+          </h2>
+
           <div className="letter-box">
 
-            {/* ================= FORM ================= */}
+            {/* =========================================== */}
+            {/* LEFT FORM */}
+            {/* =========================================== */}
 
             <div className="left-form card">
+
               <form onSubmit={handleUpdate}>
+
+                {/* ======================================= */}
+                {/* START DATE */}
+                {/* ======================================= */}
 
                 <Input
                   label="Start Date"
                   type="date"
                   name="startDate"
-                  value={values.startDate || ""}
+                  value={
+                    values.startDate || ""
+                  }
                   onChange={handleChange}
                 />
+
+                {/* ======================================= */}
+                {/* END DATE */}
+                {/* ======================================= */}
 
                 <Input
                   label="End Date"
                   type="date"
                   name="endDate"
-                  value={values.endDate || ""}
+                  value={
+                    values.endDate || ""
+                  }
                   onChange={handleChange}
                 />
 
+                {/* ======================================= */}
+                {/* SUBJECT */}
+                {/* ======================================= */}
+
                 <Input
                   name="subject"
-                  value={values.subject || ""}
+                  value={
+                    values.subject || ""
+                  }
                   onChange={handleChange}
                   label="Subject"
                   placeholder="Subject"
                 />
 
+                {/* ======================================= */}
+                {/* RECURRING */}
+                {/* ======================================= */}
+
                 <SelectInput
                   name="recuring"
-                  value={values.recuring || ""}
+                  value={
+                    values.recuring || ""
+                  }
                   onChange={handleChange}
                   label="Recurring"
                 >
@@ -223,42 +354,67 @@ const EditApproval = () => {
                   </MenuItem>
                 </SelectInput>
 
+                {/* ======================================= */}
+                {/* PRICE */}
+                {/* ======================================= */}
+
                 <Input
                   type="text"
                   name="price"
-                  value={values.price || ""}
+                  value={
+                    values.price || ""
+                  }
                   onChange={handleChange}
                   label="Price"
                   placeholder="Price"
                 />
 
+                {/* ======================================= */}
+                {/* CKEDITOR */}
+                {/* ======================================= */}
+
                 <div
+                  className="approval-editor"
                   style={{
                     minHeight: "300px",
                   }}
                 >
                   <CKEditor
                     editor={ClassicEditor}
-                    data={values.content || ""}
-                    onChange={(event, editor) => {
-                      const content = editor.getData();
+                    data={
+                      values.content || ""
+                    }
+                    onChange={(
+                      event,
+                      editor
+                    ) => {
+                      const content =
+                        editor.getData();
 
-                      setValues((prev) => ({
-                        ...prev,
-                        content,
-                      }));
+                      setValues(
+                        (prev) => ({
+                          ...prev,
+                          content,
+                        })
+                      );
                     }}
                     onReady={(editor) => {
-                      editor.editing.view.change((writer) => {
-                        writer.setStyle(
-                          "min-height",
-                          "200px",
-                          editor.editing.view.document.getRoot()
-                        );
-                      });
+                      editor.editing.view.change(
+                        (writer) => {
+                          writer.setStyle(
+                            "min-height",
+                            "200px",
+                            editor.editing.view.document.getRoot()
+                          );
+                        }
+                      );
                     }}
                   />
                 </div>
+
+                {/* ======================================= */}
+                {/* UPDATE BUTTON */}
+                {/* ======================================= */}
 
                 <button
                   type="submit"
@@ -273,83 +429,130 @@ const EditApproval = () => {
               </form>
             </div>
 
-            {/* ================= PREVIEW ================= */}
+            {/* =========================================== */}
+            {/* RIGHT PREVIEW */}
+            {/* =========================================== */}
 
             <div className="right-letter card">
+
+              {/* ========================================= */}
+              {/* DATE */}
+              {/* ========================================= */}
 
               <div className="date">
                 {values.date}
               </div>
 
+              {/* ========================================= */}
+              {/* RECEIVER INFORMATION */}
+              {/* ========================================= */}
+
               <p className="main-info">
-                To, <br />
-                Prajakta Marwaha <br />
-                Director <br />
-                Pandoza Solutions Pvt Ltd <br />
+                To,
+                <br />
+
+                Prajakta Marwaha
+                <br />
+
+                Director
+                <br />
+
+                Pandoza Solutions Pvt Ltd
+                <br />
+
                 2014 - 2016, 10 Biz Park,
-                Viman Nagar, <br />
+                Viman Nagar,
+                <br />
+
                 Pune, Maharashtra 411014
               </p>
 
+              {/* ========================================= */}
+              {/* SUBJECT */}
+              {/* ========================================= */}
+
               <p className="subject">
-                Subject: {values.subject}
+                Subject:{" "}
+                {values.subject}
               </p>
 
-              <p>
-                <strong>Start Date:</strong>{" "}
-                {values.startDate}
-              </p>
-
-              <p>
-                <strong>End Date:</strong>{" "}
-                {values.endDate}
-              </p>
-
-              <p>
-                <strong>Recurring:</strong>{" "}
-                {values.recuring}
-              </p>
-
-              <p>
-                <strong>Price:</strong>{" "}
-                {values.price
-                  ? `₹${Number(
-                      values.price
-                    ).toLocaleString("en-IN")}`
-                  : ""}
-              </p>
+              {/* ========================================= */}
+              {/* LETTER CONTENT */}
+              {/* ========================================= */}
 
               <div
                 className="sic-editor-data"
                 dangerouslySetInnerHTML={{
-                  __html: values.content || "",
+                  __html:
+                    values.content || "",
                 }}
               />
 
-              <div className="user">
-                Your Sincerely{" "}
-                <span>{values.name}</span>
-              </div>
+              {/* ========================================= */}
+              {/* BOTTOM LETTER AREA */}
+              {/* ========================================= */}
 
-              <div className="bottomsection">
+              <div className="letter-bottom">
 
-                <div className="approvar">
-                  To Be Approved By{" "}
+                {/* ======================================= */}
+                {/* SIGNATURE */}
+                {/* ======================================= */}
+
+                <div className="user">
+
+                  <div>
+                    Your Sincerely
+                  </div>
+
                   <span>
-                    Prajakta Marwaha
+                    {values.name}
                   </span>
+
                 </div>
 
-                <div className="finance">
-                  To Be Approved By{" "}
-                  <span>
-                    Finance Department
-                  </span>
+                {/* ======================================= */}
+                {/* APPROVAL ROW */}
+                {/* ======================================= */}
+
+                <div className="bottomsection">
+
+                  {/* ===================================== */}
+                  {/* APPROVER */}
+                  {/* ===================================== */}
+
+                  <div className="approvar">
+
+                    <div>
+                      To Be Approved By
+                    </div>
+
+                    <span>
+                      Prajakta Marwaha
+                    </span>
+
+                  </div>
+
+                  {/* ===================================== */}
+                  {/* FINANCE */}
+                  {/* ===================================== */}
+
+                  <div className="finance">
+
+                    <div>
+                      To Be Approved By
+                    </div>
+
+                    <span>
+                      Finance Department
+                    </span>
+
+                  </div>
+
                 </div>
 
               </div>
+
             </div>
-
           </div>
         </div>
       </div>
