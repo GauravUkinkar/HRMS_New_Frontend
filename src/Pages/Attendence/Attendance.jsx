@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Attendance.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import Table_Comp from "../../comp/table/Table";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Dropdown, Modal, DatePicker, Table } from "antd";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { SlCalender } from "react-icons/sl";
@@ -23,7 +23,9 @@ const Attendance = () => {
     date: "",
     status: "",
   });
-  const [attendanceFilter, setAttendanceFilter] = useState("present");
+const [searchParams] = useSearchParams();
+
+const attendanceFilter = searchParams.get("filter") || "all";
   const [previousAttendanceData, setPreviousAttendanceData] = useState([]);
 
   const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
@@ -296,88 +298,114 @@ const Attendance = () => {
   // GET TODAY ATTENDANCE
   // ============================================================
 
-  const getEmployeeData = async (employeeList = allemployee) => {
-    try {
-      setLoader(true);
+const getEmployeeData = async (employeeList = allemployee) => {
+  try {
+    setLoader(true);
 
-      const response = await axios.get(`${BASE_URL2}api/punch/details`);
+    const response = await axios.get(`${BASE_URL2}api/punch/details`);
 
-      const rawData = Array.isArray(response?.data?.data)
-        ? response.data.data
-        : [];
+    const rawData = Array.isArray(response?.data?.data)
+      ? response.data.data
+      : [];
 
-      const employees = employeeList || [];
+    const employees = employeeList || [];
 
-      const attendanceMap = new Map(
-        rawData.map((item) => [
-          String(item?.employeeId || "").trim(),
-          item,
-        ])
-      );
+    const attendanceMap = new Map();
 
-      const tableData = employees.map((employee, index) => {
-        const employeeId = String(employee?.empId || "").trim();
-        const item = attendanceMap.get(employeeId);
+    rawData.forEach((item) => {
+      const employeeId = String(item?.employeeId || "").trim();
 
-        const punchIn = item?.punchIn
-          ? formatTime12Hour(item.punchIn)
-          : "";
+      if (employeeId) {
+        attendanceMap.set(employeeId, item);
+      }
+    });
 
-        const punchOut = item?.punchOut
-          ? formatTime12Hour(item.punchOut)
-          : "";
+    const tableData = employees.map((employee, index) => {
+      const employeeId = String(employee?.empId || "").trim();
+      const item = attendanceMap.get(employeeId);
 
-        let status = String(item?.status || "")
-          .trim()
-          .toUpperCase();
+      // IMPORTANT:
+      // Only actual punchIn or admin punchIn means Present.
+      const hasPunchIn = Boolean(item?.punchIn);
+      const hasAdminPunchIn = Boolean(item?.punchInByAdmin);
 
-        if (punchIn) {
-          status = "IN Office";
-        } else if (status === "HALF_DAY") {
-          status = "HALF_DAY";
-        } else if (status === "FULL_DAY" || status === "PRESENT") {
-          status = "PRESENT";
-        } else {
-          status = "ABSENT";
-        }
+      const punchIn = hasPunchIn
+        ? formatTime12Hour(item.punchIn)
+        : "";
 
-        return {
-          key: employeeId || index,
-          employeeId: employeeId,
-          employeeName:
-            item?.employeeName?.toUpperCase() ||
-            employee?.name?.toUpperCase() ||
-            "",
-          employeeDesignation:
-            item?.employeeDesignation ||
-            item?.designation ||
-            employee?.designation ||
-            "",
-          punchIn: item?.punchInByAdmin
-            ? "Punch In From Admin"
-            : punchIn,
-          punchOut: item?.punchOutByAdmin
-            ? "Punch Out From Admin"
-            : punchOut,
-          status,
-          punchInByAdmin: item?.punchInByAdmin || false,
-          punchOutByAdmin: item?.punchOutByAdmin || false,
-        };
-      });
+      const punchOut = item?.punchOut
+        ? formatTime12Hour(item.punchOut)
+        : "";
 
-      setData(tableData);
-    } catch (error) {
-      console.error("Attendance API Error:", error);
+      const apiStatus = String(item?.status || "")
+        .trim()
+        .toUpperCase();
 
-      toast.error(
-        error?.response?.data?.message || "Unable to load attendance"
-      );
+      let status = "ABSENT";
 
-      setData([]);
-    } finally {
-      setLoader(false);
-    }
-  };
+      // Punch In = Present
+      if (hasPunchIn || hasAdminPunchIn) {
+        status = "IN Office";
+      }
+
+      // If API specifically says HALF_DAY and there is no punch-in
+      // keep it HALF_DAY.
+      if (
+        !hasPunchIn &&
+        !hasAdminPunchIn &&
+        apiStatus === "HALF_DAY"
+      ) {
+        status = "HALF_DAY";
+      }
+
+      return {
+        key: employeeId || index,
+
+        employeeId,
+
+        employeeName:
+          item?.employeeName?.toUpperCase() ||
+          employee?.name?.toUpperCase() ||
+          "",
+
+        employeeDesignation:
+          item?.employeeDesignation ||
+          item?.designation ||
+          employee?.designation ||
+          "",
+
+        punchIn: hasAdminPunchIn
+          ? "Punch In From Admin"
+          : punchIn,
+
+        punchOut: item?.punchOutByAdmin
+          ? "Punch Out From Admin"
+          : punchOut,
+
+        status,
+
+        punchInByAdmin: hasAdminPunchIn,
+        punchOutByAdmin: Boolean(item?.punchOutByAdmin),
+      };
+    });
+
+    setData(tableData);
+  } catch (error) {
+    console.error(
+      "Attendance API Error:",
+      error?.response?.data || error
+    );
+
+    toast.error(
+      error?.response?.data?.message ||
+        "Unable to load attendance"
+    );
+
+    setData([]);
+  } finally {
+    setLoader(false);
+  }
+};
 
   // ============================================================
   // EMPLOYEE MONTHLY ATTENDANCE
@@ -1298,55 +1326,42 @@ const handleEmployeeYearChange = async (e) => {
 
     loadData();
   }, []);
-  const filteredAttendanceData = data.filter((item) => {
-    const hasPunchIn =
-      Boolean(item?.punchIn) &&
-      item?.punchIn !== "Punch In From Admin";
+const filteredAttendanceData = data.filter((item) => {
+  const hasPunchIn =
+    Boolean(item?.punchIn) ||
+    Boolean(item?.punchInByAdmin);
 
-    if (attendanceFilter === "present") {
-      return hasPunchIn || item?.punchIn === "Punch In From Admin";
-    }
+  if (attendanceFilter === "present") {
+    return hasPunchIn;
+  }
 
-    if (attendanceFilter === "absent") {
-      return !hasPunchIn;
-    }
+  if (attendanceFilter === "absent") {
+    return !hasPunchIn;
+  }
 
-    return true;
-  });
+  return true;
+});
 
-  // ============================================================
-  // COUNTS
-  // ============================================================
+const totalEmployees = allemployee.length;
 
-  const totalEmployees = allemployee.length;
+const presentEmployees = data.filter(
+  (item) =>
+    Boolean(item?.punchIn) ||
+    Boolean(item?.punchInByAdmin),
+).length;
 
-  const presentEmployees = data.filter((item) => {
-    const status = String(item?.status || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[\s_-]+/g, "");
+const absentEmployees = Math.max(
+  totalEmployees - presentEmployees,
+  0,
+);
 
-    const hasPunchIn =
-      Boolean(item?.punchIn) && item?.punchIn !== "Punch In From Admin";
+const handleAttendanceFilter = (filter) => {
+  navigate(`/attendance?filter=${filter}`);
+};
 
-    return (
-      hasPunchIn ||
-      status === "inoffice" ||
-      status === "present" ||
-      status === "fullday"
-    );
-  }).length;
 
-  const absentEmployees = data.filter((item) => {
-    const status = String(item?.status || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[\s_-]+/g, "");
 
-    const hasPunchIn = Boolean(item?.punchIn);
 
-    return !hasPunchIn && status === "absent";
-  }).length;
 
   // ============================================================
   // TODAY TABLE
@@ -1728,57 +1743,57 @@ const handleEmployeeYearChange = async (e) => {
               </div>
 
             </div>
+<div className="btn-group">
+  <button
+    type="button"
+    className={`count ${
+      attendanceFilter === "all" ? "active" : ""
+    }`}
+    onClick={() => handleAttendanceFilter("all")}
+  >
+    Total Employee:
+    <span>{totalEmployees}</span>
+  </button>
 
-            <div className="btn-group">
-              <button
-                type="button"
-                className={`count ${attendanceFilter === "all" ? "active" : ""}`}
-                onClick={() => setAttendanceFilter("all")}
-              >
-                Total Employee:
-                <span>{totalEmployees}</span>
-              </button>
+  <button
+    type="button"
+    className={`count ${
+      attendanceFilter === "present" ? "active" : ""
+    }`}
+    onClick={() => handleAttendanceFilter("present")}
+  >
+    Present Employee:
+    <span>{presentEmployees}</span>
+  </button>
 
-              <button
-                type="button"
-                className={`count ${attendanceFilter === "present" ? "active" : ""}`}
-                onClick={() => setAttendanceFilter("present")}
-              >
-                Present Employee:
-                <span>{presentEmployees}</span>
-              </button>
+  <button
+    type="button"
+    className={`count ${
+      attendanceFilter === "absent" ? "active" : ""
+    }`}
+    onClick={() => handleAttendanceFilter("absent")}
+  >
+    Absent Employee:
+    <span>{absentEmployees}</span>
+  </button>
 
-              <button
-                type="button"
-                className={`count ${attendanceFilter === "absent" ? "active" : ""}`}
-                onClick={() => setAttendanceFilter("absent")}
-              >
-                Absent Employee:
-                <span>{absentEmployees}</span>
-              </button>
+  {/* KEEP THESE TWO BUTTONS AS THEY ARE */}
+  <button
+    type="button"
+    className="count"
+    onClick={handleAddPreviousAttendance}
+  >
+    Add Previous Attendance<SlCalender />
+  </button>
 
-              <button
-                type="button"
-                className="attendance-link"
-                onClick={handleAddPreviousAttendance}
-              >
-                <span>
-                  <FaPlus />
-                </span>
-                Add Previous Attendance
-              </button>
-
-              <button
-                type="button"
-                className="attendance-link"
-                onClick={handleViewPreviousAttendance}
-              >
-                <span>
-                  <FaPlus />
-                </span>
-                View Previous Attendance
-              </button>
-            </div>
+  <button
+    type="button"
+    className="count"
+    onClick={handleViewPreviousAttendance}
+  >
+    View Previous Attendance<SlCalender />
+  </button>
+</div>
           </div>
 
           <Table_Comp

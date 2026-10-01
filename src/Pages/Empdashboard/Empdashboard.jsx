@@ -148,6 +148,13 @@ const EmployeeDash = () => {
   const [punchingIn, setPunchingIn] = useState(false);
   const [punchingOut, setPunchingOut] = useState(false);
   const remainingTimerRef = useRef(null);
+  const remainingSecondsRef = useRef(0);
+
+  const updateRemainingSeconds = (seconds) => {
+    const value = Math.max(0, Number(seconds) || 0);
+    remainingSecondsRef.current = value;
+    setRemainingSeconds(value);
+  };
   //to get employee id
   const getEmployeeWorkSession = async () => {
     try {
@@ -170,10 +177,14 @@ const EmployeeDash = () => {
       const employeeData = response?.data?.data;
 
       if (!employeeData) {
-        setRemainingSeconds(0);
+        updateRemainingSeconds(0);
         setPunchInTime(null);
         setPunchOutTime(null);
-        return;
+        return {
+          punchInTime: null,
+          punchOutTime: null,
+          remainingSeconds: 0,
+        };
       }
 
       // =========================
@@ -193,12 +204,20 @@ const EmployeeDash = () => {
 
       const totalSeconds = hours * 60 * 60 + minutes * 60 + seconds;
 
-      setRemainingSeconds(totalSeconds);
+      updateRemainingSeconds(totalSeconds);
+
+      return {
+        punchInTime: employeeData?.punchIn || null,
+        punchOutTime: employeeData?.punchOut || null,
+        remainingSeconds: totalSeconds,
+      };
     } catch (error) {
       console.error("Employee Work Session Error:", error);
 
-      setRemainingSeconds(0);
+      updateRemainingSeconds(0);
       setPunchInTime(null);
+      setPunchOutTime(null);
+      return null;
     }
   };
 
@@ -215,10 +234,29 @@ const EmployeeDash = () => {
     try {
       setPunchingIn(true);
 
-      const response = await axios.get(
-        `${BASE_URL2}api/punch/IN/${employeeId}`,
+      const employeeDesignation =
+        user?.employeeDesignation ||
+        user?.designation ||
+        user?.employeeDesignationName ||
+        user?.jobTitle ||
+        "";
+
+      if (!employeeDesignation.trim()) {
+        toast.error("Employee designation not found");
+        return;
+      }
+
+      const response = await axios.post(
+        `${BASE_URL2}api/punch/in/${employeeId}/false`,
+        {
+          employeeName: user?.employeeName || "",
+          employeeDesignation,
+        },
         {
           withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
       );
 
@@ -231,7 +269,19 @@ const EmployeeDash = () => {
         });
 
         // Get latest punch-in + remaining time
-        await getEmployeeWorkSession();
+        const punchDetails = await getEmployeeWorkSession();
+
+        if (punchDetails) {
+          window.dispatchEvent(
+            new CustomEvent("punchUpdated", {
+              detail: {
+                employeeId,
+                action: "punchIn",
+                ...punchDetails,
+              },
+            }),
+          );
+        }
 
         // Refresh attendance
         await getEmployeeData();
@@ -263,24 +313,19 @@ const EmployeeDash = () => {
   }, [user?.employeeId]);
 
   useEffect(() => {
-    if (remainingTimerRef.current) {
-      clearInterval(remainingTimerRef.current);
-    }
-
     remainingTimerRef.current = setInterval(() => {
-      setRemainingSeconds((prev) => {
-        if (prev <= 0) {
-          clearInterval(remainingTimerRef.current);
-          return 0;
-        }
+      if (remainingSecondsRef.current <= 0) {
+        return;
+      }
 
-        return prev - 1;
-      });
+      remainingSecondsRef.current -= 1;
+      setRemainingSeconds(remainingSecondsRef.current);
     }, 1000);
 
     return () => {
       if (remainingTimerRef.current) {
         clearInterval(remainingTimerRef.current);
+        remainingTimerRef.current = null;
       }
     };
   }, []);
@@ -322,13 +367,7 @@ const EmployeeDash = () => {
       console.log("PUNCH OUT RESPONSE:", response.data);
 
       if (response.status === 200) {
-        // Stop countdown immediately
-        if (remainingTimerRef.current) {
-          clearInterval(remainingTimerRef.current);
-          remainingTimerRef.current = null;
-        }
-
-        setRemainingSeconds(0);
+        updateRemainingSeconds(0);
 
         toast.success(response?.data?.message || "Punch Out Successful!", {
           position: "top-right",
@@ -336,7 +375,19 @@ const EmployeeDash = () => {
         });
 
         // Refresh employee work-session data
-        await getEmployeeWorkSession();
+        const punchDetails = await getEmployeeWorkSession();
+
+        if (punchDetails) {
+          window.dispatchEvent(
+            new CustomEvent("punchUpdated", {
+              detail: {
+                employeeId,
+                action: "punchOut",
+                ...punchDetails,
+              },
+            }),
+          );
+        }
 
         // Refresh attendance table
         await getEmployeeData();
@@ -995,7 +1046,31 @@ const EmployeeDash = () => {
     }
   }, [user?.employeeId]);
 
-  // for remaining time detection
+  // =========================
+  // SYNC PUNCH STATE FROM MAIN PANEL
+  // =========================
+  useEffect(() => {
+    const handlePunchUpdated = async (event) => {
+      const detail = event?.detail;
+
+      if (!detail) return;
+      if (detail.employeeId !== user?.employeeId) return;
+
+      setPunchInTime(detail.punchInTime || null);
+      setPunchOutTime(detail.punchOutTime || null);
+      updateRemainingSeconds(detail.remainingSeconds);
+
+      await getEmployeeData();
+      await getTodaydata();
+      await fetchAttendance();
+    };
+
+    window.addEventListener("punchUpdated", handlePunchUpdated);
+
+    return () => {
+      window.removeEventListener("punchUpdated", handlePunchUpdated);
+    };
+  }, [user?.employeeId]);
 
   return (
     <>
@@ -1032,7 +1107,19 @@ const EmployeeDash = () => {
             {/* card for starting  */}
             <div className="box2">
               {dashboardCards.map((card) => (
-                <div className="card" key={card.id}>
+                <div
+                  className="card"
+                  key={card.id}
+                  onClick={() => {
+                    if (card.id === 1) {
+                      navigate("/empAttendance?filter=all");
+                    } else if (card.id === 2) {
+                      navigate("/empAttendance?filter=present");
+                    } else if (card.id === 3) {
+                      navigate("/empAttendance?filter=absent");
+                    }
+                  }}
+                >
                   <div
                     className="card-icon"
                     style={{
@@ -1492,7 +1579,6 @@ const EmployeeDash = () => {
                         <div className="notification-full-message">
                           {stripHtml(selectedNotification?.message || "")}
                         </div>
-
                         <div className="notification-modal-actions">
                           <button
                             type="button"
@@ -1502,16 +1588,7 @@ const EmployeeDash = () => {
                             Close
                           </button>
 
-                          <button
-                            type="button"
-                            className="notification-modal-details"
-                            onClick={() =>
-                              handleNotificationDetails(selectedNotification)
-                            }
-                          >
-                            View Details
-                            <span>→</span>
-                          </button>
+
                         </div>
                       </div>
                     </div>

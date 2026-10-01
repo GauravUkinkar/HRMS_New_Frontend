@@ -9,6 +9,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+const userBaseUrl = BASE_URL?.endsWith("/") ? BASE_URL : `${BASE_URL}/`;
 const ATTENDANCE_URL = import.meta.env.VITE_ATTENDANCE_URL;
 
 const MainPanel = ({
@@ -71,7 +72,11 @@ const MainPanel = ({
           seconds: 0,
         });
 
-        return;
+        return {
+          punchInTime: null,
+          punchOutTime: null,
+          remainingSeconds: 0,
+        };
       }
 
       const today = new Date();
@@ -128,6 +133,12 @@ const MainPanel = ({
         minutes,
         seconds,
       });
+
+      return {
+        punchInTime: employeeData?.punchIn || null,
+        punchOutTime: employeeData?.punchOut || null,
+        remainingSeconds: hours * 3600 + minutes * 60 + seconds,
+      };
     } catch (error) {
       console.error("Today Punch Details Error:", error);
       console.error("STATUS:", error?.response?.status);
@@ -229,7 +240,17 @@ const handlePunchIn = async () => {
         }
       );
 
-      await getTodayPunchDetails(employeeId);
+      const punchDetails = await getTodayPunchDetails(employeeId);
+
+      window.dispatchEvent(
+        new CustomEvent("punchUpdated", {
+          detail: {
+            employeeId,
+            action: "punchIn",
+            ...punchDetails,
+          },
+        }),
+      );
     }
   } catch (error) {
     console.error(
@@ -304,7 +325,17 @@ const handlePunchIn = async () => {
         );
 
         // Refresh today's punch information
-        await getTodayPunchDetails(employeeId);
+        const punchDetails = await getTodayPunchDetails(employeeId);
+
+        window.dispatchEvent(
+          new CustomEvent("punchUpdated", {
+            detail: {
+              employeeId,
+              action: "punchOut",
+              ...punchDetails,
+            },
+          }),
+        );
       }
     } catch (error) {
       console.error("PUNCH OUT ERROR:", error);
@@ -330,7 +361,7 @@ const handlePunchIn = async () => {
   const getLoggedInUser = async () => {
     try {
       const response = await axios.get(
-        `${BASE_URL}/AuthController/getUserById`,
+        `${userBaseUrl}AuthController/getUserById`,
         {
           withCredentials: true,
         }
@@ -358,6 +389,35 @@ const handlePunchIn = async () => {
   useEffect(() => {
     getLoggedInUser();
   }, []);
+
+  // =========================
+  // SYNC PUNCH STATE FROM OTHER COMPONENTS
+  // =========================
+  useEffect(() => {
+    const handlePunchUpdated = (event) => {
+      const detail = event?.detail;
+
+      if (!detail) return;
+      if (detail.employeeId !== userDetails?.employeeId) return;
+
+      setPunchInTime(detail.punchInTime || null);
+      setPunchOutTime(detail.punchOutTime || null);
+
+      const totalSeconds = Number(detail.remainingSeconds) || 0;
+
+      setRemainingTime({
+        hours: Math.floor(totalSeconds / 3600),
+        minutes: Math.floor((totalSeconds % 3600) / 60),
+        seconds: totalSeconds % 60,
+      });
+    };
+
+    window.addEventListener("punchUpdated", handlePunchUpdated);
+
+    return () => {
+      window.removeEventListener("punchUpdated", handlePunchUpdated);
+    };
+  }, [userDetails?.employeeId]);
 
   // =========================
   // REMAINING TIME TIMER
