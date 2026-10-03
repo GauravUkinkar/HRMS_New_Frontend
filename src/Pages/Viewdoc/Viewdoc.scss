@@ -109,6 +109,30 @@
               color: var(--white);
             }
           }
+                    .delete {
+            border: 1px solid rgba(255, 0, 0, 0.705);
+            background: transparent;
+            color: rgba(255, 0, 0, 0.705);
+
+            padding: 6px 12px;
+            border-radius: 5px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 6px;
+
+            font-size: 13px;
+            cursor: pointer;
+
+            transition: var(--trans);
+
+            &:hover {
+              background: rgba(255, 0, 0, 0.151);
+              color: red;
+            }
+          }
         }
       }
     }

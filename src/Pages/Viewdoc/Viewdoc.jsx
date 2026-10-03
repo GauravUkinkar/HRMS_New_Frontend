@@ -4,26 +4,29 @@ import "./Viewdoc.scss";
 
 import { GrDocumentPdf } from "react-icons/gr";
 import { IoMdDownload } from "react-icons/io";
-import { MdOutlinePreview } from "react-icons/md";
+import { MdOutlinePreview, MdDelete } from "react-icons/md";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
+
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const Viewdoc = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState("");
-
   const [documents, setDocuments] = useState({});
-
   const [loadingEmployees, setLoadingEmployees] = useState(false);
   const [loadingDocuments, setLoadingDocuments] = useState(false);
-  const navigate = useNavigate();
 
   const [previewFile, setPreviewFile] = useState("");
   const [previewName, setPreviewName] = useState("");
+
+  const [deletingFile, setDeletingFile] = useState("");
+
+  const navigate = useNavigate();
 
   // ============================================
   // GET ALL EMPLOYEES
@@ -37,17 +40,11 @@ const Viewdoc = () => {
     try {
       setLoadingEmployees(true);
 
-      console.log(
-        "Employee API URL:",
-        `${BASE_URL}Admin/GetAllEmployee`
-      );
+      console.log("Employee API URL:", `${BASE_URL}Admin/GetAllEmployee`);
 
-      const res = await axios.get(
-        `${BASE_URL}Admin/GetAllEmployee`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get(`${BASE_URL}Admin/GetAllEmployee`, {
+        withCredentials: true,
+      });
 
       console.log("All Employee API Response:", res.data);
 
@@ -69,10 +66,7 @@ const Viewdoc = () => {
             employeeId: employee.employeeId,
           };
         })
-        .filter(
-          (employee) =>
-            employee?.uid && employee?.employeeId
-        );
+        .filter((employee) => employee?.uid && employee?.employeeId);
 
       setEmployees(employeeList);
 
@@ -83,6 +77,8 @@ const Viewdoc = () => {
       console.error("Response:", error?.response?.data);
 
       setEmployees([]);
+
+      toast.error("Unable to load employees.");
     } finally {
       setLoadingEmployees(false);
     }
@@ -100,10 +96,7 @@ const Viewdoc = () => {
       setPreviewFile("");
       setPreviewName("");
 
-      console.log(
-        "Getting documents for Employee ID:",
-        employeeId
-      );
+      console.log("Getting documents for Employee ID:", employeeId);
 
       const res = await axios.get(
         `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`,
@@ -112,21 +105,12 @@ const Viewdoc = () => {
         }
       );
 
-      console.log(
-        "Employee Documents API Response:",
-        res.data
-      );
+      console.log("Employee Documents API Response:", res.data);
 
-      if (
-        res.data?.status === "OK" &&
-        res.data?.data
-      ) {
+      if (res.data?.status === "OK" && res.data?.data) {
         setDocuments(res.data.data);
 
-        console.log(
-          "Documents:",
-          res.data.data
-        );
+        console.log("Documents:", res.data.data);
       } else {
         setDocuments({});
       }
@@ -137,6 +121,8 @@ const Viewdoc = () => {
       );
 
       setDocuments({});
+
+      toast.error("Unable to load employee documents.");
     } finally {
       setLoadingDocuments(false);
     }
@@ -150,7 +136,6 @@ const Viewdoc = () => {
     const uid = e.target.value;
 
     setSelectedEmployee(uid);
-
     setDocuments({});
     setPreviewFile("");
     setPreviewName("");
@@ -160,19 +145,13 @@ const Viewdoc = () => {
     }
 
     const selectedEmp = employees.find(
-      (employee) =>
-        String(employee.uid) === String(uid)
+      (employee) => String(employee.uid) === String(uid)
     );
 
-    console.log(
-      "Selected Employee:",
-      selectedEmp
-    );
+    console.log("Selected Employee:", selectedEmp);
 
     if (selectedEmp?.employeeId) {
-      getEmployeeDocuments(
-        selectedEmp.employeeId
-      );
+      getEmployeeDocuments(selectedEmp.employeeId);
     }
   };
 
@@ -247,27 +226,21 @@ const Viewdoc = () => {
   // AVAILABLE DOCUMENTS
   // ============================================
 
-  const availableDocuments =
-    documentList.filter(
-      (document, index, array) => {
-        const file = documents?.[document.key];
+  const availableDocuments = documentList.filter((document, index, array) => {
+    const file = documents?.[document.key];
 
-        if (
-          file === null ||
-          file === undefined ||
-          String(file).trim() === ""
-        ) {
-          return false;
-        }
+    if (
+      file === null ||
+      file === undefined ||
+      String(file).trim() === ""
+    ) {
+      return false;
+    }
 
-        return (
-          array.findIndex(
-            (item) =>
-              item.name === document.name
-          ) === index
-        );
-      }
+    return (
+      array.findIndex((item) => item.name === document.name) === index
     );
+  });
 
   // ============================================
   // GET SELECTED EMPLOYEE
@@ -276,8 +249,7 @@ const Viewdoc = () => {
   const getSelectedEmployee = () => {
     return employees.find(
       (employee) =>
-        String(employee.uid) ===
-        String(selectedEmployee)
+        String(employee.uid) === String(selectedEmployee)
     );
   };
 
@@ -285,10 +257,7 @@ const Viewdoc = () => {
   // GET FILE NAME
   // ============================================
 
-  const getFileName = (
-    filePath,
-    documentName
-  ) => {
+  const getFileName = (filePath, documentName) => {
     if (!filePath) {
       return `${documentName}.pdf`;
     }
@@ -298,38 +267,34 @@ const Viewdoc = () => {
         .split("?")[0]
         .split("#")[0];
 
-      const fileName = cleanPath
-        .split("/")
-        .pop();
+      const fileName = cleanPath.split("/").pop();
 
-      if (
-        fileName &&
-        fileName.includes(".")
-      ) {
+      if (fileName && fileName.includes(".")) {
         return decodeURIComponent(fileName);
       }
     } catch (error) {
-      console.error(
-        "Filename extraction error:",
-        error
-      );
+      console.error("Filename extraction error:", error);
     }
 
     return `${documentName}.pdf`;
   };
+  const getDeleteFileName = (filePath, documentName) => {
+  const fileName = getFileName(filePath, documentName);
+
+  if (!fileName) {
+    return "";
+  }
+
+  // Remove extension
+  return fileName.replace(/\.[^/.]+$/, "");
+};
 
   // ============================================
   // GET DOWNLOAD FILE NAME
   // ============================================
 
-  const getDownloadFileName = (
-    filePath,
-    documentName
-  ) => {
-    const fileName = getFileName(
-      filePath,
-      documentName
-    );
+  const getDownloadFileName = (filePath, documentName) => {
+    const fileName = getFileName(filePath, documentName);
 
     return fileName || `${documentName}.pdf`;
   };
@@ -343,9 +308,7 @@ const Viewdoc = () => {
       return "";
     }
 
-    const filePathString = String(
-      filePath
-    ).trim();
+    const filePathString = String(filePath).trim();
 
     // Already complete URL
     if (
@@ -355,14 +318,8 @@ const Viewdoc = () => {
       return filePathString;
     }
 
-    const baseUrl = String(
-      BASE_URL || ""
-    ).replace(/\/+$/, "");
-
-    const path = filePathString.replace(
-      /^\/+/,
-      ""
-    );
+    const baseUrl = String(BASE_URL || "").replace(/\/+$/, "");
+    const path = filePathString.replace(/^\/+/, "");
 
     return `${baseUrl}/${path}`;
   };
@@ -371,148 +328,75 @@ const Viewdoc = () => {
   // PREVIEW DOCUMENT
   // ============================================
 
-  const handlePreview = (
-    filePath,
-    documentName
-  ) => {
+  const handlePreview = (filePath, documentName) => {
     const fileUrl = getFileUrl(filePath);
 
     if (!fileUrl) {
-      alert("Document not available");
+      toast.error("Document not available");
       return;
     }
 
-    console.log(
-      "Preview URL:",
-      fileUrl
-    );
+    console.log("Preview URL:", fileUrl);
 
     setPreviewFile(fileUrl);
     setPreviewName(documentName);
   };
 
   // ============================================
-  // DOWNLOAD DOCUMENT USING DOWNLOAD API
+  // DOWNLOAD DOCUMENT
   // ============================================
 
-  const handleDownload = async (
-    filePath,
-    documentName
-  ) => {
+  const handleDownload = async (filePath, documentName) => {
     try {
-      // ------------------------------------------
-      // GET SELECTED EMPLOYEE
-      // ------------------------------------------
-
-      const selectedEmp =
-        getSelectedEmployee();
+      const selectedEmp = getSelectedEmployee();
 
       if (!selectedEmp?.employeeId) {
-        alert(
-          "Please select an employee first."
-        );
+        toast.warning("Please select an employee first.");
         return;
       }
 
-      const employeeId =
-        selectedEmp.employeeId;
+      const employeeId = selectedEmp.employeeId;
 
-      // ------------------------------------------
-      // GET FILE NAME
-      // ------------------------------------------
-
-      const fileName =
-        getDownloadFileName(
-          filePath,
-          documentName
-        );
+      const fileName = getDownloadFileName(
+        filePath,
+        documentName
+      );
 
       if (!fileName) {
-        alert(
-          "Document file name not available."
-        );
+        toast.error("Document file name not available.");
         return;
       }
 
-      // ------------------------------------------
-      // DOWNLOAD API
-      //
-      // Example:
-      // https://userservicetest.pandozasolutions.com/
-      // uploadDoc/download/PSPL1173/employeeImage.jpg
-      // ------------------------------------------
-
-      const downloadUrl =
-        `${BASE_URL}uploadDoc/download/${encodeURIComponent(
-          employeeId
-        )}/${encodeURIComponent(fileName)}`;
-
-      console.log(
-        "Employee ID:",
+      const downloadUrl = `${BASE_URL}uploadDoc/download/${encodeURIComponent(
         employeeId
-      );
+      )}/${encodeURIComponent(fileName)}`;
 
-      console.log(
-        "File Name:",
-        fileName
-      );
+      console.log("Employee ID:", employeeId);
+      console.log("File Name:", fileName);
+      console.log("Download API:", downloadUrl);
 
-      console.log(
-        "Download API:",
-        downloadUrl
-      );
+      const response = await axios.get(downloadUrl, {
+        responseType: "blob",
+        withCredentials: true,
+      });
 
-      // ------------------------------------------
-      // CALL DOWNLOAD API
-      // ------------------------------------------
-
-      const response = await axios.get(
-        downloadUrl,
-        {
-          responseType: "blob",
-          withCredentials: true,
-        }
-      );
-
-      console.log(
-        "Download API Response:",
-        response
-      );
-
-      // ------------------------------------------
-      // CHECK FILE
-      // ------------------------------------------
-
-      if (
-        !response.data ||
-        response.data.size === 0
-      ) {
-        throw new Error(
-          "Downloaded file is empty."
-        );
+      if (!response.data || response.data.size === 0) {
+        throw new Error("Downloaded file is empty.");
       }
-
-      // ------------------------------------------
-      // GET FILE NAME FROM CONTENT-DISPOSITION
-      // ------------------------------------------
 
       let finalFileName = fileName;
 
       const contentDisposition =
-        response.headers[
-          "content-disposition"
-        ];
+        response.headers["content-disposition"];
 
       if (contentDisposition) {
-        const fileNameMatch =
-          contentDisposition.match(
-            /filename\*=UTF-8''([^;]+)|filename="?([^"]+)"?/i
-          );
+        const fileNameMatch = contentDisposition.match(
+          /filename\*=UTF-8''([^;]+)|filename="?([^"]+)"?/i
+        );
 
         if (fileNameMatch) {
           finalFileName = decodeURIComponent(
-            fileNameMatch[1] ||
-              fileNameMatch[2]
+            fileNameMatch[1] || fileNameMatch[2]
           );
         }
       }
@@ -522,21 +406,11 @@ const Viewdoc = () => {
         finalFileName
       );
 
-      // ------------------------------------------
-      // CREATE BLOB URL
-      // ------------------------------------------
+      const blobUrl = window.URL.createObjectURL(
+        response.data
+      );
 
-      const blobUrl =
-        window.URL.createObjectURL(
-          response.data
-        );
-
-      // ------------------------------------------
-      // CREATE DOWNLOAD LINK
-      // ------------------------------------------
-
-      const link =
-        document.createElement("a");
+      const link = document.createElement("a");
 
       link.href = blobUrl;
       link.download = finalFileName;
@@ -548,52 +422,132 @@ const Viewdoc = () => {
 
       document.body.removeChild(link);
 
-      // ------------------------------------------
-      // CLEANUP
-      // ------------------------------------------
-
       setTimeout(() => {
-        window.URL.revokeObjectURL(
-          blobUrl
-        );
+        window.URL.revokeObjectURL(blobUrl);
       }, 1000);
 
-      console.log(
-        "Document downloaded successfully:",
-        finalFileName
-      );
+      toast.success("Document downloaded successfully.");
     } catch (error) {
-      console.error(
-        "Download Error:",
-        error
-      );
-
+      console.error("Download Error:", error);
       console.error(
         "Download Error Response:",
         error?.response
       );
 
-      // ------------------------------------------
-      // BACKEND ERROR MESSAGE
-      // ------------------------------------------
-
-      if (error?.response) {
-        console.error(
-          "Status:",
-          error.response.status
-        );
-
-        console.error(
-          "Data:",
-          error.response.data
-        );
-      }
-
-      alert(
-        "Unable to download document. Please check the document and try again."
+      toast.error(
+        "Unable to download document. Please try again."
       );
     }
   };
+
+  // ============================================
+  // DELETE DOCUMENT
+  // ============================================
+
+const handleDelete = async (filePath, documentName) => {
+  try {
+    const selectedEmp = getSelectedEmployee();
+
+    if (!selectedEmp?.employeeId) {
+      toast.warning("Please select an employee first.");
+      return;
+    }
+
+    const employeeId = selectedEmp.employeeId;
+
+    // File name WITHOUT extension
+    const fileName = getDeleteFileName(
+      filePath,
+      documentName
+    );
+
+    if (!fileName) {
+      toast.error("Document file name not available.");
+      return;
+    }
+
+    console.log("Delete Employee ID:", employeeId);
+    console.log("Delete File Name:", fileName);
+
+    const response = await axios.delete(
+      `${BASE_URL}Admin/deleteFile`,
+      {
+        params: {
+          employeeId: employeeId,
+          fileName: fileName,
+        },
+        withCredentials: true,
+      }
+    );
+
+    console.log("Delete API Response:", response.data);
+
+    // Remove deleted file from UI
+    setDocuments((prevDocuments) => {
+      const updatedDocuments = { ...prevDocuments };
+
+      Object.keys(updatedDocuments).forEach((key) => {
+        const currentFileName = getDeleteFileName(
+          updatedDocuments[key],
+          documentName
+        );
+
+        if (currentFileName === fileName) {
+          delete updatedDocuments[key];
+        }
+      });
+
+      return updatedDocuments;
+    });
+
+    // Close preview if deleted document was being previewed
+    if (previewName === documentName) {
+      setPreviewFile("");
+      setPreviewName("");
+    }
+
+    toast.success(
+      response?.data?.message ||
+        `${documentName} deleted successfully.`
+    );
+  } catch (error) {
+    console.error("Delete Document Error:", error);
+    console.error(
+      "Delete Response:",
+      error?.response?.data
+    );
+
+    toast.error(
+      error?.response?.data?.message ||
+        "Unable to delete document. Please try again."
+    );
+  } finally {
+    setDeletingFile("");
+  }
+};
+
+  // ============================================
+  // DELETE CLICK
+  // ============================================
+
+const confirmDelete = (filePath, documentName) => {
+  const fileName = getFileName(
+    filePath,
+    documentName
+  );
+
+  const confirmed = window.confirm(
+    `Are you sure you want to delete ${documentName}?`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  setDeletingFile(fileName);
+
+  handleDelete(filePath, documentName);
+};
 
   // ============================================
   // CHECK IMAGE
@@ -610,9 +564,7 @@ const Viewdoc = () => {
   // ============================================
 
   const isPdfFile = (fileUrl) => {
-    return /\.pdf(\?.*)?$/i.test(
-      fileUrl
-    );
+    return /\.pdf(\?.*)?$/i.test(fileUrl);
   };
 
   // ============================================
@@ -632,21 +584,21 @@ const Viewdoc = () => {
         },
       ]}
     >
-                            <button
-                type="button"
-                className="back-btn"
-                         onClick={() =>
-              navigate("/")
-            }
-              >
-                ← Back
-              </button>
+      <button
+        type="button"
+        className="back-btn"
+        onClick={() => navigate("/")}
+      >
+        ← Back
+      </button>
+
       <div className="view-doc">
         <h1>View Documents</h1>
 
         <div className="view-doc-bottom">
 
           {/* EMPLOYEE DROPDOWN */}
+
           <div className="emp-list">
             <select
               name="employeeName"
@@ -660,21 +612,20 @@ const Viewdoc = () => {
                   : "Select Employee"}
               </option>
 
-              {employees.map(
-                (employee) => (
-                  <option
-                    key={employee.uid}
-                    value={employee.uid}
-                  >
-                    {employee.employeeName} -{" "}
-                    {employee.employeeId}
-                  </option>
-                )
-              )}
+              {employees.map((employee) => (
+                <option
+                  key={employee.uid}
+                  value={employee.uid}
+                >
+                  {employee.employeeName} -{" "}
+                  {employee.employeeId}
+                </option>
+              ))}
             </select>
           </div>
 
           {/* LOADING */}
+
           {loadingDocuments && (
             <div className="document-loading">
               Loading Documents...
@@ -682,89 +633,111 @@ const Viewdoc = () => {
           )}
 
           {/* NO DOCUMENTS */}
+
           {!loadingDocuments &&
             selectedEmployee &&
-            availableDocuments.length ===
-              0 && (
+            availableDocuments.length === 0 && (
               <div className="no-documents">
-                No documents uploaded for
-                this employee.
+                No documents uploaded for this employee.
               </div>
             )}
 
           {/* DOCUMENTS */}
+
           {!loadingDocuments &&
             availableDocuments.length > 0 && (
               <div className="document-preview-wrapper">
 
                 {/* DOCUMENT LIST */}
+
                 <div className="document-list">
-                  {availableDocuments.map(
-                    (document) => {
-                      const filePath =
-                        documents[
-                          document.key
-                        ];
+                  {availableDocuments.map((document) => {
+                    const filePath =
+                      documents[document.key];
 
-                      return (
-                        <div
-                          className="document-card"
-                          key={document.key}
-                        >
-                          <GrDocumentPdf className="pdf-icon" />
+                    const fileName = getFileName(
+                      filePath,
+                      document.name
+                    );
 
-                          <p>
-                            {document.name}
-                          </p>
+                    return (
+                      <div
+                        className="document-card"
+                        key={document.key}
+                      >
+                        <GrDocumentPdf className="pdf-icon" />
 
-                          <div className="btn-parent">
+                        <p>{document.name}</p>
 
-                            {/* PREVIEW */}
-                            <button
-                              type="button"
-                              className="pre"
-                              onClick={() =>
-                                handlePreview(
-                                  filePath,
-                                  document.name
-                                )
-                              }
-                            >
-                              <MdOutlinePreview />
-                              Preview
-                            </button>
+                        <div className="btn-parent">
 
-                            {/* DOWNLOAD */}
-                            <button
-                              type="button"
-                              className="down"
-                              onClick={() =>
-                                handleDownload(
-                                  filePath,
-                                  document.name
-                                )
-                              }
-                            >
-                              <IoMdDownload />
-                              Download
-                            </button>
+                          {/* PREVIEW */}
 
-                          </div>
+                          <button
+                            type="button"
+                            className="pre"
+                            onClick={() =>
+                              handlePreview(
+                                filePath,
+                                document.name
+                              )
+                            }
+                          >
+                            <MdOutlinePreview />
+                            Preview
+                          </button>
+
+                          {/* DOWNLOAD */}
+
+                          <button
+                            type="button"
+                            className="down"
+                            onClick={() =>
+                              handleDownload(
+                                filePath,
+                                document.name
+                              )
+                            }
+                          >
+                            <IoMdDownload />
+                            Download
+                          </button>
+
+                          {/* DELETE */}
+
+                          <button
+                            type="button"
+                            className="delete"
+                            onClick={() =>
+                              confirmDelete(
+                                filePath,
+                                document.name
+                              )
+                            }
+                            disabled={
+                              deletingFile === fileName
+                            }
+                          >
+                            <MdDelete />
+
+                            {deletingFile === fileName
+                              ? "Deleting..."
+                              : "Delete"}
+                          </button>
+
                         </div>
-                      );
-                    }
-                  )}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* PREVIEW SECTION */}
-                <div className="preview-section">
 
+                <div className="preview-section">
                   {previewFile ? (
                     <>
                       <div className="preview-header">
-                        <h2>
-                          {previewName}
-                        </h2>
+                        <h2>{previewName}</h2>
 
                         <button
                           type="button"
@@ -778,17 +751,12 @@ const Viewdoc = () => {
                       </div>
 
                       <div className="preview-content">
-
-                        {isImageFile(
-                          previewFile
-                        ) ? (
+                        {isImageFile(previewFile) ? (
                           <img
                             src={previewFile}
                             alt={previewName}
                           />
-                        ) : isPdfFile(
-                            previewFile
-                          ) ? (
+                        ) : isPdfFile(previewFile) ? (
                           <iframe
                             src={previewFile}
                             title={previewName}
@@ -799,7 +767,6 @@ const Viewdoc = () => {
                             title={previewName}
                           />
                         )}
-
                       </div>
                     </>
                   ) : (
@@ -807,13 +774,12 @@ const Viewdoc = () => {
                       <MdOutlinePreview />
 
                       <p>
-                        Select Preview to view
-                        the document
+                        Select Preview to view the document
                       </p>
                     </div>
                   )}
-
                 </div>
+
               </div>
             )}
         </div>
