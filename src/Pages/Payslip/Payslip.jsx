@@ -531,10 +531,6 @@ const Payslip = () => {
             </div>
 
             <div className="month">
-              <p>
-                Payslip for the month
-              </p>
-
               <h3>
                 {formatMonth(
                   payslip?.month,
@@ -552,7 +548,7 @@ const Payslip = () => {
 
               <div className="personal-info">
                 <div className="left-info">
-                  <p>
+                  <p >
                     Employee Name
                   </p>
 
@@ -582,7 +578,7 @@ const Payslip = () => {
                 </div>
 
                 <div className="right-info">
-                  <p>
+                  <p className="name">
                     :{" "}
                     {
                       payslip?.employeeName ||

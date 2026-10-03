@@ -62,23 +62,7 @@ const EmployeeDash = () => {
       ),
     },
 
-    {
-      title: "Punch In Time",
-      dataIndex: "punchIn",
-      key: "punchIn",
-      width: 130,
 
-      render: (time) => time || "--",
-    },
-
-    {
-      title: "Punch Out Time",
-      dataIndex: "punchOut",
-      key: "punchOut",
-      width: 130,
-
-      render: (time) => time || "--",
-    },
 
     {
       title: "Status",

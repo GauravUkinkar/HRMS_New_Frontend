@@ -313,25 +313,7 @@ useEffect(() => {
       align: "center",
     },
 
-    {
-      title: "In Time",
-      dataIndex: "punchIn",
-      key: "punchIn",
-      align: "center",
 
-      render: (_, record) =>
-        record?.punchIn || "-",
-    },
-
-    {
-      title: "Out Time",
-      dataIndex: "punchOut",
-      key: "punchOut",
-      align: "center",
-
-      render: (_, record) =>
-        record?.punchOut || "-",
-    },
 
     {
       title: "Status",

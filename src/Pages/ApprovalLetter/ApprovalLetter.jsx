@@ -361,9 +361,6 @@ const ApprovalLetter = () => {
                 To,
                 <br />
 
-                Prajakta Marwaha
-                <br />
-
                 Director
                 <br />
 

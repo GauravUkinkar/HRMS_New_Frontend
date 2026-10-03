@@ -245,17 +245,15 @@ const Profile = () => {
               {String(user?.role || user?.crmRole || "")
                 .trim()
                 .toUpperCase() !== "EMPLOYEE" && (
-<div
-  className="edit"
-  onClick={() => {
-    navigate(
-      `/editEmployee/${employeeprofile?.employeeId}`
-    );
-  }}
->
-  <MdOutlineEditNote />
-  <span>Edit Details</span>
-</div>
+                <div
+                  className="edit"
+                  onClick={() => {
+                    navigate(`/editEmployee/${employeeprofile?.employeeId}`);
+                  }}
+                >
+                  <MdOutlineEditNote />
+                  <span>Edit Details</span>
+                </div>
               )}
             </div>
           </div>
