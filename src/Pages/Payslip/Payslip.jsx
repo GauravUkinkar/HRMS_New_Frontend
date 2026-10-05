@@ -266,7 +266,7 @@ const Payslip = () => {
       )
     ) {
       return `${payDate} ${String(month || "")
-          .toUpperCase()
+        .toUpperCase()
         } ${year || ""}`.trim();
     }
 

@@ -279,7 +279,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to punch in. Please try again.",
+        "Unable to punch in. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -389,7 +389,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to punch out. Please try again.",
+        "Unable to punch out. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -647,10 +647,10 @@ const EmployeeDash = () => {
   const getNotificationType = (notification) => {
     return String(
       notification?.type ||
-        notification?.notificationType ||
-        notification?.category ||
-        notification?.module ||
-        "",
+      notification?.notificationType ||
+      notification?.category ||
+      notification?.module ||
+      "",
     )
       .trim()
       .toUpperCase();
@@ -942,17 +942,17 @@ const EmployeeDash = () => {
         (a, b) =>
           new Date(
             b.entryDate ||
-              b.entry_date ||
-              b.startingDate ||
-              b.starting_date ||
-              0,
+            b.entry_date ||
+            b.startingDate ||
+            b.starting_date ||
+            0,
           ) -
           new Date(
             a.entryDate ||
-              a.entry_date ||
-              a.startingDate ||
-              a.starting_date ||
-              0,
+            a.entry_date ||
+            a.startingDate ||
+            a.starting_date ||
+            0,
           ),
       );
 
@@ -1061,7 +1061,7 @@ const EmployeeDash = () => {
       <MainPanel
         title="Employee Dashboard"
         breadcrumbs={[
-          { label: "Dashboard", link: "/dashboard" },
+          { label: "Dashboard", link: "/Empdashboard" },
           { label: "Employee Dashboard" },
         ]}
       >
@@ -1242,7 +1242,13 @@ const EmployeeDash = () => {
                     )}
                     <a
                       className="btn2"
-                      href="https://newcrm.diwise.in/add_entries"
+                      href={`https://newcrm.diwise.in/login?email=${encodeURIComponent(
+                        user?.email || ""
+                      )}&password=${encodeURIComponent(
+                        user?.password || ""
+                      )}&empName=${encodeURIComponent(
+                        user?.employeeName || ""
+                      )}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -1325,10 +1331,10 @@ const EmployeeDash = () => {
                         render: (date) =>
                           date
                             ? new Date(date).toLocaleDateString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              })
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
                             : "--",
                       },
 
@@ -1471,9 +1477,8 @@ const EmployeeDash = () => {
                   ) : (
                     displayedNotifications.map((notification) => (
                       <div
-                        className={`notification-item ${
-                          notification?.isRead ? "read" : "unread"
-                        }`}
+                        className={`notification-item ${notification?.isRead ? "read" : "unread"
+                          }`}
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
                       >
@@ -1491,15 +1496,15 @@ const EmployeeDash = () => {
                           <span className="notification-date">
                             {notification?.createdAt
                               ? new Date(notification.createdAt).toLocaleString(
-                                  "en-IN",
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  },
-                                )
+                                "en-IN",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
                               : "--"}
                           </span>
                         </div>
@@ -1549,14 +1554,14 @@ const EmployeeDash = () => {
                         <p className="notification-modal-date">
                           {selectedNotification?.createdAt
                             ? new Date(
-                                selectedNotification.createdAt,
-                              ).toLocaleString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                              selectedNotification.createdAt,
+                            ).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                             : "--"}
                         </p>
 
