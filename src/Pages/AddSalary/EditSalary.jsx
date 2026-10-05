@@ -10,13 +10,10 @@ import { toast } from "react-toastify";
 import Loader from "../../comp/Loader/Loader";
 import { UserContext } from "../../../Context";
 
-
-
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const EditSalary = () => {
-  
-    const { user } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const { sId } = useParams();
   const navigate = useNavigate();
   const [error, setError] = useState({});
@@ -140,7 +137,7 @@ const EditSalary = () => {
       toast.success(
         response.data?.responseMessage || "Salary Updated successfully!",
       );
-       navigate("/salaryManagement");
+      navigate("/salaryManagement");
     } catch (err) {
       console.error("UPDATE SALARY ERROR:", err);
       console.error("Status:", err.response?.status);
@@ -156,7 +153,7 @@ const EditSalary = () => {
 
   return (
     <MainPanel
-                breadcrumbs={[
+      breadcrumbs={[
         { label: "Dashboard", link: "/dashboard" },
         { label: "Edit Salary" },
       ]}
@@ -168,15 +165,13 @@ const EditSalary = () => {
           : "Edit Salary"
       }
     >
-                        <button
-            type="button"
-            className="back-btn"
-            onClick={() =>
-              navigate("/salaryManagement")
-            }
-          >
-            ← Back
-          </button>
+      <button
+        type="button"
+        className="back-btn"
+        onClick={() => navigate("/salaryManagement")}
+      >
+        ← Back
+      </button>
       {updating && <Loader />}
       <form onSubmit={handleSubmit} className="salary-parent">
         <h1>Edit Salary Slip</h1>
@@ -308,7 +303,6 @@ const EditSalary = () => {
             />
           </div>
 
-         
           <div className="form-row">
             <Input
               name="professionalTax"
