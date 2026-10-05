@@ -38,7 +38,6 @@
         width: 100%;
 
         input {
-          // background-color: #fff !important;
           color: #fff !important;
           border-color: #fff !important;
         }
@@ -47,7 +46,6 @@
           color: #777 !important;
         }
         input:focus {
-          // background-color: #fff !important;
           color: #fff !important;
           border-color: #fff !important;
         }
@@ -56,9 +54,7 @@
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus,
         input:-webkit-autofill:active {
-          -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
-          -webkit-text-fill-color: #222 !important;
-          background-color: #fff !important;
+          -webkit-text-fill-color: #fff !important;
           transition: background-color 9999s ease-in-out 0s;
         }
       }
