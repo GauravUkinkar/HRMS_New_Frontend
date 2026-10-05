@@ -9,18 +9,20 @@ const ContextProvider = ({ children }) => {
   const [loader, setLoader] = useState(true);
   const navigate = useNavigate();
 
- 
+
 
   const getEmpDetails = async () => {
     try {
-       setLoader(true);
+      setLoader(true);
       const response = await api.get("AuthController/getUserById");
 
       if (response?.status === 200) {
+        console.log("GET USER BY ID dfsfdsd dfsf dsfdsfdssfd fds:", response?.data?.data);
+
         setUser(response?.data?.data);
       }
     } catch (error) {
-       setUser(null);
+      setUser(null);
       if (error.response?.status === 401 || error.response?.status === 403) {
         localStorage.removeItem("LoggedIn");
         navigate("/login", { replace: true });
@@ -28,22 +30,22 @@ const ContextProvider = ({ children }) => {
 
       console.error(error);
     } finally {
-    setLoader(false);
-  }
-  };
-
-useEffect(() => {
-  const fetchUser = async () => {
-    if (localStorage.getItem("LoggedIn")) {
-      await getEmpDetails();
-    } else {
-      setUser(null);
+      setLoader(false);
     }
-    setLoader(false);
   };
 
-  fetchUser();
-}, []);
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (localStorage.getItem("LoggedIn")) {
+        await getEmpDetails();
+      } else {
+        setUser(null);
+      }
+      setLoader(false);
+    };
+
+    fetchUser();
+  }, []);
 
   return (
     <UserContext.Provider

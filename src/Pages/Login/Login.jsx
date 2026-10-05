@@ -5,11 +5,11 @@ import UseForm from "../../UseForm";
 import { loginValidate } from "../../validators/LoginValidtate";
 
 import LoginImg from "../../assets/login.png";
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { api } from "../../api";
 import { toast } from "react-toastify";
 import { UserContext } from "../../../Context";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const Login = () => {
   const formObj = {
@@ -19,51 +19,143 @@ const Login = () => {
 
   const { getEmpDetails, setLoader } = useContext(UserContext);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-const login = async () => {
-  try {
-    setLoader(true);
+  const autoLoginStarted = useRef(false);
 
-    const response = await api.post("AuthController/Login", values);
+  const login = async () => {
+    try {
+      setLoader(true);
 
-    if (response.status === 200) {
-      toast.success("Login Successfully");
+      const response = await api.post("AuthController/Login", values);
 
-      const userData = response.data.data;
+      console.log("NORMAL LOGIN RESPONSE:", response);
 
-      localStorage.setItem("LoggedIn", "true");
-      localStorage.setItem("email", userData.email);
-      localStorage.setItem("token", userData.token);
-      localStorage.setItem("uid", userData.uid);
-      localStorage.setItem("role", userData.role);
+      if (response.status === 200) {
+        toast.success("Login Successfully");
 
-      await getEmpDetails();
+        const userData = response.data.data;
 
-      navigate("/", { replace: true });
+        localStorage.setItem("LoggedIn", "true");
+        localStorage.setItem("email", userData.email);
+        localStorage.setItem("token", userData.token);
+        localStorage.setItem("uid", userData.uid);
+        localStorage.setItem("role", userData.role);
+
+        await getEmpDetails();
+
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      console.log("NORMAL LOGIN ERROR:", error);
+      console.log("ERROR RESPONSE:", error?.response?.data);
+
+      const errormessage = error?.response?.data;
+
+      if (errormessage?.password) {
+        setError((prev) => ({
+          ...prev,
+          password: errormessage.password,
+        }));
+
+        toast.error(errormessage.password);
+      }
+
+      if (errormessage?.responseMessage) {
+        toast.error(errormessage.responseMessage);
+      }
+    } finally {
+      setLoader(false);
     }
-  } catch (error) {
-    console.log(error.response);
+  };
 
-    const errormessage = error.response?.data;
+  const {
+    handleChange,
+    handleSubmit,
+    handleBlur,
+    values,
+    error,
+    setError,
+  } = UseForm(formObj, loginValidate, login);
 
-    if (errormessage?.password) {
-      setError((prev) => ({
-        ...prev,
-        password: errormessage.password,
-      }));
-      toast.error(errormessage.password);
+  useEffect(() => {
+    const email = searchParams.get("email");
+    const password = searchParams.get("password");
+
+    console.log("CRM AUTO LOGIN PARAMS:", {
+      email,
+      hasPassword: !!password,
+      passwordLength: password?.length,
+    });
+
+    if (!email || !password) {
+      console.log("CRM AUTO LOGIN: Missing email or password");
+      return;
     }
 
-    if (errormessage?.responseMessage) {
-      toast.error(errormessage.responseMessage);
+    if (autoLoginStarted.current) {
+      return;
     }
-  } finally {
-    setLoader(false);
-  }
-};
 
-  const { handleChange, handleSubmit, handleBlur, values, error, setError } =
-    UseForm(formObj, loginValidate, login);
+    autoLoginStarted.current = true;
+
+    const autoLogin = async () => {
+      try {
+        setLoader(true);
+
+        console.log("CRM AUTO LOGIN: Calling API...");
+
+        const response = await api.post("AuthController/Login", {
+          email: email,
+          password: password,
+        });
+
+        console.log("CRM AUTO LOGIN RESPONSE:", response);
+
+        if (response?.status === 200) {
+          const userData = response?.data?.data;
+
+          console.log("CRM AUTO LOGIN SUCCESS:", {
+            email: userData?.email,
+            uid: userData?.uid,
+            role: userData?.role,
+            hasToken: !!userData?.token,
+          });
+
+          localStorage.setItem("LoggedIn", "true");
+          localStorage.setItem("email", userData.email);
+          localStorage.setItem("token", userData.token);
+          localStorage.setItem("uid", userData.uid);
+          localStorage.setItem("role", userData.role);
+
+          console.log("CRM AUTO LOGIN: Token saved");
+
+          await getEmpDetails();
+
+          console.log("CRM AUTO LOGIN: Employee details loaded");
+
+          window.location.replace("/");
+        }
+      } catch (error) {
+        console.error("CRM AUTO LOGIN ERROR:", error);
+        console.error(
+          "CRM AUTO LOGIN ERROR RESPONSE:",
+          error?.response?.data
+        );
+
+        const message =
+          error?.response?.data?.responseMessage ||
+          error?.response?.data?.password ||
+          "Automatic CRM login failed";
+
+        toast.error(message);
+      } finally {
+        setLoader(false);
+      }
+    };
+
+    autoLogin();
+  }, [searchParams]);
 
   return (
     <div className="login-parent parent">
