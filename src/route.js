@@ -18,6 +18,9 @@ const EmpList = lazy(() =>
 const LeaveManagement = lazy(() =>
   import("./Pages/LeaveManagement/LeaveManagement")
 );
+const TeamManagement = lazy(() =>
+  import("./Pages/TeamManagement/Teams")
+);
 
 const AddEmployee = lazy(() =>
   import("./Pages/AddEmployee/AddEmployee")
@@ -401,6 +404,13 @@ export const routes = [
     name: "ViewApprovals",
     path: "/viewApprovals",
     comp: ViewApprovals,
+
+  },
+        {
+    name: "TeamManagement",
+    path: "/teamManagement",
+    comp: TeamManagement,
+    adminonly: true,
 
   },
 ];
