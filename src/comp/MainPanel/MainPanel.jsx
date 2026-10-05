@@ -688,9 +688,6 @@ const isAdmin = userRole === "ADMIN";
         Profile
       </Link>
 
-      <Link to="/settings">
-        Settings
-      </Link>
     </div>
   )}
 </div>

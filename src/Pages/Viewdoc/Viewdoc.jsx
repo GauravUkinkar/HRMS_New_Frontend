@@ -102,7 +102,7 @@ const Viewdoc = () => {
         `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`,
         {
           withCredentials: true,
-        }
+        },
       );
 
       console.log("Employee Documents API Response:", res.data);
@@ -115,10 +115,7 @@ const Viewdoc = () => {
         setDocuments({});
       }
     } catch (error) {
-      console.error(
-        "Get Documents Error:",
-        error?.response?.data || error
-      );
+      console.error("Get Documents Error:", error?.response?.data || error);
 
       setDocuments({});
 
@@ -145,7 +142,7 @@ const Viewdoc = () => {
     }
 
     const selectedEmp = employees.find(
-      (employee) => String(employee.uid) === String(uid)
+      (employee) => String(employee.uid) === String(uid),
     );
 
     console.log("Selected Employee:", selectedEmp);
@@ -229,17 +226,11 @@ const Viewdoc = () => {
   const availableDocuments = documentList.filter((document, index, array) => {
     const file = documents?.[document.key];
 
-    if (
-      file === null ||
-      file === undefined ||
-      String(file).trim() === ""
-    ) {
+    if (file === null || file === undefined || String(file).trim() === "") {
       return false;
     }
 
-    return (
-      array.findIndex((item) => item.name === document.name) === index
-    );
+    return array.findIndex((item) => item.name === document.name) === index;
   });
 
   // ============================================
@@ -248,8 +239,7 @@ const Viewdoc = () => {
 
   const getSelectedEmployee = () => {
     return employees.find(
-      (employee) =>
-        String(employee.uid) === String(selectedEmployee)
+      (employee) => String(employee.uid) === String(selectedEmployee),
     );
   };
 
@@ -263,9 +253,7 @@ const Viewdoc = () => {
     }
 
     try {
-      const cleanPath = String(filePath)
-        .split("?")[0]
-        .split("#")[0];
+      const cleanPath = String(filePath).split("?")[0].split("#")[0];
 
       const fileName = cleanPath.split("/").pop();
 
@@ -279,15 +267,15 @@ const Viewdoc = () => {
     return `${documentName}.pdf`;
   };
   const getDeleteFileName = (filePath, documentName) => {
-  const fileName = getFileName(filePath, documentName);
+    const fileName = getFileName(filePath, documentName);
 
-  if (!fileName) {
-    return "";
-  }
+    if (!fileName) {
+      return "";
+    }
 
-  // Remove extension
-  return fileName.replace(/\.[^/.]+$/, "");
-};
+    // Remove extension
+    return fileName.replace(/\.[^/.]+$/, "");
+  };
 
   // ============================================
   // GET DOWNLOAD FILE NAME
@@ -357,10 +345,7 @@ const Viewdoc = () => {
 
       const employeeId = selectedEmp.employeeId;
 
-      const fileName = getDownloadFileName(
-        filePath,
-        documentName
-      );
+      const fileName = getDownloadFileName(filePath, documentName);
 
       if (!fileName) {
         toast.error("Document file name not available.");
@@ -368,7 +353,7 @@ const Viewdoc = () => {
       }
 
       const downloadUrl = `${BASE_URL}uploadDoc/download/${encodeURIComponent(
-        employeeId
+        employeeId,
       )}/${encodeURIComponent(fileName)}`;
 
       console.log("Employee ID:", employeeId);
@@ -386,29 +371,23 @@ const Viewdoc = () => {
 
       let finalFileName = fileName;
 
-      const contentDisposition =
-        response.headers["content-disposition"];
+      const contentDisposition = response.headers["content-disposition"];
 
       if (contentDisposition) {
         const fileNameMatch = contentDisposition.match(
-          /filename\*=UTF-8''([^;]+)|filename="?([^"]+)"?/i
+          /filename\*=UTF-8''([^;]+)|filename="?([^"]+)"?/i,
         );
 
         if (fileNameMatch) {
           finalFileName = decodeURIComponent(
-            fileNameMatch[1] || fileNameMatch[2]
+            fileNameMatch[1] || fileNameMatch[2],
           );
         }
       }
 
-      console.log(
-        "Final Download Filename:",
-        finalFileName
-      );
+      console.log("Final Download Filename:", finalFileName);
 
-      const blobUrl = window.URL.createObjectURL(
-        response.data
-      );
+      const blobUrl = window.URL.createObjectURL(response.data);
 
       const link = document.createElement("a");
 
@@ -429,14 +408,9 @@ const Viewdoc = () => {
       toast.success("Document downloaded successfully.");
     } catch (error) {
       console.error("Download Error:", error);
-      console.error(
-        "Download Error Response:",
-        error?.response
-      );
+      console.error("Download Error Response:", error?.response);
 
-      toast.error(
-        "Unable to download document. Please try again."
-      );
+      toast.error("Unable to download document. Please try again.");
     }
   };
 
@@ -444,119 +418,104 @@ const Viewdoc = () => {
   // DELETE DOCUMENT
   // ============================================
 
-const handleDelete = async (filePath, documentName) => {
-  try {
-    const selectedEmp = getSelectedEmployee();
+  const handleDelete = async (filePath, documentName) => {
+    try {
+      const selectedEmp = getSelectedEmployee();
 
-    if (!selectedEmp?.employeeId) {
-      toast.warning("Please select an employee first.");
-      return;
-    }
+      if (!selectedEmp?.employeeId) {
+        toast.warning("Please select an employee first.");
+        return;
+      }
 
-    const employeeId = selectedEmp.employeeId;
+      const employeeId = selectedEmp.employeeId;
 
-    // File name WITHOUT extension
-    const fileName = getDeleteFileName(
-      filePath,
-      documentName
-    );
+      // File name WITHOUT extension
+      const fileName = getDeleteFileName(filePath, documentName);
 
-    if (!fileName) {
-      toast.error("Document file name not available.");
-      return;
-    }
+      if (!fileName) {
+        toast.error("Document file name not available.");
+        return;
+      }
 
-    console.log("Delete Employee ID:", employeeId);
-    console.log("Delete File Name:", fileName);
+      console.log("Delete Employee ID:", employeeId);
+      console.log("Delete File Name:", fileName);
 
-    const response = await axios.delete(
-      `${BASE_URL}Admin/deleteFile`,
-      {
+      const response = await axios.delete(`${BASE_URL}Admin/deleteFile`, {
         params: {
           employeeId: employeeId,
           fileName: fileName,
         },
         withCredentials: true,
-      }
-    );
-
-    console.log("Delete API Response:", response.data);
-
-    // Remove deleted file from UI
-    setDocuments((prevDocuments) => {
-      const updatedDocuments = { ...prevDocuments };
-
-      Object.keys(updatedDocuments).forEach((key) => {
-        const currentFileName = getDeleteFileName(
-          updatedDocuments[key],
-          documentName
-        );
-
-        if (currentFileName === fileName) {
-          delete updatedDocuments[key];
-        }
       });
 
-      return updatedDocuments;
-    });
+      console.log("Delete API Response:", response.data);
 
-    // Close preview if deleted document was being previewed
-    if (previewName === documentName) {
-      setPreviewFile("");
-      setPreviewName("");
+      // Remove deleted file from UI
+      setDocuments((prevDocuments) => {
+        const updatedDocuments = { ...prevDocuments };
+
+        Object.keys(updatedDocuments).forEach((key) => {
+          const currentFileName = getDeleteFileName(
+            updatedDocuments[key],
+            documentName,
+          );
+
+          if (currentFileName === fileName) {
+            delete updatedDocuments[key];
+          }
+        });
+
+        return updatedDocuments;
+      });
+
+      // Close preview if deleted document was being previewed
+      if (previewName === documentName) {
+        setPreviewFile("");
+        setPreviewName("");
+      }
+
+      toast.success(
+        response?.data?.message || `${documentName} deleted successfully.`,
+      );
+    } catch (error) {
+      console.error("Delete Document Error:", error);
+      console.error("Delete Response:", error?.response?.data);
+
+      toast.error(
+        error?.response?.data?.message ||
+          "Unable to delete document. Please try again.",
+      );
+    } finally {
+      setDeletingFile("");
     }
-
-    toast.success(
-      response?.data?.message ||
-        `${documentName} deleted successfully.`
-    );
-  } catch (error) {
-    console.error("Delete Document Error:", error);
-    console.error(
-      "Delete Response:",
-      error?.response?.data
-    );
-
-    toast.error(
-      error?.response?.data?.message ||
-        "Unable to delete document. Please try again."
-    );
-  } finally {
-    setDeletingFile("");
-  }
-};
+  };
 
   // ============================================
   // DELETE CLICK
   // ============================================
 
-const confirmDelete = (filePath, documentName) => {
-  const fileName = getFileName(
-    filePath,
-    documentName
-  );
+  const confirmDelete = (filePath, documentName) => {
+    const fileName = getFileName(filePath, documentName);
 
-  const confirmed = window.confirm(
-    `Are you sure you want to delete ${documentName}?`
-  );
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${documentName}?`,
+    );
 
-  if (!confirmed) {
-    return;
-  }
+    if (!confirmed) {
+      return;
+    }
 
-  setDeletingFile(fileName);
+    setDeletingFile(fileName);
 
-  handleDelete(filePath, documentName);
-};
+    handleDelete(filePath, documentName);
+  };
 
   // ============================================
   // CHECK IMAGE
   // ============================================
 
   const isImageFile = (fileUrl) => {
-    return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(
-      fileUrl
-    );
+    return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(fileUrl);
   };
 
   // ============================================
@@ -584,11 +543,7 @@ const confirmDelete = (filePath, documentName) => {
         },
       ]}
     >
-      <button
-        type="button"
-        className="back-btn"
-        onClick={() => navigate("/")}
-      >
+      <button type="button" className="back-btn" onClick={() => navigate("/")}>
         ← Back
       </button>
 
@@ -596,7 +551,6 @@ const confirmDelete = (filePath, documentName) => {
         <h1>View Documents</h1>
 
         <div className="view-doc-bottom">
-
           {/* EMPLOYEE DROPDOWN */}
 
           <div className="emp-list">
@@ -607,18 +561,12 @@ const confirmDelete = (filePath, documentName) => {
               disabled={loadingEmployees}
             >
               <option value="">
-                {loadingEmployees
-                  ? "Loading Employees..."
-                  : "Select Employee"}
+                {loadingEmployees ? "Loading Employees..." : "Select Employee"}
               </option>
 
               {employees.map((employee) => (
-                <option
-                  key={employee.uid}
-                  value={employee.uid}
-                >
-                  {employee.employeeName} -{" "}
-                  {employee.employeeId}
+                <option key={employee.uid} value={employee.uid}>
+                  {employee.employeeName} - {employee.employeeId}
                 </option>
               ))}
             </select>
@@ -627,9 +575,7 @@ const confirmDelete = (filePath, documentName) => {
           {/* LOADING */}
 
           {loadingDocuments && (
-            <div className="document-loading">
-              Loading Documents...
-            </div>
+            <div className="document-loading">Loading Documents...</div>
           )}
 
           {/* NO DOCUMENTS */}
@@ -644,144 +590,104 @@ const confirmDelete = (filePath, documentName) => {
 
           {/* DOCUMENTS */}
 
-          {!loadingDocuments &&
-            availableDocuments.length > 0 && (
-              <div className="document-preview-wrapper">
+          {!loadingDocuments && availableDocuments.length > 0 && (
+            <div className="document-preview-wrapper">
+              {/* DOCUMENT LIST */}
 
-                {/* DOCUMENT LIST */}
+              <div className="document-list">
+                {availableDocuments.map((document) => {
+                  const filePath = documents[document.key];
 
-                <div className="document-list">
-                  {availableDocuments.map((document) => {
-                    const filePath =
-                      documents[document.key];
+                  const fileName = getFileName(filePath, document.name);
 
-                    const fileName = getFileName(
-                      filePath,
-                      document.name
-                    );
+                  return (
+                    <div className="document-card" key={document.key}>
+                      <GrDocumentPdf className="pdf-icon" />
 
-                    return (
-                      <div
-                        className="document-card"
-                        key={document.key}
-                      >
-                        <GrDocumentPdf className="pdf-icon" />
+                      <p>{document.name}</p>
 
-                        <p>{document.name}</p>
-
-                        <div className="btn-parent">
-
-                          {/* PREVIEW */}
-
-                          <button
-                            type="button"
-                            className="pre"
-                            onClick={() =>
-                              handlePreview(
-                                filePath,
-                                document.name
-                              )
-                            }
-                          >
-                            <MdOutlinePreview />
-                            Preview
-                          </button>
-
-                          {/* DOWNLOAD */}
-
-                          <button
-                            type="button"
-                            className="down"
-                            onClick={() =>
-                              handleDownload(
-                                filePath,
-                                document.name
-                              )
-                            }
-                          >
-                            <IoMdDownload />
-                            Download
-                          </button>
-
-                          {/* DELETE */}
-
-                          <button
-                            type="button"
-                            className="delete"
-                            onClick={() =>
-                              confirmDelete(
-                                filePath,
-                                document.name
-                              )
-                            }
-                            disabled={
-                              deletingFile === fileName
-                            }
-                          >
-                            <MdDelete />
-
-                            {deletingFile === fileName
-                              ? "Deleting..."
-                              : "Delete"}
-                          </button>
-
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* PREVIEW SECTION */}
-
-                <div className="preview-section">
-                  {previewFile ? (
-                    <>
-                      <div className="preview-header">
-                        <h2>{previewName}</h2>
+                      <div className="btn-parent">
+                        {/* PREVIEW */}
 
                         <button
                           type="button"
-                          onClick={() => {
-                            setPreviewFile("");
-                            setPreviewName("");
-                          }}
+                          className="pre"
+                          onClick={() => handlePreview(filePath, document.name)}
                         >
-                          Close
+                          <MdOutlinePreview />
+                          Preview
+                        </button>
+
+                        {/* DOWNLOAD */}
+
+                        <button
+                          type="button"
+                          className="down"
+                          onClick={() =>
+                            handleDownload(filePath, document.name)
+                          }
+                        >
+                          <IoMdDownload />
+                          Download
+                        </button>
+
+                        {/* DELETE */}
+
+                        <button
+                          type="button"
+                          className="delete"
+                          onClick={() => confirmDelete(filePath, document.name)}
+                          disabled={deletingFile === fileName}
+                        >
+                          <MdDelete />
+
+                          {deletingFile === fileName ? "Deleting..." : "Delete"}
                         </button>
                       </div>
-
-                      <div className="preview-content">
-                        {isImageFile(previewFile) ? (
-                          <img
-                            src={previewFile}
-                            alt={previewName}
-                          />
-                        ) : isPdfFile(previewFile) ? (
-                          <iframe
-                            src={previewFile}
-                            title={previewName}
-                          />
-                        ) : (
-                          <iframe
-                            src={previewFile}
-                            title={previewName}
-                          />
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="preview-empty">
-                      <MdOutlinePreview />
-
-                      <p>
-                        Select Preview to view the document
-                      </p>
                     </div>
-                  )}
-                </div>
-
+                  );
+                })}
               </div>
-            )}
+
+              {/* PREVIEW SECTION */}
+
+              <div className="preview-section">
+                {previewFile ? (
+                  <>
+                    <div className="preview-header">
+                      <h2>{previewName}</h2>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPreviewFile("");
+                          setPreviewName("");
+                        }}
+                      >
+                        Close
+                      </button>
+                    </div>
+
+                    <div className="preview-content">
+                      {isImageFile(previewFile) ? (
+                        <img src={previewFile} alt={previewName} />
+                      ) : isPdfFile(previewFile) ? (
+                        <iframe src={previewFile} title={previewName} />
+                      ) : (
+                        <iframe src={previewFile} title={previewName} />
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="preview-empty">
+                    <MdOutlinePreview />
+
+                    <p>Select Preview to view the document</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </MainPanel>
