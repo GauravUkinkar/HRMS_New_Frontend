@@ -30,18 +30,18 @@ const Calender = ({ attendanceData = [] }) => {
     const status = getAttendanceStatus(day);
     const isToday = dateString === todayString;
 
-    let className = "custom-calendar-day";
+    let statusClass = "";
 
-    // Attendance color
     if (status === "FULL_DAY") {
-      className += " attendance-present";
+      statusClass = "attendance-present";
     } else if (status === "HALF_DAY") {
-      className += " attendance-half-day";
+      statusClass = "attendance-half-day";
     } else if (status === "ABSENT") {
-      className += " attendance-absent";
+      statusClass = "attendance-absent";
     }
 
-    // Today's date
+    let className = "custom-calendar-day";
+
     if (isToday) {
       className += " today-date";
     }
@@ -56,7 +56,15 @@ const Calender = ({ attendanceData = [] }) => {
         {...other}
         className={className}
       >
-        {dayjs(day).date()}
+        <span className="date-number">
+          {dayjs(day).date()}
+        </span>
+
+        {statusClass && (
+          <span
+            className={`attendance-dot ${statusClass}`}
+          ></span>
+        )}
       </button>
     );
   };

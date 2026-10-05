@@ -1,144 +1,202 @@
 .MuiDateCalendar-root {
   width: 100% !important;
   height: 100% !important;
+  max-height: none !important;
   margin: 0 !important;
+  padding: 0 !important;
+}
+
+.MuiPickersCalendarHeader-root {
+  margin-top: 0 !important;
+  padding: 0 8px 8px 8px !important;
+  min-height: 40px !important;
+}
+
+.MuiPickersCalendarHeader-label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.MuiPickersCalendarHeader-switchViewButton {
+  padding: 4px !important;
+}
+
+.MuiPickersArrowSwitcher-root {
+  gap: 2px;
+}
+
+.MuiPickersArrowSwitcher-button {
+  padding: 4px !important;
 }
 
 .MuiDayCalendar-header {
-  gap: 20px;
+  justify-content: space-between !important;
+  gap: 0 !important;
+  margin-bottom: 3px !important;
 }
 
 .MuiDayCalendar-weekContainer {
-  gap: 20px;
+  justify-content: space-between !important;
+  gap: 0 !important;
+  margin: 0 !important;
 }
 
+.MuiDayCalendar-weekContainer > * {
+  margin: 0 !important;
+}
+
+/* Calendar date */
+
 .custom-calendar-day {
-  width: 28px;
-  height: 28px;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
   border: none;
-  border-radius: 50%;
+  border-radius: 5px;
   background: transparent;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-family: inherit;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 400;
+
+  color: #4d4d4d;
   cursor: pointer;
+
   transition: all 0.2s ease;
 }
 
-/* Present */
-.custom-calendar-day.attendance-present {
-  background: #20ad9b;
-  color: #fff;
-    width: 24px;
-  height: 24px;
+/* Date number */
+
+.date-number {
+  position: relative;
+  z-index: 2;
+  line-height: 1;
 }
 
-.custom-calendar-day.attendance-present:hover {
+/* Hover */
+
+.custom-calendar-day:hover {
+  background: #f1f5f9;
+}
+
+/* Attendance dot */
+
+.attendance-dot {
+  position: absolute;
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  left: 50%;
+  bottom: 2px;
+
+  transform: translateX(-50%);
+}
+
+/* Present */
+
+.attendance-dot.attendance-present {
   background: #20ad9b;
 }
 
 /* Half Day */
-.custom-calendar-day.attendance-half-day {
-  background: #ffc62b;
-  color: #fff;
-    width: 24px;
-  height: 24px;
-}
 
-.custom-calendar-day.attendance-half-day:hover {
+.attendance-dot.attendance-half-day {
   background: #ffc62b;
-    width: 24px;
-  height: 24px;
 }
 
 /* Absent */
-.custom-calendar-day.attendance-absent {
+
+.attendance-dot.attendance-absent {
   background: #ff3b3b;
-  color: #fff;
-    width: 24px;
-  height: 24px;
 }
 
-.custom-calendar-day.attendance-absent:hover {
-  background: #ff3b3b;
-    width: 24px;
-  height: 24px;
-}
+/* Today */
 
-/* TODAY */
 .custom-calendar-day.today-date {
-  font-weight: 700;
-}
-
-
-.custom-calendar-day.today-date:not(
-    .attendance-present,
-    .attendance-half-day,
-    .attendance-absent
-  ) {
   background: #4d89f8;
   color: #fff;
-      width: 24px;
-  height: 24px;
+
+  font-weight: 600;
+  border-radius: 4px;
 }
 
+/* Today hover */
+
+.custom-calendar-day.today-date:hover {
+  background: #4d89f8;
+}
+
+/* Dot on today's date */
+
+.custom-calendar-day.today-date .attendance-dot {
+  bottom: 1px;
+}
+
+/* Outside current month */
 
 .custom-calendar-day.outside-month {
-  opacity: 0.35;
+  color: #c9c9c9;
+  opacity: 1;
 }
+
+.custom-calendar-day.outside-month:hover {
+  background: transparent;
+}
+
+/* Today's dot should remain visible */
+
+.custom-calendar-day.today-date .attendance-dot.attendance-present {
+  background: #20ad9b;
+}
+
+.custom-calendar-day.today-date .attendance-dot.attendance-half-day {
+  background: #ffc62b;
+}
+
+.custom-calendar-day.today-date .attendance-dot.attendance-absent {
+  background: #ff3b3b;
+}
+
+/* Responsive */
+
 @media (max-width: 1670px) {
-  .MuiDayCalendar-header,
-  .MuiDayCalendar-weekContainer {
-    gap: 12px;
+  .MuiPickersCalendarHeader-root {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
   }
 
   .custom-calendar-day {
-    width: 26px;
-    height: 26px;
+    width: 29px;
+    height: 29px;
     font-size: 13px;
   }
 
-  .custom-calendar-day.attendance-present,
-  .custom-calendar-day.attendance-half-day,
-  .custom-calendar-day.attendance-absent,
-  .custom-calendar-day.today-date:not(
-      .attendance-present,
-      .attendance-half-day,
-      .attendance-absent
-    ) {
-    width: 23px;
-    height: 23px;
+  .attendance-dot {
+    width: 4px;
+    height: 4px;
+    bottom: 2px;
   }
 }
-
-
 
 @media (max-width: 1495px) {
-  .MuiDayCalendar-header,
-  .MuiDayCalendar-weekContainer {
-    gap: 8px;
-  }
-
   .custom-calendar-day {
-    width: 25px;
-    height: 25px;
-    font-size: 13px;
+    width: 27px;
+    height: 27px;
+    font-size: 12px;
   }
 
-  .custom-calendar-day.attendance-present,
-  .custom-calendar-day.attendance-half-day,
-  .custom-calendar-day.attendance-absent,
-  .custom-calendar-day.today-date:not(
-      .attendance-present,
-      .attendance-half-day,
-      .attendance-absent
-    ) {
-    width: 22px;
-    height: 22px;
+  .attendance-dot {
+    width: 4px;
+    height: 4px;
+    bottom: 1px;
   }
 }
-
-
-
