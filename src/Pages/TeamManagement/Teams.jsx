@@ -1,4 +1,3 @@
-
 import React, { useContext, useMemo, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { UserContext } from "../../../Context";
@@ -22,11 +21,11 @@ import {
   FiArrowRight,
   FiX,
   FiMail,
+
   FiBriefcase,
 } from "react-icons/fi";
 
 import "./Teams.scss";
-
 
 const teamsData = [
   {
@@ -186,10 +185,7 @@ const Teams = () => {
 
   const totalTeams = teams.length;
 
-  const totalMembers = teams.reduce(
-    (total, team) => total + team.members,
-    0
-  );
+  const totalMembers = teams.reduce((total, team) => total + team.members, 0);
 
   const teamLeaders = teams.length;
 
@@ -227,7 +223,6 @@ const Teams = () => {
       }
     >
       <div className="team-management-page">
-
         {/* HEADER */}
         <div className="team-page-header">
           <div>
@@ -254,7 +249,6 @@ const Teams = () => {
 
         {/* SUMMARY CARDS */}
         <div className="team-summary-grid">
-
           <div className="summary-card">
             <div className="summary-icon blue">
               <FiUsers />
@@ -298,12 +292,10 @@ const Teams = () => {
               <h2>{activeTeams}</h2>
             </div>
           </div>
-
         </div>
 
         {/* SEARCH / FILTER */}
         <div className="team-toolbar">
-
           <div className="team-search">
             <FiSearch />
 
@@ -322,14 +314,9 @@ const Teams = () => {
             displayEmpty
           >
             <MenuItem value="all">All Teams</MenuItem>
-            <MenuItem value="hasMembers">
-              Teams With Members
-            </MenuItem>
-            <MenuItem value="empty">
-              No Members
-            </MenuItem>
+            <MenuItem value="hasMembers">Teams With Members</MenuItem>
+            <MenuItem value="empty">No Members</MenuItem>
           </Select>
-
         </div>
 
         {/* SECTION HEADING */}
@@ -346,24 +333,16 @@ const Teams = () => {
 
         {/* TEAM GRID */}
         <div className="team-grid">
-
           {filteredTeams.map((team) => (
-
             <div className="team-card" key={team.id}>
-
               <div className={`team-card-top ${team.color}`} />
 
               <div className="team-card-content">
-
                 {/* CARD HEADER */}
                 <div className="team-card-header">
-
                   <div className="team-name-wrapper">
-
                     <div
-                      className={`team-icon ${
-                        colorClasses[team.color].icon
-                      }`}
+                      className={`team-icon ${colorClasses[team.color].icon}`}
                     >
                       <FiUsers />
                     </div>
@@ -378,80 +357,53 @@ const Teams = () => {
                       >
                         <span className="status-dot" />
 
-                        {team.members > 0
-                          ? "Active"
-                          : "No members"}
+                        {team.members > 0 ? "Active" : "No members"}
                       </span>
                     </div>
-
                   </div>
 
                   <IconButton className="more-btn">
                     <FiMoreVertical />
                   </IconButton>
-
                 </div>
 
                 {/* TEAM LEADER */}
                 <div className="team-leader">
-
                   <span>Team Leader</span>
 
                   <div className="leader-info">
-
-                    <Avatar>
-                      {team.leader.charAt(0).toUpperCase()}
-                    </Avatar>
+                    <Avatar>{team.leader.charAt(0).toUpperCase()}</Avatar>
 
                     <p>{team.leader}</p>
-
                   </div>
-
                 </div>
 
                 <div className="team-divider" />
 
                 {/* MEMBERS */}
                 {team.members > 0 ? (
-
                   <div className="team-member-preview">
-
                     <div className="avatar-stack">
-
-                      {team.membersList
-                        .slice(0, 4)
-                        .map((member, index) => (
-
-                          <Avatar
-                            key={member.employeeId}
-                            className={`avatar-${index}`}
-                          >
-                            {member.name.charAt(0)}
-                          </Avatar>
-
-                        ))}
+                      {team.membersList.slice(0, 4).map((member, index) => (
+                        <Avatar
+                          key={member.employeeId}
+                          className={`avatar-${index}`}
+                        >
+                          {member.name.charAt(0)}
+                        </Avatar>
+                      ))}
 
                       {team.members > 4 && (
-                        <div className="more-members">
-                          +{team.members - 4}
-                        </div>
+                        <div className="more-members">+{team.members - 4}</div>
                       )}
-
                     </div>
 
                     <span className="member-count">
-                      {team.members}{" "}
-                      {team.members === 1
-                        ? "Member"
-                        : "Members"}
+                      {team.members} {team.members === 1 ? "Member" : "Members"}
                     </span>
-
                   </div>
-
                 ) : (
-
                   <div className="empty-members">
-
                     <div className="empty-members-icon">
                       <FiUserPlus />
                     </div>
@@ -460,16 +412,12 @@ const Teams = () => {
                       <strong>No members assigned</strong>
                       <span>Add employees to this team</span>
                     </div>
-
                   </div>
-
                 )}
 
                 {/* FOOTER */}
                 <div className="team-card-footer">
-
                   {team.members === 0 ? (
-
                     <button
                       className="add-member-link"
                       onClick={() => openTeam(team)}
@@ -477,13 +425,8 @@ const Teams = () => {
                       <FiPlus />
                       Add Member
                     </button>
-
                   ) : (
-
-                    <span className="member-label">
-                      {team.members} Members
-                    </span>
-
+                    <span className="member-label">{team.members} Members</span>
                   )}
 
                   <button
@@ -493,31 +436,21 @@ const Teams = () => {
                     View Team
                     <FiArrowRight />
                   </button>
-
                 </div>
-
               </div>
             </div>
-
           ))}
-
         </div>
 
         {/* EMPTY SEARCH STATE */}
         {filteredTeams.length === 0 && (
-
           <div className="no-teams">
-
             <FiSearch />
 
             <h3>No teams found</h3>
 
-            <p>
-              Try changing your search or filter to find a team.
-            </p>
-
+            <p>Try changing your search or filter to find a team.</p>
           </div>
-
         )}
 
         {/* TEAM DRAWER */}
@@ -527,16 +460,11 @@ const Teams = () => {
           onClose={closeDrawer}
           className="team-drawer"
         >
-
           {selectedTeam && (
-
             <div className="drawer-content">
-
               {/* DRAWER HEADER */}
               <div className="drawer-header">
-
                 <div className="drawer-title">
-
                   <div
                     className={`drawer-team-icon ${
                       colorClasses[selectedTeam.color].icon
@@ -550,59 +478,42 @@ const Teams = () => {
 
                     <span>
                       {selectedTeam.members}{" "}
-                      {selectedTeam.members === 1
-                        ? "Member"
-                        : "Members"}
+                      {selectedTeam.members === 1 ? "Member" : "Members"}
                     </span>
                   </div>
-
                 </div>
 
                 <IconButton onClick={closeDrawer}>
                   <FiX />
                 </IconButton>
-
               </div>
 
               {/* TEAM LEADER */}
               <div className="drawer-leader-card">
-
                 <span>TEAM LEADER</span>
 
                 <div className="drawer-leader">
-
-                  <Avatar>
-                    {selectedTeam.leader
-                      .charAt(0)
-                      .toUpperCase()}
-                  </Avatar>
+                  <Avatar>{selectedTeam.leader.charAt(0).toUpperCase()}</Avatar>
 
                   <div>
-
                     <strong>{selectedTeam.leader}</strong>
 
                     <p>
                       <FiMail />
                       Team Leader
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
 
               {/* MEMBERS HEADER */}
               <div className="drawer-members-header">
-
                 <div>
                   <h3>Team Members</h3>
 
                   <span>
                     {selectedTeam.members}{" "}
-                    {selectedTeam.members === 1
-                      ? "employee"
-                      : "employees"}
+                    {selectedTeam.members === 1 ? "employee" : "employees"}
                   </span>
                 </div>
 
@@ -613,56 +524,36 @@ const Teams = () => {
                 >
                   Add Member
                 </Button>
-
               </div>
 
               {/* MEMBERS */}
               {selectedTeam.membersList.length > 0 ? (
-
                 <div className="members-list">
-
                   {selectedTeam.membersList.map((member) => (
-
-                    <div
-                      className="member-row"
-                      key={member.employeeId}
-                    >
-
-                      <Avatar>
-                        {member.name.charAt(0)}
-                      </Avatar>
+                    <div className="member-row" key={member.employeeId}>
+                      <Avatar>{member.name.charAt(0)}</Avatar>
 
                       <div className="member-details">
-
                         <strong>{member.name}</strong>
 
                         <span>{member.employeeId}</span>
-
                       </div>
 
                       <div className="member-role">
                         <span>{member.role}</span>
                       </div>
-
                     </div>
-
                   ))}
-
                 </div>
-
               ) : (
-
                 <div className="drawer-empty">
-
                   <div>
                     <FiUserPlus />
                   </div>
 
                   <h3>No members assigned</h3>
 
-                  <p>
-                    This team currently doesn't have any members.
-                  </p>
+                  <p>This team currently doesn't have any members.</p>
 
                   <Button
                     className="drawer-empty-btn"
@@ -671,17 +562,11 @@ const Teams = () => {
                   >
                     Add First Member
                   </Button>
-
                 </div>
-
               )}
-
             </div>
-
           )}
-
         </Drawer>
-
       </div>
     </MainPanel>
   );
