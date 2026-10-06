@@ -507,3 +507,47 @@
     }
   }
 }
+.logout_confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logout_message {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.logout_actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.logout_actions button {
+  border: none;
+  border-radius: 5px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.logout_cancel {
+  background-color: #e5e5e5;
+  color: #333;
+}
+
+.logout_ok {
+  background-color: var(--accent);
+  color: white;
+}
+
+.logout_cancel:hover {
+  opacity: 0.8;
+}
+
+.logout_ok:hover {
+  opacity: 0.85;
+}

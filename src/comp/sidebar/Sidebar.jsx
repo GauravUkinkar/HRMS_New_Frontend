@@ -2,7 +2,7 @@ import "./Sidebar.scss";
 
 import logo from "../../assets/blacklogo.png";
 import logo2 from "../../assets/logopan.webp";
-
+import { toast } from "react-toastify";
 import { IoDocuments } from "react-icons/io5";
 import { FiHome } from "react-icons/fi";
 import { BsPerson } from "react-icons/bs";
@@ -256,23 +256,63 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
     }
   };
 
-  const logout = async () => {
-    try {
-      await axios.post(
-        `${BASE_URL}AuthController/logout`,
-        {},
-        {
-          withCredentials: true,
-        },
-      );
+const logout = async () => {
+  try {
+    await axios.post(
+      `${BASE_URL}AuthController/logout`,
+      {},
+      {
+        withCredentials: true,
+      },
+    );
 
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
+    navigate("/login");
+  } catch (error) {
+    console.error("Logout failed:", error);
 
-      navigate("/login");
-    }
-  };
+    navigate("/login");
+  }
+};
+
+const confirmLogout = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  toast(
+    ({ closeToast }) => (
+      <div className="logout_confirm">
+        <div className="logout_message">
+          Are you sure you want to logout?
+        </div>
+
+        <div className="logout_actions">
+          <button
+            className="logout_cancel"
+            onClick={closeToast}
+          >
+            Cancel
+          </button>
+
+          <button
+            className="logout_ok"
+            onClick={async () => {
+              closeToast();
+              await logout();
+            }}
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    ),
+    {
+      position: "bottom-left",
+      autoClose: false,
+      closeOnClick: false,
+      closeButton: false,
+    },
+  );
+};
 
   if (roleLoading) {
     return (
@@ -382,7 +422,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
 
 
 <div className="bottom_section" >
-  <Link className="logout" to="/login" onClick={logout}>
+  <Link className="logout" to="/login" onClick={confirmLogout}>
     <span>
       <LuLogOut />
     </span>
