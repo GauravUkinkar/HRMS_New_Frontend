@@ -273,7 +273,7 @@
       color: rgba(255, 255, 255, 0.7);
       font-size: 11px;
       padding: 4px 18px;
-      text-align: center;
+      text-align: left;
 
       span {
         white-space: nowrap;
@@ -427,7 +427,7 @@
         color: rgba(255, 255, 255, 0.7);
         font-size: 11px;
         padding: 4px 18px;
-        text-align: center;
+        text-align: left;
 
         span {
           white-space: nowrap;
@@ -499,7 +499,7 @@
     color: rgba(255, 255, 255, 0.7);
     font-size: 11px;
     padding: 4px 18px;
-    // text-align: left;
+    text-align: left;
     transition: var(--trans);
 
     span {
