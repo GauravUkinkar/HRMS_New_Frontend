@@ -301,7 +301,7 @@
       max-width: 100%;
       height: auto;
       background: #fff;
-      border-radius: 22px;
+      border-radius: 10px;
       overflow: hidden;
       position: relative;
       box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
@@ -396,15 +396,16 @@
       .header-content {
         position: relative;
         z-index: 2;
-        min-width: 0;
+        display:flex;
+        flex-direction: column;
+        gap:5px;
 
         .session-status {
           width: fit-content;
           display: flex;
           align-items: center;
-          gap: 8px;
-          margin-bottom: 8px;
-          padding: 6px 13px;
+          gap: 10px;
+          padding: 5px 15px;
           border-radius: 30px;
           background: rgba(255, 255, 255, 0.15);
           font-size: 14px;
@@ -476,13 +477,12 @@
 
     .info-card {
       height:100%;
-      padding: 20px;
+      padding: 15px;
       display: flex;
       align-items: center;
-      gap: 18px;
-      border-radius: 18px;
+      gap: 10px;
+      border-radius: 5px;
       border: 1px solid transparent;
-      box-sizing: border-box;
     }
 
     .punch-in-card {
@@ -496,16 +496,16 @@
     }
 
     .info-icon {
-      width: 76px;
-      height: 76px;
-      min-width: 76px;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
 
       svg {
-        font-size: 36px;
+        font-size: 20px;
       }
     }
 
@@ -520,12 +520,11 @@
     }
 
     .info-content {
-      min-width: 0;
       display: flex;
       flex-direction: column;
+      gap:5px;
 
       .info-label {
-        margin-bottom: 4px;
         color: #526174;
         font-size: 14px;
         font-weight: 600;
@@ -533,14 +532,13 @@
 
       strong {
         color: #103f4b;
-        font-size: 29px;
+        font-size: 24px;
         font-weight: 700;
         line-height: 1.1;
         white-space: nowrap;
       }
 
       small {
-        margin-top: 8px;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -562,12 +560,12 @@
 
     .active-session {
       min-height: 76px;
-      padding: 14px 18px;
+      padding: 10px;
       display: flex;
       align-items: center;
       gap: 15px;
       box-sizing: border-box;
-      border-radius: 17px;
+      border-radius: 5px;
       background: linear-gradient(135deg, #edfaf6, #e5f8f3);
       border: 1px solid #d5eee7;
 
@@ -595,7 +593,6 @@
       }
 
       p {
-        margin: 5px 0 0;
         color: #61758b;
         font-size: 14px;
         line-height: 1.4;
@@ -627,22 +624,21 @@
     }
 
     .modal-footer {
-      min-height: 105px;
-      padding: 17px 20px;
+      padding: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 20px;
       box-sizing: border-box;
       border: 1px solid #e2ebf5;
-      border-radius: 17px;
+      border-radius: 5px;
       background: linear-gradient(135deg, #f9fbff, #f3f7fc);
     }
 
     .quick-tip {
       display: flex;
       align-items: center;
-      gap: 13px;
+      gap: 10px;
       min-width: 0;
 
       .tip-icon {
@@ -664,7 +660,6 @@
       }
 
       p {
-        margin: 0;
         color: #718198;
         font-size: 12px;
         line-height: 1.5;
@@ -675,15 +670,13 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      margin: 0;
 
       .end-btn {
-        min-width: 225px;
         padding: 13px 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 9px;
+        gap: 10px;
         border: none;
         border-radius: 10px;
         background: linear-gradient(100deg, #078d7d, #08776c);
@@ -696,13 +689,12 @@
         box-shadow: 0 8px 20px rgba(7, 119, 107, 0.2);
 
         svg {
-          font-size: 21px;
+          font-size: 20px;
           flex-shrink: 0;
         }
 
         .btn-arrow {
-          font-size: 21px;
-          margin-left: 2px;
+          font-size: 20px;
         }
 
         &:hover {
@@ -1112,4 +1104,66 @@
       }
     }
   }
+}
+
+
+
+
+
+.Toastify__toast-container {
+  z-index: 99999 !important;
+}
+
+.confirm-toast {
+  width: 300px;
+  padding: 2px;
+}
+
+.confirm-toast-title {
+  margin-bottom: 6px;
+  color: #1f2937;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.confirm-toast-message {
+  margin-bottom: 14px;
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.confirm-toast-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.confirm-toast-buttons button {
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--trans);
+}
+
+.confirm-cancel {
+  border: 1px solid #d0d5dd;
+  background: #fff;
+  color: #475467;
+}
+
+.confirm-cancel:hover {
+  background: #f2f4f7;
+}
+
+.confirm-ok {
+  border: 1px solid #078d7d;
+  background: #078d7d;
+  color: #fff;
+}
+
+.confirm-ok:hover {
+  background: #066f64;
 }

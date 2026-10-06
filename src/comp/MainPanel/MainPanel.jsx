@@ -577,17 +577,55 @@ const MainPanel = ({
   // END YOUR DAY
   // =========================================================
 
-  const handleEndYourDay = () => {
-    if (!punchInTime) {
-      return;
-    }
+const handleEndYourDay = () => {
+  if (!punchInTime || punchOutTime) {
+    return;
+  }
 
-    if (punchOutTime) {
-      return;
-    }
+  toast.info(
+    <div className="confirm-toast">
+      <div className="confirm-toast-title">
+        Are you sure?
+      </div>
 
-    handlePunchOut();
-  };
+      <div className="confirm-toast-message">
+        Are you sure you want to end your day?
+      </div>
+
+      <div className="confirm-toast-buttons">
+        <button
+          type="button"
+          className="confirm-cancel"
+          onClick={() => {
+            toast.dismiss();
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          className="confirm-ok"
+          onClick={() => {
+            toast.dismiss();
+            handlePunchOut();
+          }}
+        >
+          OK
+        </button>
+      </div>
+    </div>,
+    {
+      position: "top-center",
+      autoClose: false,
+      closeOnClick: false,
+      closeButton: false,
+      draggable: false,
+      icon: false,
+      pauseOnHover: true,
+    }
+  );
+};
 
   // =========================================================
   // USER ROLE
