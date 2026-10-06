@@ -435,24 +435,23 @@ const LeaveManagement = () => {
 
   return (
     <MainPanel
-                      breadcrumbs={[
-          { label: "Dashboard", link: "/dashboard" },
-          { label: "Leave Management" },
-        ]}
-        
-        title={
-          String(user?.role || user?.crmRole || "")
-            .trim()
-            .toUpperCase() === "ADMIN"
-            ? "Admin Dashboard"
-            : "Admin Dashboard"
-        }
+      breadcrumbs={[
+        { label: "Dashboard", link: "/dashboard" },
+        { label: "Leave Management" },
+      ]}
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "ADMIN"
+          ? "Admin Dashboard"
+          : "Admin Dashboard"
+      }
     >
       <div className="leave-list">
         {/* BACK BUTTON */}
         <button
           type="button"
-          className="leave-back-btn"
+          className="back-btn"
           onClick={() => {
             window.location.href = "/";
           }}

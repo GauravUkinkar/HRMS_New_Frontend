@@ -8,11 +8,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: var(--accent2);
+    padding: 10px 15px;
+    color: white;
+    border-radius: 5px;
 
     h2 {
-      font-size: 28px;
+      font-size: 20px;
       font-weight: 700;
     }
+
 
   }
   .table-row-light {
@@ -43,26 +48,5 @@
       color: #0b8b95;
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
 }
 

@@ -1,23 +1,30 @@
 .top-parent {
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+
   padding: 20px 10px;
   box-sizing: border-box;
   flex-direction: column;
+  .previous-view-title{
+    background-color: var(--accent2);
+    padding: 10px 8px;
+    border-radius: 5px;
+    width: 100px;
+    
+  }
 
   h1 {
     font-size: 28px;
     font-weight: 700;
-    color: #000;
+    color: white;
+    
   }
 }
 
 .btn-group {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
 
   .count {

@@ -147,7 +147,6 @@
         flex-direction: column;
         gap: 10px;
 
-
         .calendar-wrapper {
           width: 100%;
           margin-bottom: 5px;
@@ -179,10 +178,11 @@
           }
         }
 
-     .rmdp-left, .rmdp-right {
-      display: flex;
-      align-items: center;
-     }
+        .rmdp-left,
+        .rmdp-right {
+          display: flex;
+          align-items: center;
+        }
 
         .calendar-legend {
           position: absolute;
@@ -304,7 +304,6 @@
         }
 
         button {
-      
           margin-top: 20px;
           align-self: center;
 

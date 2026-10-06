@@ -32,8 +32,7 @@ const EmpList = () => {
   // ==========================================
   // EMPLOYEE ATTENDANCE STATES
   // ==========================================
-  const [showEmployeeAttendance, setShowEmployeeAttendance] =
-    useState(false);
+  const [showEmployeeAttendance, setShowEmployeeAttendance] = useState(false);
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
@@ -75,10 +74,7 @@ const EmpList = () => {
     } catch (error) {
       console.log(error.response?.data || error);
 
-      toast.error(
-        error?.response?.data?.message ||
-          "Failed to load employees"
-      );
+      toast.error(error?.response?.data?.message || "Failed to load employees");
     }
   };
 
@@ -92,7 +88,7 @@ const EmpList = () => {
     }
 
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this employee?"
+      "Are you sure you want to delete this employee?",
     );
 
     if (!confirmDelete) return;
@@ -102,7 +98,7 @@ const EmpList = () => {
         `${BASE_URL}Admin/deleteUserByUserId/${uid}`,
         {
           withCredentials: true,
-        }
+        },
       );
 
       console.log("Delete Employee Response:", response.data);
@@ -116,19 +112,15 @@ const EmpList = () => {
       // Refresh employee list
       getAllEmployee();
     } catch (error) {
-      console.error(
-        "Delete Employee Error:",
-        error.response?.data || error
-      );
+      console.error("Delete Employee Error:", error.response?.data || error);
 
       // ERROR TOAST
       toast.error(
-        error?.response?.data?.message ||
-          "Failed to delete employee",
+        error?.response?.data?.message || "Failed to delete employee",
         {
           position: "top-right",
           autoClose: 3000,
-        }
+        },
       );
     }
   };
@@ -136,11 +128,7 @@ const EmpList = () => {
   // ==========================================
   // GET MONTHLY ATTENDANCE
   // ==========================================
-  const getEmployeeMonthlyAttendance = async (
-    employeeId,
-    month,
-    year
-  ) => {
+  const getEmployeeMonthlyAttendance = async (employeeId, month, year) => {
     if (!employeeId) {
       setEmployeeAttendanceList([]);
 
@@ -162,38 +150,31 @@ const EmpList = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const attendanceList = Array.isArray(response?.data)
         ? response.data
         : Array.isArray(response?.data?.data)
-        ? response.data.data
-        : Array.isArray(response?.data?.result)
-        ? response.data.result
-        : [];
+          ? response.data.data
+          : Array.isArray(response?.data?.result)
+            ? response.data.result
+            : [];
 
-      console.log(
-        "Employee Monthly Attendance:",
-        attendanceList
-      );
+      console.log("Employee Monthly Attendance:", attendanceList);
 
       setEmployeeAttendanceList(attendanceList);
     } catch (error) {
-      console.error(
-        "Employee Monthly Attendance Error:",
-        error
-      );
+      console.error("Employee Monthly Attendance Error:", error);
 
       setEmployeeAttendanceList([]);
 
       toast.error(
-        error?.response?.data?.message ||
-          "Unable to load employee attendance",
+        error?.response?.data?.message || "Unable to load employee attendance",
         {
           position: "top-right",
           autoClose: 3000,
-        }
+        },
       );
     } finally {
       setEmployeeAttendanceLoading(false);
@@ -226,7 +207,7 @@ const EmpList = () => {
     await getEmployeeMonthlyAttendance(
       record?.empId,
       currentMonth,
-      currentYear
+      currentYear,
     );
   };
 
@@ -241,7 +222,7 @@ const EmpList = () => {
     await getEmployeeMonthlyAttendance(
       selectedEmployee?.empId,
       month,
-      selectedYear
+      selectedYear,
     );
   };
 
@@ -256,7 +237,7 @@ const EmpList = () => {
     await getEmployeeMonthlyAttendance(
       selectedEmployee?.empId,
       selectedMonth,
-      year
+      year,
     );
   };
 
@@ -293,9 +274,7 @@ const EmpList = () => {
       key: "employeeId",
       align: "center",
       render: (_, record) =>
-        record?.employeeId ||
-        selectedEmployee?.empId ||
-        "-",
+        record?.employeeId || selectedEmployee?.empId || "-",
     },
 
     {
@@ -303,10 +282,7 @@ const EmpList = () => {
       dataIndex: "date",
       key: "date",
       align: "center",
-      render: (date) =>
-        date
-          ? dayjs(date).format("YYYY-MM-DD")
-          : "-",
+      render: (date) => (date ? dayjs(date).format("YYYY-MM-DD") : "-"),
     },
 
     {
@@ -315,9 +291,7 @@ const EmpList = () => {
       key: "employeeName",
       align: "center",
       render: (_, record) =>
-        record?.employeeName ||
-        selectedEmployee?.name ||
-        "-",
+        record?.employeeName || selectedEmployee?.name || "-",
     },
 
     {
@@ -326,9 +300,7 @@ const EmpList = () => {
       key: "employeeDesignation",
       align: "center",
       render: (_, record) =>
-        record?.employeeDesignation ||
-        selectedEmployee?.designation ||
-        "-",
+        record?.employeeDesignation || selectedEmployee?.designation || "-",
     },
 
     {
@@ -344,9 +316,7 @@ const EmpList = () => {
           return "Punch In From Admin";
         }
 
-        return dayjs(record.punchIn).format(
-          "HH:mm:ss"
-        );
+        return dayjs(record.punchIn).format("HH:mm:ss");
       },
     },
 
@@ -363,9 +333,7 @@ const EmpList = () => {
           return "Punch Out From Admin";
         }
 
-        return dayjs(record.punchOut).format(
-          "HH:mm:ss"
-        );
+        return dayjs(record.punchOut).format("HH:mm:ss");
       },
     },
 
@@ -376,18 +344,14 @@ const EmpList = () => {
       align: "center",
 
       render: (status) => {
-        const normalizedStatus = String(
-          status || ""
-        )
+        const normalizedStatus = String(status || "")
           .trim()
           .toUpperCase();
 
         return (
           <span
             className={`attendance-status ${
-              normalizedStatus === "HALF_DAY"
-                ? "half-day-status"
-                : ""
+              normalizedStatus === "HALF_DAY" ? "half-day-status" : ""
             }`}
           >
             {status || "-"}
@@ -415,22 +379,16 @@ const EmpList = () => {
       render: (_, record) => {
         const name = record.name || "N/A";
 
-        const nameParts = name
-          .trim()
-          .split(" ");
+        const nameParts = name.trim().split(" ");
 
         const initials =
           nameParts.length > 1
-            ? `${nameParts[0][0]}${
-                nameParts[nameParts.length - 1][0]
-              }`
+            ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`
             : nameParts[0][0];
 
         return (
           <Space>
-            <Avatar className="avatar">
-              {initials.toUpperCase()}
-            </Avatar>
+            <Avatar className="avatar">{initials.toUpperCase()}</Avatar>
 
             {name}
           </Space>
@@ -512,9 +470,7 @@ const EmpList = () => {
       fixed: "right",
 
       render: (status) => (
-        <Tag color={status ? "success" : "default"}>
-          {status || "N/A"}
-        </Tag>
+        <Tag color={status ? "success" : "default"}>{status || "N/A"}</Tag>
       ),
     },
 
@@ -529,19 +485,13 @@ const EmpList = () => {
 
       render: (_, record) => (
         <Space size="middle">
-
           {/* VIEW */}
           <EyeOutlined
             className="view"
             onClick={() => {
-              console.log(
-                "Selected Employee ID:",
-                record.empId
-              );
+              console.log("Selected Employee ID:", record.empId);
 
-              navigate(
-                `/EmployeeProfile/${record.empId}`
-              );
+              navigate(`/EmployeeProfile/${record.empId}`);
             }}
           />
 
@@ -549,29 +499,22 @@ const EmpList = () => {
           <EditOutlined
             className="edit"
             onClick={() => {
-              navigate(
-                `/editEmployee/${record.empId}`
-              );
+              navigate(`/editEmployee/${record.empId}`);
             }}
           />
 
           {/* DELETE */}
           <DeleteOutlined
             className="delete"
-            onClick={() =>
-              handleDeleteEmployee(record.uid)
-            }
+            onClick={() => handleDeleteEmployee(record.uid)}
           />
 
           {/* CALENDAR */}
           <SlCalender
             className="date"
             title="View Attendance"
-            onClick={() =>
-              handleCalendar(record)
-            }
+            onClick={() => handleCalendar(record)}
           />
-
         </Space>
       ),
     },
@@ -606,11 +549,10 @@ const EmpList = () => {
       />
 
       <MainPanel
-                  breadcrumbs={[
+        breadcrumbs={[
           { label: "Dashboard", link: "/dashboard" },
           { label: "Employees List" },
         ]}
-        
         title={
           String(user?.role || user?.crmRole || "")
             .trim()
@@ -619,59 +561,41 @@ const EmpList = () => {
             : "Admin Dashboard"
         }
       >
-                      <button
-                type="button"
-                className="back-btn"
-                         onClick={() =>
-              navigate("/")
-            }
-              >
-                ← Back
-              </button>
+        <button
+          type="button"
+          className="back-btn"
+          onClick={() => navigate("/")}
+        >
+          ← Back
+        </button>
 
         {/* =====================================================
             EMPLOYEE ATTENDANCE SECTION
         ===================================================== */}
         {showEmployeeAttendance ? (
           <div className="employee-attendance-page">
-
             {/* HEADER */}
             <div className="attendance-header">
-
               <h1 className="empname">
                 Check Employee Attendance -{" "}
-                <span>
-                  {selectedEmployee?.name || ""}
-                </span>
+                <span>{selectedEmployee?.name || ""}</span>
               </h1>
-
             </div>
 
             {/* MONTH + YEAR */}
             <div className="employee-month-search">
-
               <div className="month-field">
                 <label>Month</label>
 
                 <select
                   value={selectedMonth}
-                  onChange={
-                    handleEmployeeMonthChange
-                  }
+                  onChange={handleEmployeeMonthChange}
                 >
-                  {Array.from(
-                    { length: 12 },
-                    (_, index) => (
-                      <option
-                        key={index + 1}
-                        value={index + 1}
-                      >
-                        {dayjs()
-                          .month(index)
-                          .format("MMMM")}
-                      </option>
-                    )
-                  )}
+                  {Array.from({ length: 12 }, (_, index) => (
+                    <option key={index + 1} value={index + 1}>
+                      {dayjs().month(index).format("MMMM")}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -681,41 +605,29 @@ const EmpList = () => {
                 <input
                   type="number"
                   value={selectedYear}
-                  onChange={
-                    handleEmployeeYearChange
-                  }
+                  onChange={handleEmployeeYearChange}
                 />
               </div>
-
             </div>
 
             {/* ATTENDANCE TABLE */}
             <Table
               columns={employeeAttendanceColumns}
-              dataSource={employeeAttendanceList.map(
-                (item, index) => ({
-                  ...item,
+              dataSource={employeeAttendanceList.map((item, index) => ({
+                ...item,
 
-                  employeeId:
-                    item?.employeeId ||
-                    selectedEmployee?.empId ||
-                    "",
+                employeeId: item?.employeeId || selectedEmployee?.empId || "",
 
-                  employeeName:
-                    item?.employeeName ||
-                    selectedEmployee?.name ||
-                    "",
+                employeeName:
+                  item?.employeeName || selectedEmployee?.name || "",
 
-                  employeeDesignation:
-                    item?.employeeDesignation ||
-                    selectedEmployee?.designation ||
-                    "",
+                employeeDesignation:
+                  item?.employeeDesignation ||
+                  selectedEmployee?.designation ||
+                  "",
 
-                  key: `${
-                    item?.date || index
-                  }-${index}`,
-                })
-              )}
+                key: `${item?.date || index}-${index}`,
+              }))}
               loading={employeeAttendanceLoading}
               bordered
               scroll={{ x: "max-content" }}
@@ -724,48 +636,37 @@ const EmpList = () => {
                 showSizeChanger: true,
               }}
             />
-
           </div>
         ) : (
-
           /* =====================================================
              NORMAL EMPLOYEE LIST SECTION
           ===================================================== */
           <div className="emp-list">
-
             {/* ==================================================
                 SINGLE ROW HEADER
             ================================================== */}
             <div className="employee-list-header">
-
               {/* BACK BUTTON */}
-
 
               {/* EMPLOYEES TITLE */}
               <h2>Employees</h2>
 
               {/* RIGHT SIDE */}
               <div className="employee-list-actions">
-
                 {/* TOTAL EMPLOYEE */}
                 <div className="count">
-                  Total Number Of Employee:{" "}
-                  <span>
-                    {allemployee.length}
-                  </span>
+                  Total Number Of Employee: <span>{allemployee.length}</span>
                 </div>
 
-                {/* ADD EMPLOYEE */}
-                <Link to="/addEmployee">
-                  <span>
-                    <FaPlus />
-                  </span>
-
-                  Add Employee
-                </Link>
-
+                <div className="add">
+                  <Link className="add" to="/addEmployee">
+                    <span>
+                      <FaPlus />
+                    </span>
+                    Add Employee
+                  </Link>
+                </div>
               </div>
-
             </div>
 
             {/* EMPLOYEE TABLE */}
@@ -779,15 +680,11 @@ const EmpList = () => {
                 showSizeChanger: true,
               }}
               rowClassName={(_, index) =>
-                index % 2 === 0
-                  ? "table-row-light"
-                  : "table-row-dark"
+                index % 2 === 0 ? "table-row-light" : "table-row-dark"
               }
             />
-
           </div>
         )}
-
       </MainPanel>
     </>
   );

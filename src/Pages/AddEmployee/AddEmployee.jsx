@@ -209,7 +209,7 @@ const AddEmployee = () => {
     >
       <button
         type="button"
-        className="previous-view-back"
+        className="back-btn"
         onClick={() => navigate("/empList")}
       >
         ← Back

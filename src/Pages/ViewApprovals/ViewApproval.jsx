@@ -1,25 +1,12 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useContext,
-} from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 
 import "./ViewApprovals.scss";
-
+import { FaPlus } from "react-icons/fa";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
-import {
-  Table,
-  Space,
-  Tag,
-  Avatar,
-} from "antd";
+import { Table, Space, Tag, Avatar } from "antd";
 
-import {
-  MdEdit,
-  MdDelete,
-} from "react-icons/md";
+import { MdEdit, MdDelete } from "react-icons/md";
 
 import { FaDownload } from "react-icons/fa";
 
@@ -36,14 +23,11 @@ import SelectInput from "../../comp/selectInput/SelectInput";
 
 import { MenuItem } from "@mui/material";
 
-import {
-  Link,
-  useNavigate,
-} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ViewApproval = () => {
   const navigate = useNavigate();
-const [statusLoader, setStatusLoader] = useState(false);
+  const [statusLoader, setStatusLoader] = useState(false);
   const { user } = useContext(UserContext);
 
   // =====================================================
@@ -76,8 +60,7 @@ const [statusLoader, setStatusLoader] = useState(false);
   // BASE URL
   // =====================================================
 
-  const BASE_URL =
-    import.meta.env.VITE_APPROVAL_BACKEND_URL;
+  const BASE_URL = import.meta.env.VITE_APPROVAL_BACKEND_URL;
 
   // =====================================================
   // DATE FORMATTER
@@ -91,8 +74,7 @@ const [statusLoader, setStatusLoader] = useState(false);
     // 2026-09-30T00:00:00
     // 2026-09-30T00:00:00.000Z
 
-    const dateOnly = String(dateValue)
-      .split("T")[0];
+    const dateOnly = String(dateValue).split("T")[0];
 
     const parts = dateOnly.split("-");
 
@@ -104,11 +86,7 @@ const [statusLoader, setStatusLoader] = useState(false);
     const month = Number(parts[1]);
     const day = Number(parts[2]);
 
-    if (
-      !year ||
-      !month ||
-      !day
-    ) {
+    if (!year || !month || !day) {
       return dateValue;
     }
 
@@ -117,25 +95,18 @@ const [statusLoader, setStatusLoader] = useState(false);
     // directly because timezone conversion
     // can sometimes change the displayed date.
 
-    const date = new Date(
-      year,
-      month - 1,
-      day
-    );
+    const date = new Date(year, month - 1, day);
 
     if (isNaN(date.getTime())) {
       return dateValue;
     }
 
-    return date.toLocaleDateString(
-      "en-US",
-      {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }
-    );
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   // =====================================================
@@ -157,89 +128,68 @@ const [statusLoader, setStatusLoader] = useState(false);
       // ================================================
 
       if (user?.role === "ADMIN") {
-        response = await axios.get(
-          `${BASE_URL}Admin/GetAllApproval`,
-          {
-            withCredentials: true,
-          }
-        );
+        response = await axios.get(`${BASE_URL}Admin/GetAllApproval`, {
+          withCredentials: true,
+        });
       }
 
       // ================================================
       // EMPLOYEE
       // ================================================
-
       else {
         response = await axios.get(
           `${BASE_URL}employee/GetApprovalByForUseruid?uid=${user.uid}`,
           {
             withCredentials: true,
-          }
+          },
         );
       }
 
-      console.log(
-        "Approval API Response:",
-        response.data
-      );
+      console.log("Approval API Response:", response.data);
 
-      const approvalData =
-        response?.data?.data || [];
+      const approvalData = response?.data?.data || [];
 
       // ================================================
       // FORMAT DATA
       // ================================================
 
-      const formattedData = [
-        ...approvalData,
-      ]
-        .reverse()
-        .map((item, index) => ({
-          id: item.aid,
+      const formattedData = [...approvalData].reverse().map((item, index) => ({
+        id: item.aid,
 
-          index: index + 1,
+        index: index + 1,
 
-          key: item.aid,
+        key: item.aid,
 
-          date: item.date,
+        date: item.date,
 
-          name: item.name,
+        name: item.name,
 
-          subject: item.subject,
+        subject: item.subject,
 
-          content: item.content,
+        content: item.content,
 
-          StartDate: item.startDate,
+        StartDate: item.startDate,
 
-          EndDate: item.endDate,
+        EndDate: item.endDate,
 
-          Recurring: item.recuring,
+        Recurring: item.recuring,
 
-          price: item.price,
+        price: item.price,
 
-          approvebByMam:
-            item.approvebByMam,
+        approvebByMam: item.approvebByMam,
 
-          approvedByFinance:
-            item.approvedByFinance,
+        approvedByFinance: item.approvedByFinance,
 
-          status:
-            item.overAllStatus,
-        }));
+        status: item.overAllStatus,
+      }));
 
       setData(formattedData);
-
     } catch (error) {
-      console.log(
-        "Get Approval Error:",
-        error.response?.data || error
-      );
+      console.log("Get Approval Error:", error.response?.data || error);
 
       toast.error(
-        error.response?.data?.message ||
-        "Failed to get approval data"
+        error.response?.data?.message || "Failed to get approval data",
       );
-
     } finally {
       setLoader(false);
     }
@@ -249,126 +199,111 @@ const [statusLoader, setStatusLoader] = useState(false);
   // CHANGE MAM STATUS
   // =====================================================
 
-const changemamStatus = async (e, id) => {
-  try {
-    const value = e.target.value;
+  const changemamStatus = async (e, id) => {
+    try {
+      const value = e.target.value;
 
-    if (!value) return;
+      if (!value) return;
 
-    setStatusLoader(true);
+      setStatusLoader(true);
 
-    const response = await axios.post(
-      `${BASE_URL}Admin/ChangeStatusForMam?aId=${id}&status=${value}`,
-      {},
-      {
-        withCredentials: true,
-      }
-    );
-
-    if (response.status === 200) {
-      setEdit(null);
-
-      await getApprovalData();
-
-      toast.success(
-        "Mam status updated successfully"
+      const response = await axios.post(
+        `${BASE_URL}Admin/ChangeStatusForMam?aId=${id}&status=${value}`,
+        {},
+        {
+          withCredentials: true,
+        },
       );
-    }
-  } catch (error) {
-    console.log(error);
 
-    toast.error(
-      error.response?.data?.message ||
-      "Failed to update Mam status"
-    );
-  } finally {
-    setStatusLoader(false);
-  }
-};
+      if (response.status === 200) {
+        setEdit(null);
+
+        await getApprovalData();
+
+        toast.success("Mam status updated successfully");
+      }
+    } catch (error) {
+      console.log(error);
+
+      toast.error(
+        error.response?.data?.message || "Failed to update Mam status",
+      );
+    } finally {
+      setStatusLoader(false);
+    }
+  };
 
   // =====================================================
   // CHANGE FINANCE STATUS
   // =====================================================
 
-const changeFinanceStatus = async (e, id) => {
-  try {
-    const value = e.target.value;
+  const changeFinanceStatus = async (e, id) => {
+    try {
+      const value = e.target.value;
 
-    if (!value) return;
+      if (!value) return;
 
-    setStatusLoader(true);
+      setStatusLoader(true);
 
-    const response = await axios.post(
-      `${BASE_URL}Admin/ChangeStatusForFinance?aId=${id}&status=${value}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.post(
+        `${BASE_URL}Admin/ChangeStatusForFinance?aId=${id}&status=${value}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
         },
-        withCredentials: true,
-      }
-    );
-
-    if (response.status === 200) {
-      setEdit(null);
-
-      await getApprovalData();
-
-      toast.success(
-        "Finance status updated successfully"
       );
-    }
-  } catch (error) {
-    console.log(error);
 
-    toast.error(
-      error.response?.data?.message ||
-      "Failed to update Finance status"
-    );
-  } finally {
-    setStatusLoader(false);
-  }
-};
+      if (response.status === 200) {
+        setEdit(null);
+
+        await getApprovalData();
+
+        toast.success("Finance status updated successfully");
+      }
+    } catch (error) {
+      console.log(error);
+
+      toast.error(
+        error.response?.data?.message || "Failed to update Finance status",
+      );
+    } finally {
+      setStatusLoader(false);
+    }
+  };
 
   // =====================================================
   // CHANGE OVERALL STATUS
   // =====================================================
 
-  const changeoverStatus = async (
-    e,
-    id
-  ) => {
+  const changeoverStatus = async (e, id) => {
     try {
-      const value =
-        e.target.value;
+      const value = e.target.value;
 
       if (!value) return;
 
-      const response =
-        await axios.post(
-          `${BASE_URL}Admin/FinalStatus?aId=${id}&status=${value}`,
-          {},
-          {
-            withCredentials: true,
-          }
-        );
+      const response = await axios.post(
+        `${BASE_URL}Admin/FinalStatus?aId=${id}&status=${value}`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
 
       if (response.status === 200) {
-        toast.success(
-          "Approval status updated successfully"
-        );
+        toast.success("Approval status updated successfully");
 
         setEdit(null);
 
         getApprovalData();
       }
-
     } catch (error) {
       console.log(error);
 
       toast.error(
-        error.response?.data?.message ||
-        "Failed to update approval status"
+        error.response?.data?.message || "Failed to update approval status",
       );
     }
   };
@@ -377,48 +312,34 @@ const changeFinanceStatus = async (e, id) => {
   // GET APPROVAL BY ID
   // =====================================================
 
-  const getApprovalDataById =
-    async (id) => {
-      try {
-        const response =
-          await axios.get(
-            `${BASE_URL}authController/GetApproval?aId=${id}`,
-            {
-              withCredentials: true,
-            }
-          );
+  const getApprovalDataById = async (id) => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}authController/GetApproval?aId=${id}`,
+        {
+          withCredentials: true,
+        },
+      );
 
-        console.log(
-          "Approval By ID:",
-          response.data
-        );
+      console.log("Approval By ID:", response.data);
 
-        setValues(
-          response?.data?.data || {}
-        );
+      setValues(response?.data?.data || {});
 
-        if (response.status === 200) {
-          setIsPdf(true);
+      if (response.status === 200) {
+        setIsPdf(true);
 
-          // Give React time to render
-          // the A4 PDF element.
-          setTimeout(() => {
-            handleDownloadPDF();
-          }, 800);
-        }
-
-      } catch (error) {
-        console.log(
-          "Get Approval By ID Error:",
-          error.response?.data ||
-          error
-        );
-
-        toast.error(
-          "Failed to generate approval letter"
-        );
+        // Give React time to render
+        // the A4 PDF element.
+        setTimeout(() => {
+          handleDownloadPDF();
+        }, 800);
       }
-    };
+    } catch (error) {
+      console.log("Get Approval By ID Error:", error.response?.data || error);
+
+      toast.error("Failed to generate approval letter");
+    }
+  };
 
   // =====================================================
   // DOWNLOAD PDF
@@ -428,66 +349,49 @@ const changeFinanceStatus = async (e, id) => {
     const input = pdfRef.current;
 
     if (!input) {
-      toast.error(
-        "PDF content not ready"
-      );
+      toast.error("PDF content not ready");
       return;
     }
 
     try {
-
-      await new Promise(
-        (resolve) => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(resolve);
-          });
-        }
-      );
-
-      const canvas =
-        await html2canvas(
-          input,
-          {
-            scale: 2,
-
-            useCORS: true,
-
-            allowTaint: true,
-
-            backgroundColor:
-              "#ffffff",
-
-            logging: false,
-
-            width: 794,
-
-            height: 1123,
-
-            windowWidth: 794,
-
-            windowHeight: 1123,
-          }
-        );
-
-      const imgData =
-        canvas.toDataURL(
-          "image/jpeg",
-          1
-        );
-
-      const pdf =
-        new jsPDF({
-          orientation: "portrait",
-          unit: "mm",
-          format: "a4",
-          compress: true,
+      await new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(resolve);
         });
+      });
 
-      const pageWidth =
-        pdf.internal.pageSize.getWidth();
+      const canvas = await html2canvas(input, {
+        scale: 2,
 
-      const pageHeight =
-        pdf.internal.pageSize.getHeight();
+        useCORS: true,
+
+        allowTaint: true,
+
+        backgroundColor: "#ffffff",
+
+        logging: false,
+
+        width: 794,
+
+        height: 1123,
+
+        windowWidth: 794,
+
+        windowHeight: 1123,
+      });
+
+      const imgData = canvas.toDataURL("image/jpeg", 1);
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+        compress: true,
+      });
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+
+      const pageHeight = pdf.internal.pageSize.getHeight();
 
       pdf.addImage(
         imgData,
@@ -497,30 +401,16 @@ const changeFinanceStatus = async (e, id) => {
         pageWidth,
         pageHeight,
         undefined,
-        "FAST"
+        "FAST",
       );
 
-      pdf.save(
-        `Approval_Letter_${values?.name ||
-        "Employee"
-        }.pdf`
-      );
+      pdf.save(`Approval_Letter_${values?.name || "Employee"}.pdf`);
 
-      toast.success(
-        "Approval letter downloaded"
-      );
-
+      toast.success("Approval letter downloaded");
     } catch (error) {
+      console.error("PDF Download Error:", error);
 
-      console.error(
-        "PDF Download Error:",
-        error
-      );
-
-      toast.error(
-        "Failed to download approval letter"
-      );
-
+      toast.error("Failed to download approval letter");
     } finally {
       setIsPdf(false);
     }
@@ -530,86 +420,54 @@ const changeFinanceStatus = async (e, id) => {
   // DELETE APPROVAL
   // =====================================================
 
-  const handleDelete =
-    async (id) => {
+  const handleDelete = async (id) => {
+    if (!id) return;
 
-      if (!id) return;
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this approval?",
+    );
 
-      const confirmDelete =
-        window.confirm(
-          "Are you sure you want to delete this approval?"
-        );
+    if (!confirmDelete) {
+      return;
+    }
 
-      if (!confirmDelete) {
-        return;
+    try {
+      const response = await axios.delete(
+        `${BASE_URL}Admin/DeleteApproval?aId=${id}`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      if (response.status === 200 || response.status === 204) {
+        toast.success("Approval deleted successfully");
+
+        setData((prev) => prev.filter((item) => item.id !== id));
       }
+    } catch (error) {
+      console.log("Delete Approval Error:", error.response?.data || error);
 
-      try {
-
-        const response =
-          await axios.delete(
-            `${BASE_URL}Admin/DeleteApproval?aId=${id}`,
-            {
-              withCredentials: true,
-            }
-          );
-
-        if (
-          response.status === 200 ||
-          response.status === 204
-        ) {
-
-          toast.success(
-            "Approval deleted successfully"
-          );
-
-          setData(
-            (prev) =>
-              prev.filter(
-                (item) =>
-                  item.id !== id
-              )
-          );
-        }
-
-      } catch (error) {
-
-        console.log(
-          "Delete Approval Error:",
-          error.response?.data ||
-          error
-        );
-
-        toast.error(
-          error.response?.data?.message ||
-          "Failed to delete approval"
-        );
-      }
-    };
+      toast.error(error.response?.data?.message || "Failed to delete approval");
+    }
+  };
 
   // =====================================================
   // GET DATA WHEN USER IS READY
   // =====================================================
 
   useEffect(() => {
-
     if (!user?.uid) {
       return;
     }
 
     getApprovalData();
-
-  }, [
-    user?.uid,
-    user?.role,
-  ]);
+  }, [user?.uid, user?.role]);
 
   // =====================================================
   // TABLE COLUMNS
   // =====================================================
 
   const columns = [
-
     // ================================================
     // ID
     // ================================================
@@ -639,8 +497,7 @@ const changeFinanceStatus = async (e, id) => {
 
       width: 150,
 
-      render: (date) =>
-        formatApprovalDate(date),
+      render: (date) => formatApprovalDate(date),
     },
 
     // ================================================
@@ -648,8 +505,7 @@ const changeFinanceStatus = async (e, id) => {
     // ================================================
 
     {
-      title:
-        "Employee Name",
+      title: "Employee Name",
 
       dataIndex: "name",
 
@@ -660,50 +516,25 @@ const changeFinanceStatus = async (e, id) => {
       fixed: "left",
 
       render: (name) => {
+        const employeeName = name || "N/A";
 
-        const employeeName =
-          name || "N/A";
-
-        const nameParts =
-          employeeName
-            .trim()
-            .split(" ")
-            .filter(Boolean);
+        const nameParts = employeeName.trim().split(" ").filter(Boolean);
 
         let initials = "NA";
 
-        if (
-          nameParts.length === 1
-        ) {
-
-          initials =
-            nameParts[0]?.charAt(
-              0
-            ) || "N";
-
+        if (nameParts.length === 1) {
+          initials = nameParts[0]?.charAt(0) || "N";
         } else {
-
-          initials =
-            `${nameParts[0]?.charAt(
-              0
-            ) || ""
-            }${nameParts[
-              nameParts.length - 1
-            ]?.charAt(0) || ""
-            }`;
+          initials = `${nameParts[0]?.charAt(0) || ""}${
+            nameParts[nameParts.length - 1]?.charAt(0) || ""
+          }`;
         }
 
         return (
           <Space>
+            <Avatar className="avatar">{initials.toUpperCase()}</Avatar>
 
-            <Avatar className="avatar">
-              {initials.toUpperCase()}
-            </Avatar>
-
-            <span>
-              {employeeName}
-            </span>
-
+            <span>{employeeName}</span>
           </Space>
         );
       },
@@ -722,8 +553,7 @@ const changeFinanceStatus = async (e, id) => {
 
       width: 250,
 
-      render: (subject) =>
-        subject || "N/A",
+      render: (subject) => subject || "N/A",
     },
 
     // ================================================
@@ -739,10 +569,7 @@ const changeFinanceStatus = async (e, id) => {
 
       width: 150,
 
-      render: (date) =>
-        date
-          ? formatApprovalDate(date)
-          : "N/A",
+      render: (date) => (date ? formatApprovalDate(date) : "N/A"),
     },
 
     // ================================================
@@ -758,10 +585,7 @@ const changeFinanceStatus = async (e, id) => {
 
       width: 150,
 
-      render: (date) =>
-        date
-          ? formatApprovalDate(date)
-          : "N/A",
+      render: (date) => (date ? formatApprovalDate(date) : "N/A"),
     },
 
     // ================================================
@@ -771,19 +595,13 @@ const changeFinanceStatus = async (e, id) => {
     {
       title: "Recurring",
 
-      dataIndex:
-        "Recurring",
+      dataIndex: "Recurring",
 
       key: "Recurring",
 
       width: 150,
 
-      render: (value) => (
-        <Tag>
-          {value ||
-            "No Recurring"}
-        </Tag>
-      ),
+      render: (value) => <Tag>{value || "No Recurring"}</Tag>,
     },
 
     // ================================================
@@ -800,20 +618,11 @@ const changeFinanceStatus = async (e, id) => {
       width: 150,
 
       render: (price) => {
-
-        if (
-          price === null ||
-          price === undefined ||
-          price === ""
-        ) {
+        if (price === null || price === undefined || price === "") {
           return "N/A";
         }
 
-        return `₹${Number(
-          price
-        ).toLocaleString(
-          "en-IN"
-        )}`;
+        return `₹${Number(price).toLocaleString("en-IN")}`;
       },
     },
 
@@ -822,59 +631,38 @@ const changeFinanceStatus = async (e, id) => {
     // ================================================
 
     {
-      title:
-        "Approved By Mam",
+      title: "Approved By Mam",
 
-      dataIndex:
-        "approvebByMam",
+      dataIndex: "approvebByMam",
 
-      key:
-        "approvebByMam",
+      key: "approvebByMam",
 
       width: 190,
 
-      render: (
-        text,
-        record
-      ) => (
+      render: (text, record) => (
         <>
-          {user?.role ===
-            "ADMIN" &&
-            edit ===
-            record.id ? (
+          {user?.role === "ADMIN" && edit === record.id ? (
+            <SelectInput
+              label="Select Option"
+              value={record.approvebByMam || ""}
+              onChange={(e) => changemamStatus(e, record.id)}
+              disabled={statusLoader}
+            >
+              <MenuItem value="Approved">Approved</MenuItem>
 
-<SelectInput
-  label="Select Option"
-  value={record.approvebByMam || ""}
-  onChange={(e) =>
-    changemamStatus(e, record.id)
-  }
-  disabled={statusLoader}
->
-              <MenuItem value="Approved">
-                Approved
-              </MenuItem>
-
-              <MenuItem value="Rejected">
-                Rejected
-              </MenuItem>
+              <MenuItem value="Rejected">Rejected</MenuItem>
             </SelectInput>
-
           ) : (
-
             <Tag
               color={
-                record.approvebByMam ===
-                  "Approved"
+                record.approvebByMam === "Approved"
                   ? "green"
-                  : record.approvebByMam ===
-                    "Rejected"
+                  : record.approvebByMam === "Rejected"
                     ? "red"
                     : "gold"
               }
             >
-              {record.approvebByMam ||
-                "Pending"}
+              {record.approvebByMam || "Pending"}
             </Tag>
           )}
         </>
@@ -886,59 +674,38 @@ const changeFinanceStatus = async (e, id) => {
     // ================================================
 
     {
-      title:
-        "Approved By Finance",
+      title: "Approved By Finance",
 
-      dataIndex:
-        "approvedByFinance",
+      dataIndex: "approvedByFinance",
 
-      key:
-        "approvedByFinance",
+      key: "approvedByFinance",
 
       width: 200,
 
-      render: (
-        text,
-        record
-      ) => (
+      render: (text, record) => (
         <>
-          {user?.role ===
-            "ADMIN" &&
-            edit ===
-            record.id ? (
+          {user?.role === "ADMIN" && edit === record.id ? (
+            <SelectInput
+              label="Select Option"
+              value={record.approvedByFinance || ""}
+              onChange={(e) => changeFinanceStatus(e, record.id)}
+              disabled={statusLoader}
+            >
+              <MenuItem value="Approved">Approved</MenuItem>
 
-<SelectInput
-  label="Select Option"
-  value={record.approvedByFinance || ""}
-  onChange={(e) =>
-    changeFinanceStatus(e, record.id)
-  }
-  disabled={statusLoader}
->
-              <MenuItem value="Approved">
-                Approved
-              </MenuItem>
-
-              <MenuItem value="Rejected">
-                Rejected
-              </MenuItem>
+              <MenuItem value="Rejected">Rejected</MenuItem>
             </SelectInput>
-
           ) : (
-
             <Tag
               color={
-                record.approvedByFinance ===
-                  "Approved"
+                record.approvedByFinance === "Approved"
                   ? "green"
-                  : record.approvedByFinance ===
-                    "Rejected"
+                  : record.approvedByFinance === "Rejected"
                     ? "red"
                     : "gold"
               }
             >
-              {record.approvedByFinance ||
-                "Pending"}
+              {record.approvedByFinance || "Pending"}
             </Tag>
           )}
         </>
@@ -958,53 +725,29 @@ const changeFinanceStatus = async (e, id) => {
 
       width: 160,
 
-      render: (
-        text,
-        record
-      ) => (
+      render: (text, record) => (
         <>
-          {user?.role ===
-            "ADMIN" &&
-            edit ===
-            record.id ? (
-
+          {user?.role === "ADMIN" && edit === record.id ? (
             <SelectInput
               label="Select Option"
-              value={
-                record.status ||
-                ""
-              }
-              onChange={(e) =>
-                changeoverStatus(
-                  e,
-                  record.id
-                )
-              }
+              value={record.status || ""}
+              onChange={(e) => changeoverStatus(e, record.id)}
             >
-              <MenuItem value="Approved">
-                Approved
-              </MenuItem>
+              <MenuItem value="Approved">Approved</MenuItem>
 
-              <MenuItem value="Rejected">
-                Rejected
-              </MenuItem>
+              <MenuItem value="Rejected">Rejected</MenuItem>
             </SelectInput>
-
           ) : (
-
             <Tag
               color={
-                record.status ===
-                  "Approved"
+                record.status === "Approved"
                   ? "green"
-                  : record.status ===
-                    "Rejected"
+                  : record.status === "Rejected"
                     ? "red"
                     : "gold"
               }
             >
-              {record.status ||
-                "Pending"}
+              {record.status || "Pending"}
             </Tag>
           )}
         </>
@@ -1024,72 +767,45 @@ const changeFinanceStatus = async (e, id) => {
 
       fixed: "right",
 
-      render: (
-        _,
-        record
-      ) => (
+      render: (_, record) => (
         <Space size="middle">
-
           {/* ADMIN STATUS EDIT */}
 
-          {user?.role ===
-            "ADMIN" && (
-
-              <MdEdit
-                className="edit"
-                title="Edit Approval Status"
-                onClick={() =>
-                  setEdit(
-                    record.id
-                  )
-                }
-              />
-            )}
+          {user?.role === "ADMIN" && (
+            <MdEdit
+              className="edit"
+              title="Edit Approval Status"
+              onClick={() => setEdit(record.id)}
+            />
+          )}
 
           {/* EMPLOYEE COMPLETE EDIT */}
 
-          {user?.role ===
-            "EMPLOYEE" && (
-
-              <MdEdit
-                className="edit"
-                title="Edit Approval Letter"
-                onClick={() =>
-                  navigate(
-                    `/editApproval/${record.id}`
-                  )
-                }
-              />
-            )}
+          {user?.role === "EMPLOYEE" && (
+            <MdEdit
+              className="edit"
+              title="Edit Approval Letter"
+              onClick={() => navigate(`/editApproval/${record.id}`)}
+            />
+          )}
 
           {/* ADMIN DELETE */}
 
-          {user?.role ===
-            "ADMIN" && (
-
-              <MdDelete
-                className="delete"
-                title="Delete Approval"
-                onClick={() =>
-                  handleDelete(
-                    record.id
-                  )
-                }
-              />
-            )}
+          {user?.role === "ADMIN" && (
+            <MdDelete
+              className="delete"
+              title="Delete Approval"
+              onClick={() => handleDelete(record.id)}
+            />
+          )}
 
           {/* DOWNLOAD */}
 
           <FaDownload
             className="download"
             title="Download Approval"
-            onClick={() =>
-              getApprovalDataById(
-                record.id
-              )
-            }
+            onClick={() => getApprovalDataById(record.id)}
           />
-
         </Space>
       ),
     },
@@ -1108,35 +824,22 @@ const changeFinanceStatus = async (e, id) => {
         },
 
         {
-          label:
-            "Approval Letters",
+          label: "Approval Letters",
         },
       ]}
       title={
-        String(
-          user?.role ||
-          user?.crmRole ||
-          ""
-        )
+        String(user?.role || user?.crmRole || "")
           .trim()
-          .toUpperCase() ===
-          "ADMIN"
+          .toUpperCase() === "ADMIN"
           ? "Admin Dashboard"
           : "Approval Letters"
       }
     >
-
       {/* ============================================== */}
       {/* BACK */}
       {/* ============================================== */}
 
-      <button
-        type="button"
-        className="back-btn"
-        onClick={() =>
-          navigate("/")
-        }
-      >
+      <button type="button" className="back-btn" onClick={() => navigate("/")}>
         ← Back
       </button>
 
@@ -1145,19 +848,15 @@ const changeFinanceStatus = async (e, id) => {
       {/* ============================================== */}
 
       <div className="page-header">
+        <h2>Approval Letters</h2>
 
-        <h2>
-          Approval Letters
-        </h2>
-
-{String(user?.role || user?.crmRole || "").trim().toUpperCase() === "EMPLOYEE" && (
-  <Link to="/approvalLetter">
-    <button className="btn">
-      Add Letter
-    </button>
-  </Link>
-)}
-
+        {String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "EMPLOYEE" && (
+          <Link to="/approvalLetter">
+            <button className="apply">Add Letter<FaPlus /></button>
+          </Link>
+        )}
       </div>
 
       {/* ============================================== */}
@@ -1165,56 +864,34 @@ const changeFinanceStatus = async (e, id) => {
       {/* ============================================== */}
 
       <div className="parent">
-
         <div
           className="card"
           style={{
             padding: "20px",
           }}
         >
-
           <Table
             loading={loader}
-
             columns={columns}
-
             dataSource={data}
-
             bordered
-
             scroll={{
               x: "max-content",
             }}
-
             pagination={{
               pageSize: 10,
 
               showSizeChanger: true,
 
-              pageSizeOptions: [
-                "10",
-                "20",
-                "50",
-                "100",
-              ],
+              pageSizeOptions: ["10", "20", "50", "100"],
 
-              showTotal: (
-                total,
-                range
-              ) =>
+              showTotal: (total, range) =>
                 `${range[0]}-${range[1]} of ${total} approvals`,
             }}
-
-            rowClassName={(
-              _,
-              index
-            ) =>
-              index % 2 === 0
-                ? "table-row-light"
-                : "table-row-dark"
+            rowClassName={(_, index) =>
+              index % 2 === 0 ? "table-row-light" : "table-row-dark"
             }
           />
-
         </div>
 
         {/* ============================================ */}
@@ -1222,62 +899,37 @@ const changeFinanceStatus = async (e, id) => {
         {/* ============================================ */}
 
         {isPdf && (
-
           <div className="pdf-render-wrapper">
-
-            <div
-              className="right-letter pdf-letter"
-              ref={pdfRef}
-            >
-
+            <div className="right-letter pdf-letter" ref={pdfRef}>
               {/* ====================================== */}
               {/* DATE */}
               {/* ====================================== */}
 
-              <div className="date">
-
-                {formatApprovalDate(
-                  values?.date
-                )}
-
-              </div>
+              <div className="date">{formatApprovalDate(values?.date)}</div>
 
               {/* ====================================== */}
               {/* RECEIVER */}
               {/* ====================================== */}
 
               <div className="main-info">
-
                 To,
                 <br />
-
                 Prajakta Marwaha
                 <br />
-
                 Director
                 <br />
-
                 Pandoza Solutions Pvt Ltd
                 <br />
-
-                2014 - 2016, 10 Biz Park,
-                Viman Nagar,
+                2014 - 2016, 10 Biz Park, Viman Nagar,
                 <br />
-
                 Pune, Maharashtra 411014
-
               </div>
 
               {/* ====================================== */}
               {/* SUBJECT */}
               {/* ====================================== */}
 
-              <div className="subject">
-
-                Subject:{" "}
-                {values?.subject}
-
-              </div>
+              <div className="subject">Subject: {values?.subject}</div>
 
               {/* ====================================== */}
               {/* CONTENT */}
@@ -1286,9 +938,7 @@ const changeFinanceStatus = async (e, id) => {
               <div
                 className="sic-editor-data"
                 dangerouslySetInnerHTML={{
-                  __html:
-                    values?.content ||
-                    "",
+                  __html: values?.content || "",
                 }}
               />
 
@@ -1297,21 +947,14 @@ const changeFinanceStatus = async (e, id) => {
               {/* ====================================== */}
 
               <div className="letter-bottom">
-
                 {/* ==================================== */}
                 {/* SIGNATURE */}
                 {/* ==================================== */}
 
                 <div className="user">
+                  <div>Your Sincerely</div>
 
-                  <div>
-                    Your Sincerely
-                  </div>
-
-                  <span>
-                    {values?.name}
-                  </span>
-
+                  <span>{values?.name}</span>
                 </div>
 
                 {/* ==================================== */}
@@ -1319,42 +962,23 @@ const changeFinanceStatus = async (e, id) => {
                 {/* ==================================== */}
 
                 <div className="bottomsection">
-
                   <div className="approvar">
+                    <div>To Be Approved By</div>
 
-                    <div>
-                      To Be Approved By
-                    </div>
-
-                    <span>
-                      Prajakta Marwaha
-                    </span>
-
+                    <span>Prajakta Marwaha</span>
                   </div>
 
                   <div className="finance">
+                    <div>To Be Approved By</div>
 
-                    <div>
-                      To Be Approved By
-                    </div>
-
-                    <span>
-                      Finance Department
-                    </span>
-
+                    <span>Finance Department</span>
                   </div>
-
                 </div>
-
               </div>
-
             </div>
-
           </div>
         )}
-
       </div>
-
     </MainPanel>
   );
 };

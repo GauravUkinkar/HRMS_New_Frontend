@@ -19,54 +19,15 @@
 
     box-sizing: border-box;
 
-    // ==========================================
-    // BACK BUTTON
-    // ==========================================
-
-    .salary-back-btn {
-      flex-shrink: 0;
-
-      border: none;
-
-      background: #e9e9e9;
-
-      color: #333;
-
-      padding: 10px 22px;
-
-      border-radius: 5px;
-
-      font-size: 15px;
-
-      font-weight: 500;
-
-      cursor: pointer;
-
-      white-space: nowrap;
-
-      transition: 0.3s ease;
-
-      &:hover {
-        background: #dcdcdc;
-      }
-
-      &:focus {
-        outline: none;
-      }
-    }
-
-    // ==========================================
-    // SALARY MANAGEMENT TITLE
-    // ==========================================
 
     h2 {
       margin: 0;
 
-      font-size: 28px;
+      font-size: 22px;
 
       font-weight: 700;
 
-      color: #222;
+      color: whhite;
 
       white-space: nowrap;
     }
@@ -159,9 +120,9 @@
 
         outline: none;
 
-        background: #0b8b95;
+        background: white;
 
-        color: #fff;
+        color: var(--accent2);
 
         padding: 0 16px;
 
@@ -177,7 +138,7 @@
 
         font-size: 14px;
 
-        font-weight: 500;
+        font-weight: 550;
 
         cursor: pointer;
 
@@ -187,10 +148,12 @@
 
         &:hover {
           background: #0a7a85;
+          color: white;
         }
 
         svg {
-          font-size: 13px;
+          font-size: 16px;
+          font-weight: 550;
         }
       }
     }

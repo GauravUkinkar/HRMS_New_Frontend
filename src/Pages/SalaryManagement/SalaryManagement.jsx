@@ -3,10 +3,7 @@ import "./SalaryManagement.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { Avatar, Space, Table } from "antd";
 import { FaEye } from "react-icons/fa";
-import {
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
 import SelectInput from "../../comp/selectInput/SelectInput";
@@ -14,7 +11,6 @@ import { MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { UserContext } from "../../../Context";
-
 
 const SalaryManagement = () => {
   const navigate = useNavigate();
@@ -56,10 +52,7 @@ const SalaryManagement = () => {
 
   const currentYear = new Date().getFullYear();
 
-  const years = Array.from(
-    { length: 10 },
-    (_, index) => currentYear - index
-  );
+  const years = Array.from({ length: 10 }, (_, index) => currentYear - index);
 
   // ==========================================
   // GET SALARY
@@ -69,12 +62,9 @@ const SalaryManagement = () => {
     try {
       setLoader(true);
 
-      const res = await axios.get(
-        `${BASE_URL}admin/getAllNewSalaries`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get(`${BASE_URL}admin/getAllNewSalaries`, {
+        withCredentials: true,
+      });
 
       console.log("Salary API Response:", res.data);
 
@@ -97,11 +87,9 @@ const SalaryManagement = () => {
             key: item.data.sid || index + 1,
 
             // Employee information
-            employeeName:
-              item.data.employeeName || "N/A",
+            employeeName: item.data.employeeName || "N/A",
 
-            employeeId:
-              item.data.employeeId || "N/A",
+            employeeId: item.data.employeeId || "N/A",
 
             // Company
             companyName:
@@ -111,114 +99,72 @@ const SalaryManagement = () => {
               "",
 
             // Salary period
-            month:
-              item.data.month || "N/A",
+            month: item.data.month || "N/A",
 
-            year:
-              item.data.year || "N/A",
+            year: item.data.year || "N/A",
 
             // Earnings
-            grossSalary:
-              item.data.grossSalary ?? 0,
+            grossSalary: item.data.grossSalary ?? 0,
 
-            basicSalary:
-              item.data.basicSalary ?? 0,
+            basicSalary: item.data.basicSalary ?? 0,
 
-            da:
-              item.data.da ?? 0,
+            da: item.data.da ?? 0,
 
-            hra:
-              item.data.hra ?? 0,
+            hra: item.data.hra ?? 0,
 
-            otherAllowance:
-              item.data.otherAllowance ?? 0,
+            otherAllowance: item.data.otherAllowance ?? 0,
 
             // Attendance
-            totalWorkingDay:
-              item.data.totalWorkingDay ?? 0,
+            totalWorkingDay: item.data.totalWorkingDay ?? 0,
 
-            presentDay:
-              item.data.presentDay ?? 0,
+            presentDay: item.data.presentDay ?? 0,
 
-            absentDays:
-              item.data.absentDays ?? 0,
+            absentDays: item.data.absentDays ?? 0,
 
-            lop:
-              item.data.lop ?? 0,
+            lop: item.data.lop ?? 0,
 
             // Deductions
-            employeePf:
-              item.data.employeePf ?? 0,
+            employeePf: item.data.employeePf ?? 0,
 
-            employerPf:
-              item.data.employerPf ?? 0,
+            employerPf: item.data.employerPf ?? 0,
 
-            employeeEsic:
-              item.data.employeeEsic ?? 0,
+            employeeEsic: item.data.employeeEsic ?? 0,
 
-            salaryAdvance:
-              item.data.salaryAdvance ?? 0,
+            salaryAdvance: item.data.salaryAdvance ?? 0,
 
-            otherDiduction:
-              item.data.otherDiduction ?? 0,
+            otherDiduction: item.data.otherDiduction ?? 0,
 
-            professionalTax:
-              item.data.professionalTax ?? 0,
+            professionalTax: item.data.professionalTax ?? 0,
 
-            insuranceCorporation:
-              item.data.insuranceCorporation ?? 0,
+            insuranceCorporation: item.data.insuranceCorporation ?? 0,
 
             // Net salary
-            netSalary:
-              item.data.netSalary ?? 0,
+            netSalary: item.data.netSalary ?? 0,
 
             // Employee personal/payment information
-            paydate:
-              item.data.paydate ??
-              item.data.payDate ??
-              "",
+            paydate: item.data.paydate ?? item.data.payDate ?? "",
 
-            bankName:
-              item.data.bankName ?? "",
+            bankName: item.data.bankName ?? "",
 
-            accountNumber:
-              item.data.accountNumber ??
-              item.data.accountNo ??
-              "",
+            accountNumber: item.data.accountNumber ?? item.data.accountNo ?? "",
 
-            panNumber:
-              item.data.panNumber ??
-              item.data.panNo ??
-              "",
+            panNumber: item.data.panNumber ?? item.data.panNo ?? "",
 
-            uanNo:
-              item.data.uanNo ??
-              item.data.uanNumber ??
-              "",
+            uanNo: item.data.uanNo ?? item.data.uanNumber ?? "",
           };
         })
         .filter(Boolean);
 
-      console.log(
-        "Formatted Salary Data:",
-        salaryRecords
-      );
+      console.log("Formatted Salary Data:", salaryRecords);
 
       setSalaryData(salaryRecords);
     } catch (error) {
-      console.log(
-        "STATUS:",
-        error.response?.status
-      );
+      console.log("STATUS:", error.response?.status);
 
-      console.log(
-        "ERROR:",
-        error.response?.data
-      );
+      console.log("ERROR:", error.response?.data);
 
       toast.error(
-        error.response?.data?.responseMessage ||
-          "Unable to fetch salary data"
+        error.response?.data?.responseMessage || "Unable to fetch salary data",
       );
     } finally {
       setLoader(false);
@@ -229,359 +175,304 @@ const SalaryManagement = () => {
   // VIEW PAYSLIP
   // ==========================================
 
- // ==========================================
-// VIEW PAYSLIP
-// ==========================================
+  // ==========================================
+  // VIEW PAYSLIP
+  // ==========================================
 
-const handleViewPayslip = async (record) => {
-  try {
-    setLoader(true);
+  const handleViewPayslip = async (record) => {
+    try {
+      setLoader(true);
 
-    console.log("SELECTED SALARY RECORD:", record);
+      console.log("SELECTED SALARY RECORD:", record);
 
-    const employeeId = record?.employeeId;
-    const year = record?.year;
-    const selectedMonth = record?.month;
+      const employeeId = record?.employeeId;
+      const year = record?.year;
+      const selectedMonth = record?.month;
 
-    if (!employeeId || !year) {
-      toast.error("Employee ID or Year is missing");
-      return;
-    }
-
-    // =========================================================
-    // GET COMPLETE PAYSLIP DATA FROM API
-    // =========================================================
-
-    const response = await axios.get(
-      `${BASE_URL}admin/getByYearAndEmployeeId`,
-      {
-        params: {
-          year: year,
-          employeeId: employeeId,
-        },
-        withCredentials: true,
+      if (!employeeId || !year) {
+        toast.error("Employee ID or Year is missing");
+        return;
       }
-    );
 
-    console.log("RAW PAYSLIP API RESPONSE:", response.data);
+      // =========================================================
+      // GET COMPLETE PAYSLIP DATA FROM API
+      // =========================================================
 
-    // =========================================================
-    // SUPPORT BOTH POSSIBLE API RESPONSE FORMATS
-    //
-    // Format 1:
-    // [
-    //   {
-    //     status: "OK",
-    //     data: { ... }
-    //   }
-    // ]
-    //
-    // Format 2:
-    // {
-    //   status: "OK",
-    //   data: { ... }
-    // }
-    // =========================================================
-
-    const salaryList = Array.isArray(response.data)
-      ? response.data
-      : response.data?.data
-      ? [response.data]
-      : [];
-
-    if (salaryList.length === 0) {
-      toast.error("Payslip data not found");
-      return;
-    }
-
-    // =========================================================
-    // FIND THE EXACT EMPLOYEE + YEAR + MONTH RECORD
-    // =========================================================
-
-    const matchingSalary =
-      salaryList.find((item) => {
-        const data = item?.data;
-
-        return (
-          String(data?.employeeId || "").trim() ===
-            String(employeeId).trim() &&
-          String(data?.year || "").trim() ===
-            String(year).trim() &&
-          String(data?.month || "")
-            .trim()
-            .toLowerCase() ===
-            String(selectedMonth || "")
-              .trim()
-              .toLowerCase()
-        );
-      }) ||
-      salaryList.find((item) => {
-        const data = item?.data;
-
-        return (
-          String(data?.employeeId || "").trim() ===
-          String(employeeId).trim()
-        );
-      }) ||
-      salaryList[0];
-
-    const apiPayslip = matchingSalary?.data;
-
-    if (!apiPayslip) {
-      toast.error("Payslip data not found");
-      return;
-    }
-
-    // =========================================================
-    // IMPORTANT:
-    // Do NOT allow empty values from one object to overwrite
-    // valid values from the other object.
-    // =========================================================
-
-    const firstNonEmpty = (...values) => {
-      return values.find(
-        (value) =>
-          value !== undefined &&
-          value !== null &&
-          String(value).trim() !== ""
+      const response = await axios.get(
+        `${BASE_URL}admin/getByYearAndEmployeeId`,
+        {
+          params: {
+            year: year,
+            employeeId: employeeId,
+          },
+          withCredentials: true,
+        },
       );
-    };
 
-    const payslipData = {
-      // Keep every field returned by the API
-      ...record,
-      ...apiPayslip,
+      console.log("RAW PAYSLIP API RESPONSE:", response.data);
 
-      // Employee
-      employeeName: firstNonEmpty(
-        apiPayslip.employeeName,
-        record.employeeName,
-        ""
-      ),
+      // =========================================================
+      // SUPPORT BOTH POSSIBLE API RESPONSE FORMATS
+      //
+      // Format 1:
+      // [
+      //   {
+      //     status: "OK",
+      //     data: { ... }
+      //   }
+      // ]
+      //
+      // Format 2:
+      // {
+      //   status: "OK",
+      //   data: { ... }
+      // }
+      // =========================================================
 
-      employeeId: firstNonEmpty(
-        apiPayslip.employeeId,
-        record.employeeId,
-        employeeId
-      ),
+      const salaryList = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data
+          ? [response.data]
+          : [];
 
-      // Salary period
-      month: firstNonEmpty(
-        apiPayslip.month,
-        record.month,
-        selectedMonth,
-        ""
-      ),
+      if (salaryList.length === 0) {
+        toast.error("Payslip data not found");
+        return;
+      }
 
-      year: firstNonEmpty(
-        apiPayslip.year,
-        record.year,
-        year,
-        ""
-      ),
+      // =========================================================
+      // FIND THE EXACT EMPLOYEE + YEAR + MONTH RECORD
+      // =========================================================
 
-      // Company
-      // Your API response currently returns companyName: null,
-      // so use the salary record if available and finally the
-      // actual company configured in this payslip module.
-      companyName: firstNonEmpty(
-        apiPayslip.companyName,
-        apiPayslip.company,
-        apiPayslip.company_name,
-        record.companyName,
-        record.company,
-        record.company_name,
-        "Pandoza Solutions Pvt Ltd"
-      ),
+      const matchingSalary =
+        salaryList.find((item) => {
+          const data = item?.data;
 
-      // Payment / employee details
-      paydate: firstNonEmpty(
-        apiPayslip.paydate,
-        apiPayslip.payDate,
-        record.paydate,
-        record.payDate,
-        ""
-      ),
+          return (
+            String(data?.employeeId || "").trim() ===
+              String(employeeId).trim() &&
+            String(data?.year || "").trim() === String(year).trim() &&
+            String(data?.month || "")
+              .trim()
+              .toLowerCase() ===
+              String(selectedMonth || "")
+                .trim()
+                .toLowerCase()
+          );
+        }) ||
+        salaryList.find((item) => {
+          const data = item?.data;
 
-      bankName: firstNonEmpty(
-        apiPayslip.bankName,
-        record.bankName,
-        ""
-      ),
+          return (
+            String(data?.employeeId || "").trim() === String(employeeId).trim()
+          );
+        }) ||
+        salaryList[0];
 
-      accountNumber: firstNonEmpty(
-        apiPayslip.accountNumber,
-        apiPayslip.accountNo,
-        record.accountNumber,
-        record.accountNo,
-        ""
-      ),
+      const apiPayslip = matchingSalary?.data;
 
-      // THIS FIXES YOUR PAN NUMBER ISSUE
-      panNumber: firstNonEmpty(
-        apiPayslip.panNumber,
-        apiPayslip.panNo,
-        apiPayslip.pan,
-        record.panNumber,
-        record.panNo,
-        record.pan,
-        ""
-      ),
+      if (!apiPayslip) {
+        toast.error("Payslip data not found");
+        return;
+      }
 
-      uanNo: firstNonEmpty(
-        apiPayslip.uanNo,
-        apiPayslip.uanNumber,
-        record.uanNo,
-        record.uanNumber,
-        ""
-      ),
+      // =========================================================
+      // IMPORTANT:
+      // Do NOT allow empty values from one object to overwrite
+      // valid values from the other object.
+      // =========================================================
 
-      // Attendance
-      totalWorkingDay: firstNonEmpty(
-        apiPayslip.totalWorkingDay,
-        record.totalWorkingDay,
-        0
-      ),
+      const firstNonEmpty = (...values) => {
+        return values.find(
+          (value) =>
+            value !== undefined &&
+            value !== null &&
+            String(value).trim() !== "",
+        );
+      };
 
-      presentDay: firstNonEmpty(
-        apiPayslip.presentDay,
-        record.presentDay,
-        0
-      ),
+      const payslipData = {
+        // Keep every field returned by the API
+        ...record,
+        ...apiPayslip,
 
-      absentDays: firstNonEmpty(
-        apiPayslip.absentDays,
-        record.absentDays,
-        0
-      ),
+        // Employee
+        employeeName: firstNonEmpty(
+          apiPayslip.employeeName,
+          record.employeeName,
+          "",
+        ),
 
-      lop: firstNonEmpty(
-        apiPayslip.lop,
-        record.lop,
-        0
-      ),
+        employeeId: firstNonEmpty(
+          apiPayslip.employeeId,
+          record.employeeId,
+          employeeId,
+        ),
 
-      // Earnings
-      grossSalary: firstNonEmpty(
-        apiPayslip.grossSalary,
-        record.grossSalary,
-        0
-      ),
+        // Salary period
+        month: firstNonEmpty(apiPayslip.month, record.month, selectedMonth, ""),
 
-      basicSalary: firstNonEmpty(
-        apiPayslip.basicSalary,
-        record.basicSalary,
-        0
-      ),
+        year: firstNonEmpty(apiPayslip.year, record.year, year, ""),
 
-      da: firstNonEmpty(
-        apiPayslip.da,
-        record.da,
-        0
-      ),
+        // Company
+        // Your API response currently returns companyName: null,
+        // so use the salary record if available and finally the
+        // actual company configured in this payslip module.
+        companyName: firstNonEmpty(
+          apiPayslip.companyName,
+          apiPayslip.company,
+          apiPayslip.company_name,
+          record.companyName,
+          record.company,
+          record.company_name,
+          "Pandoza Solutions Pvt Ltd",
+        ),
 
-      hra: firstNonEmpty(
-        apiPayslip.hra,
-        record.hra,
-        0
-      ),
+        // Payment / employee details
+        paydate: firstNonEmpty(
+          apiPayslip.paydate,
+          apiPayslip.payDate,
+          record.paydate,
+          record.payDate,
+          "",
+        ),
 
-      otherAllowance: firstNonEmpty(
-        apiPayslip.otherAllowance,
-        record.otherAllowance,
-        0
-      ),
+        bankName: firstNonEmpty(apiPayslip.bankName, record.bankName, ""),
 
-      // Deductions
-      professionalTax: firstNonEmpty(
-        apiPayslip.professionalTax,
-        record.professionalTax,
-        0
-      ),
+        accountNumber: firstNonEmpty(
+          apiPayslip.accountNumber,
+          apiPayslip.accountNo,
+          record.accountNumber,
+          record.accountNo,
+          "",
+        ),
 
-      employeePf: firstNonEmpty(
-        apiPayslip.employeePf,
-        record.employeePf,
-        0
-      ),
+        // THIS FIXES YOUR PAN NUMBER ISSUE
+        panNumber: firstNonEmpty(
+          apiPayslip.panNumber,
+          apiPayslip.panNo,
+          apiPayslip.pan,
+          record.panNumber,
+          record.panNo,
+          record.pan,
+          "",
+        ),
 
-      employerPf: firstNonEmpty(
-        apiPayslip.employerPf,
-        record.employerPf,
-        0
-      ),
+        uanNo: firstNonEmpty(
+          apiPayslip.uanNo,
+          apiPayslip.uanNumber,
+          record.uanNo,
+          record.uanNumber,
+          "",
+        ),
 
-      employeeEsic: firstNonEmpty(
-        apiPayslip.employeeEsic,
-        record.employeeEsic,
-        0
-      ),
+        // Attendance
+        totalWorkingDay: firstNonEmpty(
+          apiPayslip.totalWorkingDay,
+          record.totalWorkingDay,
+          0,
+        ),
 
-      salaryAdvance: firstNonEmpty(
-        apiPayslip.salaryAdvance,
-        record.salaryAdvance,
-        0
-      ),
+        presentDay: firstNonEmpty(apiPayslip.presentDay, record.presentDay, 0),
 
-      otherDiduction: firstNonEmpty(
-        apiPayslip.otherDiduction,
-        record.otherDiduction,
-        0
-      ),
+        absentDays: firstNonEmpty(apiPayslip.absentDays, record.absentDays, 0),
 
-      insuranceCorporation: firstNonEmpty(
-        apiPayslip.insuranceCorporation,
-        record.insuranceCorporation,
-        0
-      ),
+        lop: firstNonEmpty(apiPayslip.lop, record.lop, 0),
 
-      netSalary: firstNonEmpty(
-        apiPayslip.netSalary,
-        record.netSalary,
-        0
-      ),
-    };
+        // Earnings
+        grossSalary: firstNonEmpty(
+          apiPayslip.grossSalary,
+          record.grossSalary,
+          0,
+        ),
 
-    // =========================================================
-    // DEBUG - CHECK EXACT DATA BEFORE OPENING PAYSLIP
-    // =========================================================
+        basicSalary: firstNonEmpty(
+          apiPayslip.basicSalary,
+          record.basicSalary,
+          0,
+        ),
 
-    console.log("FINAL PAYSLIP DATA SENT TO PAYSLIP PAGE:", payslipData);
-    console.log("FINAL COMPANY:", payslipData.companyName);
-    console.log("FINAL PAN:", payslipData.panNumber);
-    console.log("FINAL ACCOUNT:", payslipData.accountNumber);
-    console.log("FINAL PAY DATE:", payslipData.paydate);
+        da: firstNonEmpty(apiPayslip.da, record.da, 0),
 
-    // =========================================================
-    // OPEN PAYSLIP
-    // =========================================================
+        hra: firstNonEmpty(apiPayslip.hra, record.hra, 0),
 
-    navigate("/Payslip", {
-      state: {
-        payslip: payslipData,
-      },
-    });
-  } catch (error) {
-    console.error("VIEW PAYSLIP ERROR:", error);
+        otherAllowance: firstNonEmpty(
+          apiPayslip.otherAllowance,
+          record.otherAllowance,
+          0,
+        ),
 
-    console.error(
-      "STATUS:",
-      error.response?.status
-    );
+        // Deductions
+        professionalTax: firstNonEmpty(
+          apiPayslip.professionalTax,
+          record.professionalTax,
+          0,
+        ),
 
-    console.error(
-      "API ERROR:",
-      error.response?.data
-    );
+        employeePf: firstNonEmpty(apiPayslip.employeePf, record.employeePf, 0),
 
-    toast.error(
-      error.response?.data?.responseMessage ||
-        "Unable to fetch payslip"
-    );
-  } finally {
-    setLoader(false);
-  }
-};
+        employerPf: firstNonEmpty(apiPayslip.employerPf, record.employerPf, 0),
+
+        employeeEsic: firstNonEmpty(
+          apiPayslip.employeeEsic,
+          record.employeeEsic,
+          0,
+        ),
+
+        salaryAdvance: firstNonEmpty(
+          apiPayslip.salaryAdvance,
+          record.salaryAdvance,
+          0,
+        ),
+
+        otherDiduction: firstNonEmpty(
+          apiPayslip.otherDiduction,
+          record.otherDiduction,
+          0,
+        ),
+
+        insuranceCorporation: firstNonEmpty(
+          apiPayslip.insuranceCorporation,
+          record.insuranceCorporation,
+          0,
+        ),
+
+        netSalary: firstNonEmpty(apiPayslip.netSalary, record.netSalary, 0),
+      };
+
+      // =========================================================
+      // DEBUG - CHECK EXACT DATA BEFORE OPENING PAYSLIP
+      // =========================================================
+
+      console.log("FINAL PAYSLIP DATA SENT TO PAYSLIP PAGE:", payslipData);
+      console.log("FINAL COMPANY:", payslipData.companyName);
+      console.log("FINAL PAN:", payslipData.panNumber);
+      console.log("FINAL ACCOUNT:", payslipData.accountNumber);
+      console.log("FINAL PAY DATE:", payslipData.paydate);
+
+      // =========================================================
+      // OPEN PAYSLIP
+      // =========================================================
+
+      navigate("/Payslip", {
+        state: {
+          payslip: payslipData,
+        },
+      });
+    } catch (error) {
+      console.error("VIEW PAYSLIP ERROR:", error);
+
+      console.error("STATUS:", error.response?.status);
+
+      console.error("API ERROR:", error.response?.data);
+
+      toast.error(
+        error.response?.data?.responseMessage || "Unable to fetch payslip",
+      );
+    } finally {
+      setLoader(false);
+    }
+  };
 
   // ==========================================
   // DELETE SALARY
@@ -589,51 +480,31 @@ const handleViewPayslip = async (record) => {
 
   const deleteSalary = async (record) => {
     try {
-      console.log(
-        "Deleting Salary:",
-        record
-      );
+      console.log("Deleting Salary:", record);
 
-      const response = await axios.delete(
-        `${BASE_URL}admin/deleteNewSalary`,
-        {
-          params: {
-            sId: record.key,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.delete(`${BASE_URL}admin/deleteNewSalary`, {
+        params: {
+          sId: record.key,
+        },
+        withCredentials: true,
+      });
 
-      console.log(
-        "Delete Salary Response:",
-        response.data
-      );
+      console.log("Delete Salary Response:", response.data);
 
       toast.success(
-        response.data?.responseMessage ||
-          "Salary Deleted Successfully!"
+        response.data?.responseMessage || "Salary Deleted Successfully!",
       );
 
       getSalary();
     } catch (err) {
-      console.error(
-        "DELETE SALARY ERROR:",
-        err
-      );
+      console.error("DELETE SALARY ERROR:", err);
 
-      console.error(
-        "Status:",
-        err.response?.status
-      );
+      console.error("Status:", err.response?.status);
 
-      console.error(
-        "Response:",
-        err.response?.data
-      );
+      console.error("Response:", err.response?.data);
 
       toast.error(
-        err.response?.data?.responseMessage ||
-          "Unable to delete salary"
+        err.response?.data?.responseMessage || "Unable to delete salary",
       );
     }
   };
@@ -650,26 +521,18 @@ const handleViewPayslip = async (record) => {
   // FILTER SALARY DATA
   // ==========================================
 
-  const filteredSalaryData =
-    salaryData.filter((salary) => {
-      const monthMatch =
-        !selectedMonth ||
-        String(salary.month)
-          .trim()
-          .toLowerCase() ===
-          selectedMonth
-            .trim()
-            .toLowerCase();
+  const filteredSalaryData = salaryData.filter((salary) => {
+    const monthMatch =
+      !selectedMonth ||
+      String(salary.month).trim().toLowerCase() ===
+        selectedMonth.trim().toLowerCase();
 
-      const yearMatch =
-        !selectedYear ||
-        String(salary.year)
-          .trim() ===
-          String(selectedYear)
-            .trim();
+    const yearMatch =
+      !selectedYear ||
+      String(salary.year).trim() === String(selectedYear).trim();
 
-      return monthMatch && yearMatch;
-    });
+    return monthMatch && yearMatch;
+  });
 
   // ==========================================
   // CLEAR FILTERS
@@ -694,32 +557,20 @@ const handleViewPayslip = async (record) => {
       fixed: "left",
 
       render: (name) => {
-        const employeeName =
-          name || "N/A";
+        const employeeName = name || "N/A";
 
-        const nameParts =
-          employeeName
-            .trim()
-            .split(" ");
+        const nameParts = employeeName.trim().split(" ");
 
         const initials =
           nameParts.length > 1
-            ? `${nameParts[0][0]}${
-                nameParts[
-                  nameParts.length - 1
-                ][0]
-              }`
+            ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`
             : nameParts[0]?.[0] || "?";
 
         return (
           <Space>
-            <Avatar className="avatar">
-              {initials.toUpperCase()}
-            </Avatar>
+            <Avatar className="avatar">{initials.toUpperCase()}</Avatar>
 
-            <span>
-              {employeeName}
-            </span>
+            <span>{employeeName}</span>
           </Space>
         );
       },
@@ -755,10 +606,7 @@ const handleViewPayslip = async (record) => {
       key: "grossSalary",
       width: 150,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -788,10 +636,7 @@ const handleViewPayslip = async (record) => {
       key: "lop",
       width: 140,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -800,10 +645,7 @@ const handleViewPayslip = async (record) => {
       key: "da",
       width: 180,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -812,10 +654,7 @@ const handleViewPayslip = async (record) => {
       key: "employeePf",
       width: 150,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -824,10 +663,7 @@ const handleViewPayslip = async (record) => {
       key: "employerPf",
       width: 150,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -836,10 +672,7 @@ const handleViewPayslip = async (record) => {
       key: "employeeEsic",
       width: 160,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -848,10 +681,7 @@ const handleViewPayslip = async (record) => {
       key: "salaryAdvance",
       width: 170,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -860,10 +690,7 @@ const handleViewPayslip = async (record) => {
       key: "otherDiduction",
       width: 170,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -872,10 +699,7 @@ const handleViewPayslip = async (record) => {
       key: "otherAllowance",
       width: 170,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -884,10 +708,7 @@ const handleViewPayslip = async (record) => {
       key: "professionalTax",
       width: 170,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -896,10 +717,7 @@ const handleViewPayslip = async (record) => {
       key: "insuranceCorporation",
       width: 200,
 
-      render: (value) =>
-        `₹ ${Number(value).toLocaleString(
-          "en-IN"
-        )}`,
+      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
     {
@@ -909,12 +727,7 @@ const handleViewPayslip = async (record) => {
       width: 150,
 
       render: (value) => (
-        <strong>
-          ₹{" "}
-          {Number(value).toLocaleString(
-            "en-IN"
-          )}
-        </strong>
+        <strong>₹ {Number(value).toLocaleString("en-IN")}</strong>
       ),
     },
 
@@ -930,17 +743,16 @@ const handleViewPayslip = async (record) => {
 
       render: (_, record) => (
         <Space size="middle">
-
           {/* VIEW PAYSLIP */}
 
           <button
-  type="button"
-  className="view-salary-link"
-  onClick={() => handleViewPayslip(record)}
-  title="View Payslip"
->
-  <FaEye className="viewsalary" />
-</button>
+            type="button"
+            className="view-salary-link"
+            onClick={() => handleViewPayslip(record)}
+            title="View Payslip"
+          >
+            <FaEye className="viewsalary" />
+          </button>
 
           {/* EDIT SALARY */}
 
@@ -948,14 +760,9 @@ const handleViewPayslip = async (record) => {
             className="edit"
             title="Edit Salary"
             onClick={() => {
-              console.log(
-                "FULL RECORD:",
-                record
-              );
+              console.log("FULL RECORD:", record);
 
-              navigate(
-                `/editSalary/${record.key}`
-              );
+              navigate(`/editSalary/${record.key}`);
             }}
           />
 
@@ -967,13 +774,9 @@ const handleViewPayslip = async (record) => {
             onClick={() => {
               deleteSalary(record);
 
-              console.log(
-                "Delete Salary:",
-                record
-              );
+              console.log("Delete Salary:", record);
             }}
           />
-
         </Space>
       ),
     },
@@ -985,7 +788,7 @@ const handleViewPayslip = async (record) => {
 
   return (
     <MainPanel
-                    breadcrumbs={[
+      breadcrumbs={[
         { label: "Dashboard", link: "/dashboard" },
         { label: "Salary Management" },
       ]}
@@ -997,47 +800,26 @@ const handleViewPayslip = async (record) => {
           : " "
       }
     >
-                              <button
-            type="button"
-            className="back-btn"
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            ← Back
-          </button>
+      <button type="button" className="back-btn" onClick={() => navigate("/")}>
+        ← Back
+      </button>
       <div className="salary-management">
-
-
-
         <div className="page-header">
-
-
-          <h2>
-            Salary Management
-          </h2>
+          <h2>Salary Management</h2>
 
           {/* FILTERS + ADD SALARY */}
 
           <div className="rightside">
-
             {/* MONTH */}
 
             <SelectInput
               label="Month"
               name="month"
               value={selectedMonth}
-              onChange={(e) =>
-                setSelectedMonth(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setSelectedMonth(e.target.value)}
             >
               {months.map((month) => (
-                <MenuItem
-                  key={month}
-                  value={month}
-                >
+                <MenuItem key={month} value={month}>
                   {month}
                 </MenuItem>
               ))}
@@ -1049,17 +831,10 @@ const handleViewPayslip = async (record) => {
               label="Year"
               name="year"
               value={selectedYear}
-              onChange={(e) =>
-                setSelectedYear(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setSelectedYear(e.target.value)}
             >
               {years.map((year) => (
-                <MenuItem
-                  key={year}
-                  value={year}
-                >
+                <MenuItem key={year} value={year}>
                   {year}
                 </MenuItem>
               ))}
@@ -1067,14 +842,11 @@ const handleViewPayslip = async (record) => {
 
             {/* CLEAR */}
 
-            {(selectedMonth ||
-              selectedYear) && (
+            {(selectedMonth || selectedYear) && (
               <button
                 type="button"
                 className="clear-filter-btn"
-                onClick={
-                  clearFilters
-                }
+                onClick={clearFilters}
               >
                 Clear
               </button>
@@ -1085,16 +857,11 @@ const handleViewPayslip = async (record) => {
             <button
               type="button"
               className="add-salary-btn"
-              onClick={() =>
-                navigate(
-                  "/addSalary"
-                )
-              }
+              onClick={() => navigate("/addSalary")}
             >
               <FaPlus />
               Add Salary
             </button>
-
           </div>
         </div>
 
@@ -1102,9 +869,7 @@ const handleViewPayslip = async (record) => {
 
         <Table
           columns={columns}
-          dataSource={
-            filteredSalaryData
-          }
+          dataSource={filteredSalaryData}
           bordered
           loading={loader}
           scroll={{
@@ -1113,23 +878,12 @@ const handleViewPayslip = async (record) => {
           pagination={{
             pageSize: 5,
             showSizeChanger: true,
-            pageSizeOptions: [
-              "5",
-              "10",
-              "20",
-              "50",
-            ],
+            pageSizeOptions: ["5", "10", "20", "50"],
           }}
-          rowClassName={(
-            _,
-            index
-          ) =>
-            index % 2 === 0
-              ? "table-row-light"
-              : "table-row-dark"
+          rowClassName={(_, index) =>
+            index % 2 === 0 ? "table-row-light" : "table-row-dark"
           }
         />
-
       </div>
     </MainPanel>
   );

@@ -7,43 +7,6 @@
   // GAP IS USED INSTEAD OF MARGIN
   gap: 20px;
 
-  // =====================================================
-  // BACK BUTTON
-  // =====================================================
-
-  .leave-back-btn {
-    align-self: flex-start;
-
-    border: none;
-    background: #e9e9e9;
-
-    color: #333;
-
-    padding: 10px 22px;
-
-    border-radius: 5px;
-
-    font-size: 14px;
-    font-weight: 400;
-
-    cursor: pointer;
-
-    transition: 0.3s ease;
-
-    white-space: nowrap;
-
-    &:hover {
-      background: #dcdcdc;
-    }
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  // =====================================================
-  // PAGE HEADER
-  // =====================================================
 
   .page-header {
     display: flex;

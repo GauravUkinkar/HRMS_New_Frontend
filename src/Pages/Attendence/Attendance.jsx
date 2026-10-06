@@ -83,9 +83,7 @@ const Attendance = () => {
 
   const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1);
 
-  const [selectedYear, setSelectedYear] = useState(
-    String(dayjs().year())
-  );
+  const [selectedYear, setSelectedYear] = useState(String(dayjs().year()));
 
   // ============================================================
   // ADD PREVIOUS ATTENDANCE
@@ -329,13 +327,9 @@ const Attendance = () => {
         const hasPunchIn = Boolean(item?.punchIn);
         const hasAdminPunchIn = Boolean(item?.punchInByAdmin);
 
-        const punchIn = hasPunchIn
-          ? formatTime12Hour(item.punchIn)
-          : "";
+        const punchIn = hasPunchIn ? formatTime12Hour(item.punchIn) : "";
 
-        const punchOut = item?.punchOut
-          ? formatTime12Hour(item.punchOut)
-          : "";
+        const punchOut = item?.punchOut ? formatTime12Hour(item.punchOut) : "";
 
         const apiStatus = String(item?.status || "")
           .trim()
@@ -350,11 +344,7 @@ const Attendance = () => {
 
         // If API specifically says HALF_DAY and there is no punch-in
         // keep it HALF_DAY.
-        if (
-          !hasPunchIn &&
-          !hasAdminPunchIn &&
-          apiStatus === "HALF_DAY"
-        ) {
+        if (!hasPunchIn && !hasAdminPunchIn && apiStatus === "HALF_DAY") {
           status = "HALF_DAY";
         }
 
@@ -374,13 +364,9 @@ const Attendance = () => {
             employee?.designation ||
             "",
 
-          punchIn: hasAdminPunchIn
-            ? "Punch In From Admin"
-            : punchIn,
+          punchIn: hasAdminPunchIn ? "Punch In From Admin" : punchIn,
 
-          punchOut: item?.punchOutByAdmin
-            ? "Punch Out From Admin"
-            : punchOut,
+          punchOut: item?.punchOutByAdmin ? "Punch Out From Admin" : punchOut,
 
           status,
 
@@ -391,14 +377,10 @@ const Attendance = () => {
 
       setData(tableData);
     } catch (error) {
-      console.error(
-        "Attendance API Error:",
-        error?.response?.data || error
-      );
+      console.error("Attendance API Error:", error?.response?.data || error);
 
       toast.error(
-        error?.response?.data?.message ||
-        "Unable to load attendance"
+        error?.response?.data?.message || "Unable to load attendance",
       );
 
       setData([]);
@@ -488,7 +470,7 @@ const Attendance = () => {
     await getEmployeeMonthlyAttendance(
       selectedEmployee?.employeeId,
       month,
-      Number(selectedYear)
+      Number(selectedYear),
     );
   };
 
@@ -511,7 +493,7 @@ const Attendance = () => {
       await getEmployeeMonthlyAttendance(
         selectedEmployee?.employeeId,
         selectedMonth,
-        year
+        year,
       );
     }
   };
@@ -728,12 +710,13 @@ const Attendance = () => {
 
         return (
           <span
-            className={`attendance-status ${normalizedStatus === "HALF_DAY"
-              ? "half-day-status"
-              : normalizedStatus === "ABSENT"
-                ? "absent-status"
-                : ""
-              }`}
+            className={`attendance-status ${
+              normalizedStatus === "HALF_DAY"
+                ? "half-day-status"
+                : normalizedStatus === "ABSENT"
+                  ? "absent-status"
+                  : ""
+            }`}
           >
             {status || "-"}
           </span>
@@ -908,8 +891,6 @@ const Attendance = () => {
     return record?.status?.toString().trim().toUpperCase() || null;
   };
 
-
-
   const getAttendanceForSelectedDate = async (date) => {
     if (!date) {
       return [];
@@ -923,7 +904,7 @@ const Attendance = () => {
             startDate: date,
             endDate: date,
           },
-        }
+        },
       );
 
       if (Array.isArray(response?.data?.data)) {
@@ -986,15 +967,15 @@ const Attendance = () => {
                 return attendanceStatus !== "ABSENT";
               })
               .map((item) => String(item?.employeeId || "").trim())
-              .filter(Boolean)
+              .filter(Boolean),
           );
 
           eligibleEmployees = allemployee.filter((item) =>
-            eligibleEmployeeIds.has(String(item?.empId || "").trim())
+            eligibleEmployeeIds.has(String(item?.empId || "").trim()),
           );
         } else {
           eligibleEmployees = allemployee.filter((item) =>
-            selectedEmployees.includes(item?.empId)
+            selectedEmployees.includes(item?.empId),
           );
         }
 
@@ -1022,12 +1003,12 @@ const Attendance = () => {
             headers: {
               "Content-Type": "application/json",
             },
-          }
+          },
         );
 
         if (response?.status === 200 && response?.data?.success !== false) {
           toast.success(
-            response?.data?.message || "Attendance adjustment completed"
+            response?.data?.message || "Attendance adjustment completed",
           );
 
           const employeesList = await getAllEmployee();
@@ -1046,7 +1027,7 @@ const Attendance = () => {
           setShowAttendanceModal(false);
         } else {
           throw new Error(
-            response?.data?.message || "Unable to update attendance"
+            response?.data?.message || "Unable to update attendance",
           );
         }
 
@@ -1054,7 +1035,7 @@ const Attendance = () => {
       }
 
       const selectedEmployeeData = allemployee.find(
-        (item) => String(item?.empId || "") === String(employeeId)
+        (item) => String(item?.empId || "") === String(employeeId),
       );
 
       if (!selectedEmployeeData) {
@@ -1074,7 +1055,7 @@ const Attendance = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (response?.status === 200 && response?.data?.success !== false) {
@@ -1096,7 +1077,7 @@ const Attendance = () => {
         setShowAttendanceModal(false);
       } else {
         throw new Error(
-          response?.data?.message || "Unable to update previous attendance"
+          response?.data?.message || "Unable to update previous attendance",
         );
       }
     } catch (error) {
@@ -1104,8 +1085,8 @@ const Attendance = () => {
 
       toast.error(
         error?.response?.data?.message ||
-        error?.message ||
-        "Unable to update previous attendance"
+          error?.message ||
+          "Unable to update previous attendance",
       );
     } finally {
       setAttendanceHistoryLoading(false);
@@ -1134,7 +1115,7 @@ const Attendance = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (response.status === 200 || response.status === 201) {
@@ -1144,9 +1125,7 @@ const Attendance = () => {
     } catch (error) {
       console.error("Mark Present Error:", error);
 
-      toast.error(
-        error?.response?.data?.message || "Unable to mark present"
-      );
+      toast.error(error?.response?.data?.message || "Unable to mark present");
     } finally {
       setLoader(false);
     }
@@ -1156,41 +1135,39 @@ const Attendance = () => {
   // MARK HALF DAY
   // ============================================================
 
-const markHalfDay = async (record) => {
-  try {
-    setLoader(true);
+  const markHalfDay = async (record) => {
+    try {
+      setLoader(true);
 
-    const today = dayjs().format("YYYY-MM-DD");
+      const today = dayjs().format("YYYY-MM-DD");
 
-    const response = await axios.post(
-      `${BASE_URL2}api/punch/adjust/${record?.employeeId}`,
-      {
-        date: today,
-        attendanceType: "HALF_DAY",
-        employeeName: record?.employeeName || "",
-        employeeDesignation: record?.employeeDesignation || "",
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        `${BASE_URL2}api/punch/adjust/${record?.employeeId}`,
+        {
+          date: today,
+          attendanceType: "HALF_DAY",
+          employeeName: record?.employeeName || "",
+          employeeDesignation: record?.employeeDesignation || "",
         },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Marked Half Day Successfully");
+        await getEmployeeData();
       }
-    );
+    } catch (error) {
+      console.error("Mark Half Day Error:", error);
 
-    if (response.status === 200 || response.status === 201) {
-      toast.success("Marked Half Day Successfully");
-      await getEmployeeData();
+      toast.error(error?.response?.data?.message || "Unable to mark half day");
+    } finally {
+      setLoader(false);
     }
-  } catch (error) {
-    console.error("Mark Half Day Error:", error);
-
-    toast.error(
-      error?.response?.data?.message || "Unable to mark half day"
-    );
-  } finally {
-    setLoader(false);
-  }
-};
+  };
 
   // ============================================================
   // MARK ABSENT
@@ -1254,7 +1231,7 @@ const markHalfDay = async (record) => {
       setLoader(true);
 
       const response = await axios.get(
-        `${BASE_URL2}api/punch/clear/out/${employeeId}`
+        `${BASE_URL2}api/punch/clear/out/${employeeId}`,
       );
 
       if (response.status === 200) {
@@ -1266,7 +1243,7 @@ const markHalfDay = async (record) => {
       console.error("Remove Punch Out Error:", error);
 
       toast.error(
-        error?.response?.data?.message || "Unable to remove punch out"
+        error?.response?.data?.message || "Unable to remove punch out",
       );
     } finally {
       setLoader(false);
@@ -1355,9 +1332,7 @@ const markHalfDay = async (record) => {
     loadData();
   }, []);
   const filteredAttendanceData = data.filter((item) => {
-    const hasPunchIn =
-      Boolean(item?.punchIn) ||
-      Boolean(item?.punchInByAdmin);
+    const hasPunchIn = Boolean(item?.punchIn) || Boolean(item?.punchInByAdmin);
 
     if (attendanceFilter === "present") {
       return hasPunchIn;
@@ -1373,23 +1348,14 @@ const markHalfDay = async (record) => {
   const totalEmployees = allemployee.length;
 
   const presentEmployees = data.filter(
-    (item) =>
-      Boolean(item?.punchIn) ||
-      Boolean(item?.punchInByAdmin),
+    (item) => Boolean(item?.punchIn) || Boolean(item?.punchInByAdmin),
   ).length;
 
-  const absentEmployees = Math.max(
-    totalEmployees - presentEmployees,
-    0,
-  );
+  const absentEmployees = Math.max(totalEmployees - presentEmployees, 0);
 
   const handleAttendanceFilter = (filter) => {
     navigate(`/attendance?filter=${filter}`);
   };
-
-
-
-
 
   // ============================================================
   // TODAY TABLE
@@ -1441,9 +1407,7 @@ const markHalfDay = async (record) => {
               <button
                 type="button"
                 className="save-time-btn"
-                onClick={() =>
-                  updatePunchInTime(record?.employeeId)
-                }
+                onClick={() => updatePunchInTime(record?.employeeId)}
                 disabled={loader}
               >
                 {loader ? "Saving..." : "Save"}
@@ -1463,9 +1427,7 @@ const markHalfDay = async (record) => {
       width: 200,
       align: "center",
 
-      render: (_, record) => (
-        <span>{record?.punchOut || "-"}</span>
-      ),
+      render: (_, record) => <span>{record?.punchOut || "-"}</span>,
     },
 
     {
@@ -1506,9 +1468,7 @@ const markHalfDay = async (record) => {
               : "";
 
         return (
-          <span
-            className={`attendance-status ${statusClass}`}
-          >
+          <span className={`attendance-status ${statusClass}`}>
             {displayStatus}
           </span>
         );
@@ -1529,15 +1489,13 @@ const markHalfDay = async (record) => {
           menuItems.push({
             key: "1",
             label: "Remove Punch In",
-            onClick: () =>
-              removePunchIn(record?.employeeId),
+            onClick: () => removePunchIn(record?.employeeId),
           });
 
           menuItems.push({
             key: "2",
             label: "Change Punch In Time",
-            onClick: () =>
-              changePunchInTime(record),
+            onClick: () => changePunchInTime(record),
           });
         }
 
@@ -1545,30 +1503,26 @@ const markHalfDay = async (record) => {
           menuItems.push({
             key: "6",
             label: "Remove Punch Out",
-            onClick: () =>
-              removePunchOut(record?.employeeId),
+            onClick: () => removePunchOut(record?.employeeId),
           });
         }
 
         menuItems.push({
           key: "3",
           label: "Mark Present",
-          onClick: () =>
-            markPresent(record),
+          onClick: () => markPresent(record),
         });
 
         menuItems.push({
           key: "4",
           label: "Mark Absent",
-          onClick: () =>
-            markAbsent(record?.employeeId),
+          onClick: () => markAbsent(record?.employeeId),
         });
 
         menuItems.push({
           key: "5",
           label: "Mark Half Day",
-          onClick: () =>
-            markHalfDay(record),
+          onClick: () => markHalfDay(record),
         });
 
         return (
@@ -1580,10 +1534,7 @@ const markHalfDay = async (record) => {
               trigger={["click"]}
               placement="bottomRight"
             >
-              <button
-                type="button"
-                className="three-dot-btn"
-              >
+              <button type="button" className="three-dot-btn">
                 <HiOutlineDotsHorizontal />
               </button>
             </Dropdown>
@@ -1591,9 +1542,7 @@ const markHalfDay = async (record) => {
             <button
               type="button"
               className="calendar-btn"
-              onClick={() =>
-                handleCalendar(record)
-              }
+              onClick={() => handleCalendar(record)}
             >
               <SlCalender />
             </button>
@@ -1629,7 +1578,7 @@ const markHalfDay = async (record) => {
           <div className="previous-view-header">
             <button
               type="button"
-              className="previous-view-back"
+              className="back-btn"
               onClick={closePreviousAttendance}
             >
               ← Back
@@ -1778,26 +1727,24 @@ const markHalfDay = async (record) => {
         // =====================================================
         <>
           <div className="top-parent">
-
+            <button
+              type="button"
+              className="back-btn"
+              onClick={() => navigate("/")}
+            >
+              ← Back
+            </button>
             <div className="previous-view-header">
-              <button
-                type="button"
-                className="previous-view-back"
-                onClick={() => navigate("/")}
-              >
-                ← Back
-              </button>
-
               <div className="previous-view-title">
                 <h1>Today's Attendance</h1>
               </div>
-
             </div>
             <div className="btn-group">
               <button
                 type="button"
-                className={`count ${attendanceFilter === "all" ? "active" : ""
-                  }`}
+                className={`count ${
+                  attendanceFilter === "all" ? "active" : ""
+                }`}
                 onClick={() => handleAttendanceFilter("all")}
               >
                 Total Employee:
@@ -1806,8 +1753,9 @@ const markHalfDay = async (record) => {
 
               <button
                 type="button"
-                className={`count ${attendanceFilter === "present" ? "active" : ""
-                  }`}
+                className={`count ${
+                  attendanceFilter === "present" ? "active" : ""
+                }`}
                 onClick={() => handleAttendanceFilter("present")}
               >
                 Present Employee:
@@ -1816,8 +1764,9 @@ const markHalfDay = async (record) => {
 
               <button
                 type="button"
-                className={`count ${attendanceFilter === "absent" ? "active" : ""
-                  }`}
+                className={`count ${
+                  attendanceFilter === "absent" ? "active" : ""
+                }`}
                 onClick={() => handleAttendanceFilter("absent")}
               >
                 Absent Employee:
@@ -1830,7 +1779,8 @@ const markHalfDay = async (record) => {
                 className="count"
                 onClick={handleAddPreviousAttendance}
               >
-                Add Previous Attendance<SlCalender />
+                Add Previous Attendance
+                <SlCalender />
               </button>
 
               <button
@@ -1838,7 +1788,8 @@ const markHalfDay = async (record) => {
                 className="count"
                 onClick={handleViewPreviousAttendance}
               >
-                View Previous Attendance<SlCalender />
+                View Previous Attendance
+                <SlCalender />
               </button>
             </div>
           </div>
@@ -1850,17 +1801,14 @@ const markHalfDay = async (record) => {
             bordered
             scroll={{ x: "max-content" }}
             pagination={{
-              pageSize: 10
+              pageSize: 10,
             }}
             rowClassName={(_, index) =>
-              index % 2 === 0
-                ? "table-row-light"
-                : "table-row-dark"
+              index % 2 === 0 ? "table-row-light" : "table-row-dark"
             }
           />
         </>
       )}
-
 
       <Modal
         open={showAttendanceModal}

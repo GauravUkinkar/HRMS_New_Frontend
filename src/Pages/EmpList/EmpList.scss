@@ -19,25 +19,25 @@
 
   .employee-list-header {
     width: 100%;
-
     display: flex;
     align-items: center;
-
     gap: 20px;
-
+background-color: var(--accent2);
     box-sizing: border-box;
+    padding: 10px 8px;
+    border-radius: 5px;
   }
 
 
 
   .employee-list-header h2 {
-    margin: 0;
+  
 
-    font-size: 28px;
+    font-size: 20px;
 
     font-weight: 700;
 
-    color: #222;
+    color: white;
 
     white-space: nowrap;
   }
@@ -67,7 +67,7 @@
 
     justify-content: center;
 
-    background: #0b8c951a;
+    background: white;
 
     border-radius: 5px;
 
@@ -75,7 +75,7 @@
 
     padding: 8px 16px;
 
-    color: #0b8b95;
+    color:var(--accent2) ;
 
     gap: 5px;
 
@@ -87,17 +87,19 @@
 
     span {
       font-weight: 800;
+      
     }
   }
+
 
   // ===================================================
   // ADD EMPLOYEE BUTTON
   // ===================================================
 
   .employee-list-actions a {
-    background: #0b8b95;
+    background: white;
 
-    color: white;
+    color:var(--accent2);
 
     padding: 8px 16px;
 
@@ -117,6 +119,7 @@
 
     &:hover {
       background: #0a7a85;
+      color: white;
     }
 
     span {

@@ -1,15 +1,12 @@
-
-import React, { useContext, useEffect, useRef, useState } from "react";
+import  { useContext, useEffect, useRef, useState } from "react";
 import { Table, Space, Input, Button, message } from "antd";
-import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import {  SearchOutlined } from "@ant-design/icons";
 import axios from "axios";
 import "./EmpLeave.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../../Context";
-import { IoMdArrowBack } from "react-icons/io";
-
-
+import { FaPlus } from "react-icons/fa";
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const LeaveManagement = () => {
@@ -53,7 +50,7 @@ const LeaveManagement = () => {
         `${BASE_URL}AuthController/getAllLeaveRequestByuid?uId=${user.uid}`,
         {
           withCredentials: true,
-        }
+        },
       );
 
       console.log("Employee Leaves:", response.data);
@@ -72,9 +69,7 @@ const LeaveManagement = () => {
 
         days: item.totalleaveDays || 0,
 
-        from: item.leaveDates?.length
-          ? item.leaveDates[0]?.date || "-"
-          : "-",
+        from: item.leaveDates?.length ? item.leaveDates[0]?.date || "-" : "-",
 
         to: item.leaveDates?.length
           ? item.leaveDates[item.leaveDates.length - 1]?.date || "-"
@@ -91,10 +86,7 @@ const LeaveManagement = () => {
 
       setLeaveData(formattedData);
     } catch (error) {
-      console.error(
-        "GET ALL LEAVES ERROR:",
-        error.response?.data || error
-      );
+      console.error("GET ALL LEAVES ERROR:", error.response?.data || error);
 
       message.error("Failed to fetch leaves");
     } finally {
@@ -135,13 +127,9 @@ const LeaveManagement = () => {
           placeholder={placeholder}
           value={selectedKeys[0] || ""}
           onChange={(e) => {
-            setSelectedKeys(
-              e.target.value ? [e.target.value] : []
-            );
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
           }}
-          onPressEnter={() =>
-            handleSearch(selectedKeys, confirm)
-          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm)}
           style={{
             marginBottom: 8,
             display: "block",
@@ -152,9 +140,7 @@ const LeaveManagement = () => {
         <Space>
           <Button
             type="primary"
-            onClick={() =>
-              handleSearch(selectedKeys, confirm)
-            }
+            onClick={() => handleSearch(selectedKeys, confirm)}
             icon={<SearchOutlined />}
             size="small"
           >
@@ -162,9 +148,7 @@ const LeaveManagement = () => {
           </Button>
 
           <Button
-            onClick={() =>
-              handleReset(clearFilters, confirm)
-            }
+            onClick={() => handleReset(clearFilters, confirm)}
             size="small"
           >
             Reset
@@ -184,10 +168,7 @@ const LeaveManagement = () => {
     onFilter: (value, record) => {
       const recordValue = record[dataIndex];
 
-      if (
-        recordValue === undefined ||
-        recordValue === null
-      ) {
+      if (recordValue === undefined || recordValue === null) {
         return false;
       }
 
@@ -215,10 +196,7 @@ const LeaveManagement = () => {
       key: "employeeName",
       width: 220,
       fixed: "left",
-      ...getColumnSearchProps(
-        "employeeName",
-        "Search employee name"
-      ),
+      ...getColumnSearchProps("employeeName", "Search employee name"),
     },
 
     {
@@ -227,10 +205,7 @@ const LeaveManagement = () => {
       key: "employeeId",
       width: 160,
       fixed: "left",
-      ...getColumnSearchProps(
-        "employeeId",
-        "Search employee ID"
-      ),
+      ...getColumnSearchProps("employeeId", "Search employee ID"),
     },
 
     {
@@ -238,10 +213,7 @@ const LeaveManagement = () => {
       dataIndex: "leaveType",
       key: "leaveType",
       width: 160,
-      ...getColumnSearchProps(
-        "leaveType",
-        "Search leave type"
-      ),
+      ...getColumnSearchProps("leaveType", "Search leave type"),
     },
 
     {
@@ -287,10 +259,7 @@ const LeaveManagement = () => {
         </span>
       ),
 
-      ...getColumnSearchProps(
-        "reason",
-        "Search reason"
-      ),
+      ...getColumnSearchProps("reason", "Search reason"),
     },
 
     {
@@ -301,73 +270,48 @@ const LeaveManagement = () => {
       align: "center",
 
       render: (status) => {
-        const currentStatus = status
-          ?.toString()
-          .trim()
-          .toLowerCase();
+        const currentStatus = status?.toString().trim().toLowerCase();
 
         if (currentStatus === "pending") {
-          return (
-            <span className="pending-status">
-              Pending
-            </span>
-          );
+          return <span className="pending-status">Pending</span>;
         }
 
         if (currentStatus === "approved") {
-          return (
-            <span className="approved-status">
-              Approved
-            </span>
-          );
+          return <span className="approved-status">Approved</span>;
         }
 
         if (currentStatus === "rejected") {
-          return (
-            <span className="rejected-status">
-              Rejected
-            </span>
-          );
+          return <span className="rejected-status">Rejected</span>;
         }
 
         return "-";
       },
     },
-
-
   ];
 
   return (
     <MainPanel
-                  breadcrumbs={[
-          { label: "Dashboard", link: "/" },
-          { label: "Leave Management" },
-        ]}
-        
-        title={
-          String(user?.role || user?.crmRole || "")
-            .trim()
-            .toUpperCase() === "EMPLOYEE"
-            ? "Employee Dashboard"
-            : "Admin Dashboard"
-        }
+      breadcrumbs={[
+        { label: "Dashboard", link: "/" },
+        { label: "Leave Management" },
+      ]}
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "EMPLOYEE"
+          ? "Employee Dashboard"
+          : "Admin Dashboard"
+      }
     >
-          <button
-            type="button"
-            className="back-btn"
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            ← Back
-          </button>
+      <button type="button" className="back-btn" onClick={() => navigate("/")}>
+        ← Back
+      </button>
       <div className="leave-list">
         <div className="page-header">
           <h2>Leave Management</h2>
           <Link to="/leaveApplication">
-            <button className="btn" >Apply Leave</button>
-            </Link>
-        
+            <button className="apply">Apply Leave<FaPlus /></button>
+          </Link>
         </div>
 
         <Table
@@ -384,9 +328,7 @@ const LeaveManagement = () => {
             pageSizeOptions: ["10", "20", "50", "100"],
           }}
           rowClassName={(_record, index) =>
-            index % 2 === 0
-              ? "table-row-light"
-              : "table-row-dark"
+            index % 2 === 0 ? "table-row-light" : "table-row-dark"
           }
         />
       </div>
@@ -395,4 +337,3 @@ const LeaveManagement = () => {
 };
 
 export default LeaveManagement;
-

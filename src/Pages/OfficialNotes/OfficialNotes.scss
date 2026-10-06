@@ -19,12 +19,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background-color: var(--accent2);
+    padding: 10px 8px;
+    border-radius: 5px;
 
     .header-content {
       h1 {
         font-size: 26px;
         font-weight: 600;
-        color: #1f2937;
+            color: white;
+
       }
     }
 
@@ -38,8 +42,8 @@
       padding: 10px 14px;
       border: none;
       border-radius: 6px;
-      background: #498e97;
-      color: var(--white);
+      background: white;
+      color: var(--accent2);
       // font-family: inherit;
       font-size: 14px;
       font-weight: 500;
@@ -52,7 +56,8 @@
       }
 
       &:hover {
-        background: #64a0a8;
+        background: #0a7a85;
+        color: white;
       }
 
       &:active {
