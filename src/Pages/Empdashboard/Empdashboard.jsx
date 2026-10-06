@@ -992,12 +992,17 @@ const EmployeeDash = () => {
 
       const birthdayData = response?.data?.data || [];
 
-      const formattedBirthdays = birthdayData.map((employee) => ({
-        id: employee.uid,
-        name: employee.employeeName || "Unknown",
-        birthday: employee.date || "",
-        designation: employee.designation || "Employee",
-      }));
+const formattedBirthdays = birthdayData.map((employee) => ({
+  id: employee.uid,
+  name: employee.employeeName || "Unknown",
+  birthday: employee.date
+    ? new Date(employee.date).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+      })
+    : "",
+  designation: employee.designation || "Employee",
+}));
 
       setBirthdayEmployees(formattedBirthdays);
     } catch (error) {

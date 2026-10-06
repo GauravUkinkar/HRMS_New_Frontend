@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./AdminDash.scss";
@@ -132,62 +131,53 @@ const AdminDash = () => {
   const [allEmployees, setAllEmployees] = useState([]);
   const [employeeLoader, setEmployeeLoader] = useState(false);
 
-const getAllEmployees = async () => {
-  try {
-    const response = await axios.get(
-      `${BASE_URL_USER}Admin/GetAllEmployee`,
-      {
+  const getAllEmployees = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL_USER}Admin/GetAllEmployee`, {
         withCredentials: true,
-      },
-    );
+      });
 
-    console.log("ALL EMPLOYEES API:", response.data);
+      console.log("ALL EMPLOYEES API:", response.data);
 
-    let employees = [];
+      let employees = [];
 
-    if (Array.isArray(response?.data)) {
-      employees = response.data;
-    } else if (Array.isArray(response?.data?.data)) {
-      employees = response.data.data;
-    } else if (Array.isArray(response?.data?.employees)) {
-      employees = response.data.employees;
+      if (Array.isArray(response?.data)) {
+        employees = response.data;
+      } else if (Array.isArray(response?.data?.data)) {
+        employees = response.data.data;
+      } else if (Array.isArray(response?.data?.employees)) {
+        employees = response.data.employees;
+      }
+
+      employees = employees.filter(Boolean);
+
+      console.log("TOTAL ALL EMPLOYEES:", employees.length);
+
+      setAllEmployees(employees);
+
+      return employees;
+    } catch (error) {
+      console.error("Get All Employees Error:", error?.response?.data || error);
+
+      setAllEmployees([]);
+
+      return [];
     }
-
-    employees = employees.filter(Boolean);
-
-    console.log("TOTAL ALL EMPLOYEES:", employees.length);
-
-    setAllEmployees(employees);
-
-    return employees;
-  } catch (error) {
-    console.error(
-      "Get All Employees Error:",
-      error?.response?.data || error,
-    );
-
-    setAllEmployees([]);
-
-    return [];
-  }
-};
+  };
 
   // =========================================================
   // TODAY ATTENDANCE
   // =========================================================
 
   const [today, setToday] = useState({});
-  const [todayAttendanceRecords, setTodayAttendanceRecords] =
-    useState([]);
+  const [todayAttendanceRecords, setTodayAttendanceRecords] = useState([]);
 
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
 
   const getTodaydata = async () => {
     try {
-      const currentDate = new Date()
-        .toISOString()
-        .split("T")[0];
+      const currentDate = new Date().toISOString().split("T")[0];
 
       const res = await axios.get(
         `${BASE_URL2}api/punch/work-session/summary?date=${currentDate}`,
@@ -199,10 +189,7 @@ const getAllEmployees = async () => {
 
       return res?.data || {};
     } catch (error) {
-      console.log(
-        "Today Summary API Error:",
-        error?.response?.data || error,
-      );
+      console.log("Today Summary API Error:", error?.response?.data || error);
 
       setToday({});
 
@@ -210,116 +197,89 @@ const getAllEmployees = async () => {
     }
   };
 
-const getEmployeeData = async () => {
-  try {
-    setLoader(true);
+  const getEmployeeData = async () => {
+    try {
+      setLoader(true);
 
-    const response = await axios.get(
-      `${BASE_URL2}api/punch/details`,
-    );
+      const response = await axios.get(`${BASE_URL2}api/punch/details`);
 
-    console.log("TODAY ATTENDANCE API:", response.data);
+      console.log("TODAY ATTENDANCE API:", response.data);
 
-    const records = Array.isArray(response?.data?.data)
-      ? response.data.data
-      : [];
+      const records = Array.isArray(response?.data?.data)
+        ? response.data.data
+        : [];
 
-    setTodayAttendanceRecords(records);
+      setTodayAttendanceRecords(records);
 
-    const tableData = records.map((item, index) => {
-      // ONLY punch-in decides Present / Absent
-      const hasPunchIn =
-        Boolean(item?.punchIn) ||
-        Boolean(item?.punchInByAdmin);
+      const tableData = records.map((item, index) => {
+        // ONLY punch-in decides Present / Absent
+        const hasPunchIn =
+          Boolean(item?.punchIn) || Boolean(item?.punchInByAdmin);
 
-      return {
-        key: item?.employeeId || index,
+        return {
+          key: item?.employeeId || index,
 
-        employeeId: item?.employeeId || "",
+          employeeId: item?.employeeId || "",
 
-        employeeName:
-          item?.employeeName?.toUpperCase() || "",
+          employeeName: item?.employeeName?.toUpperCase() || "",
 
-        employeeDesignation:
-          item?.employeeDesignation || "",
+          employeeDesignation: item?.employeeDesignation || "",
 
-        punchIn: item?.punchInByAdmin
-          ? "Punch In From Admin"
-          : item?.punchIn
-            ? item.punchIn
-                .split("T")[1]
-                ?.replace("Z", "")
-                .slice(0, 8)
-            : "",
+          punchIn: item?.punchInByAdmin
+            ? "Punch In From Admin"
+            : item?.punchIn
+              ? item.punchIn.split("T")[1]?.replace("Z", "").slice(0, 8)
+              : "",
 
-        punchOut: item?.punchOutByAdmin
-          ? "Punch Out From Admin"
-          : item?.punchOut
-            ? item.punchOut
-                .split("T")[1]
-                ?.replace("Z", "")
-                .slice(0, 8)
-            : "",
+          punchOut: item?.punchOutByAdmin
+            ? "Punch Out From Admin"
+            : item?.punchOut
+              ? item.punchOut.split("T")[1]?.replace("Z", "").slice(0, 8)
+              : "",
 
-        // DO NOT use item.status
-        status: hasPunchIn ? "IN Office" : "ABSENT",
+          // DO NOT use item.status
+          status: hasPunchIn ? "IN Office" : "ABSENT",
 
-        hasPunchIn,
+          hasPunchIn,
 
-        punchInByAdmin: Boolean(
-          item?.punchInByAdmin,
-        ),
+          punchInByAdmin: Boolean(item?.punchInByAdmin),
 
-        punchOutByAdmin: Boolean(
-          item?.punchOutByAdmin,
-        ),
-      };
-    });
+          punchOutByAdmin: Boolean(item?.punchOutByAdmin),
+        };
+      });
 
-    setData(tableData);
+      setData(tableData);
 
-    console.log(
-      "NORMALIZED TODAY ATTENDANCE:",
-      tableData,
-    );
+      console.log("NORMALIZED TODAY ATTENDANCE:", tableData);
 
-    return records;
-  } catch (error) {
-    console.error(
-      "Attendance API Error:",
-      error?.response?.data || error,
-    );
+      return records;
+    } catch (error) {
+      console.error("Attendance API Error:", error?.response?.data || error);
 
-    toast.error(
-      error?.response?.data?.message ||
-        "Unable to load attendance",
-    );
+      toast.error(
+        error?.response?.data?.message || "Unable to load attendance",
+      );
 
-    setData([]);
-    setTodayAttendanceRecords([]);
+      setData([]);
+      setTodayAttendanceRecords([]);
 
-    return [];
-  } finally {
-    setLoader(false);
-  }
-};
+      return [];
+    } finally {
+      setLoader(false);
+    }
+  };
 
   // =========================================================
   // DASHBOARD CARDS
   // =========================================================
 
-const totalEmployees = allEmployees.length;
+  const totalEmployees = allEmployees.length;
 
-const presentEmployees = todayAttendanceRecords.filter(
-  (item) =>
-    Boolean(item?.punchIn) ||
-    Boolean(item?.punchInByAdmin),
-).length;
+  const presentEmployees = todayAttendanceRecords.filter(
+    (item) => Boolean(item?.punchIn) || Boolean(item?.punchInByAdmin),
+  ).length;
 
-const absentEmployees = Math.max(
-  totalEmployees - presentEmployees,
-  0,
-);
+  const absentEmployees = Math.max(totalEmployees - presentEmployees, 0);
 
   const dashboardCards = [
     {
@@ -375,9 +335,7 @@ const absentEmployees = Math.max(
       width: 170,
 
       render: (name) => (
-        <span className="employee-name-text">
-          {name || "N/A"}
-        </span>
+        <span className="employee-name-text">{name || "N/A"}</span>
       ),
     },
 
@@ -406,8 +364,7 @@ const absentEmployees = Math.max(
       width: 110,
 
       render: (status) => {
-        const normalizedStatus =
-          normalizeStatus(status);
+        const normalizedStatus = normalizeStatus(status);
 
         let color = "default";
 
@@ -419,9 +376,7 @@ const absentEmployees = Math.max(
           normalizedStatus === "full day"
         ) {
           color = "success";
-        } else if (
-          normalizedStatus === "absent"
-        ) {
+        } else if (normalizedStatus === "absent") {
           color = "error";
         } else if (
           normalizedStatus === "half day" ||
@@ -430,11 +385,7 @@ const absentEmployees = Math.max(
           color = "warning";
         }
 
-        return (
-          <Tag color={color}>
-            {status || "N/A"}
-          </Tag>
-        );
+        return <Tag color={color}>{status || "N/A"}</Tag>;
       },
     },
   ];
@@ -447,18 +398,13 @@ const absentEmployees = Math.max(
 
   const getAllLeaves = async () => {
     try {
-      const response = await axios.get(
-        `${BASE_URL}admin/getAllLeaves`,
-        {
-          withCredentials: true,
-        },
-      );
+      const response = await axios.get(`${BASE_URL}admin/getAllLeaves`, {
+        withCredentials: true,
+      });
 
       console.log("GET ALL LEAVES:", response.data);
 
-      const leaveData = Array.isArray(
-        response?.data?.data,
-      )
+      const leaveData = Array.isArray(response?.data?.data)
         ? response.data.data
         : Array.isArray(response?.data)
           ? response.data
@@ -466,10 +412,7 @@ const absentEmployees = Math.max(
 
       setLeave(leaveData);
     } catch (error) {
-      console.log(
-        "Get All Leaves Error:",
-        error?.response?.data || error,
-      );
+      console.log("Get All Leaves Error:", error?.response?.data || error);
 
       setLeave([]);
     }
@@ -479,9 +422,7 @@ const absentEmployees = Math.max(
     {
       name: "Pending",
       value: leave.filter(
-        (item) =>
-          normalizeStatus(item?.approved) ===
-          "pending",
+        (item) => normalizeStatus(item?.approved) === "pending",
       ).length,
       color: "#ffc52b",
     },
@@ -489,9 +430,7 @@ const absentEmployees = Math.max(
     {
       name: "Approved",
       value: leave.filter(
-        (item) =>
-          normalizeStatus(item?.approved) ===
-          "approved",
+        (item) => normalizeStatus(item?.approved) === "approved",
       ).length,
       color: "#42cfa5",
     },
@@ -499,9 +438,7 @@ const absentEmployees = Math.max(
     {
       name: "Rejected",
       value: leave.filter(
-        (item) =>
-          normalizeStatus(item?.approved) ===
-          "rejected",
+        (item) => normalizeStatus(item?.approved) === "rejected",
       ).length,
       color: "#ff424c",
     },
@@ -513,23 +450,17 @@ const absentEmployees = Math.max(
 
   const currentDate = new Date();
 
-  const [selectedMonth, setSelectedMonth] =
-    useState(
-      String(
-        currentDate.getMonth() + 1,
-      ).padStart(2, "0"),
-    );
+  const [selectedMonth, setSelectedMonth] = useState(
+    String(currentDate.getMonth() + 1).padStart(2, "0"),
+  );
 
-  const [selectedYear, setSelectedYear] =
-    useState(
-      String(currentDate.getFullYear()),
-    );
+  const [selectedYear, setSelectedYear] = useState(
+    String(currentDate.getFullYear()),
+  );
 
-  const [attendanceData, setAttendanceData] =
-    useState([]);
+  const [attendanceData, setAttendanceData] = useState([]);
 
-  const [attendanceLoader, setAttendanceLoader] =
-    useState(false);
+  const [attendanceLoader, setAttendanceLoader] = useState(false);
 
   const months = [
     { value: "01", label: "January" },
@@ -556,60 +487,34 @@ const absentEmployees = Math.max(
     years.push(String(year));
   }
 
-  const getMonthlyAttendance = async (
-    month,
-    year,
-  ) => {
+  const getMonthlyAttendance = async (month, year) => {
     try {
       setAttendanceLoader(true);
 
       const startDate = `${year}-${month}-01`;
 
-      const lastDay = new Date(
-        Number(year),
-        Number(month),
-        0,
-      ).getDate();
+      const lastDay = new Date(Number(year), Number(month), 0).getDate();
 
-      const endDate = `${year}-${month}-${String(
-        lastDay,
-      ).padStart(2, "0")}`;
+      const endDate = `${year}-${month}-${String(lastDay).padStart(2, "0")}`;
 
-      console.log(
-        "MONTHLY START DATE:",
-        startDate,
-      );
+      console.log("MONTHLY START DATE:", startDate);
 
-      console.log(
-        "MONTHLY END DATE:",
-        endDate,
-      );
+      console.log("MONTHLY END DATE:", endDate);
 
       const response = await axios.get(
         `${BASE_URL2}api/punch/getPreviousAttendence?startDate=${startDate}&endDate=${endDate}`,
       );
 
-      console.log(
-        "MONTHLY ATTENDANCE API:",
-        response.data,
-      );
+      console.log("MONTHLY ATTENDANCE API:", response.data);
 
-      const records = Array.isArray(
-        response?.data?.data,
-      )
+      const records = Array.isArray(response?.data?.data)
         ? response.data.data
         : [];
 
       const days = [];
 
-      for (
-        let day = 1;
-        day <= lastDay;
-        day++
-      ) {
-        const formattedDay = String(
-          day,
-        ).padStart(2, "0");
+      for (let day = 1; day <= lastDay; day++) {
+        const formattedDay = String(day).padStart(2, "0");
 
         days.push({
           date: `${day} ${new Date(
@@ -633,21 +538,15 @@ const absentEmployees = Math.max(
           return;
         }
 
-        const attendanceDate =
-          item.punchIn.split("T")[0];
+        const attendanceDate = item.punchIn.split("T")[0];
 
-        const dayData = days.find(
-          (day) =>
-            day.fullDate === attendanceDate,
-        );
+        const dayData = days.find((day) => day.fullDate === attendanceDate);
 
         if (!dayData) {
           return;
         }
 
-        const status = normalizeStatus(
-          item?.status,
-        );
+        const status = normalizeStatus(item?.status);
 
         if (
           !item?.status ||
@@ -658,22 +557,14 @@ const absentEmployees = Math.max(
           status === "inprogress"
         ) {
           dayData.present += 1;
-        } else if (
-          status === "absent"
-        ) {
+        } else if (status === "absent") {
           dayData.absent += 1;
-        } else if (
-          status === "half day" ||
-          status === "halfday"
-        ) {
+        } else if (status === "half day" || status === "halfday") {
           dayData.halfDay += 1;
         }
       });
 
-      console.log(
-        "MONTH GRAPH DATA:",
-        days,
-      );
+      console.log("MONTH GRAPH DATA:", days);
 
       setAttendanceData(days);
     } catch (error) {
@@ -689,10 +580,7 @@ const absentEmployees = Math.max(
   };
 
   useEffect(() => {
-    getMonthlyAttendance(
-      selectedMonth,
-      selectedYear,
-    );
+    getMonthlyAttendance(selectedMonth, selectedYear);
   }, [selectedMonth, selectedYear]);
 
   // =========================================================
@@ -707,32 +595,19 @@ const absentEmployees = Math.max(
         `${BASE_URL3}Pandoza_Admin/Admin/Team/getAllTeams`,
       );
 
-      console.log(
-        "TEAM API RESPONSE:",
-        res.data,
-      );
+      console.log("TEAM API RESPONSE:", res.data);
 
-      const teamData = Array.isArray(
-        res?.data,
-      )
-        ? res.data
-            .filter((item) => item?.data)
-            .map((item) => item.data)
+      const teamData = Array.isArray(res?.data)
+        ? res.data.filter((item) => item?.data).map((item) => item.data)
         : Array.isArray(res?.data?.data)
           ? res.data.data
           : [];
 
-      console.log(
-        "NORMALIZED TEAM DATA:",
-        teamData,
-      );
+      console.log("NORMALIZED TEAM DATA:", teamData);
 
       setTeam(teamData);
     } catch (error) {
-      console.error(
-        "Team API Error:",
-        error?.response?.data || error,
-      );
+      console.error("Team API Error:", error?.response?.data || error);
 
       setTeam([]);
     }
@@ -742,74 +617,43 @@ const absentEmployees = Math.max(
   // NOTIFICATIONS
   // =========================================================
 
-  const [notifications, setNotifications] =
-    useState([]);
+  const [notifications, setNotifications] = useState([]);
 
-  const [notificationLoader, setNotificationLoader] =
-    useState(false);
+  const [notificationLoader, setNotificationLoader] = useState(false);
 
-  const [notificationCount, setNotificationCount] =
-    useState(0);
+  const [notificationCount, setNotificationCount] = useState(0);
 
-  const [
-    unreadNotifications,
-    setUnreadNotifications,
-  ] = useState([]);
+  const [unreadNotifications, setUnreadNotifications] = useState([]);
 
-  const [showUnread, setShowUnread] =
-    useState(false);
+  const [showUnread, setShowUnread] = useState(false);
 
-  const [
-    showNotificationModal,
-    setShowNotificationModal,
-  ] = useState(false);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
-  const [
-    selectedNotification,
-    setSelectedNotification,
-  ] = useState(null);
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   const displayedNotifications = showUnread
     ? unreadNotifications
-    : [...notifications].sort(
-        (a, b) => {
-          if (
-            a?.isRead === b?.isRead
-          ) {
-            return 0;
-          }
+    : [...notifications].sort((a, b) => {
+        if (a?.isRead === b?.isRead) {
+          return 0;
+        }
 
-          return a?.isRead ? 1 : -1;
-        },
-      );
+        return a?.isRead ? 1 : -1;
+      });
 
   const stripHtml = (html = "") => {
-    const temp =
-      document.createElement("div");
+    const temp = document.createElement("div");
 
     temp.innerHTML = html;
 
-    return (
-      temp.textContent ||
-      temp.innerText ||
-      ""
-    );
+    return temp.textContent || temp.innerText || "";
   };
 
-  const getNotificationPreview = (
-    message = "",
-  ) => {
-    const plainText = stripHtml(
-      message,
-    )
-      .replace(/\s+/g, " ")
-      .trim();
+  const getNotificationPreview = (message = "") => {
+    const plainText = stripHtml(message).replace(/\s+/g, " ").trim();
 
     return plainText.length > 80
-      ? `${plainText.substring(
-          0,
-          80,
-        )}...`
+      ? `${plainText.substring(0, 80)}...`
       : plainText;
   };
 
@@ -824,38 +668,19 @@ const absentEmployees = Math.max(
         },
       );
 
-      console.log(
-        "NOTIFICATION API RESPONSE:",
-        response.data,
-      );
+      console.log("NOTIFICATION API RESPONSE:", response.data);
 
-      const notificationData =
-        Array.isArray(response.data)
-          ? response.data
-              .map(
-                (item) =>
-                  item?.data,
-              )
-              .filter(Boolean)
-          : Array.isArray(
-                response?.data?.data,
-              )
-            ? response.data.data
-            : [];
+      const notificationData = Array.isArray(response.data)
+        ? response.data.map((item) => item?.data).filter(Boolean)
+        : Array.isArray(response?.data?.data)
+          ? response.data.data
+          : [];
 
-      console.log(
-        "NORMALIZED NOTIFICATIONS:",
-        notificationData,
-      );
+      console.log("NORMALIZED NOTIFICATIONS:", notificationData);
 
-      setNotifications(
-        notificationData,
-      );
+      setNotifications(notificationData);
     } catch (error) {
-      console.error(
-        "Notification API Error:",
-        error?.response?.data || error,
-      );
+      console.error("Notification API Error:", error?.response?.data || error);
 
       setNotifications([]);
     } finally {
@@ -863,524 +688,352 @@ const absentEmployees = Math.max(
     }
   };
 
-  const getNotificationCount =
-    async () => {
-      try {
-        const response =
-          await axios.get(
-            `${BASE_URL_USER}Notification/my/UnreadCount`,
-            {
-              withCredentials: true,
-            },
-          );
-
-        console.log(
-          "NOTIFICATION COUNT:",
-          response.data,
-        );
-
-        setNotificationCount(
-          Number(response?.data) || 0,
-        );
-      } catch (error) {
-        console.error(
-          "Notification Count API Error:",
-          error?.response?.data ||
-            error,
-        );
-
-        setNotificationCount(0);
-      }
-    };
-
-  const getUnreadNotifications =
-    async () => {
-      try {
-        setNotificationLoader(true);
-
-        const response =
-          await axios.get(
-            `${BASE_URL_USER}Notification/my/UnreadNotifications`,
-            {
-              withCredentials: true,
-            },
-          );
-
-        console.log(
-          "UNREAD NOTIFICATION API RESPONSE:",
-          response.data,
-        );
-
-        const unreadData =
-          Array.isArray(response.data)
-            ? response.data
-                .map(
-                  (item) =>
-                    item?.data,
-                )
-                .filter(Boolean)
-            : Array.isArray(
-                  response?.data?.data,
-                )
-              ? response.data.data
-              : [];
-
-        console.log(
-          "NORMALIZED UNREAD NOTIFICATIONS:",
-          unreadData,
-        );
-
-        setUnreadNotifications(
-          unreadData,
-        );
-
-        setShowUnread(true);
-      } catch (error) {
-        console.error(
-          "Unread Notification API Error:",
-          error?.response?.data ||
-            error,
-        );
-
-        setUnreadNotifications(
-          [],
-        );
-      } finally {
-        setNotificationLoader(
-          false,
-        );
-      }
-    };
-
-  const markNotificationAsRead =
-    async (notificationId) => {
-      try {
-        await axios.put(
-          `${BASE_URL_USER}Notification/${notificationId}/markAsRead`,
-          {},
-          {
-            withCredentials: true,
-          },
-        );
-
-        console.log(
-          "Notification marked as read:",
-          notificationId,
-        );
-
-        // Update normal list immediately
-        setNotifications(
-          (prev) =>
-            prev.map(
-              (notification) =>
-                notification?.id ===
-                notificationId
-                  ? {
-                      ...notification,
-                      isRead: true,
-                    }
-                  : notification,
-            ),
-        );
-
-        // Remove from unread list
-        setUnreadNotifications(
-          (prev) =>
-            prev.filter(
-              (notification) =>
-                notification?.id !==
-                notificationId,
-            ),
-        );
-
-        // Update unread count
-        setNotificationCount(
-          (prev) =>
-            Math.max(
-              0,
-              Number(prev) - 1,
-            ),
-        );
-
-        return true;
-      } catch (error) {
-        console.error(
-          "Mark Notification Read API Error:",
-          error?.response?.data ||
-            error,
-        );
-
-        return false;
-      }
-    };
-
-  const handleNotificationClick =
-    async (notification) => {
-      if (!notification) {
-        return;
-      }
-
-      setSelectedNotification(
-        notification,
+  const getNotificationCount = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL_USER}Notification/my/UnreadCount`,
+        {
+          withCredentials: true,
+        },
       );
 
-      setShowNotificationModal(
-        true,
+      console.log("NOTIFICATION COUNT:", response.data);
+
+      setNotificationCount(Number(response?.data) || 0);
+    } catch (error) {
+      console.error(
+        "Notification Count API Error:",
+        error?.response?.data || error,
       );
 
-      if (!notification?.isRead) {
-        await markNotificationAsRead(
-          notification.id,
-        );
-      }
-    };
+      setNotificationCount(0);
+    }
+  };
 
-  const handleNotificationDetails =
-    (notification) => {
-      if (!notification) {
-        return;
-      }
+  const getUnreadNotifications = async () => {
+    try {
+      setNotificationLoader(true);
 
-      const type = String(
-        notification?.type || "",
-      )
-        .trim()
-        .toLowerCase();
-
-      setShowNotificationModal(
-        false,
+      const response = await axios.get(
+        `${BASE_URL_USER}Notification/my/UnreadNotifications`,
+        {
+          withCredentials: true,
+        },
       );
 
-      switch (type) {
-        case "birthday":
-          navigate("/birthday");
-          break;
+      console.log("UNREAD NOTIFICATION API RESPONSE:", response.data);
 
-        case "leave":
-        case "leave_request":
-        case "leaverequest":
-          navigate(
-            "/LeaveManagement",
-          );
-          break;
+      const unreadData = Array.isArray(response.data)
+        ? response.data.map((item) => item?.data).filter(Boolean)
+        : Array.isArray(response?.data?.data)
+          ? response.data.data
+          : [];
 
-        case "attendance":
-          navigate("/attendance");
-          break;
+      console.log("NORMALIZED UNREAD NOTIFICATIONS:", unreadData);
 
-        case "document":
-        case "document-upload":
-        case "document_upload":
-          navigate("/Viewdoc");
-          break;
+      setUnreadNotifications(unreadData);
 
-        case "salary":
-          navigate(
-            "/SalaryManagement",
-          );
-          break;
+      setShowUnread(true);
+    } catch (error) {
+      console.error(
+        "Unread Notification API Error:",
+        error?.response?.data || error,
+      );
 
-        case "task":
-          navigate(
-            "/TaskManagement",
-          );
-          break;
+      setUnreadNotifications([]);
+    } finally {
+      setNotificationLoader(false);
+    }
+  };
 
-        default:
-          break;
-      }
-    };
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      await axios.put(
+        `${BASE_URL_USER}Notification/${notificationId}/markAsRead`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+
+      console.log("Notification marked as read:", notificationId);
+
+      // Update normal list immediately
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification?.id === notificationId
+            ? {
+                ...notification,
+                isRead: true,
+              }
+            : notification,
+        ),
+      );
+
+      // Remove from unread list
+      setUnreadNotifications((prev) =>
+        prev.filter((notification) => notification?.id !== notificationId),
+      );
+
+      // Update unread count
+      setNotificationCount((prev) => Math.max(0, Number(prev) - 1));
+
+      return true;
+    } catch (error) {
+      console.error(
+        "Mark Notification Read API Error:",
+        error?.response?.data || error,
+      );
+
+      return false;
+    }
+  };
+
+  const handleNotificationClick = async (notification) => {
+    if (!notification) {
+      return;
+    }
+
+    setSelectedNotification(notification);
+
+    setShowNotificationModal(true);
+
+    if (!notification?.isRead) {
+      await markNotificationAsRead(notification.id);
+    }
+  };
+
+  const handleNotificationDetails = (notification) => {
+    if (!notification) {
+      return;
+    }
+
+    const type = String(notification?.type || "")
+      .trim()
+      .toLowerCase();
+
+    setShowNotificationModal(false);
+
+    switch (type) {
+      case "birthday":
+        navigate("/birthday");
+        break;
+
+      case "leave":
+      case "leave_request":
+      case "leaverequest":
+        navigate("/LeaveManagement");
+        break;
+
+      case "attendance":
+        navigate("/attendance");
+        break;
+
+      case "document":
+      case "document-upload":
+      case "document_upload":
+        navigate("/Viewdoc");
+        break;
+
+      case "salary":
+        navigate("/SalaryManagement");
+        break;
+
+      case "task":
+        navigate("/TaskManagement");
+        break;
+
+      default:
+        break;
+    }
+  };
 
   // =========================================================
   // BIRTHDAY
   // =========================================================
 
-  const [birthday, setBirthday] =
-    useState([]);
+  const [birthday, setBirthday] = useState([]);
 
-  const [birthdayLoader, setBirthdayLoader] =
-    useState(false);
+  const [birthdayLoader, setBirthdayLoader] = useState(false);
 
-  const [
-    wishingEmployeeId,
-    setWishingEmployeeId,
-  ] = useState(null);
+  const [wishingEmployeeId, setWishingEmployeeId] = useState(null);
 
-  const [
-    wishedEmployees,
-    setWishedEmployees,
-  ] = useState(() => {
+  const [wishedEmployees, setWishedEmployees] = useState(() => {
     try {
-      const saved =
-        localStorage.getItem(
-          "birthdayWishedEmployees",
-        );
+      const saved = localStorage.getItem("birthdayWishedEmployees");
 
-      const parsed = saved
-        ? JSON.parse(saved)
-        : [];
+      const parsed = saved ? JSON.parse(saved) : [];
 
-      return Array.isArray(parsed)
-        ? parsed
-        : [];
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
-      console.error(
-        "Birthday localStorage error:",
-        error,
-      );
+      console.error("Birthday localStorage error:", error);
 
       return [];
     }
   });
 
-  const isBirthdayToday =
-    (birthdayDate) => {
-      if (!birthdayDate) {
-        return false;
-      }
+  const isBirthdayToday = (birthdayDate) => {
+    if (!birthdayDate) {
+      return false;
+    }
 
-      const today = new Date();
+    const today = new Date();
 
-      let birthday;
+    let birthday;
 
-      birthday = new Date(
-        birthdayDate,
+    birthday = new Date(birthdayDate);
+
+    if (isNaN(birthday.getTime())) {
+      return false;
+    }
+
+    return (
+      birthday.getDate() === today.getDate() &&
+      birthday.getMonth() === today.getMonth()
+    );
+  };
+
+  const getMonthBirthday = async () => {
+    try {
+      setBirthdayLoader(true);
+
+      const currentMonth = new Date()
+        .toLocaleString("en-US", {
+          month: "short",
+        })
+        .toLowerCase();
+
+      const res = await axios.get(
+        `${BASE_URL_USER}AuthController/birthdays?month=${currentMonth}`,
+        {
+          withCredentials: true,
+        },
       );
 
-      if (
-        isNaN(
-          birthday.getTime(),
-        )
-      ) {
-        return false;
+      console.log("MONTH BIRTHDAY API:", res.data);
+
+      const birthdayData = Array.isArray(res?.data?.data)
+        ? res.data.data
+        : Array.isArray(res?.data)
+          ? res.data
+          : [];
+
+      setBirthday(birthdayData);
+    } catch (error) {
+      console.error("Birthday API Error:", error?.response?.data || error);
+
+      setBirthday([]);
+    } finally {
+      setBirthdayLoader(false);
+    }
+  };
+
+  const handleBirthdayWish = async (employee) => {
+    console.log("WISH BUTTON CLICKED");
+
+    console.log("EMPLOYEE:", employee);
+
+    try {
+      const recipientUid = employee?.uid;
+
+      console.log("RECIPIENT UID:", recipientUid);
+
+      if (!recipientUid) {
+        toast.error("Recipient UID not found");
+
+        return;
       }
 
-      return (
-        birthday.getDate() ===
-          today.getDate() &&
-        birthday.getMonth() ===
-          today.getMonth()
-      );
-    };
+      if (wishedEmployees.includes(recipientUid)) {
+        toast.info("Birthday wish already sent");
 
-  const getMonthBirthday =
-    async () => {
-      try {
-        setBirthdayLoader(
-          true,
-        );
+        return;
+      }
 
-        const currentMonth =
-          new Date()
-            .toLocaleString(
-              "en-US",
-              {
-                month: "short",
-              },
-            )
-            .toLowerCase();
+      setWishingEmployeeId(recipientUid);
 
-        const res =
-          await axios.get(
-            `${BASE_URL_USER}AuthController/birthdays?month=${currentMonth}`,
-            {
-              withCredentials: true,
-            },
+      const companyName =
+        employee?.companyName ||
+        employee?.company ||
+        "Pandoza Solutions Pvt.Ltd.";
+
+      const payload = {
+        recipientUids: [recipientUid],
+
+        title: "Happy Birthday! 🎂",
+
+        message: `Wishing ${
+          employee?.employeeName || "you"
+        } a very Happy Birthday! 🎉 From ${companyName}.`,
+
+        type: "birthday",
+
+        referenceId: recipientUid,
+      };
+
+      console.log("BIRTHDAY NOTIFICATION PAYLOAD:", payload);
+
+      await axios.post(`${BASE_URL_USER}Notification/Admin/create`, payload, {
+        withCredentials: true,
+      });
+
+      setWishedEmployees((prev) => {
+        const updated = prev.includes(recipientUid)
+          ? prev
+          : [...prev, recipientUid];
+
+        try {
+          localStorage.setItem(
+            "birthdayWishedEmployees",
+            JSON.stringify(updated),
           );
-
-        console.log(
-          "MONTH BIRTHDAY API:",
-          res.data,
-        );
-
-        const birthdayData =
-          Array.isArray(
-            res?.data?.data,
-          )
-            ? res.data.data
-            : Array.isArray(
-                  res?.data,
-                )
-              ? res.data
-              : [];
-
-        setBirthday(
-          birthdayData,
-        );
-      } catch (error) {
-        console.error(
-          "Birthday API Error:",
-          error?.response?.data ||
-            error,
-        );
-
-        setBirthday([]);
-      } finally {
-        setBirthdayLoader(
-          false,
-        );
-      }
-    };
-
-  const handleBirthdayWish =
-    async (employee) => {
-      console.log(
-        "WISH BUTTON CLICKED",
-      );
-
-      console.log(
-        "EMPLOYEE:",
-        employee,
-      );
-
-      try {
-        const recipientUid =
-          employee?.uid;
-
-        console.log(
-          "RECIPIENT UID:",
-          recipientUid,
-        );
-
-        if (!recipientUid) {
-          toast.error(
-            "Recipient UID not found",
-          );
-
-          return;
+        } catch (error) {
+          console.error("Unable to save birthday wish:", error);
         }
 
-        if (
-          wishedEmployees.includes(
-            recipientUid,
-          )
-        ) {
-          toast.info(
-            "Birthday wish already sent",
-          );
+        return updated;
+      });
 
-          return;
-        }
+      toast.success(
+        `Birthday wish sent to ${employee?.employeeName || "employee"}! 🎉`,
+      );
+    } catch (error) {
+      console.error(
+        "BIRTHDAY NOTIFICATION ERROR:",
+        error?.response?.data || error,
+      );
 
-        setWishingEmployeeId(
-          recipientUid,
-        );
-
-        const companyName =
-          employee?.companyName ||
-          employee?.company ||
-          "Pandoza Solutions Pvt.Ltd.";
-
-        const payload = {
-          recipientUids: [
-            recipientUid,
-          ],
-
-          title:
-            "Happy Birthday! 🎂",
-
-          message: `Wishing ${
-            employee?.employeeName ||
-            "you"
-          } a very Happy Birthday! 🎉 From ${companyName}.`,
-
-          type: "birthday",
-
-          referenceId:
-            recipientUid,
-        };
-
-        console.log(
-          "BIRTHDAY NOTIFICATION PAYLOAD:",
-          payload,
-        );
-
-        await axios.post(
-          `${BASE_URL_USER}Notification/Admin/create`,
-          payload,
-          {
-            withCredentials: true,
-          },
-        );
-
-        setWishedEmployees(
-          (prev) => {
-            const updated =
-              prev.includes(
-                recipientUid,
-              )
-                ? prev
-                : [
-                    ...prev,
-                    recipientUid,
-                  ];
-
-            try {
-              localStorage.setItem(
-                "birthdayWishedEmployees",
-                JSON.stringify(
-                  updated,
-                ),
-              );
-            } catch (error) {
-              console.error(
-                "Unable to save birthday wish:",
-                error,
-              );
-            }
-
-            return updated;
-          },
-        );
-
-        toast.success(
-          `Birthday wish sent to ${
-            employee?.employeeName ||
-            "employee"
-          }! 🎉`,
-        );
-      } catch (error) {
-        console.error(
-          "BIRTHDAY NOTIFICATION ERROR:",
-          error?.response?.data ||
-            error,
-        );
-
-        toast.error(
-          error?.response?.data
-            ?.message ||
-            error?.response?.data
-              ?.responseMessage ||
-            "Unable to send birthday wish",
-        );
-      } finally {
-        setWishingEmployeeId(
-          null,
-        );
-      }
-    };
+      toast.error(
+        error?.response?.data?.message ||
+          error?.response?.data?.responseMessage ||
+          "Unable to send birthday wish",
+      );
+    } finally {
+      setWishingEmployeeId(null);
+    }
+  };
 
   // =========================================================
   // INITIAL DASHBOARD LOAD
   // =========================================================
 
-useEffect(() => {
-  const loadDashboard = async () => {
-    await getAllEmployees();
+  useEffect(() => {
+    const loadDashboard = async () => {
+      await getAllEmployees();
 
-    await Promise.all([
-      getEmployeeData(),
-      getAllLeaves(),
-      getallteam(),
-      getTodaydata(),
-      getNotifications(),
-      getNotificationCount(),
-      getMonthBirthday(),
-    ]);
-  };
+      await Promise.all([
+        getEmployeeData(),
+        getAllLeaves(),
+        getallteam(),
+        getTodaydata(),
+        getNotifications(),
+        getNotificationCount(),
+        getMonthBirthday(),
+      ]);
+    };
 
-  loadDashboard();
-}, []);
+    loadDashboard();
+  }, []);
 
   // =========================================================
   // RETURN
@@ -1402,21 +1055,16 @@ useEffect(() => {
       >
         <div className="admindash-parent">
           <div className="left-side">
-
             {/* =================================================
                 WELCOME
             ================================================= */}
 
             <div className="box1">
               <div className="welcome-text">
-                <h2>
-                  {getGreeting()}, Admin! 👋
-                </h2>
+                <h2>{getGreeting()}, Admin! 👋</h2>
 
                 <span>
-                  Here's what's happening
-                  with your organization
-                  today.
+                  Here's what's happening with your organization today.
                 </span>
               </div>
 
@@ -1436,63 +1084,39 @@ useEffect(() => {
             ================================================= */}
 
             <div className="box2">
-              {dashboardCards.map(
-                (card) => (
+              {dashboardCards.map((card) => (
+                <div
+                  className="card"
+                  key={card.id}
+                  onClick={() => {
+                    if (card.id === 1) {
+                      navigate("/attendance?filter=all");
+                    } else if (card.id === 2) {
+                      navigate("/attendance?filter=present");
+                    } else if (card.id === 3) {
+                      navigate("/attendance?filter=absent");
+                    } else if (card.id === 4) {
+                      navigate("/attendance?filter=halfday");
+                    }
+                  }}
+                >
                   <div
-                    className="card"
-                    key={card.id}
-                    onClick={() => {
-                      if (
-                        card.id === 1
-                      ) {
-                        navigate(
-                          "/attendance?filter=all",
-                        );
-                      } else if (
-                        card.id === 2
-                      ) {
-                        navigate(
-                          "/attendance?filter=present",
-                        );
-                      } else if (
-                        card.id === 3
-                      ) {
-                        navigate(
-                          "/attendance?filter=absent",
-                        );
-                      } else if (
-                        card.id === 4
-                      ) {
-                        navigate(
-                          "/attendance?filter=halfday",
-                        );
-                      }
+                    className="card-icon"
+                    style={{
+                      color: card.iconColor,
+                      backgroundColor: card.iconBg,
                     }}
                   >
-                    <div
-                      className="card-icon"
-                      style={{
-                        color:
-                          card.iconColor,
-                        backgroundColor:
-                          card.iconBg,
-                      }}
-                    >
-                      {card.icon}
-                    </div>
-
-                    <div className="card-content">
-                      <div className="card-title">
-                        {card.title}
-                      </div>
-
-                      <p>
-                        {card.value}
-                      </p>
-                    </div>
+                    {card.icon}
                   </div>
-                ),
-              )}
+
+                  <div className="card-content">
+                    <div className="card-title">{card.title}</div>
+
+                    <p>{card.value}</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* =================================================
@@ -1500,7 +1124,6 @@ useEffect(() => {
             ================================================= */}
 
             <div className="box3">
-
               {/* MONTHLY ATTENDANCE */}
 
               <div className="box3-left">
@@ -1508,77 +1131,40 @@ useEffect(() => {
                   <div className="icon">
                     <LuChartNoAxesCombined />
 
-                    <span>
-                      Attendance
-                      Overview
-                    </span>
+                    <span>Attendance Overview</span>
                   </div>
 
                   <div className="attendance-filters">
-
                     <select
                       className="month-select"
-                      value={
-                        selectedMonth
-                      }
-                      onChange={(e) =>
-                        setSelectedMonth(
-                          e.target.value,
-                        )
-                      }
+                      value={selectedMonth}
+                      onChange={(e) => setSelectedMonth(e.target.value)}
                     >
-                      {months.map(
-                        (month) => (
-                          <option
-                            key={
-                              month.value
-                            }
-                            value={
-                              month.value
-                            }
-                          >
-                            {
-                              month.label
-                            }
-                          </option>
-                        ),
-                      )}
+                      {months.map((month) => (
+                        <option key={month.value} value={month.value}>
+                          {month.label}
+                        </option>
+                      ))}
                     </select>
 
                     <select
                       className="month-select"
-                      value={
-                        selectedYear
-                      }
-                      onChange={(e) =>
-                        setSelectedYear(
-                          e.target.value,
-                        )
-                      }
+                      value={selectedYear}
+                      onChange={(e) => setSelectedYear(e.target.value)}
                     >
-                      {years.map(
-                        (year) => (
-                          <option
-                            key={year}
-                            value={year}
-                          >
-                            {year}
-                          </option>
-                        ),
-                      )}
+                      {years.map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
 
                 <div className="attendance-chart">
-                  <ResponsiveContainer
-                    width="100%"
-                    height="100%"
-                  >
+                  <ResponsiveContainer width="100%" height="100%">
                     <BarChart
-                      data={
-                        attendanceData
-                      }
+                      data={attendanceData}
                       margin={{
                         top: 10,
                         right: 10,
@@ -1587,10 +1173,7 @@ useEffect(() => {
                       }}
                       barGap={2}
                     >
-                      <CartesianGrid
-                        strokeDasharray="0"
-                        vertical={false}
-                      />
+                      <CartesianGrid strokeDasharray="0" vertical={false} />
 
                       <XAxis
                         dataKey="date"
@@ -1614,36 +1197,21 @@ useEffect(() => {
                       <Bar
                         dataKey="present"
                         fill="#20ad9b"
-                        radius={[
-                          2,
-                          2,
-                          0,
-                          0,
-                        ]}
+                        radius={[2, 2, 0, 0]}
                         barSize={8}
                       />
 
                       <Bar
                         dataKey="absent"
                         fill="#ff3b3bdd"
-                        radius={[
-                          2,
-                          2,
-                          0,
-                          0,
-                        ]}
+                        radius={[2, 2, 0, 0]}
                         barSize={8}
                       />
 
                       <Bar
                         dataKey="halfDay"
                         fill="#ffc62b9c"
-                        radius={[
-                          2,
-                          2,
-                          0,
-                          0,
-                        ]}
+                        radius={[2, 2, 0, 0]}
                         barSize={8}
                       />
                     </BarChart>
@@ -1675,25 +1243,17 @@ useEffect(() => {
                   <div className="leave-title">
                     <LuListChecks />
 
-                    <span>
-                      Leave Requests
-                    </span>
+                    <span>Leave Requests</span>
                   </div>
 
-                  <Link
-                    to="/LeaveManagement"
-                    className="view-all"
-                  >
+                  <Link to="/LeaveManagement" className="view-all">
                     View All →
                   </Link>
                 </div>
 
                 <div className="leave-content">
                   <div className="leave-chart">
-                    <ResponsiveContainer
-                      width="100%"
-                      height="100%"
-                    >
+                    <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={leaveData}
@@ -1706,18 +1266,9 @@ useEffect(() => {
                           startAngle={90}
                           endAngle={-270}
                         >
-                          {leaveData.map(
-                            (item) => (
-                              <Cell
-                                key={
-                                  item.name
-                                }
-                                fill={
-                                  item.color
-                                }
-                              />
-                            ),
-                          )}
+                          {leaveData.map((item) => (
+                            <Cell key={item.name} fill={item.color} />
+                          ))}
                         </Pie>
 
                         <Tooltip />
@@ -1727,53 +1278,32 @@ useEffect(() => {
                     <div className="chart-center">
                       <strong>
                         {leaveData.reduce(
-                          (
-                            total,
-                            item,
-                          ) =>
-                            total +
-                            item.value,
+                          (total, item) => total + item.value,
                           0,
                         )}
                       </strong>
 
-                      <span>
-                        Total Requests
-                      </span>
+                      <span>Total Requests</span>
                     </div>
                   </div>
 
                   <div className="leave-legend">
-                    {leaveData.map(
-                      (item) => (
-                        <div
-                          className="legend-row"
-                          key={
-                            item.name
-                          }
-                        >
-                          <div className="legend-left">
-                            <span
-                              className="legend-dot"
-                              style={{
-                                backgroundColor:
-                                  item.color,
-                              }}
-                            ></span>
+                    {leaveData.map((item) => (
+                      <div className="legend-row" key={item.name}>
+                        <div className="legend-left">
+                          <span
+                            className="legend-dot"
+                            style={{
+                              backgroundColor: item.color,
+                            }}
+                          ></span>
 
-                            <span>
-                              {
-                                item.name
-                              }
-                            </span>
-                          </div>
-
-                          <strong>
-                            {item.value}
-                          </strong>
+                          <span>{item.name}</span>
                         </div>
-                      ),
-                    )}
+
+                        <strong>{item.value}</strong>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1784,7 +1314,6 @@ useEffect(() => {
             ================================================= */}
 
             <div className="box4">
-
               {/* TODAY ATTENDANCE */}
 
               <div className="box4-left">
@@ -1792,25 +1321,17 @@ useEffect(() => {
                   <div className="heading-title">
                     <LuUsers />
 
-                    <span>
-                      Today's
-                      Attendance
-                    </span>
+                    <span>Today's Attendance</span>
                   </div>
 
-                  <Link
-                    to="/attendance"
-                    className="view-all"
-                  >
+                  <Link to="/attendance" className="view-all">
                     View All →
                   </Link>
                 </div>
 
                 <div className="employee-table">
                   <Table
-                    columns={
-                      recentEmployeeColumns
-                    }
+                    columns={recentEmployeeColumns}
                     dataSource={data}
                     loading={loader}
                     rowKey="key"
@@ -1819,21 +1340,14 @@ useEffect(() => {
                     scroll={{
                       x: "max-content",
                     }}
-                    rowClassName={(
-                      _,
-                      index,
-                    ) =>
-                      index % 2 === 0
-                        ? "table-row-light"
-                        : "table-row-dark"
+                    rowClassName={(_, index) =>
+                      index % 2 === 0 ? "table-row-light" : "table-row-dark"
                     }
                     pagination={{
                       pageSize: 5,
                       showSizeChanger: false,
                       showQuickJumper: false,
-                      position: [
-                        "bottomRight",
-                      ],
+                      position: ["bottomRight"],
                     }}
                   />
                 </div>
@@ -1846,81 +1360,56 @@ useEffect(() => {
                   <div className="heading-title">
                     <LuUsers />
 
-                    <span>
-                      Team Status
-                    </span>
+                    <span>Team Status</span>
                   </div>
                 </div>
 
                 <div className="team-list">
-                  {team.length ===
-                  0 ? (
-                    <div className="team-empty">
-                      No teams found
-                    </div>
+                  {team.length === 0 ? (
+                    <div className="team-empty">No teams found</div>
                   ) : (
-                    team.map(
-                      (
-                        item,
-                        index,
-                      ) => {
-                        const teamColors =
-                          [
-                            "#3182ed",
-                            "#e83d9b",
-                            "#43c98d",
-                            "#8b5cf6",
-                            "#f5a623",
-                          ];
+                    team.map((item, index) => {
+                      const teamColors = [
+                        "#3182ed",
+                        "#e83d9b",
+                        "#43c98d",
+                        "#8b5cf6",
+                        "#f5a623",
+                      ];
 
-                        const color =
-                          teamColors[
-                            index %
-                              teamColors.length
-                          ];
+                      const color = teamColors[index % teamColors.length];
 
-                        return (
-                          <div
-                            className="team-row"
-                            key={
-                              item?.id ||
-                              index
-                            }
-                          >
-                            <div className="team-left">
-                              <div
-                                className="team-icon"
-                                style={{
-                                  backgroundColor: `${color}20`,
-                                  color:
-                                    color,
-                                }}
-                              >
-                                <LuUsers />
-                              </div>
-
-                              <div className="heading">
-                                {item?.name ||
-                                  "N/A"}
-
-                                <span>
-                                  TL:{" "}
-                                  {item?.manegerName ||
-                                    item?.managerName ||
-                                    "N/A"}
-                                </span>
-                              </div>
+                      return (
+                        <div className="team-row" key={item?.id || index}>
+                          <div className="team-left">
+                            <div
+                              className="team-icon"
+                              style={{
+                                backgroundColor: `${color}20`,
+                                color: color,
+                              }}
+                            >
+                              <LuUsers />
                             </div>
 
-                            <div className="team-members">
-                              {item?.memberCount ||
-                                0}{" "}
-                              Members
+                            <div className="heading">
+                              {item?.name || "N/A"}
+
+                              <span>
+                                TL:{" "}
+                                {item?.manegerName ||
+                                  item?.managerName ||
+                                  "N/A"}
+                              </span>
                             </div>
                           </div>
-                        );
-                      },
-                    )
+
+                          <div className="team-members">
+                            {item?.memberCount || 0} Members
+                          </div>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -1932,7 +1421,6 @@ useEffect(() => {
           ================================================= */}
 
           <div className="right-side">
-
             {/* CLOCK */}
 
             <div className="top-box1">
@@ -1942,33 +1430,19 @@ useEffect(() => {
                     length: 12,
                   },
                   (_, index) => {
-                    const number =
-                      index + 1;
+                    const number = index + 1;
 
-                    const angle =
-                      (number * 30 -
-                        90) *
-                      (Math.PI /
-                        180);
+                    const angle = (number * 30 - 90) * (Math.PI / 180);
 
-                    const radius =
-                      52;
+                    const radius = 52;
 
-                    const x =
-                      Math.cos(
-                        angle,
-                      ) * radius;
+                    const x = Math.cos(angle) * radius;
 
-                    const y =
-                      Math.sin(
-                        angle,
-                      ) * radius;
+                    const y = Math.sin(angle) * radius;
 
                     return (
                       <span
-                        key={
-                          number
-                        }
+                        key={number}
                         className="clock-number"
                         style={{
                           left: `calc(50% + ${x}px)`,
@@ -2012,13 +1486,10 @@ useEffect(() => {
 
             <div className="middle-box2">
               <div className="notification-header">
-
                 <div
                   className="notification-title"
                   onClick={() => {
-                    setShowUnread(
-                      false,
-                    );
+                    setShowUnread(false);
 
                     getNotifications();
                   }}
@@ -2026,9 +1497,7 @@ useEffect(() => {
                     cursor: "pointer",
                   }}
                 >
-                  <span>
-                    Notifications
-                  </span>
+                  <span>Notifications</span>
                 </div>
 
                 <div
@@ -2042,140 +1511,42 @@ useEffect(() => {
                 >
                   <LuBell />
 
-                  <span className="count">
-                    {
-                      notificationCount
-                    }
-                  </span>
+                  <span className="count">{notificationCount}</span>
                 </div>
               </div>
 
               <div className="notification-list">
                 {notificationLoader ? (
                   <div className="notification-loading">
-                    Loading
-                    notifications...
+                    Loading notifications...
                   </div>
-                ) : displayedNotifications.length ===
-                  0 ? (
+                ) : displayedNotifications.length === 0 ? (
                   <div className="notification-empty">
                     {showUnread
                       ? "No unread notifications"
                       : "No notifications"}
                   </div>
                 ) : (
-                  displayedNotifications.map(
-                    (
-                      notification,
-                    ) => (
-                      <div
-                        className={`notification-item ${
-                          notification?.isRead
-                            ? "read"
-                            : "unread"
-                        }`}
-                        key={
-                          notification?.id
-                        }
-                        onClick={() =>
-                          handleNotificationClick(
-                            notification,
-                          )
-                        }
-                      >
-                        <div className="notification-icon">
-                          <LuCheck />
-                        </div>
-
-                        <div className="notification-content">
-                          <h4>
-                            {notification?.title ||
-                              "Notification"}
-                          </h4>
-
-                          <p>
-                            {getNotificationPreview(
-                              notification?.message,
-                            )}
-                          </p>
-
-                          <span className="notification-date">
-                            {notification?.createdAt
-                              ? new Date(
-                                  notification.createdAt,
-                                ).toLocaleString(
-                                  "en-IN",
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  },
-                                )
-                              : "--"}
-                          </span>
-                        </div>
-
-                        {!notification?.isRead && (
-                          <span className="notification-dot"></span>
-                        )}
-                      </div>
-                    ),
-                  )
-                )}
-              </div>
-
-              {/* NOTIFICATION MODAL */}
-
-              {showNotificationModal &&
-                selectedNotification && (
-                  <div
-                    className="notification-modal-overlay"
-                    onClick={() =>
-                      setShowNotificationModal(
-                        false,
-                      )
-                    }
-                  >
+                  displayedNotifications.map((notification) => (
                     <div
-                      className="notification-modal"
-                      onClick={(e) =>
-                        e.stopPropagation()
-                      }
+                      className={`notification-item ${
+                        notification?.isRead ? "read" : "unread"
+                      }`}
+                      key={notification?.id}
+                      onClick={() => handleNotificationClick(notification)}
                     >
-                      <div className="notification-modal-header">
-                        <div>
-                          <h3>
-                            {selectedNotification?.title ||
-                              "Notification"}
-                          </h3>
-
-                          <span className="notification-modal-type">
-                            {selectedNotification?.type ||
-                              "Notification"}
-                          </span>
-                        </div>
-
-                        <button
-                          type="button"
-                          className="notification-modal-close"
-                          onClick={() =>
-                            setShowNotificationModal(
-                              false,
-                            )
-                          }
-                        >
-                          ×
-                        </button>
+                      <div className="notification-icon">
+                        <LuCheck />
                       </div>
 
-                      <div className="notification-modal-body">
-                        <p className="notification-modal-date">
-                          {selectedNotification?.createdAt
-                            ? new Date(
-                                selectedNotification.createdAt,
-                              ).toLocaleString(
+                      <div className="notification-content">
+                        <h4>{notification?.title || "Notification"}</h4>
+
+                        <p>{getNotificationPreview(notification?.message)}</p>
+
+                        <span className="notification-date">
+                          {notification?.createdAt
+                            ? new Date(notification.createdAt).toLocaleString(
                                 "en-IN",
                                 {
                                   day: "2-digit",
@@ -2186,55 +1557,93 @@ useEffect(() => {
                                 },
                               )
                             : "--"}
-                        </p>
+                        </span>
+                      </div>
 
-                        <div className="notification-full-message">
-                          {stripHtml(
-                            selectedNotification?.message ||
-                              "",
-                          )}
-                        </div>
+                      {!notification?.isRead && (
+                        <span className="notification-dot"></span>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
 
-                        <div className="notification-modal-actions">
+              {/* NOTIFICATION MODAL */}
+
+              {showNotificationModal && selectedNotification && (
+                <div
+                  className="notification-modal-overlay"
+                  onClick={() => setShowNotificationModal(false)}
+                >
+                  <div
+                    className="notification-modal"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="notification-modal-header">
+                      <div>
+                        <h3>{selectedNotification?.title || "Notification"}</h3>
+
+                        <span className="notification-modal-type">
+                          {selectedNotification?.type || "Notification"}
+                        </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="notification-modal-close"
+                        onClick={() => setShowNotificationModal(false)}
+                      >
+                        ×
+                      </button>
+                    </div>
+
+                    <div className="notification-modal-body">
+                      <p className="notification-modal-date">
+                        {selectedNotification?.createdAt
+                          ? new Date(
+                              selectedNotification.createdAt,
+                            ).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : "--"}
+                      </p>
+
+                      <div className="notification-full-message">
+                        {stripHtml(selectedNotification?.message || "")}
+                      </div>
+
+                      <div className="notification-modal-actions">
+                        <button
+                          type="button"
+                          className="notification-modal-cancel"
+                          onClick={() => setShowNotificationModal(false)}
+                        >
+                          Close
+                        </button>
+
+                        {String(selectedNotification?.type || "")
+                          .trim()
+                          .toLowerCase() !== "birthday" && (
                           <button
                             type="button"
-                            className="notification-modal-cancel"
+                            className="notification-modal-details"
                             onClick={() =>
-                              setShowNotificationModal(
-                                false,
-                              )
+                              handleNotificationDetails(selectedNotification)
                             }
                           >
-                            Close
+                            View Details
+                            <span>→</span>
                           </button>
-
-                          {String(
-                            selectedNotification?.type ||
-                              "",
-                          )
-                            .trim()
-                            .toLowerCase() !==
-                            "birthday" && (
-                            <button
-                              type="button"
-                              className="notification-modal-details"
-                              onClick={() =>
-                                handleNotificationDetails(
-                                  selectedNotification,
-                                )
-                              }
-                            >
-                              View Details
-                              <span>
-                                →
-                              </span>
-                            </button>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
+              )}
             </div>
 
             {/* =================================================
@@ -2246,129 +1655,84 @@ useEffect(() => {
                 <div className="birthday-title">
                   <LuCake />
 
-                  <span>
-                    Birthdays This
-                    Month
-                  </span>
+                  <span>Birthdays This Month</span>
                 </div>
               </div>
 
               <div className="birthday-list">
                 {birthdayLoader ? (
-                  <div className="birthday-loading">
-                    Loading
-                    birthdays...
-                  </div>
-                ) : birthday.length ===
-                  0 ? (
-                  <div className="birthday-empty">
-                    No birthdays this
-                    month
-                  </div>
+                  <div className="birthday-loading">Loading birthdays...</div>
+                ) : birthday.length === 0 ? (
+                  <div className="birthday-empty">No birthdays this month</div>
                 ) : (
-                  birthday.map(
-                    (
-                      employee,
-                      index,
-                    ) => {
-                      const birthdayToday =
-                        isBirthdayToday(
-                          employee?.date,
-                        );
+                  birthday.map((employee, index) => {
+                    const birthdayToday = isBirthdayToday(employee?.date);
 
-                      const employeeId =
-                        employee?.uid;
+                    const employeeId = employee?.uid;
 
-                      return (
-                        <div
-                          className={`birthday-item ${
-                            birthdayToday
-                              ? "birthday-today"
-                              : ""
-                          }`}
-                          key={
-                            employeeId ||
-                            index
-                          }
-                        >
-                          <div className="birthday-avatar">
-                            {(
-                              employee?.employeeName ||
-                              "N/A"
-                            )
-                              .split(
-                                " ",
-                              )
-                              .map(
-                                (
-                                  word,
-                                ) =>
-                                  word[0],
-                              )
-                              .join(
-                                "",
-                              )
-                              .toUpperCase()}
-                          </div>
+                    return (
+                      <div
+                        className={`birthday-item ${
+                          birthdayToday ? "birthday-today" : ""
+                        }`}
+                        key={employeeId || index}
+                      >
+                        <div className="birthday-avatar">
+                          {(employee?.employeeName || "N/A")
+                            .split(" ")
+                            .map((word) => word[0])
+                            .join("")
+                            .toUpperCase()}
+                        </div>
 
-                          <div className="birthday-info">
-                            <h4>
-                              {employee?.employeeName ||
-                                "N/A"}
-                            </h4>
-
-                            {birthdayToday && (
-                              <span className="birthday-today-text">
-                                🎂 Birthday
-                                Today!
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="birthday-date">
-                            {employee?.date ||
-                              "--"}
-                          </div>
+                        <div className="birthday-info">
+                          <h4>{employee?.employeeName || "N/A"}</h4>
 
                           {birthdayToday && (
-                            <button
-                              type="button"
-                              className={`wish-button ${
-                                wishedEmployees.includes(
-                                  employeeId,
-                                )
-                                  ? "wish-sent"
-                                  : ""
-                              }`}
-                              disabled={
-                                wishingEmployeeId ===
-                                  employeeId ||
-                                wishedEmployees.includes(
-                                  employeeId,
-                                )
-                              }
-                              onClick={() =>
-                                handleBirthdayWish(
-                                  employee,
-                                )
-                              }
-                            >
-                              <LuSend />
-
-                              {wishingEmployeeId ===
-                              employeeId
-                                ? "Sending..."
-                                : wishedEmployees.includes(
-                                      employeeId,
-                                    )
-                                  ? "Wished ✓"
-                                  : "Wish"}
-                            </button>
+                            <span className="birthday-today-text">
+                              🎂 Birthday Today!
+                            </span>
                           )}
                         </div>
-                      );
-                    },
-                  )
+
+                        <div className="birthday-date">
+                          {employee?.date
+                            ? new Date(employee.date).toLocaleDateString(
+                                "en-IN",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                },
+                              )
+                            : "--"}
+                        </div>
+
+                        {birthdayToday && (
+                          <button
+                            type="button"
+                            className={`wish-button ${
+                              wishedEmployees.includes(employeeId)
+                                ? "wish-sent"
+                                : ""
+                            }`}
+                            disabled={
+                              wishingEmployeeId === employeeId ||
+                              wishedEmployees.includes(employeeId)
+                            }
+                            onClick={() => handleBirthdayWish(employee)}
+                          >
+                            <LuSend />
+
+                            {wishingEmployeeId === employeeId
+                              ? "Sending..."
+                              : wishedEmployees.includes(employeeId)
+                                ? "Wished ✓"
+                                : "Wish"}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </div>
@@ -2380,4 +1744,3 @@ useEffect(() => {
 };
 
 export default AdminDash;
-

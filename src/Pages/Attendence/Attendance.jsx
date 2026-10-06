@@ -1367,191 +1367,213 @@ const handleAttendanceFilter = (filter) => {
   // TODAY TABLE
   // ============================================================
 
-  const columns = [
-    {
-      title: "Employee Id",
-      dataIndex: "employeeId",
-      key: "employeeId",
-      search: true,
-      align: "center",
-    },
+const columns = [
+  {
+    title: "Employee Id",
+    dataIndex: "employeeId",
+    key: "employeeId",
+    width: 150,
+    align: "center",
+  },
 
-    {
-      title: "Employee Name",
-      dataIndex: "employeeName",
-      key: "employeeName",
-      search: true,
-      align: "center",
-    },
+  {
+    title: "Employee Name",
+    dataIndex: "employeeName",
+    key: "employeeName",
+    width: 220,
+    align: "center",
+  },
 
-    {
-      title: "Designation",
-      dataIndex: "employeeDesignation",
-      key: "employeeDesignation",
-      search: true,
-      align: "center",
-    },
+  {
+    title: "Designation",
+    dataIndex: "employeeDesignation",
+    key: "employeeDesignation",
+    width: 220,
+    align: "center",
+  },
 
-    {
-      title: "In Time",
-      dataIndex: "punchIn",
-      key: "punchIn",
-      align: "center",
+  {
+    title: "In Time",
+    dataIndex: "punchIn",
+    key: "punchIn",
+    width: 200,
+    align: "center",
 
-      render: (_, record) => {
-        if (activePunchIn === record?.employeeId) {
-          return (
-            <div className="change-time-wrapper">
-              <input
-                type="time"
-                value={newTime}
-                onChange={(e) => setNewTime(e.target.value)}
-                className="time-input"
-              />
-
-              <button
-                type="button"
-                className="save-time-btn"
-                onClick={() => updatePunchInTime(record?.employeeId)}
-                disabled={loader}
-              >
-                {loader ? "Saving..." : "Save"}
-              </button>
-            </div>
-          );
-        }
-
-        return <span>{record?.punchIn || "-"}</span>;
-      },
-    },
-
-    {
-      title: "Out Time",
-      dataIndex: "punchOut",
-      key: "punchOut",
-      align: "center",
-
-      render: (_, record) => <span>{record?.punchOut || "-"}</span>,
-    },
-
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      align: "center",
-
-      render: (status) => {
-        const normalizedStatus = String(status || "")
-          .trim()
-          .toUpperCase();
-
-        let displayStatus = status || "-";
-
-        if (
-          normalizedStatus === "IN OFFICE" ||
-          normalizedStatus === "PRESENT" ||
-          normalizedStatus === "FULL_DAY"
-        ) {
-          displayStatus = "IN Office";
-        }
-
-        if (normalizedStatus === "HALF_DAY") {
-          displayStatus = "Half Day";
-        }
-
-        if (normalizedStatus === "ABSENT") {
-          displayStatus = "Absent";
-        }
-
-        const statusClass =
-          normalizedStatus === "ABSENT"
-            ? "absent-status"
-            : normalizedStatus === "HALF_DAY"
-              ? "half-day-status"
-              : "";
-
+    render: (_, record) => {
+      if (activePunchIn === record?.employeeId) {
         return (
-          <span className={`attendance-status ${statusClass}`}>
-            {displayStatus}
-          </span>
-        );
-      },
-    },
-
-    {
-      title: "Action",
-      key: "Action",
-      align: "center",
-
-      render: (_, record) => {
-        const menuItems = [];
-
-        if (record?.punchIn) {
-          menuItems.push({
-            key: "1",
-            label: "Remove Punch In",
-            onClick: () => removePunchIn(record?.employeeId),
-          });
-
-          menuItems.push({
-            key: "2",
-            label: "Change Punch In Time",
-            onClick: () => changePunchInTime(record),
-          });
-        }
-
-        if (record?.punchOut) {
-          menuItems.push({
-            key: "6",
-            label: "Remove Punch Out",
-            onClick: () => removePunchOut(record?.employeeId),
-          });
-        }
-
-        menuItems.push({
-          key: "3",
-          label: "Mark Present",
-          onClick: () => markPresent(record?.employeeId),
-        });
-
-        menuItems.push({
-          key: "4",
-          label: "Mark Absent",
-          onClick: () => markAbsent(record?.employeeId),
-        });
-
-        menuItems.push({
-          key: "5",
-          label: "Mark Half Day",
-          onClick: () => markHalfDay(record?.employeeId),
-        });
-
-        return (
-          <div className="dropdown_parent">
-            <Dropdown
-              menu={{
-                items: menuItems,
-              }}
-              trigger={["click"]}
-              placement="bottomRight"
-            >
-              <button type="button" className="three-dot-btn">
-                <HiOutlineDotsHorizontal />
-              </button>
-            </Dropdown>
+          <div className="change-time-wrapper">
+            <input
+              type="time"
+              value={newTime}
+              onChange={(e) => setNewTime(e.target.value)}
+              className="time-input"
+            />
 
             <button
               type="button"
-              className="calendar-btn"
-              onClick={() => handleCalendar(record)}
+              className="save-time-btn"
+              onClick={() =>
+                updatePunchInTime(record?.employeeId)
+              }
+              disabled={loader}
             >
-              <SlCalender />
+              {loader ? "Saving..." : "Save"}
             </button>
           </div>
         );
-      },
+      }
+
+      return <span>{record?.punchIn || "-"}</span>;
     },
-  ];
+  },
+
+  {
+    title: "Out Time",
+    dataIndex: "punchOut",
+    key: "punchOut",
+    width: 200,
+    align: "center",
+
+    render: (_, record) => (
+      <span>{record?.punchOut || "-"}</span>
+    ),
+  },
+
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    width: 150,
+    align: "center",
+
+    render: (status) => {
+      const normalizedStatus = String(status || "")
+        .trim()
+        .toUpperCase();
+
+      let displayStatus = status || "-";
+
+      if (
+        normalizedStatus === "IN OFFICE" ||
+        normalizedStatus === "PRESENT" ||
+        normalizedStatus === "FULL_DAY"
+      ) {
+        displayStatus = "IN Office";
+      }
+
+      if (normalizedStatus === "HALF_DAY") {
+        displayStatus = "Half Day";
+      }
+
+      if (normalizedStatus === "ABSENT") {
+        displayStatus = "Absent";
+      }
+
+      const statusClass =
+        normalizedStatus === "ABSENT"
+          ? "absent-status"
+          : normalizedStatus === "HALF_DAY"
+          ? "half-day-status"
+          : "";
+
+      return (
+        <span
+          className={`attendance-status ${statusClass}`}
+        >
+          {displayStatus}
+        </span>
+      );
+    },
+  },
+
+  {
+    title: "Action",
+    key: "Action",
+    width: 180,
+    fixed: "right",
+    align: "center",
+
+    render: (_, record) => {
+      const menuItems = [];
+
+      if (record?.punchIn) {
+        menuItems.push({
+          key: "1",
+          label: "Remove Punch In",
+          onClick: () =>
+            removePunchIn(record?.employeeId),
+        });
+
+        menuItems.push({
+          key: "2",
+          label: "Change Punch In Time",
+          onClick: () =>
+            changePunchInTime(record),
+        });
+      }
+
+      if (record?.punchOut) {
+        menuItems.push({
+          key: "6",
+          label: "Remove Punch Out",
+          onClick: () =>
+            removePunchOut(record?.employeeId),
+        });
+      }
+
+      menuItems.push({
+        key: "3",
+        label: "Mark Present",
+        onClick: () =>
+          markPresent(record?.employeeId),
+      });
+
+      menuItems.push({
+        key: "4",
+        label: "Mark Absent",
+        onClick: () =>
+          markAbsent(record?.employeeId),
+      });
+
+      menuItems.push({
+        key: "5",
+        label: "Mark Half Day",
+        onClick: () =>
+          markHalfDay(record?.employeeId),
+      });
+
+      return (
+        <div className="dropdown_parent">
+          <Dropdown
+            menu={{
+              items: menuItems,
+            }}
+            trigger={["click"]}
+            placement="bottomRight"
+          >
+            <button
+              type="button"
+              className="three-dot-btn"
+            >
+              <HiOutlineDotsHorizontal />
+            </button>
+          </Dropdown>
+
+          <button
+            type="button"
+            className="calendar-btn"
+            onClick={() =>
+              handleCalendar(record)
+            }
+          >
+            <SlCalender />
+          </button>
+        </div>
+      );
+    },
+  },
+];
 
   // ============================================================
   // JSX
@@ -1796,11 +1818,21 @@ const handleAttendanceFilter = (filter) => {
 </div>
           </div>
 
-          <Table_Comp
-            columns={columns}
-            data={filteredAttendanceData}
-            loading={loader}
-          />
+<Table
+  columns={columns}
+  dataSource={filteredAttendanceData}
+  loading={loader}
+  bordered
+  scroll={{ x: "max-content" }}
+  pagination={{
+    pageSize: 10  
+  }}
+  rowClassName={(_, index) =>
+    index % 2 === 0
+      ? "table-row-light"
+      : "table-row-dark"
+  }
+/>
         </>
       )}
 

@@ -8,7 +8,7 @@
   flex-direction: column;
   overflow-x: hidden;
   transition: var(--trans);
-  padding:10px;
+  padding: 10px;
   // TOP
 
   .top {
@@ -27,6 +27,7 @@
       border-bottom: 1px solid var(--white);
       padding: 10px 0;
       overflow: hidden;
+     
       img {
         height: 50px;
         max-width: 100%;
@@ -40,50 +41,50 @@
       justify-content: flex-start;
       align-items: flex-start;
       width: 100%;
-     .nav_item{
-        width:100%;
-         .link {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        gap: var(--unit);
-        font-size: 15px;
-        text-decoration: none;
-        color: white;
-        cursor: pointer;
-        transition: var(--trans);
-        border-radius: 5px;
-        &.active {
-          background-color: var(--accent2);
-        }
-        &:hover {
-          background-color: var(--accent2);
-        }
-
-        span {
+      .nav_item {
+        width: 100%;
+        .link {
           display: flex;
-          justify-content: center;
+          justify-content: flex-start;
           align-items: center;
-          min-width: 30px;
+          gap: var(--unit);
+          font-size: 15px;
+          text-decoration: none;
+          color: white;
+          cursor: pointer;
           transition: var(--trans);
-          svg {
-            font-size: 24px;
-            color: white;
+          border-radius: 5px;
+          &.active {
+            background-color: var(--accent2);
+          }
+          &:hover {
+            background-color: var(--accent2);
+          }
+
+          span {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 30px;
+            transition: var(--trans);
+            svg {
+              font-size: 24px;
+              color: white;
+            }
+          }
+
+          .nav_text {
+            white-space: nowrap;
+            opacity: 1;
+            visibility: visible;
+            width: auto;
+            transition:
+              opacity 0.2s ease,
+              width 0.3s ease;
+            overflow: hidden;
           }
         }
-
-        .nav_text {
-          white-space: nowrap;
-          opacity: 1;
-          visibility: visible;
-          width: auto;
-          transition:
-            opacity 0.2s ease,
-            width 0.3s ease;
-          overflow: hidden;
-        }
       }
-     }
       .child_list {
         //   position: absolute;
         //   top: 100%;
@@ -129,7 +130,7 @@
     align-items: center;
     gap: var(--unit);
     color: var(--white);
-    padding: 20px 10px;
+    padding: 10px 20px;
     text-decoration: none;
     cursor: pointer;
     transition: var(--trans);
@@ -145,6 +146,8 @@
 
     &:hover {
       opacity: 0.8;
+      background-color: var(--accent2);
+      border-radius: 5px;
     }
   }
 }
@@ -163,8 +166,7 @@
       justify-content: center;
       gap: 0;
       padding: 10px 5px;
-      border-radius:10px;
-     
+      border-radius: 10px;
 
       // Center icon
       span {
@@ -230,7 +232,7 @@
 
       gap: var(--unit);
 
-      padding: 20px 10px;
+     
     }
 
     .logo {
