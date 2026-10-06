@@ -337,15 +337,12 @@ const Attendance = () => {
 
         let status = "ABSENT";
 
-        // Punch In = Present
-        if (hasPunchIn || hasAdminPunchIn) {
-          status = "IN Office";
-        }
-
-        // If API specifically says HALF_DAY and there is no punch-in
-        // keep it HALF_DAY.
-        if (!hasPunchIn && !hasAdminPunchIn && apiStatus === "HALF_DAY") {
+        if (apiStatus === "ABSENT") {
+          status = "ABSENT";
+        } else if (apiStatus === "HALF_DAY") {
           status = "HALF_DAY";
+        } else if (hasPunchIn || hasAdminPunchIn) {
+          status = "IN Office";
         }
 
         return {
@@ -1007,9 +1004,7 @@ const Attendance = () => {
         );
 
         if (response?.status === 200 && response?.data?.success !== false) {
-          toast.success(
-            response?.data?.message || "Attendance adjustment completed",
-          );
+         toast.success("Previous Attendance Updated Successfully");
 
           const employeesList = await getAllEmployee();
           await getEmployeeData(employeesList);
@@ -1093,18 +1088,19 @@ const Attendance = () => {
     }
   };
 
-  // ============================================================
-  // MARK PRESENT
-  // ============================================================
-
   const markPresent = async (record) => {
     try {
       setLoader(true);
 
       const today = dayjs().format("YYYY-MM-DD");
 
+      if (!record?.employeeId) {
+        toast.error("Employee ID not found");
+        return;
+      }
+
       const response = await axios.post(
-        `${BASE_URL2}api/punch/adjust/${record?.employeeId}`,
+        `${BASE_URL2}api/punch/adjust/${record.employeeId}`,
         {
           date: today,
           attendanceType: "FULL_DAY",
@@ -1125,15 +1121,15 @@ const Attendance = () => {
     } catch (error) {
       console.error("Mark Present Error:", error);
 
-      toast.error(error?.response?.data?.message || "Unable to mark present");
+      toast.error(
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to mark present"
+      );
     } finally {
       setLoader(false);
     }
   };
-
-  // ============================================================
-  // MARK HALF DAY
-  // ============================================================
 
   const markHalfDay = async (record) => {
     try {
@@ -1141,8 +1137,13 @@ const Attendance = () => {
 
       const today = dayjs().format("YYYY-MM-DD");
 
+      if (!record?.employeeId) {
+        toast.error("Employee ID not found");
+        return;
+      }
+
       const response = await axios.post(
-        `${BASE_URL2}api/punch/adjust/${record?.employeeId}`,
+        `${BASE_URL2}api/punch/adjust/${record.employeeId}`,
         {
           date: today,
           attendanceType: "HALF_DAY",
@@ -1153,7 +1154,7 @@ const Attendance = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
 
       if (response.status === 200 || response.status === 201) {
@@ -1163,33 +1164,54 @@ const Attendance = () => {
     } catch (error) {
       console.error("Mark Half Day Error:", error);
 
-      toast.error(error?.response?.data?.message || "Unable to mark half day");
+      toast.error(
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to mark half day"
+      );
     } finally {
       setLoader(false);
     }
   };
 
-  // ============================================================
-  // MARK ABSENT
-  // ============================================================
-
-  const markAbsent = async (employeeId) => {
+  const markAbsent = async (record) => {
     try {
       setLoader(true);
 
-      const response = await axios.get(
-        `${BASE_URL2}api/punch/mark/ab/${employeeId}`,
+      const today = dayjs().format("YYYY-MM-DD");
+
+      if (!record?.employeeId) {
+        toast.error("Employee ID not found");
+        return;
+      }
+
+      const response = await axios.post(
+        `${BASE_URL2}api/punch/adjust/${record.employeeId}`,
+        {
+          date: today,
+          attendanceType: "ABSENT",
+          employeeName: record?.employeeName || "",
+          employeeDesignation: record?.employeeDesignation || "",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         toast.success("Marked Absent Successfully");
-
         await getEmployeeData();
       }
     } catch (error) {
       console.error("Mark Absent Error:", error);
 
-      toast.error(error?.response?.data?.message || "Unable to mark absent");
+      toast.error(
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to mark absent"
+      );
     } finally {
       setLoader(false);
     }
@@ -1332,14 +1354,12 @@ const Attendance = () => {
     loadData();
   }, []);
   const filteredAttendanceData = data.filter((item) => {
-    const hasPunchIn = Boolean(item?.punchIn) || Boolean(item?.punchInByAdmin);
-
     if (attendanceFilter === "present") {
-      return hasPunchIn;
+      return item?.status === "IN Office" || item?.status === "HALF_DAY";
     }
 
     if (attendanceFilter === "absent") {
-      return !hasPunchIn;
+      return item?.status === "ABSENT";
     }
 
     return true;
@@ -1516,7 +1536,7 @@ const Attendance = () => {
         menuItems.push({
           key: "4",
           label: "Mark Absent",
-          onClick: () => markAbsent(record?.employeeId),
+          onClick: () => markAbsent(record),
         });
 
         menuItems.push({

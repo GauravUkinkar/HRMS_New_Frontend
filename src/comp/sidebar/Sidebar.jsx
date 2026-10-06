@@ -431,11 +431,11 @@ const confirmLogout = (e) => {
   </Link>
 
   <div className="version">
-    <span>Version 1.0</span>
+    <span>V 1.0</span>
   </div>
 </div>
     </div>
-  );
+  ); 
 };
 
 export default Sidebar;
