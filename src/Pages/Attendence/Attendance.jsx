@@ -1019,9 +1019,7 @@ const Attendance = () => {
         );
 
         if (response?.status === 200 && response?.data?.success !== false) {
-          toast.success(
-            response?.data?.message || "Attendance adjustment completed"
-          );
+         toast.success("Previous Attendance Updated Successfully");
 
           const employeesList = await getAllEmployee();
           await getEmployeeData(employeesList);
