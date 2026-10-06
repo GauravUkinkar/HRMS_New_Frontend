@@ -353,38 +353,26 @@
 
 .previous-view-header {
   width: 100%;
-
   display: flex;
-
   align-items: center;
   justify-content: space-between;
   margin-bottom: 25px;
-
   position: relative;
 }
 
 .previous-view-back {
   border: none;
   // border: 1px solid red;
-
   background: #e9e9e9;
-
   color: #333;
-
   padding: 12px 25px;
-
   border-radius: 5px;
-
   font-size: 15px;
-
   cursor: pointer;
-
   transition: 0.3s ease;
-
   &:hover {
     background: #dcdcdc;
   }
-
   &:focus {
     outline: none;
   }
@@ -392,15 +380,10 @@
 
 .previous-view-title {
   flex: 1;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   position: relative;
-
   .empname {
     font-size: 30px;
     font-weight: 600;

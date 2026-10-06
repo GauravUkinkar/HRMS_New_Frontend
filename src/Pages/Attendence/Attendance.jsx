@@ -23,9 +23,9 @@ const Attendance = () => {
     date: "",
     status: "",
   });
-const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-const attendanceFilter = searchParams.get("filter") || "all";
+  const attendanceFilter = searchParams.get("filter") || "all";
   const [previousAttendanceData, setPreviousAttendanceData] = useState([]);
 
   const [attendanceHistoryLoading, setAttendanceHistoryLoading] =
@@ -83,9 +83,9 @@ const attendanceFilter = searchParams.get("filter") || "all";
 
   const [selectedMonth, setSelectedMonth] = useState(dayjs().month() + 1);
 
- const [selectedYear, setSelectedYear] = useState(
-  String(dayjs().year())
-);
+  const [selectedYear, setSelectedYear] = useState(
+    String(dayjs().year())
+  );
 
   // ============================================================
   // ADD PREVIOUS ATTENDANCE
@@ -298,114 +298,114 @@ const attendanceFilter = searchParams.get("filter") || "all";
   // GET TODAY ATTENDANCE
   // ============================================================
 
-const getEmployeeData = async (employeeList = allemployee) => {
-  try {
-    setLoader(true);
+  const getEmployeeData = async (employeeList = allemployee) => {
+    try {
+      setLoader(true);
 
-    const response = await axios.get(`${BASE_URL2}api/punch/details`);
+      const response = await axios.get(`${BASE_URL2}api/punch/details`);
 
-    const rawData = Array.isArray(response?.data?.data)
-      ? response.data.data
-      : [];
+      const rawData = Array.isArray(response?.data?.data)
+        ? response.data.data
+        : [];
 
-    const employees = employeeList || [];
+      const employees = employeeList || [];
 
-    const attendanceMap = new Map();
+      const attendanceMap = new Map();
 
-    rawData.forEach((item) => {
-      const employeeId = String(item?.employeeId || "").trim();
+      rawData.forEach((item) => {
+        const employeeId = String(item?.employeeId || "").trim();
 
-      if (employeeId) {
-        attendanceMap.set(employeeId, item);
-      }
-    });
+        if (employeeId) {
+          attendanceMap.set(employeeId, item);
+        }
+      });
 
-    const tableData = employees.map((employee, index) => {
-      const employeeId = String(employee?.empId || "").trim();
-      const item = attendanceMap.get(employeeId);
+      const tableData = employees.map((employee, index) => {
+        const employeeId = String(employee?.empId || "").trim();
+        const item = attendanceMap.get(employeeId);
 
-      // IMPORTANT:
-      // Only actual punchIn or admin punchIn means Present.
-      const hasPunchIn = Boolean(item?.punchIn);
-      const hasAdminPunchIn = Boolean(item?.punchInByAdmin);
+        // IMPORTANT:
+        // Only actual punchIn or admin punchIn means Present.
+        const hasPunchIn = Boolean(item?.punchIn);
+        const hasAdminPunchIn = Boolean(item?.punchInByAdmin);
 
-      const punchIn = hasPunchIn
-        ? formatTime12Hour(item.punchIn)
-        : "";
+        const punchIn = hasPunchIn
+          ? formatTime12Hour(item.punchIn)
+          : "";
 
-      const punchOut = item?.punchOut
-        ? formatTime12Hour(item.punchOut)
-        : "";
+        const punchOut = item?.punchOut
+          ? formatTime12Hour(item.punchOut)
+          : "";
 
-      const apiStatus = String(item?.status || "")
-        .trim()
-        .toUpperCase();
+        const apiStatus = String(item?.status || "")
+          .trim()
+          .toUpperCase();
 
-      let status = "ABSENT";
+        let status = "ABSENT";
 
-      // Punch In = Present
-      if (hasPunchIn || hasAdminPunchIn) {
-        status = "IN Office";
-      }
+        // Punch In = Present
+        if (hasPunchIn || hasAdminPunchIn) {
+          status = "IN Office";
+        }
 
-      // If API specifically says HALF_DAY and there is no punch-in
-      // keep it HALF_DAY.
-      if (
-        !hasPunchIn &&
-        !hasAdminPunchIn &&
-        apiStatus === "HALF_DAY"
-      ) {
-        status = "HALF_DAY";
-      }
+        // If API specifically says HALF_DAY and there is no punch-in
+        // keep it HALF_DAY.
+        if (
+          !hasPunchIn &&
+          !hasAdminPunchIn &&
+          apiStatus === "HALF_DAY"
+        ) {
+          status = "HALF_DAY";
+        }
 
-      return {
-        key: employeeId || index,
+        return {
+          key: employeeId || index,
 
-        employeeId,
+          employeeId,
 
-        employeeName:
-          item?.employeeName?.toUpperCase() ||
-          employee?.name?.toUpperCase() ||
-          "",
+          employeeName:
+            item?.employeeName?.toUpperCase() ||
+            employee?.name?.toUpperCase() ||
+            "",
 
-        employeeDesignation:
-          item?.employeeDesignation ||
-          item?.designation ||
-          employee?.designation ||
-          "",
+          employeeDesignation:
+            item?.employeeDesignation ||
+            item?.designation ||
+            employee?.designation ||
+            "",
 
-        punchIn: hasAdminPunchIn
-          ? "Punch In From Admin"
-          : punchIn,
+          punchIn: hasAdminPunchIn
+            ? "Punch In From Admin"
+            : punchIn,
 
-        punchOut: item?.punchOutByAdmin
-          ? "Punch Out From Admin"
-          : punchOut,
+          punchOut: item?.punchOutByAdmin
+            ? "Punch Out From Admin"
+            : punchOut,
 
-        status,
+          status,
 
-        punchInByAdmin: hasAdminPunchIn,
-        punchOutByAdmin: Boolean(item?.punchOutByAdmin),
-      };
-    });
+          punchInByAdmin: hasAdminPunchIn,
+          punchOutByAdmin: Boolean(item?.punchOutByAdmin),
+        };
+      });
 
-    setData(tableData);
-  } catch (error) {
-    console.error(
-      "Attendance API Error:",
-      error?.response?.data || error
-    );
+      setData(tableData);
+    } catch (error) {
+      console.error(
+        "Attendance API Error:",
+        error?.response?.data || error
+      );
 
-    toast.error(
-      error?.response?.data?.message ||
+      toast.error(
+        error?.response?.data?.message ||
         "Unable to load attendance"
-    );
+      );
 
-    setData([]);
-  } finally {
-    setLoader(false);
-  }
-};
+      setData([]);
+    } finally {
+      setLoader(false);
+    }
+  };
 
   // ============================================================
   // EMPLOYEE MONTHLY ATTENDANCE
@@ -481,40 +481,40 @@ const getEmployeeData = async (employeeList = allemployee) => {
   };
 
   const handleEmployeeMonthChange = async (e) => {
-  const month = Number(e.target.value);
+    const month = Number(e.target.value);
 
-  setSelectedMonth(month);
-
-  await getEmployeeMonthlyAttendance(
-    selectedEmployee?.employeeId,
-    month,
-    Number(selectedYear)
-  );
-};
-
-const handleEmployeeYearChange = async (e) => {
-  const value = e.target.value;
-
-  if (value.length > 4) {
-    return;
-  }
-
-  setSelectedYear(value);
-
-  if (value.length === 4) {
-    const year = Number(value);
-
-    if (year < 2000 || year > 2100) {
-      return;
-    }
+    setSelectedMonth(month);
 
     await getEmployeeMonthlyAttendance(
       selectedEmployee?.employeeId,
-      selectedMonth,
-      year
+      month,
+      Number(selectedYear)
     );
-  }
-};
+  };
+
+  const handleEmployeeYearChange = async (e) => {
+    const value = e.target.value;
+
+    if (value.length > 4) {
+      return;
+    }
+
+    setSelectedYear(value);
+
+    if (value.length === 4) {
+      const year = Number(value);
+
+      if (year < 2000 || year > 2100) {
+        return;
+      }
+
+      await getEmployeeMonthlyAttendance(
+        selectedEmployee?.employeeId,
+        selectedMonth,
+        year
+      );
+    }
+  };
 
   const closeEmployeeAttendance = () => {
     setShowEmployeeAttendance(false);
@@ -911,112 +911,164 @@ const handleEmployeeYearChange = async (e) => {
 
 
   const getAttendanceForSelectedDate = async (date) => {
-  if (!date) {
-    return [];
-  }
+    if (!date) {
+      return [];
+    }
 
-  try {
-    const response = await axios.get(
-      `${BASE_URL2}api/punch/getPreviousAttendence`,
-      {
-        params: {
-          startDate: date,
-          endDate: date,
-        },
+    try {
+      const response = await axios.get(
+        `${BASE_URL2}api/punch/getPreviousAttendence`,
+        {
+          params: {
+            startDate: date,
+            endDate: date,
+          },
+        }
+      );
+
+      if (Array.isArray(response?.data?.data)) {
+        return response.data.data;
       }
-    );
 
-    if (Array.isArray(response?.data?.data)) {
-      return response.data.data;
+      if (Array.isArray(response?.data)) {
+        return response.data;
+      }
+
+      return [];
+    } catch (error) {
+      console.error("Selected Date Attendance Error:", error);
+      return [];
     }
-
-    if (Array.isArray(response?.data)) {
-      return response.data;
-    }
-
-    return [];
-  } catch (error) {
-    console.error("Selected Date Attendance Error:", error);
-    return [];
-  }
-};
+  };
   // ============================================================
   // ADJUST PREVIOUS ATTENDANCE
   // ============================================================
 
   const adjustPreviousAttendance = async () => {
-  const { employeeId, date, status } = previousAttendance;
+    const { employeeId, date, status } = previousAttendance;
 
-  if (!selectedEmployees.length) {
-    toast.error("Please select employee");
-    return;
-  }
+    if (!selectedEmployees.length) {
+      toast.error("Please select employee");
+      return;
+    }
 
-  if (!date) {
-    toast.error("Please select date");
-    return;
-  }
+    if (!date) {
+      toast.error("Please select date");
+      return;
+    }
 
-  if (!status) {
-    toast.error("Please select status");
-    return;
-  }
+    if (!status) {
+      toast.error("Please select status");
+      return;
+    }
 
-  try {
-    setAttendanceHistoryLoading(true);
+    try {
+      setAttendanceHistoryLoading(true);
 
-    const isBulk =
-      selectedEmployees.length > 1 ||
-      employeeId === "ALL" ||
-      employeeId === "MULTIPLE";
+      const isBulk =
+        selectedEmployees.length > 1 ||
+        employeeId === "ALL" ||
+        employeeId === "MULTIPLE";
 
-    if (isBulk) {
-      let eligibleEmployees = [];
+      if (isBulk) {
+        let eligibleEmployees = [];
 
-      if (employeeId === "ALL") {
-        const attendanceForDate = await getAttendanceForSelectedDate(date);
+        if (employeeId === "ALL") {
+          const attendanceForDate = await getAttendanceForSelectedDate(date);
 
-        const eligibleEmployeeIds = new Set(
-          attendanceForDate
-            .filter((item) => {
-              const attendanceStatus = String(item?.status || "")
-                .trim()
-                .toUpperCase();
+          const eligibleEmployeeIds = new Set(
+            attendanceForDate
+              .filter((item) => {
+                const attendanceStatus = String(item?.status || "")
+                  .trim()
+                  .toUpperCase();
 
-              return attendanceStatus !== "ABSENT";
-            })
-            .map((item) => String(item?.employeeId || "").trim())
-            .filter(Boolean)
+                return attendanceStatus !== "ABSENT";
+              })
+              .map((item) => String(item?.employeeId || "").trim())
+              .filter(Boolean)
+          );
+
+          eligibleEmployees = allemployee.filter((item) =>
+            eligibleEmployeeIds.has(String(item?.empId || "").trim())
+          );
+        } else {
+          eligibleEmployees = allemployee.filter((item) =>
+            selectedEmployees.includes(item?.empId)
+          );
+        }
+
+        const employees = eligibleEmployees
+          .map((item) => ({
+            employeeId: item?.empId || "",
+            attendanceType: status,
+            employeeName: item?.name || "",
+            employeeDesignation: item?.designation || "",
+          }))
+          .filter((item) => item.employeeId);
+
+        if (!employees.length) {
+          toast.error("No eligible employees found for selected date");
+          return;
+        }
+
+        const response = await axios.post(
+          `${BASE_URL2}api/punch/bulkAdjustment`,
+          {
+            date,
+            employee: employees,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
 
-        eligibleEmployees = allemployee.filter((item) =>
-          eligibleEmployeeIds.has(String(item?.empId || "").trim())
-        );
-      } else {
-        eligibleEmployees = allemployee.filter((item) =>
-          selectedEmployees.includes(item?.empId)
-        );
+        if (response?.status === 200 && response?.data?.success !== false) {
+          toast.success(
+            response?.data?.message || "Attendance adjustment completed"
+          );
+
+          const employeesList = await getAllEmployee();
+          await getEmployeeData(employeesList);
+
+          setPreviousAttendance({
+            employeeId: "",
+            date: "",
+            status: "",
+          });
+
+          setSelectedEmployees([]);
+          setPreviousAttendanceData([]);
+          setEmployeeDropdownOpen(false);
+          setDatePickerOpen(false);
+          setShowAttendanceModal(false);
+        } else {
+          throw new Error(
+            response?.data?.message || "Unable to update attendance"
+          );
+        }
+
+        return;
       }
 
-      const employees = eligibleEmployees
-        .map((item) => ({
-          employeeId: item?.empId || "",
-          attendanceType: status,
-          employeeName: item?.name || "",
-          employeeDesignation: item?.designation || "",
-        }))
-        .filter((item) => item.employeeId);
+      const selectedEmployeeData = allemployee.find(
+        (item) => String(item?.empId || "") === String(employeeId)
+      );
 
-      if (!employees.length) {
-        toast.error("No eligible employees found for selected date");
+      if (!selectedEmployeeData) {
+        toast.error("Selected employee not found");
         return;
       }
 
       const response = await axios.post(
-        `${BASE_URL2}api/punch/bulkAdjustment`,
+        `${BASE_URL2}api/punch/adjust/${employeeId}`,
         {
           date,
-          employee: employees,
+          attendanceType: status,
+          employeeName: selectedEmployeeData.name || "",
+          employeeDesignation: selectedEmployeeData.designation || "",
         },
         {
           headers: {
@@ -1026,12 +1078,10 @@ const handleEmployeeYearChange = async (e) => {
       );
 
       if (response?.status === 200 && response?.data?.success !== false) {
-        toast.success(
-          response?.data?.message || "Attendance adjustment completed"
-        );
+        toast.success("Previous Attendance Updated Successfully");
 
-        const employeesList = await getAllEmployee();
-        await getEmployeeData(employeesList);
+        await getEmployeeData();
+        await getPreviousAttendance(employeeId);
 
         setPreviousAttendance({
           employeeId: "",
@@ -1046,93 +1096,57 @@ const handleEmployeeYearChange = async (e) => {
         setShowAttendanceModal(false);
       } else {
         throw new Error(
-          response?.data?.message || "Unable to update attendance"
+          response?.data?.message || "Unable to update previous attendance"
         );
       }
+    } catch (error) {
+      console.error("Adjust Previous Attendance Error:", error);
 
-      return;
-    }
-
-    const selectedEmployeeData = allemployee.find(
-      (item) => String(item?.empId || "") === String(employeeId)
-    );
-
-    if (!selectedEmployeeData) {
-      toast.error("Selected employee not found");
-      return;
-    }
-
-    const response = await axios.post(
-      `${BASE_URL2}api/punch/adjust/${employeeId}`,
-      {
-        date,
-        attendanceType: status,
-        employeeName: selectedEmployeeData.name || "",
-        employeeDesignation: selectedEmployeeData.designation || "",
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (response?.status === 200 && response?.data?.success !== false) {
-      toast.success("Previous Attendance Updated Successfully");
-
-      await getEmployeeData();
-      await getPreviousAttendance(employeeId);
-
-      setPreviousAttendance({
-        employeeId: "",
-        date: "",
-        status: "",
-      });
-
-      setSelectedEmployees([]);
-      setPreviousAttendanceData([]);
-      setEmployeeDropdownOpen(false);
-      setDatePickerOpen(false);
-      setShowAttendanceModal(false);
-    } else {
-      throw new Error(
-        response?.data?.message || "Unable to update previous attendance"
-      );
-    }
-  } catch (error) {
-    console.error("Adjust Previous Attendance Error:", error);
-
-    toast.error(
-      error?.response?.data?.message ||
+      toast.error(
+        error?.response?.data?.message ||
         error?.message ||
         "Unable to update previous attendance"
-    );
-  } finally {
-    setAttendanceHistoryLoading(false);
-  }
-};
+      );
+    } finally {
+      setAttendanceHistoryLoading(false);
+    }
+  };
 
   // ============================================================
   // MARK PRESENT
   // ============================================================
 
-  const markPresent = async (employeeId) => {
+  const markPresent = async (record) => {
     try {
       setLoader(true);
 
-      const response = await axios.get(
-        `${BASE_URL2}api/punch/mark/fd/${employeeId}/true/true`,
+      const today = dayjs().format("YYYY-MM-DD");
+
+      const response = await axios.post(
+        `${BASE_URL2}api/punch/adjust/${record?.employeeId}`,
+        {
+          date: today,
+          attendanceType: "FULL_DAY",
+          employeeName: record?.employeeName || "",
+          employeeDesignation: record?.employeeDesignation || "",
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         toast.success("Marked Present Successfully");
-
         await getEmployeeData();
       }
     } catch (error) {
       console.error("Mark Present Error:", error);
 
-      toast.error(error?.response?.data?.message || "Unable to mark present");
+      toast.error(
+        error?.response?.data?.message || "Unable to mark present"
+      );
     } finally {
       setLoader(false);
     }
@@ -1142,27 +1156,41 @@ const handleEmployeeYearChange = async (e) => {
   // MARK HALF DAY
   // ============================================================
 
-  const markHalfDay = async (employeeId) => {
-    try {
-      setLoader(true);
+const markHalfDay = async (record) => {
+  try {
+    setLoader(true);
 
-      const response = await axios.get(
-        `${BASE_URL2}api/punch/mark/hd/${employeeId}/true/true`,
-      );
+    const today = dayjs().format("YYYY-MM-DD");
 
-      if (response.status === 200) {
-        toast.success("Marked Half Day Successfully");
-
-        await getEmployeeData();
+    const response = await axios.post(
+      `${BASE_URL2}api/punch/adjust/${record?.employeeId}`,
+      {
+        date: today,
+        attendanceType: "HALF_DAY",
+        employeeName: record?.employeeName || "",
+        employeeDesignation: record?.employeeDesignation || "",
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    } catch (error) {
-      console.error("Mark Half Day Error:", error);
+    );
 
-      toast.error(error?.response?.data?.message || "Unable to mark half day");
-    } finally {
-      setLoader(false);
+    if (response.status === 200 || response.status === 201) {
+      toast.success("Marked Half Day Successfully");
+      await getEmployeeData();
     }
-  };
+  } catch (error) {
+    console.error("Mark Half Day Error:", error);
+
+    toast.error(
+      error?.response?.data?.message || "Unable to mark half day"
+    );
+  } finally {
+    setLoader(false);
+  }
+};
 
   // ============================================================
   // MARK ABSENT
@@ -1326,38 +1354,38 @@ const handleEmployeeYearChange = async (e) => {
 
     loadData();
   }, []);
-const filteredAttendanceData = data.filter((item) => {
-  const hasPunchIn =
-    Boolean(item?.punchIn) ||
-    Boolean(item?.punchInByAdmin);
+  const filteredAttendanceData = data.filter((item) => {
+    const hasPunchIn =
+      Boolean(item?.punchIn) ||
+      Boolean(item?.punchInByAdmin);
 
-  if (attendanceFilter === "present") {
-    return hasPunchIn;
-  }
+    if (attendanceFilter === "present") {
+      return hasPunchIn;
+    }
 
-  if (attendanceFilter === "absent") {
-    return !hasPunchIn;
-  }
+    if (attendanceFilter === "absent") {
+      return !hasPunchIn;
+    }
 
-  return true;
-});
+    return true;
+  });
 
-const totalEmployees = allemployee.length;
+  const totalEmployees = allemployee.length;
 
-const presentEmployees = data.filter(
-  (item) =>
-    Boolean(item?.punchIn) ||
-    Boolean(item?.punchInByAdmin),
-).length;
+  const presentEmployees = data.filter(
+    (item) =>
+      Boolean(item?.punchIn) ||
+      Boolean(item?.punchInByAdmin),
+  ).length;
 
-const absentEmployees = Math.max(
-  totalEmployees - presentEmployees,
-  0,
-);
+  const absentEmployees = Math.max(
+    totalEmployees - presentEmployees,
+    0,
+  );
 
-const handleAttendanceFilter = (filter) => {
-  navigate(`/attendance?filter=${filter}`);
-};
+  const handleAttendanceFilter = (filter) => {
+    navigate(`/attendance?filter=${filter}`);
+  };
 
 
 
@@ -1367,213 +1395,213 @@ const handleAttendanceFilter = (filter) => {
   // TODAY TABLE
   // ============================================================
 
-const columns = [
-  {
-    title: "Employee Id",
-    dataIndex: "employeeId",
-    key: "employeeId",
-    width: 150,
-    align: "center",
-  },
+  const columns = [
+    {
+      title: "Employee Id",
+      dataIndex: "employeeId",
+      key: "employeeId",
+      width: 150,
+      align: "center",
+    },
 
-  {
-    title: "Employee Name",
-    dataIndex: "employeeName",
-    key: "employeeName",
-    width: 220,
-    align: "center",
-  },
+    {
+      title: "Employee Name",
+      dataIndex: "employeeName",
+      key: "employeeName",
+      width: 220,
+      align: "center",
+    },
 
-  {
-    title: "Designation",
-    dataIndex: "employeeDesignation",
-    key: "employeeDesignation",
-    width: 220,
-    align: "center",
-  },
+    {
+      title: "Designation",
+      dataIndex: "employeeDesignation",
+      key: "employeeDesignation",
+      width: 220,
+      align: "center",
+    },
 
-  {
-    title: "In Time",
-    dataIndex: "punchIn",
-    key: "punchIn",
-    width: 200,
-    align: "center",
+    {
+      title: "In Time",
+      dataIndex: "punchIn",
+      key: "punchIn",
+      width: 200,
+      align: "center",
 
-    render: (_, record) => {
-      if (activePunchIn === record?.employeeId) {
+      render: (_, record) => {
+        if (activePunchIn === record?.employeeId) {
+          return (
+            <div className="change-time-wrapper">
+              <input
+                type="time"
+                value={newTime}
+                onChange={(e) => setNewTime(e.target.value)}
+                className="time-input"
+              />
+
+              <button
+                type="button"
+                className="save-time-btn"
+                onClick={() =>
+                  updatePunchInTime(record?.employeeId)
+                }
+                disabled={loader}
+              >
+                {loader ? "Saving..." : "Save"}
+              </button>
+            </div>
+          );
+        }
+
+        return <span>{record?.punchIn || "-"}</span>;
+      },
+    },
+
+    {
+      title: "Out Time",
+      dataIndex: "punchOut",
+      key: "punchOut",
+      width: 200,
+      align: "center",
+
+      render: (_, record) => (
+        <span>{record?.punchOut || "-"}</span>
+      ),
+    },
+
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 150,
+      align: "center",
+
+      render: (status) => {
+        const normalizedStatus = String(status || "")
+          .trim()
+          .toUpperCase();
+
+        let displayStatus = status || "-";
+
+        if (
+          normalizedStatus === "IN OFFICE" ||
+          normalizedStatus === "PRESENT" ||
+          normalizedStatus === "FULL_DAY"
+        ) {
+          displayStatus = "IN Office";
+        }
+
+        if (normalizedStatus === "HALF_DAY") {
+          displayStatus = "Half Day";
+        }
+
+        if (normalizedStatus === "ABSENT") {
+          displayStatus = "Absent";
+        }
+
+        const statusClass =
+          normalizedStatus === "ABSENT"
+            ? "absent-status"
+            : normalizedStatus === "HALF_DAY"
+              ? "half-day-status"
+              : "";
+
         return (
-          <div className="change-time-wrapper">
-            <input
-              type="time"
-              value={newTime}
-              onChange={(e) => setNewTime(e.target.value)}
-              className="time-input"
-            />
+          <span
+            className={`attendance-status ${statusClass}`}
+          >
+            {displayStatus}
+          </span>
+        );
+      },
+    },
+
+    {
+      title: "Action",
+      key: "Action",
+      width: 180,
+      fixed: "right",
+      align: "center",
+
+      render: (_, record) => {
+        const menuItems = [];
+
+        if (record?.punchIn) {
+          menuItems.push({
+            key: "1",
+            label: "Remove Punch In",
+            onClick: () =>
+              removePunchIn(record?.employeeId),
+          });
+
+          menuItems.push({
+            key: "2",
+            label: "Change Punch In Time",
+            onClick: () =>
+              changePunchInTime(record),
+          });
+        }
+
+        if (record?.punchOut) {
+          menuItems.push({
+            key: "6",
+            label: "Remove Punch Out",
+            onClick: () =>
+              removePunchOut(record?.employeeId),
+          });
+        }
+
+        menuItems.push({
+          key: "3",
+          label: "Mark Present",
+          onClick: () =>
+            markPresent(record),
+        });
+
+        menuItems.push({
+          key: "4",
+          label: "Mark Absent",
+          onClick: () =>
+            markAbsent(record?.employeeId),
+        });
+
+        menuItems.push({
+          key: "5",
+          label: "Mark Half Day",
+          onClick: () =>
+            markHalfDay(record),
+        });
+
+        return (
+          <div className="dropdown_parent">
+            <Dropdown
+              menu={{
+                items: menuItems,
+              }}
+              trigger={["click"]}
+              placement="bottomRight"
+            >
+              <button
+                type="button"
+                className="three-dot-btn"
+              >
+                <HiOutlineDotsHorizontal />
+              </button>
+            </Dropdown>
 
             <button
               type="button"
-              className="save-time-btn"
+              className="calendar-btn"
               onClick={() =>
-                updatePunchInTime(record?.employeeId)
+                handleCalendar(record)
               }
-              disabled={loader}
             >
-              {loader ? "Saving..." : "Save"}
+              <SlCalender />
             </button>
           </div>
         );
-      }
-
-      return <span>{record?.punchIn || "-"}</span>;
+      },
     },
-  },
-
-  {
-    title: "Out Time",
-    dataIndex: "punchOut",
-    key: "punchOut",
-    width: 200,
-    align: "center",
-
-    render: (_, record) => (
-      <span>{record?.punchOut || "-"}</span>
-    ),
-  },
-
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    width: 150,
-    align: "center",
-
-    render: (status) => {
-      const normalizedStatus = String(status || "")
-        .trim()
-        .toUpperCase();
-
-      let displayStatus = status || "-";
-
-      if (
-        normalizedStatus === "IN OFFICE" ||
-        normalizedStatus === "PRESENT" ||
-        normalizedStatus === "FULL_DAY"
-      ) {
-        displayStatus = "IN Office";
-      }
-
-      if (normalizedStatus === "HALF_DAY") {
-        displayStatus = "Half Day";
-      }
-
-      if (normalizedStatus === "ABSENT") {
-        displayStatus = "Absent";
-      }
-
-      const statusClass =
-        normalizedStatus === "ABSENT"
-          ? "absent-status"
-          : normalizedStatus === "HALF_DAY"
-          ? "half-day-status"
-          : "";
-
-      return (
-        <span
-          className={`attendance-status ${statusClass}`}
-        >
-          {displayStatus}
-        </span>
-      );
-    },
-  },
-
-  {
-    title: "Action",
-    key: "Action",
-    width: 180,
-    fixed: "right",
-    align: "center",
-
-    render: (_, record) => {
-      const menuItems = [];
-
-      if (record?.punchIn) {
-        menuItems.push({
-          key: "1",
-          label: "Remove Punch In",
-          onClick: () =>
-            removePunchIn(record?.employeeId),
-        });
-
-        menuItems.push({
-          key: "2",
-          label: "Change Punch In Time",
-          onClick: () =>
-            changePunchInTime(record),
-        });
-      }
-
-      if (record?.punchOut) {
-        menuItems.push({
-          key: "6",
-          label: "Remove Punch Out",
-          onClick: () =>
-            removePunchOut(record?.employeeId),
-        });
-      }
-
-      menuItems.push({
-        key: "3",
-        label: "Mark Present",
-        onClick: () =>
-          markPresent(record?.employeeId),
-      });
-
-      menuItems.push({
-        key: "4",
-        label: "Mark Absent",
-        onClick: () =>
-          markAbsent(record?.employeeId),
-      });
-
-      menuItems.push({
-        key: "5",
-        label: "Mark Half Day",
-        onClick: () =>
-          markHalfDay(record?.employeeId),
-      });
-
-      return (
-        <div className="dropdown_parent">
-          <Dropdown
-            menu={{
-              items: menuItems,
-            }}
-            trigger={["click"]}
-            placement="bottomRight"
-          >
-            <button
-              type="button"
-              className="three-dot-btn"
-            >
-              <HiOutlineDotsHorizontal />
-            </button>
-          </Dropdown>
-
-          <button
-            type="button"
-            className="calendar-btn"
-            onClick={() =>
-              handleCalendar(record)
-            }
-          >
-            <SlCalender />
-          </button>
-        </div>
-      );
-    },
-  },
-];
+  ];
 
   // ============================================================
   // JSX
@@ -1765,74 +1793,71 @@ const columns = [
               </div>
 
             </div>
-<div className="btn-group">
-  <button
-    type="button"
-    className={`count ${
-      attendanceFilter === "all" ? "active" : ""
-    }`}
-    onClick={() => handleAttendanceFilter("all")}
-  >
-    Total Employee:
-    <span>{totalEmployees}</span>
-  </button>
+            <div className="btn-group">
+              <button
+                type="button"
+                className={`count ${attendanceFilter === "all" ? "active" : ""
+                  }`}
+                onClick={() => handleAttendanceFilter("all")}
+              >
+                Total Employee:
+                <span>{totalEmployees}</span>
+              </button>
 
-  <button
-    type="button"
-    className={`count ${
-      attendanceFilter === "present" ? "active" : ""
-    }`}
-    onClick={() => handleAttendanceFilter("present")}
-  >
-    Present Employee:
-    <span>{presentEmployees}</span>
-  </button>
+              <button
+                type="button"
+                className={`count ${attendanceFilter === "present" ? "active" : ""
+                  }`}
+                onClick={() => handleAttendanceFilter("present")}
+              >
+                Present Employee:
+                <span>{presentEmployees}</span>
+              </button>
 
-  <button
-    type="button"
-    className={`count ${
-      attendanceFilter === "absent" ? "active" : ""
-    }`}
-    onClick={() => handleAttendanceFilter("absent")}
-  >
-    Absent Employee:
-    <span>{absentEmployees}</span>
-  </button>
+              <button
+                type="button"
+                className={`count ${attendanceFilter === "absent" ? "active" : ""
+                  }`}
+                onClick={() => handleAttendanceFilter("absent")}
+              >
+                Absent Employee:
+                <span>{absentEmployees}</span>
+              </button>
 
-  {/* KEEP THESE TWO BUTTONS AS THEY ARE */}
-  <button
-    type="button"
-    className="count"
-    onClick={handleAddPreviousAttendance}
-  >
-    Add Previous Attendance<SlCalender />
-  </button>
+              {/* KEEP THESE TWO BUTTONS AS THEY ARE */}
+              <button
+                type="button"
+                className="count"
+                onClick={handleAddPreviousAttendance}
+              >
+                Add Previous Attendance<SlCalender />
+              </button>
 
-  <button
-    type="button"
-    className="count"
-    onClick={handleViewPreviousAttendance}
-  >
-    View Previous Attendance<SlCalender />
-  </button>
-</div>
+              <button
+                type="button"
+                className="count"
+                onClick={handleViewPreviousAttendance}
+              >
+                View Previous Attendance<SlCalender />
+              </button>
+            </div>
           </div>
 
-<Table
-  columns={columns}
-  dataSource={filteredAttendanceData}
-  loading={loader}
-  bordered
-  scroll={{ x: "max-content" }}
-  pagination={{
-    pageSize: 10  
-  }}
-  rowClassName={(_, index) =>
-    index % 2 === 0
-      ? "table-row-light"
-      : "table-row-dark"
-  }
-/>
+          <Table
+            columns={columns}
+            dataSource={filteredAttendanceData}
+            loading={loader}
+            bordered
+            scroll={{ x: "max-content" }}
+            pagination={{
+              pageSize: 10
+            }}
+            rowClassName={(_, index) =>
+              index % 2 === 0
+                ? "table-row-light"
+                : "table-row-dark"
+            }
+          />
         </>
       )}
 
