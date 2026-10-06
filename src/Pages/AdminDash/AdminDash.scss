@@ -1,11 +1,23 @@
 .admindash-parent {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  gap: 20px;
+width: 100%;
+height: 100%;
+display: flex;
+gap: 20px;
+
+overflow-y: auto;
+
+/* Hide scrollbar */
+&::-webkit-scrollbar {
+  display: none;
+
+
+scrollbar-width: none; 
+-ms-overflow-style: none; 
+}
   //main left side data
   .left-side {
     width: 80%;
+    height:100%;
     display: flex;
     flex-direction: column;
     gap: 20px;
