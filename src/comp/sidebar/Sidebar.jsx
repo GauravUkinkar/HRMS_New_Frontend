@@ -1,6 +1,6 @@
 import "./Sidebar.scss";
 
-import logo from "../../assets/logo.png";
+import logo from "../../assets/blacklogo.png";
 import logo2 from "../../assets/logopan.webp";
 
 import { IoDocuments } from "react-icons/io5";
@@ -277,7 +277,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
   if (roleLoading) {
     return (
       <div
-        className="sidebar_parent"
+        className={`sidebar_parent ${active ? "expanded" : "collapsed"}`}
         onClick={(e) => {
           e.stopPropagation();
           setActive(true);
@@ -306,7 +306,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
 
   return (
     <div
-      className="sidebar_parent"
+      className={`sidebar_parent ${active ? "expanded" : "collapsed"}`}
       onClick={(e) => {
         e.stopPropagation();
         setActive(true);
@@ -380,13 +380,20 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
         </div>
       </div>
 
-      <Link className="logout" to="/login" onClick={logout}>
-        <span>
-          <LuLogOut />
-        </span>
 
-        <span className="nav_text">Logout</span>
-      </Link>
+<div className="bottom_section" >
+  <Link className="logout" to="/login" onClick={logout}>
+    <span>
+      <LuLogOut />
+    </span>
+
+    <span className="nav_text">Logout</span>
+  </Link>
+
+  <div className="version">
+    <span>Version 1.0</span>
+  </div>
+</div>
     </div>
   );
 };
