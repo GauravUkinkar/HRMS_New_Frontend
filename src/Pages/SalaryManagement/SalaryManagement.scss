@@ -18,6 +18,9 @@
     gap: 20px;
 
     box-sizing: border-box;
+    background-color: var(--accent2);
+    padding: 10px 8px;
+    border-radius: 5px;
 
 
     h2 {
@@ -27,7 +30,7 @@
 
       font-weight: 700;
 
-      color: whhite;
+      color: white;
 
       white-space: nowrap;
     }

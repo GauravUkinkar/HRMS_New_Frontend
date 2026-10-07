@@ -7,12 +7,11 @@
   // GAP IS USED INSTEAD OF MARGIN
   gap: 20px;
 
-
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
+background-color: var(--accent2);
     gap: 20px;
 
     h2 {
@@ -24,7 +23,7 @@
     .btn-group {
       display: flex;
       gap: 10px;
-      .manage-leaves{
+      .manage-leaves {
         background-color: #0b8b95;
         color: white;
         padding: 8px 16px;
@@ -32,14 +31,11 @@
         border-radius: 5px;
         cursor: pointer;
         border: 1px solid var(--accent2);
-        &:hover{
-background-color: white;
-color: #0b8b95;
-transition: var(--trans);
-
+        &:hover {
+          background-color: white;
+          color: #0b8b95;
+          transition: var(--trans);
         }
-
-
       }
 
       .count,
@@ -326,7 +322,6 @@ transition: var(--trans);
     }
   }
 }
-
 
 // =====================================================
 // RESPONSIVE

@@ -8,10 +8,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: var(--accent2);
+    padding: 10px 8px;
+    border-radius: 5px;
 
     h2 {
       font-size: 20px;
       font-weight: 700;
+      color: white;
     }
 
     .btn-group {
@@ -53,6 +57,8 @@
 
         &:hover {
           background: #0a7a85;
+          color: white;
+          transition: var(--trans);
         }
       }
     }
