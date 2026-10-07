@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainPanel from "../../comp/MainPanel/MainPanel";
-import { Space, Table } from "antd";
+import { Space, Table, Input, Button } from "antd";
 import axios from "axios";
 import { FaEye } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
@@ -21,6 +21,8 @@ const UserList = () => {
   const [showDeletedUsers, setShowDeletedUsers] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const searchInput = useRef(null);
+
   const formatUsers = (response) => {
     const data = Array.isArray(response)
       ? response
@@ -29,14 +31,26 @@ const UserList = () => {
         : [];
 
     return data.map((item, index) => {
-      const user = item?.data || item || {};
+      const currentUser = item?.data || item || {};
 
       return {
-        key: user.uid || user.uId || user.userId || index + 1,
-        email: user.email || "N/A",
-        role: user.role || "N/A",
-        isDeleted: user.isDeleted ?? null,
-        uid: user.uid || "N/A",
+        key:
+          currentUser.uid ||
+          currentUser.uId ||
+          currentUser.userId ||
+          index + 1,
+
+        email: currentUser.email || "N/A",
+
+        role: currentUser.role || "N/A",
+
+        isDeleted: currentUser.isDeleted ?? null,
+
+        uid:
+          currentUser.uid ||
+          currentUser.uId ||
+          currentUser.userId ||
+          "N/A",
       };
     });
   };
@@ -45,22 +59,25 @@ const UserList = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(`${BASE_URL}Admin/GetAllUser`, {
-        withCredentials: true,
-      });
-
-      console.log("Active Users Response:", res.data);
+      const res = await axios.get(
+        `${BASE_URL}Admin/GetAllUser`,
+        {
+          withCredentials: true,
+        }
+      );
 
       const users = formatUsers(res.data);
 
-      console.log("Formatted Active Users:", users);
-
       setAllUser(users);
     } catch (error) {
-      console.error("Get Active User Error:", error.response?.data || error);
+      console.error(
+        "Get Active User Error:",
+        error?.response?.data || error
+      );
 
       toast.error(
-        error.response?.data?.message || "Failed to load active users",
+        error?.response?.data?.message ||
+          "Failed to load active users"
       );
     } finally {
       setLoading(false);
@@ -75,21 +92,21 @@ const UserList = () => {
         `${BASE_URL}Admin/getAllDeletedUsers/deleted`,
         {
           withCredentials: true,
-        },
+        }
       );
-
-      console.log("Deleted Users Full Response:", res.data);
 
       const deletedUsers = formatUsers(res.data);
 
-      console.log("Formatted Deleted Users:", deletedUsers);
-
       setAllUser(deletedUsers);
     } catch (error) {
-      console.error("Get Deleted Users Error:", error.response?.data || error);
+      console.error(
+        "Get Deleted Users Error:",
+        error?.response?.data || error
+      );
 
       toast.error(
-        error.response?.data?.message || "Failed to load deleted users",
+        error?.response?.data?.message ||
+          "Failed to load deleted users"
       );
 
       setAllUser([]);
@@ -106,6 +123,46 @@ const UserList = () => {
   const handleDeletedUsers = () => {
     setShowDeletedUsers(true);
     getDeletedUsers();
+  };
+
+  const deleteUser = async (uid) => {
+    try {
+      if (!uid) {
+        toast.error("User ID is missing");
+        return;
+      }
+
+      const response = await axios.delete(
+        `${BASE_URL}Admin/deleteUserByUserId/${uid}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (
+        response?.status >= 200 &&
+        response?.status < 300
+      ) {
+        toast.success("User deleted successfully");
+
+        setAllUser((prevUsers) =>
+          prevUsers.filter(
+            (currentUser) =>
+              String(currentUser.uid) !== String(uid)
+          )
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Delete User Error:",
+        error?.response?.data || error
+      );
+
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to delete user"
+      );
+    }
   };
 
   const handleDeleteUser = (uid) => {
@@ -170,72 +227,138 @@ const UserList = () => {
         autoClose: false,
         closeOnClick: false,
         closeButton: false,
-      },
+      }
     );
   };
 
-  const deleteUser = async (uid) => {
-    try {
-      console.log("Deleting User UID:", uid);
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+      close,
+    }) => (
+      <div
+        style={{
+          padding: 8,
+          width: 220,
+        }}
+        onKeyDown={(event) =>
+          event.stopPropagation()
+        }
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0] || ""}
+          onChange={(event) => {
+            setSelectedKeys(
+              event.target.value
+                ? [event.target.value]
+                : []
+            );
+          }}
+          onPressEnter={() => {
+            confirm();
+          }}
+          allowClear
+          style={{
+            marginBottom: 8,
+            display: "block",
+          }}
+        />
 
-      const response = await axios.delete(
-        `${BASE_URL}Admin/deleteUserByUserId/${uid}`,
-        {
-          withCredentials: true,
-        },
-      );
+        <Space>
+          <Button
+            type="primary"
+            icon={<SearchOutlined />}
+            size="small"
+            onClick={() => confirm()}
+          >
+            Search
+          </Button>
 
-      console.log("Delete User Response:", response.data);
+          <Button
+            size="small"
+            onClick={() => {
+              clearFilters?.();
 
-      toast.success("User deleted successfully");
+              confirm({
+                closeDropdown: true,
+              });
+            }}
+          >
+            Reset
+          </Button>
 
-      setAllUser((prevUsers) => prevUsers.filter((user) => user.uid !== uid));
-    } catch (error) {
-      console.error("Delete User Error:", error.response?.data || error);
+          <Button
+            type="link"
+            size="small"
+            onClick={() => close()}
+          >
+            Close
+          </Button>
+        </Space>
+      </div>
+    ),
 
-      toast.error(error.response?.data?.message || "Failed to delete user");
-    }
-  };
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered
+            ? "#1677ff"
+            : undefined,
+        }}
+      />
+    ),
 
-  useEffect(() => {
-    getAllUser();
-  }, []);
+    onFilter: (value, record) =>
+      String(record?.[dataIndex] || "")
+        .toLowerCase()
+        .includes(
+          String(value || "").toLowerCase()
+        ),
+
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => {
+          searchInput.current?.select();
+        }, 100);
+      }
+    },
+  });
 
   const columns = [
     {
-      title: (
-        <>
-          User ID <SearchOutlined />
-        </>
-      ),
+      title: "User ID",
       dataIndex: "uid",
       key: "uid",
       width: 150,
       fixed: "left",
+      ...getColumnSearchProps("uid"),
+
+      render: (uid) => uid || "N/A",
     },
 
-    ...(!showDeletedUsers ? [] : []),
-
     {
-      title: (
-        <>
-          Email <SearchOutlined />
-        </>
-      ),
+      title: "Email",
       dataIndex: "email",
       key: "email",
       width: 260,
+      ...getColumnSearchProps("email"),
+
+      render: (email) => email || "N/A",
     },
 
     {
-      title: (
-        <>
-          Role <SearchOutlined />
-        </>
-      ),
+      title: "Role",
       dataIndex: "role",
       key: "role",
-      width: 260,
+      width: 180,
+      ...getColumnSearchProps("role"),
+
+      render: (role) => role || "N/A",
     },
 
     {
@@ -246,11 +369,16 @@ const UserList = () => {
 
       render: (_, record) => {
         const isActive =
-          record.isDeleted === false || record.isDeleted === "false";
+          record?.isDeleted === false ||
+          record?.isDeleted === "false";
 
         return (
           <span
-            className={isActive ? "user-status active" : "user-status inactive"}
+            className={
+              isActive
+                ? "user-status active"
+                : "user-status inactive"
+            }
           >
             {isActive ? "Active" : "Inactive"}
           </span>
@@ -270,7 +398,11 @@ const UserList = () => {
               <Space size="middle">
                 <DeleteOutlined
                   className="delete"
-                  onClick={() => handleDeleteUser(record.uid)}
+                  onClick={() =>
+                    handleDeleteUser(
+                      record?.uid
+                    )
+                  }
                 />
               </Space>
             ),
@@ -279,15 +411,28 @@ const UserList = () => {
       : []),
   ];
 
+  useEffect(() => {
+    getAllUser();
+  }, []);
+
   return (
     <>
       <MainPanel
         breadcrumbs={[
-          { label: "Dashboard", link: "/dashboard" },
-          { label: "User List" },
+          {
+            label: "Dashboard",
+            link: "/dashboard",
+          },
+          {
+            label: "User List",
+          },
         ]}
         title={
-          String(user?.role || user?.crmRole || "")
+          String(
+            user?.role ||
+              user?.crmRole ||
+              ""
+          )
             .trim()
             .toUpperCase() === "ADMIN"
             ? "Admin Dashboard"
@@ -301,19 +446,30 @@ const UserList = () => {
         >
           ← Back
         </button>
+
         <div className="user-list">
           <div className="page-header">
+            <h2>
+              {showDeletedUsers
+                ? "Deleted Users"
+                : "All Users"}
+            </h2>
 
-            <h2>{showDeletedUsers ? "Deleted Users" : "All Users"}</h2>
             <div className="btn-group">
               <div className="count">
                 Total Number Of Users:
-                <span>{alluser.length}</span>
+                <span>
+                  {alluser.length}
+                </span>
               </div>
 
               <button
                 type="button"
-                className={!showDeletedUsers ? "active" : ""}
+                className={
+                  !showDeletedUsers
+                    ? "active"
+                    : ""
+                }
                 onClick={handleActiveUsers}
               >
                 <span>
@@ -324,7 +480,11 @@ const UserList = () => {
 
               <button
                 type="button"
-                className={showDeletedUsers ? "active" : ""}
+                className={
+                  showDeletedUsers
+                    ? "active"
+                    : ""
+                }
                 onClick={handleDeletedUsers}
               >
                 <span>
@@ -335,7 +495,6 @@ const UserList = () => {
             </div>
           </div>
 
-          {/* USER TABLE */}
           <Table
             columns={columns}
             dataSource={alluser}
@@ -345,11 +504,26 @@ const UserList = () => {
               x: "max-content",
             }}
             pagination={{
-              pageSize: 20,
+              defaultCurrent: 1,
+              defaultPageSize: 10,
               showSizeChanger: true,
+              pageSizeOptions: [
+                "10",
+                "20",
+                "50",
+              ],
+              showQuickJumper: true,
+
+              showTotal: (
+                total,
+                range
+              ) =>
+                `${range[0]}-${range[1]} of ${total} users`,
             }}
             rowClassName={(_, index) =>
-              index % 2 === 0 ? "table-row-light" : "table-row-dark"
+              index % 2 === 0
+                ? "table-row-light"
+                : "table-row-dark"
             }
           />
         </div>

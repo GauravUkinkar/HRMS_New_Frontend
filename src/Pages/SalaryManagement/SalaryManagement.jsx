@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./SalaryManagement.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
-import { Avatar, Space, Table } from "antd";
+import { Avatar, Space, Table, Input, Button } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { FaEye } from "react-icons/fa";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { FaPlus } from "react-icons/fa6";
@@ -17,7 +18,8 @@ const SalaryManagement = () => {
   const { user } = useContext(UserContext);
   const [salaryData, setSalaryData] = useState([]);
   const [loader, setLoader] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   // ==========================================
   // FILTER STATES
   // ==========================================
@@ -250,14 +252,14 @@ const SalaryManagement = () => {
 
           return (
             String(data?.employeeId || "").trim() ===
-              String(employeeId).trim() &&
+            String(employeeId).trim() &&
             String(data?.year || "").trim() === String(year).trim() &&
             String(data?.month || "")
               .trim()
               .toLowerCase() ===
-              String(selectedMonth || "")
-                .trim()
-                .toLowerCase()
+            String(selectedMonth || "")
+              .trim()
+              .toLowerCase()
           );
         }) ||
         salaryList.find((item) => {
@@ -520,16 +522,15 @@ const SalaryManagement = () => {
   // ==========================================
   // FILTER SALARY DATA
   // ==========================================
-
   const filteredSalaryData = salaryData.filter((salary) => {
     const monthMatch =
       !selectedMonth ||
-      String(salary.month).trim().toLowerCase() ===
-        selectedMonth.trim().toLowerCase();
+      String(salary.month || "").trim().toLowerCase() ===
+      selectedMonth.trim().toLowerCase();
 
     const yearMatch =
       !selectedYear ||
-      String(salary.year).trim() === String(selectedYear).trim();
+      String(salary.year || "").trim() === String(selectedYear).trim();
 
     return monthMatch && yearMatch;
   });
@@ -538,42 +539,100 @@ const SalaryManagement = () => {
   // CLEAR FILTERS
   // ==========================================
 
-  const clearFilters = () => {
-    setSelectedMonth("");
-    setSelectedYear("");
-  };
+ const clearFilters = () => {
+  setSelectedMonth("");
+  setSelectedYear("");
+  setCurrentPage(1);
+};
 
   // ==========================================
   // TABLE COLUMNS
   // ==========================================
+ const getColumnSearchProps = (dataIndex) => ({
+  filterDropdown: ({
+    setSelectedKeys,
+    selectedKeys,
+    confirm,
+    clearFilters,
+  }) => (
+    <div
+      style={{
+        padding: 8,
+      }}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
+      <Input
+        placeholder={`Search ${dataIndex}`}
+        value={selectedKeys[0] || ""}
+        onChange={(e) => {
+          setSelectedKeys(e.target.value ? [e.target.value] : []);
+        }}
+        onPressEnter={() => {
+          confirm();
+        }}
+        style={{
+          width: 200,
+          marginBottom: 8,
+          display: "block",
+        }}
+      />
 
+      <Space>
+        <Button
+          type="primary"
+          onClick={() => confirm()}
+          icon={<SearchOutlined />}
+          size="small"
+          style={{
+            width: 90,
+          }}
+        >
+          Search
+        </Button>
+
+        <Button
+          onClick={() => {
+            clearFilters?.();
+            confirm();
+          }}
+          size="small"
+          style={{
+            width: 90,
+          }}
+        >
+          Reset
+        </Button>
+      </Space>
+    </div>
+  ),
+
+  filterIcon: (filtered) => (
+    <SearchOutlined
+      style={{
+        color: filtered ? "#1677ff" : undefined,
+      }}
+    />
+  ),
+
+  onFilter: (value, record) =>
+    String(record?.[dataIndex] ?? "")
+      .toLowerCase()
+      .includes(String(value).toLowerCase()),
+});
   const columns = [
     {
       title: "Employee Name",
-      search: true,
       dataIndex: "employeeName",
       key: "employeeName",
-      width: 220,
-      fixed: "left",
-
-      render: (name) => {
-        const employeeName = name || "N/A";
-
-        const nameParts = employeeName.trim().split(" ");
-
-        const initials =
-          nameParts.length > 1
-            ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`
-            : nameParts[0]?.[0] || "?";
-
-        return (
-          <Space>
-            <Avatar className="avatar">{initials.toUpperCase()}</Avatar>
-
-            <span>{employeeName}</span>
-          </Space>
-        );
-      },
+      ...getColumnSearchProps("employeeName"),
+      render: (text, record) => (
+        <div className="employee-name">
+          <Avatar>
+            {record?.employeeName?.charAt(0)?.toUpperCase()}
+          </Avatar>
+          <span>{text}</span>
+        </div>
+      ),
     },
 
     {
@@ -581,7 +640,7 @@ const SalaryManagement = () => {
       dataIndex: "employeeId",
       key: "employeeId",
       width: 160,
-      search: true,
+      ...getColumnSearchProps("employeeId"),
     },
 
     {
@@ -589,7 +648,7 @@ const SalaryManagement = () => {
       dataIndex: "month",
       key: "month",
       width: 130,
-      search: true,
+      ...getColumnSearchProps("month"),
     },
 
     {
@@ -597,23 +656,25 @@ const SalaryManagement = () => {
       dataIndex: "year",
       key: "year",
       width: 100,
-      search: true,
+      ...getColumnSearchProps("year"),
     },
 
     {
-      title: "Gross Salary",
-      dataIndex: "grossSalary",
-      key: "grossSalary",
-      width: 150,
-
-      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
-    },
+  title: "Gross Salary",
+  dataIndex: "grossSalary",
+  key: "grossSalary",
+  width: 150,
+  ...getColumnSearchProps("grossSalary"),
+  render: (value) =>
+    `₹ ${Number(value || 0).toLocaleString("en-IN")}`,
+},
 
     {
       title: "Total Working Days",
       dataIndex: "totalWorkingDay",
       key: "totalWorkingDay",
       width: 180,
+      ...getColumnSearchProps("totalWorkingDay"),
     },
 
     {
@@ -621,6 +682,7 @@ const SalaryManagement = () => {
       dataIndex: "presentDay",
       key: "presentDay",
       width: 150,
+      ...getColumnSearchProps("presentDay"),
     },
 
     {
@@ -628,6 +690,7 @@ const SalaryManagement = () => {
       dataIndex: "absentDays",
       key: "absentDays",
       width: 150,
+      ...getColumnSearchProps("absentDays"),
     },
 
     {
@@ -635,7 +698,7 @@ const SalaryManagement = () => {
       dataIndex: "lop",
       key: "lop",
       width: 140,
-
+      ...getColumnSearchProps("lop"),
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
@@ -644,7 +707,7 @@ const SalaryManagement = () => {
       dataIndex: "da",
       key: "da",
       width: 180,
-
+      ...getColumnSearchProps("da"),
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
@@ -653,6 +716,7 @@ const SalaryManagement = () => {
       dataIndex: "employeePf",
       key: "employeePf",
       width: 150,
+      ...getColumnSearchProps("employeePf"),
 
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
@@ -662,25 +726,27 @@ const SalaryManagement = () => {
       dataIndex: "employerPf",
       key: "employerPf",
       width: 150,
+      ...getColumnSearchProps("employerPf"),
 
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
-    {
-      title: "Employee ESIC",
-      dataIndex: "employeeEsic",
-      key: "employeeEsic",
-      width: 160,
-
-      render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
-    },
+   {
+  title: "Employee ESIC",
+  dataIndex: "employeeEsic",
+  key: "employeeEsic",
+  width: 160,
+  ...getColumnSearchProps("employeeEsic"),
+  render: (value) =>
+    `₹ ${Number(value || 0).toLocaleString("en-IN")}`,
+},
 
     {
       title: "Advance Salary",
       dataIndex: "salaryAdvance",
       key: "salaryAdvance",
       width: 170,
-
+      ...getColumnSearchProps("salaryAdvance"),
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
@@ -689,6 +755,7 @@ const SalaryManagement = () => {
       dataIndex: "otherDiduction",
       key: "otherDiduction",
       width: 170,
+      ...getColumnSearchProps("otherDiduction"),
 
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
@@ -698,6 +765,7 @@ const SalaryManagement = () => {
       dataIndex: "otherAllowance",
       key: "otherAllowance",
       width: 170,
+      ...getColumnSearchProps("otherAllowance"),
 
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
@@ -707,6 +775,7 @@ const SalaryManagement = () => {
       dataIndex: "professionalTax",
       key: "professionalTax",
       width: 170,
+      ...getColumnSearchProps("professionalTax"),
 
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
@@ -716,20 +785,23 @@ const SalaryManagement = () => {
       dataIndex: "insuranceCorporation",
       key: "insuranceCorporation",
       width: 200,
+      ...getColumnSearchProps("insuranceCorporation"),
 
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
-    {
-      title: "Net Salary",
-      dataIndex: "netSalary",
-      key: "netSalary",
-      width: 150,
-
-      render: (value) => (
-        <strong>₹ {Number(value).toLocaleString("en-IN")}</strong>
-      ),
-    },
+   {
+  title: "Net Salary",
+  dataIndex: "netSalary",
+  key: "netSalary",
+  width: 150,
+  ...getColumnSearchProps("netSalary"),
+  render: (value) => (
+    <strong>
+      ₹ {Number(value || 0).toLocaleString("en-IN")}
+    </strong>
+  ),
+},
 
     // ==========================================
     // ACTIONS
@@ -876,9 +948,17 @@ const SalaryManagement = () => {
             x: "max-content",
           }}
           pagination={{
-            pageSize: 5,
+            current: currentPage,
+            pageSize: pageSize,
+            total: filteredSalaryData.length,
             showSizeChanger: true,
-            pageSizeOptions: ["5", "10", "20", "50"],
+            pageSizeOptions: [ "10", "20", "50"],
+            onChange: (page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            },
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} of ${total} records`,
           }}
           rowClassName={(_, index) =>
             index % 2 === 0 ? "table-row-light" : "table-row-dark"
