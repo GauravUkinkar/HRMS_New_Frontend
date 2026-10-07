@@ -13,28 +13,37 @@
     align-items: center;
 background-color: var(--accent2);
     gap: 20px;
+    padding: 10px 8px;
+    border-radius: 5px;
 
     h2 {
       font-size: 28px;
       font-weight: 700;
-      margin: 0;
+      color: white;
     }
 
     .btn-group {
       display: flex;
       gap: 10px;
       .manage-leaves {
-        background-color: #0b8b95;
-        color: white;
+        background-color: white;
+        color: var(--accent2);
         padding: 8px 16px;
         font-weight: 700;
         border-radius: 5px;
         cursor: pointer;
         border: 1px solid var(--accent2);
+        span{
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+      
         &:hover {
-          background-color: white;
-          color: #0b8b95;
+           background: #0a7a85;;
+          color: white;
           transition: var(--trans);
+         
         }
       }
 

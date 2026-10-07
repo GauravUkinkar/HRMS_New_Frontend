@@ -6,6 +6,7 @@ import "./LeaveManagement.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { UserContext } from "../../../Context";
 import { useNavigate } from "react-router-dom";
+import { FaPlus } from "react-icons/fa";
 
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
@@ -472,7 +473,7 @@ const LeaveManagement = () => {
               className="manage-leaves"
               onClick={() => navigate("/addLeave")}
             >
-              <span>Manage Leaves</span>
+              <span>Manage Leaves<FaPlus /></span>
             </div>
 
             <div
