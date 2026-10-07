@@ -246,6 +246,53 @@ const Payslip = () => {
       3
     )} ${year}`.toUpperCase();
   };
+  const getPreviousMonth = (month, year) => {
+  if (!month || !year) {
+    return "-";
+  }
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  let monthIndex;
+
+  // If API sends month as number
+  if (!Number.isNaN(Number(month)) && Number(month) >= 1 && Number(month) <= 12) {
+    monthIndex = Number(month) - 1;
+  } else {
+    // If API sends month as name
+    monthIndex = monthNames.findIndex(
+      (item) =>
+        item.toLowerCase() === String(month).trim().toLowerCase()
+    );
+  }
+
+  if (monthIndex === -1) {
+    return "-";
+  }
+
+  const previousMonthIndex =
+    monthIndex === 0 ? 11 : monthIndex - 1;
+
+  const previousYear =
+    monthIndex === 0 ? Number(year) - 1 : Number(year);
+
+  return `${monthNames[previousMonthIndex]
+    .substring(0, 3)
+    .toUpperCase()} ${previousYear}`;
+};
 
   const formatPayDate = () => {
     const payDate =
@@ -530,14 +577,14 @@ const Payslip = () => {
               />
             </div>
 
-            <div className="month">
-              <h3>
-                {formatMonth(
-                  payslip?.month,
-                  payslip?.year
-                )}
-              </h3>
-            </div>
+<div className="month">
+  <h3>
+    {getPreviousMonth(
+      payslip?.month,
+      payslip?.year
+    )}
+  </h3>
+</div>
           </div>
 
           <div className="summary">

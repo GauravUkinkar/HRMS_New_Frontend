@@ -11,6 +11,9 @@ import Leave_details from "./Pages/LeaveManagement/Leave_details";
 const Payslip = lazy(() =>
   import("./Pages/Payslip/Payslip")
 );
+const AddLeave = lazy(() =>
+  import("./Pages/LeaveManagement/AddLeave")
+);
 
 const EmpList = lazy(() =>
   import("./Pages/EmpList/EmpList")
@@ -162,6 +165,13 @@ export const routes = [
     name: "Viewdoc",
     path: "/Viewdoc",
     comp: Viewdoc,
+
+  },
+    {
+    name: "AddLeave",
+    path: "/addLeave",
+    comp: AddLeave,
+    adminonly:true,
 
   },
 

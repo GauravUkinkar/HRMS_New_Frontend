@@ -5,16 +5,20 @@ import axios from "axios";
 import "./LeaveManagement.scss";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { UserContext } from "../../../Context";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const LeaveManagement = () => {
+  const navigate = useNavigate();
   const [leaveData, setLeaveData] = useState([]);
   const [statusFilter, setStatusFilter] = useState(null);
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
   const searchInput = useRef(null);
   const { user } = useContext(UserContext);
+
+  
   const normalizeStatus = (status) => {
     if (!status) {
       return "Pending";
@@ -464,6 +468,13 @@ const LeaveManagement = () => {
           <h2>Leave Management</h2>
 
           <div className="btn-group">
+            <div
+              className="manage-leaves"
+              onClick={() => navigate("/addLeave")}
+            >
+              <span>Manage Leaves</span>
+            </div>
+
             <div
               className={`pending ${
                 statusFilter === "Pending" ? "active-filter" : ""
