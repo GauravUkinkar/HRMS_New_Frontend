@@ -1372,28 +1372,38 @@
   box-sizing: border-box;
 }
 
-.monthly-status.full-day-status {
-  min-width: auto;
-  padding: 0;
+.monthly-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
 
-  background: transparent;
+.full-day-status {
+  color: #15803d;
+  background: #dcfce7;
+  padding: 3px 10px;
+  border-radius: 5px;
+}
+
+.half-day-status {
+  color: #d97706;
+  background: #fef3c7;
+  padding: 5px 20px;
+  border-radius: 5px;
+}
+
+.absent-status {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.in-office-status {
   color: #008c9e;
-
-  border-radius: 0;
-}
-
-.monthly-status.half-day-status {
-  background: #fff3e0;
-  color: #f57c00;
-
-  border-radius: 16px;
-}
-
-.monthly-status.absent-status {
-  background: #fff0f0;
-  color: #e53935;
-
-  border-radius: 16px;
+  background: #e9f8fa;
 }
 
 /* Loading */
@@ -1483,4 +1493,9 @@
   .attendance-filter {
     padding: 13px;
   }
+}
+.admin-punch-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: red;
 }

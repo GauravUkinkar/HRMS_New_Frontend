@@ -97,6 +97,7 @@ const EmployeeDash = () => {
           normalizedStatus === "halfday"
         ) {
           color = "warning";
+          
         }
 
         return <Tag color={color}>{status || "N/A"}</Tag>;
