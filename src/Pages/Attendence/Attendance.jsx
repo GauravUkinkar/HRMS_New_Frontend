@@ -664,121 +664,144 @@ const Attendance = () => {
   // ============================================================
   // PREVIOUS ATTENDANCE COLUMNS
   // ============================================================
+const previousAttendanceColumns = [
+  {
+    title: "Emp Id",
+    dataIndex: "employeeId",
+    key: "employeeId",
+    align: "center",
+  },
 
-  const previousAttendanceColumns = [
-    {
-      title: "Emp Id",
-      dataIndex: "employeeId",
-      key: "employeeId",
-      align: "center",
+  {
+    title: "Employee Name",
+    dataIndex: "employeeName",
+    key: "employeeName",
+    align: "center",
+  },
+
+  {
+    title: "Designation",
+    dataIndex: "employeeDesignation",
+    key: "employeeDesignation",
+    align: "center",
+  },
+
+  {
+    title: "In Time",
+    dataIndex: "punchIn",
+    key: "punchIn",
+    width: 180,
+    align: "center",
+
+    render: (time, record) => {
+      if (!time) {
+        return "-";
+      }
+
+      return (
+        <span>
+          {formatTime12Hour(time)}
+
+          {record?.punchInByAdmin && (
+            <span className="admin-punch-label">
+              {" "}
+              (Admin Punch)
+            </span>
+          )}
+        </span>
+      );
     },
+  },
 
-    {
-      title: "Employee Name",
-      dataIndex: "employeeName",
-      key: "employeeName",
-      align: "center",
+  {
+    title: "Out Time",
+    dataIndex: "punchOut",
+    key: "punchOut",
+    width: 180,
+    align: "center",
+
+    render: (time, record) => {
+      if (!time) {
+        return "-";
+      }
+
+      return (
+        <span>
+          {formatTime12Hour(time)}
+
+          {record?.punchOutByAdmin && (
+            <span className="admin-punch-label">
+              {" "}
+              (Admin Punch)
+            </span>
+          )}
+        </span>
+      );
     },
+  },
 
-    {
-      title: "Designation",
-      dataIndex: "employeeDesignation",
-      key: "employeeDesignation",
-      align: "center",
-    },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    align: "center",
 
-    {
-      title: "In Time",
-      dataIndex: "punchIn",
-      key: "punchIn",
-      width: 150,
-      render: (time, record) => {
-        if (!time) {
-          return "-";
-        }
+    render: (status) => {
+      const normalizedStatus = String(status || "")
+        .trim()
+        .toUpperCase();
 
+      if (
+        normalizedStatus === "FULL_DAY" ||
+        normalizedStatus === "PRESENT"
+      ) {
         return (
-          <span>
-            {time}
-
-            {record?.punchInByAdmin && (
-              <span className="admin-punch-label">
-                {" "}
-                (Admin Punch)
-              </span>
-            )}
+          <span className="attendance-status full-day-status">
+            Full Day
           </span>
         );
-      },
-    },
+      }
 
-    {
-      title: "Out Time",
-      dataIndex: "punchOut",
-      key: "punchOut",
-      width: 150,
-      render: (time, record) => {
-        if (!time) {
-          return "-";
-        }
-
+      if (normalizedStatus === "HALF_DAY") {
         return (
-          <span>
-            {time}
-
-            {record?.punchOutByAdmin && (
-              <span className="admin-punch-label">
-                {" "}
-                (Admin Punch)
-              </span>
-            )}
+          <span className="attendance-status half-day-status">
+            Half Day
           </span>
         );
-      },
-    },
+      }
 
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      align: "center",
-
-      render: (status) => {
-        const normalizedStatus = String(status || "")
-          .trim()
-          .toUpperCase();
-
+      if (normalizedStatus === "ABSENT") {
         return (
-          <span
-            className={`attendance-status ${normalizedStatus === "HALF_DAY"
-              ? "half-day-status"
-              : normalizedStatus === "ABSENT"
-                ? "absent-status"
-                : ""
-              }`}
-          >
-            {status || "-"}
+          <span className="attendance-status absent-status">
+            Absent
           </span>
         );
-      },
-    },
+      }
 
-    {
-      title: "Action",
-      key: "action",
-      align: "center",
-
-      render: (_, record) => (
-        <button
-          type="button"
-          className="calendar-btn"
-          onClick={() => handleCalendar(record)}
-        >
-          <SlCalender />
-        </button>
-      ),
+      return (
+        <span className="attendance-status">
+          {status || "-"}
+        </span>
+      );
     },
-  ];
+  },
+
+  {
+    title: "Action",
+    key: "action",
+    align: "center",
+
+    render: (_, record) => (
+      <button
+        type="button"
+        className="calendar-btn"
+        onClick={() => handleCalendar(record)}
+      >
+        <SlCalender />
+      </button>
+    ),
+  },
+];
 
   // ============================================================
   // MONTHLY ATTENDANCE COLUMNS
