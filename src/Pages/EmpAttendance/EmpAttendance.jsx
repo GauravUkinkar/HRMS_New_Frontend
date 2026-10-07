@@ -132,33 +132,33 @@ const attendanceData = Array.isArray(response?.data)
           const attendance =
             attendanceMap.get(employeeId);
 
-          let status = "ABSENT";
+         let status = "ABSENT";
 
-          if (attendance) {
-            const rawStatus = String(
-              attendance?.status || ""
-            )
-              .trim()
-              .toUpperCase();
+if (attendance) {
+  const rawStatus = String(
+    attendance?.status || ""
+  )
+    .trim()
+    .toUpperCase();
 
-            if (
-              attendance?.punchIn ||
-              attendance?.punchInByAdmin
-            ) {
-              status = "IN OFFICE";
-            } else if (
-              rawStatus === "HALF_DAY"
-            ) {
-              status = "HALF_DAY";
-            } else if (
-              rawStatus === "PRESENT" ||
-              rawStatus === "FULL_DAY"
-            ) {
-              status = "PRESENT";
-            } else {
-              status = "ABSENT";
-            }
-          }
+  if (rawStatus === "HALF_DAY") {
+    status = "HALF_DAY";
+  } else if (
+    rawStatus === "FULL_DAY" ||
+    rawStatus === "PRESENT"
+  ) {
+    status = "FULL_DAY";
+  } else if (rawStatus === "ABSENT") {
+    status = "ABSENT";
+  } else if (
+    attendance?.punchIn ||
+    attendance?.punchInByAdmin
+  ) {
+    status = "IN OFFICE";
+  } else {
+    status = "ABSENT";
+  }
+}
 
           return {
             key: employeeId || index,
@@ -316,52 +316,43 @@ useEffect(() => {
 
 
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      align: "center",
+  title: "Status",
+  dataIndex: "status",
+  key: "status",
+  align: "center",
 
-      render: (status) => {
-        const normalizedStatus = String(
-          status || ""
-        )
-          .trim()
-          .toUpperCase();
+  render: (status) => {
+    const normalizedStatus = String(status || "")
+      .trim()
+      .toUpperCase();
 
-        let displayStatus = "-";
+    let displayStatus = "-";
+    let statusClass = "";
 
-        if (
-          normalizedStatus === "IN OFFICE" ||
-          normalizedStatus === "PRESENT" ||
-          normalizedStatus === "FULL_DAY"
-        ) {
-          displayStatus = "IN Office";
-        } else if (
-          normalizedStatus === "HALF_DAY"
-        ) {
-          displayStatus = "Half Day";
-        } else if (
-          normalizedStatus === "ABSENT"
-        ) {
-          displayStatus = "Absent";
-        }
+    if (normalizedStatus === "FULL_DAY") {
+      displayStatus = "Full Day";
+      statusClass = "full-day-status";
+    } else if (normalizedStatus === "PRESENT") {
+      displayStatus = "Full Day";
+      statusClass = "full-day-status";
+    } else if (normalizedStatus === "HALF_DAY") {
+      displayStatus = "Half Day";
+      statusClass = "half-day-status";
+    } else if (normalizedStatus === "ABSENT") {
+      displayStatus = "Absent";
+      statusClass = "absent-status";
+    } else if (normalizedStatus === "IN OFFICE") {
+      displayStatus = "IN Office";
+      statusClass = "in-office-status";
+    }
 
-        const statusClass =
-          normalizedStatus === "ABSENT"
-            ? "absent-status"
-            : normalizedStatus === "HALF_DAY"
-            ? "half-day-status"
-            : "";
-
-        return (
-          <span
-            className={`attendance-status ${statusClass}`}
-          >
-            {displayStatus}
-          </span>
-        );
-      },
-    },
+    return (
+      <span className={`attendance-status ${statusClass}`}>
+        {displayStatus}
+      </span>
+    );
+  },
+},
   ];
 
   // ============================================================
