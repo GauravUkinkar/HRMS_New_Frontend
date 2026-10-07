@@ -62,8 +62,6 @@ const EmployeeDash = () => {
       ),
     },
 
-
-
     {
       title: "Status",
       dataIndex: "status",
@@ -279,7 +277,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-        "Unable to punch in. Please try again.",
+          "Unable to punch in. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -389,7 +387,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-        "Unable to punch out. Please try again.",
+          "Unable to punch out. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -647,10 +645,10 @@ const EmployeeDash = () => {
   const getNotificationType = (notification) => {
     return String(
       notification?.type ||
-      notification?.notificationType ||
-      notification?.category ||
-      notification?.module ||
-      "",
+        notification?.notificationType ||
+        notification?.category ||
+        notification?.module ||
+        "",
     )
       .trim()
       .toUpperCase();
@@ -942,17 +940,17 @@ const EmployeeDash = () => {
         (a, b) =>
           new Date(
             b.entryDate ||
-            b.entry_date ||
-            b.startingDate ||
-            b.starting_date ||
-            0,
+              b.entry_date ||
+              b.startingDate ||
+              b.starting_date ||
+              0,
           ) -
           new Date(
             a.entryDate ||
-            a.entry_date ||
-            a.startingDate ||
-            a.starting_date ||
-            0,
+              a.entry_date ||
+              a.startingDate ||
+              a.starting_date ||
+              0,
           ),
       );
 
@@ -992,17 +990,27 @@ const EmployeeDash = () => {
 
       const birthdayData = response?.data?.data || [];
 
-const formattedBirthdays = birthdayData.map((employee) => ({
-  id: employee.uid,
-  name: employee.employeeName || "Unknown",
-  birthday: employee.date
-    ? new Date(employee.date).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-      })
-    : "",
-  designation: employee.designation || "Employee",
-}));
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const formattedBirthdays = birthdayData
+  .filter((employee) => {
+    if (!employee.date) return false;
+
+    const birthdayDate = new Date(employee.date);
+    birthdayDate.setHours(0, 0, 0, 0);
+
+    return birthdayDate >= today;
+  })
+  .map((employee) => ({
+    id: employee.uid,
+    name: employee.employeeName || "Unknown",
+    birthday: new Date(employee.date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+    }),
+    designation: employee.designation || "Employee",
+  }));
 
       setBirthdayEmployees(formattedBirthdays);
     } catch (error) {
@@ -1248,11 +1256,11 @@ const formattedBirthdays = birthdayData.map((employee) => ({
                     <a
                       className="btn2"
                       href={`https://newcrm.diwise.in/login?email=${encodeURIComponent(
-                        user?.email || ""
+                        user?.email || "",
                       )}&password=${encodeURIComponent(
-                        user?.password || ""
+                        user?.password || "",
                       )}&empName=${encodeURIComponent(
-                        user?.employeeName || ""
+                        user?.employeeName || "",
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1336,10 +1344,10 @@ const formattedBirthdays = birthdayData.map((employee) => ({
                         render: (date) =>
                           date
                             ? new Date(date).toLocaleDateString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              })
                             : "--",
                       },
 
@@ -1482,8 +1490,9 @@ const formattedBirthdays = birthdayData.map((employee) => ({
                   ) : (
                     displayedNotifications.map((notification) => (
                       <div
-                        className={`notification-item ${notification?.isRead ? "read" : "unread"
-                          }`}
+                        className={`notification-item ${
+                          notification?.isRead ? "read" : "unread"
+                        }`}
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
                       >
@@ -1501,15 +1510,15 @@ const formattedBirthdays = birthdayData.map((employee) => ({
                           <span className="notification-date">
                             {notification?.createdAt
                               ? new Date(notification.createdAt).toLocaleString(
-                                "en-IN",
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                },
-                              )
+                                  "en-IN",
+                                  {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  },
+                                )
                               : "--"}
                           </span>
                         </div>
@@ -1559,14 +1568,14 @@ const formattedBirthdays = birthdayData.map((employee) => ({
                         <p className="notification-modal-date">
                           {selectedNotification?.createdAt
                             ? new Date(
-                              selectedNotification.createdAt,
-                            ).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
+                                selectedNotification.createdAt,
+                              ).toLocaleString("en-IN", {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
                             : "--"}
                         </p>
 
@@ -1581,8 +1590,6 @@ const formattedBirthdays = birthdayData.map((employee) => ({
                           >
                             Close
                           </button>
-
-
                         </div>
                       </div>
                     </div>
@@ -1733,7 +1740,9 @@ const formattedBirthdays = birthdayData.map((employee) => ({
                       </div>
 
                       {/* Birthday Date */}
-                      <div className="birthday-date">{employee.birthday}</div>
+                      {employee.birthday && (
+                        <div className="birthday-date">{employee.birthday}</div>
+                      )}
                     </div>
                   ))
                 ) : (

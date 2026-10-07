@@ -918,7 +918,19 @@ const AdminDash = () => {
           ? res.data
           : [];
 
-      setBirthday(birthdayData);
+      const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const filteredBirthdayData = birthdayData.filter((employee) => {
+  if (!employee?.date) return false;
+
+  const birthdayDate = new Date(employee.date);
+  birthdayDate.setHours(0, 0, 0, 0);
+
+  return birthdayDate >= today;
+});
+
+setBirthday(filteredBirthdayData);
     } catch (error) {
       console.error("Birthday API Error:", error?.response?.data || error);
 
