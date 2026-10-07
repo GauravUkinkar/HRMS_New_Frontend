@@ -1039,22 +1039,49 @@ const formattedBirthdays = birthdayData
   .filter((employee) => {
     if (!employee.date) return false;
 
-    const birthdayDate = new Date(employee.date);
+    const [day, monthText] = employee.date.split(" ");
+
+    const monthIndex = [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "may",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "oct",
+      "nov",
+      "dec",
+    ].indexOf(monthText.toLowerCase());
+
+    if (monthIndex === -1) return false;
+
+    // Use current year, not birth year
+    const birthdayDate = new Date(
+      today.getFullYear(),
+      monthIndex,
+      Number(day)
+    );
+
     birthdayDate.setHours(0, 0, 0, 0);
 
+    // Only today's and future birthdays
     return birthdayDate >= today;
   })
-  .map((employee) => ({
-    id: employee.uid,
-    name: employee.employeeName || "Unknown",
-    birthday: new Date(employee.date).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-    }),
-    designation: employee.designation || "Employee",
-  }));
+  .map((employee) => {
+    const [day, monthText] = employee.date.split(" ");
 
-      setBirthdayEmployees(formattedBirthdays);
+    return {
+      id: employee.uid,
+      name: employee.employeeName || "Unknown",
+      birthday: `${day} ${monthText.substring(0, 3)}`,
+      designation: employee.designation || "Employee",
+    };
+  });
+
+setBirthdayEmployees(formattedBirthdays);
     } catch (error) {
       console.error("Birthday API Error:", error);
       setBirthdayEmployees([]);
