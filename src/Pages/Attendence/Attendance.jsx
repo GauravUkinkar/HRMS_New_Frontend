@@ -318,69 +318,98 @@ const Attendance = () => {
         }
       });
 
-      const tableData = employees.map((employee, index) => {
-        const employeeId = String(employee?.empId || "").trim();
-        const item = attendanceMap.get(employeeId);
+      const tableData = employees
+        .map((employee, index) => {
+          const employeeId = String(employee?.empId || "").trim();
+          const item = attendanceMap.get(employeeId);
 
-        // IMPORTANT:
-        // Only actual punchIn or admin punchIn means Present.
-        const hasPunchIn = Boolean(item?.punchIn);
-        const hasAdminPunchIn = Boolean(item?.punchInByAdmin);
+          if (!item) {
+            return {
+              key: employeeId || index,
+              employeeId,
+              employeeName: employee?.name?.toUpperCase() || "",
+              employeeDesignation: employee?.designation || "",
+              punchIn: "",
+              punchOut: "",
+              status: "ABSENT",
+              hasPunchIn: false,
+              punchInByAdmin: false,
+              punchOutByAdmin: false,
+            };
+          }
 
-        const punchIn = hasPunchIn ? formatTime12Hour(item.punchIn) : "";
+          const punchInByAdmin = Boolean(item?.punchInByAdmin);
+          const punchOutByAdmin = Boolean(item?.punchOutByAdmin);
 
-        const punchOut = item?.punchOut ? formatTime12Hour(item.punchOut) : "";
+          const punchIn = item?.punchIn
+            ? formatTime12Hour(item.punchIn)
+            : "";
 
-        const apiStatus = String(item?.status || "")
-          .trim()
-          .toUpperCase();
+          const punchOut = item?.punchOut
+            ? formatTime12Hour(item.punchOut)
+            : "";
 
-        let status = "ABSENT";
+          const apiStatus = String(item?.status || "")
+            .trim()
+            .toUpperCase();
 
-        if (apiStatus === "ABSENT") {
-          status = "ABSENT";
-        } else if (apiStatus === "HALF_DAY") {
-          status = "HALF_DAY";
-        } else if (hasPunchIn || hasAdminPunchIn) {
-          status = "IN Office";
-        }
+          let status = "ABSENT";
 
-        return {
-          key: employeeId || index,
+          if (apiStatus === "FULL_DAY") {
+            status = "FULL_DAY";
+          } else if (apiStatus === "HALF_DAY") {
+            status = "HALF_DAY";
+          } else if (apiStatus === "ABSENT") {
+            status = "ABSENT";
+          } else if (punchIn) {
+            status = "IN Office";
+          }
 
-          employeeId,
+          return {
+            key: employeeId || index,
+            employeeId,
+            employeeName:
+              item?.employeeName?.toUpperCase() ||
+              employee?.name?.toUpperCase() ||
+              "",
+            employeeDesignation:
+              item?.employeeDesignation ||
+              item?.designation ||
+              employee?.designation ||
+              "",
+            punchIn,
+            punchOut,
+            status,
+            hasPunchIn: Boolean(item?.punchIn),
+            punchInByAdmin,
+            punchOutByAdmin,
+          };
+        })
+        .sort((a, b) => {
+          if (!a.punchIn && !b.punchIn) return 0;
+          if (!a.punchIn) return 1;
+          if (!b.punchIn) return -1;
 
-          employeeName:
-            item?.employeeName?.toUpperCase() ||
-            employee?.name?.toUpperCase() ||
-            "",
-
-          employeeDesignation:
-            item?.employeeDesignation ||
-            item?.designation ||
-            employee?.designation ||
-            "",
-
-          punchIn: hasAdminPunchIn ? "Punch In From Admin" : punchIn,
-
-          punchOut: item?.punchOutByAdmin ? "Punch Out From Admin" : punchOut,
-
-          status,
-
-          punchInByAdmin: hasAdminPunchIn,
-          punchOutByAdmin: Boolean(item?.punchOutByAdmin),
-        };
-      });
+          return a.punchIn.localeCompare(b.punchIn);
+        });
 
       setData(tableData);
+
+      return rawData;
     } catch (error) {
-      console.error("Attendance API Error:", error?.response?.data || error);
+      console.error(
+        "Attendance API Error:",
+        error?.response?.data || error
+      );
 
       toast.error(
-        error?.response?.data?.message || "Unable to load attendance",
+        error?.response?.data?.message ||
+        "Unable to load attendance"
       );
 
       setData([]);
+
+      return [];
     } finally {
       setLoader(false);
     }
@@ -635,108 +664,144 @@ const Attendance = () => {
   // ============================================================
   // PREVIOUS ATTENDANCE COLUMNS
   // ============================================================
+const previousAttendanceColumns = [
+  {
+    title: "Emp Id",
+    dataIndex: "employeeId",
+    key: "employeeId",
+    align: "center",
+  },
 
-  const previousAttendanceColumns = [
-    {
-      title: "Emp Id",
-      dataIndex: "employeeId",
-      key: "employeeId",
-      align: "center",
+  {
+    title: "Employee Name",
+    dataIndex: "employeeName",
+    key: "employeeName",
+    align: "center",
+  },
+
+  {
+    title: "Designation",
+    dataIndex: "employeeDesignation",
+    key: "employeeDesignation",
+    align: "center",
+  },
+
+  {
+    title: "In Time",
+    dataIndex: "punchIn",
+    key: "punchIn",
+    width: 180,
+    align: "center",
+
+    render: (time, record) => {
+      if (!time) {
+        return "-";
+      }
+
+      return (
+        <span>
+          {formatTime12Hour(time)}
+
+          {record?.punchInByAdmin && (
+            <span className="admin-punch-label">
+              {" "}
+              (Admin Punch)
+            </span>
+          )}
+        </span>
+      );
     },
+  },
 
-    {
-      title: "Employee Name",
-      dataIndex: "employeeName",
-      key: "employeeName",
-      align: "center",
+  {
+    title: "Out Time",
+    dataIndex: "punchOut",
+    key: "punchOut",
+    width: 180,
+    align: "center",
+
+    render: (time, record) => {
+      if (!time) {
+        return "-";
+      }
+
+      return (
+        <span>
+          {formatTime12Hour(time)}
+
+          {record?.punchOutByAdmin && (
+            <span className="admin-punch-label">
+              {" "}
+              (Admin Punch)
+            </span>
+          )}
+        </span>
+      );
     },
+  },
 
-    {
-      title: "Designation",
-      dataIndex: "employeeDesignation",
-      key: "employeeDesignation",
-      align: "center",
-    },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    align: "center",
 
-    {
-      title: "In Time",
-      key: "punchIn",
-      align: "center",
+    render: (status) => {
+      const normalizedStatus = String(status || "")
+        .trim()
+        .toUpperCase();
 
-      render: (_, record) => {
-        if (!record?.punchIn) {
-          return "-";
-        }
-
-        if (record?.punchInByAdmin) {
-          return "Punch In From Admin";
-        }
-
-        return formatTime12Hour(record.punchIn);
-      },
-    },
-
-    {
-      title: "Out Time",
-      key: "punchOut",
-      align: "center",
-
-      render: (_, record) => {
-        if (!record?.punchOut) {
-          return "-";
-        }
-
-        if (record?.punchOutByAdmin) {
-          return "Punch Out From Admin";
-        }
-
-        return formatTime12Hour(record.punchOut);
-      },
-    },
-
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      align: "center",
-
-      render: (status) => {
-        const normalizedStatus = String(status || "")
-          .trim()
-          .toUpperCase();
-
+      if (
+        normalizedStatus === "FULL_DAY" ||
+        normalizedStatus === "PRESENT"
+      ) {
         return (
-          <span
-            className={`attendance-status ${
-              normalizedStatus === "HALF_DAY"
-                ? "half-day-status"
-                : normalizedStatus === "ABSENT"
-                  ? "absent-status"
-                  : ""
-            }`}
-          >
-            {status || "-"}
+          <span className="attendance-status full-day-status">
+            Full Day
           </span>
         );
-      },
-    },
+      }
 
-    {
-      title: "Action",
-      key: "action",
-      align: "center",
+      if (normalizedStatus === "HALF_DAY") {
+        return (
+          <span className="attendance-status half-day-status">
+            Half Day
+          </span>
+        );
+      }
 
-      render: (_, record) => (
-        <button
-          type="button"
-          className="calendar-btn"
-          onClick={() => handleCalendar(record)}
-        >
-          <SlCalender />
-        </button>
-      ),
+      if (normalizedStatus === "ABSENT") {
+        return (
+          <span className="attendance-status absent-status">
+            Absent
+          </span>
+        );
+      }
+
+      return (
+        <span className="attendance-status">
+          {status || "-"}
+        </span>
+      );
     },
-  ];
+  },
+
+  {
+    title: "Action",
+    key: "action",
+    align: "center",
+
+    render: (_, record) => (
+      <button
+        type="button"
+        className="calendar-btn"
+        onClick={() => handleCalendar(record)}
+      >
+        <SlCalender />
+      </button>
+    ),
+  },
+];
 
   // ============================================================
   // MONTHLY ATTENDANCE COLUMNS
@@ -811,7 +876,9 @@ const Attendance = () => {
 
     {
       title: "Out Time",
+      dataIndex: "punchOut",
       key: "punchOut",
+      width: 200,
       align: "center",
 
       render: (_, record) => {
@@ -819,11 +886,18 @@ const Attendance = () => {
           return "-";
         }
 
-        if (record?.punchOutByAdmin) {
-          return <span className="admin-punch-text">Punch Out From Admin</span>;
-        }
+        return (
+          <span>
+            {record.punchOut}
 
-        return formatTime12Hour(record.punchOut);
+            {record?.punchOutByAdmin && (
+              <span className="admin-punch-label">
+                {" "}
+                (Admin Punch)
+              </span>
+            )}
+          </span>
+        );
       },
     },
 
@@ -838,21 +912,24 @@ const Attendance = () => {
           .trim()
           .toUpperCase();
 
-        let displayStatus = status || "-";
-        let statusClass = "full-day-status";
+        let displayStatus = "-";
+        let statusClass = "";
 
-        if (normalizedStatus === "FULL_DAY") {
-          displayStatus = "FULL_DAY";
-          statusClass = "full-day-status";
-        } else if (normalizedStatus === "PRESENT") {
-          displayStatus = "FULL_DAY";
+        if (
+          normalizedStatus === "FULL_DAY" ||
+          normalizedStatus === "PRESENT"
+        ) {
+          displayStatus = "Full Day";
           statusClass = "full-day-status";
         } else if (normalizedStatus === "HALF_DAY") {
-          displayStatus = "HALF_DAY";
+          displayStatus = "Half Day";
           statusClass = "half-day-status";
         } else if (normalizedStatus === "ABSENT") {
-          displayStatus = "ABSENT";
+          displayStatus = "Absent";
           statusClass = "absent-status";
+        } else if (normalizedStatus === "IN OFFICE") {
+          displayStatus = "IN Office";
+          statusClass = "in-office-status";
         }
 
         return (
@@ -1004,7 +1081,7 @@ const Attendance = () => {
         );
 
         if (response?.status === 200 && response?.data?.success !== false) {
-         toast.success("Previous Attendance Updated Successfully");
+          toast.success("Previous Attendance Updated Successfully");
 
           const employeesList = await getAllEmployee();
           await getEmployeeData(employeesList);
@@ -1080,8 +1157,8 @@ const Attendance = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          error?.message ||
-          "Unable to update previous attendance",
+        error?.message ||
+        "Unable to update previous attendance",
       );
     } finally {
       setAttendanceHistoryLoading(false);
@@ -1111,12 +1188,22 @@ const Attendance = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
 
       if (response.status === 200 || response.status === 201) {
-        toast.success("Marked Present Successfully");
-        await getEmployeeData();
+        setData((prev) =>
+          prev.map((item) =>
+            item.employeeId === record.employeeId
+              ? {
+                ...item,
+                status: "FULL_DAY",
+              }
+              : item
+          )
+        );
+
+        toast.success("Marked Full Day Successfully");
       }
     } catch (error) {
       console.error("Mark Present Error:", error);
@@ -1124,7 +1211,7 @@ const Attendance = () => {
       toast.error(
         error?.response?.data?.message ||
         error?.message ||
-        "Unable to mark present"
+        "Unable to mark full day"
       );
     } finally {
       setLoader(false);
@@ -1158,8 +1245,18 @@ const Attendance = () => {
       );
 
       if (response.status === 200 || response.status === 201) {
+        setData((prev) =>
+          prev.map((item) =>
+            item.employeeId === record.employeeId
+              ? {
+                ...item,
+                status: "HALF_DAY",
+              }
+              : item
+          )
+        );
+
         toast.success("Marked Half Day Successfully");
-        await getEmployeeData();
       }
     } catch (error) {
       console.error("Mark Half Day Error:", error);
@@ -1174,48 +1271,7 @@ const Attendance = () => {
     }
   };
 
-  const markAbsent = async (record) => {
-    try {
-      setLoader(true);
 
-      const today = dayjs().format("YYYY-MM-DD");
-
-      if (!record?.employeeId) {
-        toast.error("Employee ID not found");
-        return;
-      }
-
-      const response = await axios.post(
-        `${BASE_URL2}api/punch/adjust/${record.employeeId}`,
-        {
-          date: today,
-          attendanceType: "ABSENT",
-          employeeName: record?.employeeName || "",
-          employeeDesignation: record?.employeeDesignation || "",
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        toast.success("Marked Absent Successfully");
-        await getEmployeeData();
-      }
-    } catch (error) {
-      console.error("Mark Absent Error:", error);
-
-      toast.error(
-        error?.response?.data?.message ||
-        error?.message ||
-        "Unable to mark absent"
-      );
-    } finally {
-      setLoader(false);
-    }
-  };
 
   // ============================================================
   // REMOVE PUNCH IN
@@ -1290,18 +1346,53 @@ const Attendance = () => {
   // UPDATE PUNCH IN TIME
   // ============================================================
 
-  const updatePunchInTime = async (employeeId) => {
+  const updatePunchInTime = async (
+    employeeId,
+    employeeName,
+    employeeDesignation,
+    currentPunchIn
+  ) => {
     if (!newTime) {
       toast.error("Please select punch in time");
+      return;
+    }
 
+    if (!employeeId) {
+      toast.error("Employee ID is missing");
       return;
     }
 
     try {
       setLoader(true);
 
-      const todayDate = new Date();
+      const hasExistingPunchIn =
+        Boolean(currentPunchIn) &&
+        currentPunchIn !== "Punch In From Admin";
 
+      const hasAdminPunchIn =
+        currentPunchIn === "Punch In From Admin";
+
+      if (!hasExistingPunchIn && !hasAdminPunchIn) {
+        const punchInResponse = await axios.post(
+          `${BASE_URL2}api/punch/in/${employeeId}/true`,
+          {
+            employeeName,
+            employeeDesignation,
+          }
+        );
+
+        if (
+          punchInResponse?.status !== 200 &&
+          punchInResponse?.status !== 201
+        ) {
+          throw new Error(
+            punchInResponse?.data?.message ||
+            "Unable to create punch in"
+          );
+        }
+      }
+
+      const todayDate = new Date();
       const [hours, minutes] = newTime.split(":");
 
       const fullDate = new Date(
@@ -1311,30 +1402,44 @@ const Attendance = () => {
           todayDate.getDate(),
           Number(hours),
           Number(minutes),
-          0,
-        ),
+          0
+        )
       );
 
-      const response = await axios.post(
+      const timeResponse = await axios.post(
         `${BASE_URL2}api/punch/newtime/in/${employeeId}`,
         {
           punchInTime: fullDate.toISOString(),
-        },
+        }
       );
 
-      if (response.status === 200) {
-        toast.success("Punch In Time Updated Successfully");
-
-        setActivePunchIn(null);
-        setNewTime("");
-
-        await getEmployeeData();
+      if (
+        timeResponse?.status !== 200 &&
+        timeResponse?.status !== 201
+      ) {
+        throw new Error(
+          timeResponse?.data?.message ||
+          "Unable to update punch in time"
+        );
       }
+
+      toast.success("Punch In Time Updated Successfully");
+
+      setActivePunchIn(null);
+      setNewTime("");
+
+      const employees = await getAllEmployee();
+      await getEmployeeData(employees);
     } catch (error) {
-      console.error("Update Punch In Error:", error);
+      console.error(
+        "Update Punch In Error:",
+        error?.response?.data || error
+      );
 
       toast.error(
-        error?.response?.data?.message || "Unable to update punch in time",
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to update punch in time"
       );
     } finally {
       setLoader(false);
@@ -1427,7 +1532,14 @@ const Attendance = () => {
               <button
                 type="button"
                 className="save-time-btn"
-                onClick={() => updatePunchInTime(record?.employeeId)}
+                onClick={() =>
+                  updatePunchInTime(
+                    record?.employeeId,
+                    record?.employeeName,
+                    record?.employeeDesignation,
+                    record?.punchIn
+                  )
+                }
                 disabled={loader}
               >
                 {loader ? "Saving..." : "Save"}
@@ -1436,7 +1548,14 @@ const Attendance = () => {
           );
         }
 
-        return <span>{record?.punchIn || "-"}</span>;
+        return (
+          <span>
+            {record?.punchIn || "-"}
+            {record?.punchInByAdmin && (
+              <span className="admin-punch-label"> (Admin Punch)</span>
+            )}
+          </span>
+        );
       },
     },
 
@@ -1462,34 +1581,36 @@ const Attendance = () => {
           .trim()
           .toUpperCase();
 
-        let displayStatus = status || "-";
-
-        if (
-          normalizedStatus === "IN OFFICE" ||
-          normalizedStatus === "PRESENT" ||
-          normalizedStatus === "FULL_DAY"
-        ) {
-          displayStatus = "IN Office";
+        if (normalizedStatus === "HALF_DAY") {
+          return (
+            <span className="attendance-status half-day-status">
+              Half Day
+            </span>
+          );
         }
 
-        if (normalizedStatus === "HALF_DAY") {
-          displayStatus = "Half Day";
+        if (
+          normalizedStatus === "FULL_DAY" ||
+          normalizedStatus === "PRESENT"
+        ) {
+          return (
+            <span className="attendance-status full-day-status">
+              Full Day
+            </span>
+          );
         }
 
         if (normalizedStatus === "ABSENT") {
-          displayStatus = "Absent";
+          return (
+            <span className="attendance-status absent-status">
+              Absent
+            </span>
+          );
         }
 
-        const statusClass =
-          normalizedStatus === "ABSENT"
-            ? "absent-status"
-            : normalizedStatus === "HALF_DAY"
-              ? "half-day-status"
-              : "";
-
         return (
-          <span className={`attendance-status ${statusClass}`}>
-            {displayStatus}
+          <span className="attendance-status">
+            IN Office
           </span>
         );
       },
@@ -1517,26 +1638,26 @@ const Attendance = () => {
             label: "Change Punch In Time",
             onClick: () => changePunchInTime(record),
           });
+        } else {
+          menuItems.push({
+            key: "1",
+            label: "Punch In",
+            onClick: () => changePunchInTime(record),
+          });
         }
 
         if (record?.punchOut) {
           menuItems.push({
-            key: "6",
+            key: "3",
             label: "Remove Punch Out",
             onClick: () => removePunchOut(record?.employeeId),
           });
         }
 
         menuItems.push({
-          key: "3",
-          label: "Mark Present",
-          onClick: () => markPresent(record),
-        });
-
-        menuItems.push({
           key: "4",
-          label: "Mark Absent",
-          onClick: () => markAbsent(record),
+          label: "Mark Full Day",
+          onClick: () => markPresent(record),
         });
 
         menuItems.push({
@@ -1762,9 +1883,8 @@ const Attendance = () => {
             <div className="btn-group">
               <button
                 type="button"
-                className={`count ${
-                  attendanceFilter === "all" ? "active" : ""
-                }`}
+                className={`count ${attendanceFilter === "all" ? "active" : ""
+                  }`}
                 onClick={() => handleAttendanceFilter("all")}
               >
                 Total Employee:
@@ -1773,9 +1893,8 @@ const Attendance = () => {
 
               <button
                 type="button"
-                className={`count ${
-                  attendanceFilter === "present" ? "active" : ""
-                }`}
+                className={`count ${attendanceFilter === "present" ? "active" : ""
+                  }`}
                 onClick={() => handleAttendanceFilter("present")}
               >
                 Present Employee:
@@ -1784,9 +1903,8 @@ const Attendance = () => {
 
               <button
                 type="button"
-                className={`count ${
-                  attendanceFilter === "absent" ? "active" : ""
-                }`}
+                className={`count ${attendanceFilter === "absent" ? "active" : ""
+                  }`}
                 onClick={() => handleAttendanceFilter("absent")}
               >
                 Absent Employee:

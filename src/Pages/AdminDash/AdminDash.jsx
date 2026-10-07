@@ -116,12 +116,52 @@ const AdminDash = () => {
   const getEmployeeKey = (employee) => {
     return String(
       employee?.employeeId ??
-        employee?.employeeID ??
-        employee?.empId ??
-        employee?.id ??
-        employee?.uid ??
-        "",
+      employee?.employeeID ??
+      employee?.empId ??
+      employee?.id ??
+      employee?.uid ??
+      "",
     ).trim();
+  };
+
+
+  const formatTime12Hour = (dateTime) => {
+    if (!dateTime) return "";
+
+    const value = String(dateTime);
+
+    if (!value.includes("T")) {
+      const [hours, minutes, seconds = "00"] = value.split(":");
+
+      let hour = Number(hours);
+
+      if (isNaN(hour) || !minutes) return value;
+
+      const period = hour >= 12 ? "PM" : "AM";
+
+      hour = hour % 12 || 12;
+
+      return `${String(hour).padStart(2, "0")}:${minutes}:${seconds} ${period}`;
+    }
+
+    const timePart = value
+      .split("T")[1]
+      ?.split(".")[0]
+      ?.replace("Z", "");
+
+    if (!timePart) return "";
+
+    const [hours, minutes, seconds = "00"] = timePart.split(":");
+
+    let hour = Number(hours);
+
+    if (isNaN(hour) || !minutes) return "";
+
+    const period = hour >= 12 ? "PM" : "AM";
+
+    hour = hour % 12 || 12;
+
+    return `${String(hour).padStart(2, "0")}:${minutes}:${seconds} ${period}`;
   };
 
   // =========================================================
@@ -212,52 +252,87 @@ const AdminDash = () => {
       setTodayAttendanceRecords(records);
 
       const tableData = records.map((item, index) => {
-        // ONLY punch-in decides Present / Absent
-        const hasPunchIn =
-          Boolean(item?.punchIn) || Boolean(item?.punchInByAdmin);
+        const punchInByAdmin = Boolean(item?.punchInByAdmin);
+        const punchOutByAdmin = Boolean(item?.punchOutByAdmin);
+
+        const punchInTime = item?.punchIn
+          ? formatTime12Hour(item.punchIn)
+          : "";
+
+        const punchOutTime = item?.punchOut
+          ? formatTime12Hour(item.punchOut)
+          : "";
+
+        const apiStatus = String(item?.status || "")
+          .trim()
+          .toUpperCase();
+
+        let status = "ABSENT";
+
+        if (apiStatus === "FULL_DAY" || apiStatus === "PRESENT") {
+          status = "FULL_DAY";
+        } else if (apiStatus === "HALF_DAY") {
+          status = "HALF_DAY";
+        } else if (apiStatus === "ABSENT") {
+          status = "ABSENT";
+        } else if (item?.punchIn) {
+          status = "IN Office";
+        }
 
         return {
           key: item?.employeeId || index,
-
           employeeId: item?.employeeId || "",
-
           employeeName: item?.employeeName?.toUpperCase() || "",
-
           employeeDesignation: item?.employeeDesignation || "",
 
-          punchIn: item?.punchInByAdmin
-            ? "Punch In From Admin"
-            : item?.punchIn
-              ? item.punchIn.split("T")[1]?.replace("Z", "").slice(0, 8)
-              : "",
+          punchIn: punchInTime,
+          punchOut: punchOutTime,
 
-          punchOut: item?.punchOutByAdmin
-            ? "Punch Out From Admin"
-            : item?.punchOut
-              ? item.punchOut.split("T")[1]?.replace("Z", "").slice(0, 8)
-              : "",
+          status,
 
-          // DO NOT use item.status
-          status: hasPunchIn ? "IN Office" : "ABSENT",
+          hasPunchIn:
+            Boolean(item?.punchIn) || Boolean(item?.punchInByAdmin),
 
-          hasPunchIn,
+          punchInByAdmin,
 
-          punchInByAdmin: Boolean(item?.punchInByAdmin),
+          punchOutByAdmin,
 
-          punchOutByAdmin: Boolean(item?.punchOutByAdmin),
+          rawPunchIn: item?.punchIn || "",
         };
+      });
+      tableData.sort((a, b) => {
+        if (!a.rawPunchIn && !b.rawPunchIn) {
+          return 0;
+        }
+
+        if (!a.rawPunchIn) {
+          return 1;
+        }
+
+        if (!b.rawPunchIn) {
+          return -1;
+        }
+
+        return (
+          new Date(a.rawPunchIn).getTime() -
+          new Date(b.rawPunchIn).getTime()
+        );
       });
 
       setData(tableData);
 
-      console.log("NORMALIZED TODAY ATTENDANCE:", tableData);
+      console.log("SORTED TODAY ATTENDANCE:", tableData);
 
       return records;
     } catch (error) {
-      console.error("Attendance API Error:", error?.response?.data || error);
+      console.error(
+        "Attendance API Error:",
+        error?.response?.data || error
+      );
 
       toast.error(
-        error?.response?.data?.message || "Unable to load attendance",
+        error?.response?.data?.message ||
+        "Unable to load attendance"
       );
 
       setData([]);
@@ -345,7 +420,18 @@ const AdminDash = () => {
       key: "punchIn",
       width: 130,
 
-      render: (time) => time || "--",
+      render: (_, record) => (
+        <span>
+          {record?.punchIn || "--"}
+
+          {record?.punchInByAdmin && (
+            <span className="admin-punch-label">
+              {" "}
+              (Admin Punch)
+            </span>
+          )}
+        </span>
+      ),
     },
 
     {
@@ -354,7 +440,18 @@ const AdminDash = () => {
       key: "punchOut",
       width: 130,
 
-      render: (time) => time || "--",
+      render: (_, record) => (
+        <span>
+          {record?.punchOut || "--"}
+
+          {record?.punchOutByAdmin && (
+            <span className="admin-punch-label">
+              {" "}
+              (Admin)
+            </span>
+          )}
+        </span>
+      ),
     },
 
     {
@@ -364,28 +461,47 @@ const AdminDash = () => {
       width: 110,
 
       render: (status) => {
-        const normalizedStatus = normalizeStatus(status);
+        const normalizedStatus = String(status || "")
+          .trim()
+          .toUpperCase();
 
-        let color = "default";
-
-        if (
-          normalizedStatus === "in office" ||
-          normalizedStatus === "inprogress" ||
-          normalizedStatus === "in progress" ||
-          normalizedStatus === "present" ||
-          normalizedStatus === "full day"
-        ) {
-          color = "success";
-        } else if (normalizedStatus === "absent") {
-          color = "error";
-        } else if (
-          normalizedStatus === "half day" ||
-          normalizedStatus === "halfday"
-        ) {
-          color = "warning";
+        if (normalizedStatus === "FULL_DAY") {
+          return (
+            <span className="dashboard-status full-day-status">
+              Full Day
+            </span>
+          );
         }
 
-        return <Tag color={color}>{status || "N/A"}</Tag>;
+        if (normalizedStatus === "HALF_DAY") {
+          return (
+            <span className="dashboard-status half-day-status">
+              Half Day
+            </span>
+          );
+        }
+
+        if (normalizedStatus === "ABSENT") {
+          return (
+            <span className="dashboard-status absent-status">
+              Absent
+            </span>
+          );
+        }
+
+        if (normalizedStatus === "IN OFFICE") {
+          return (
+            <span className="dashboard-status in-office-status">
+              IN Office
+            </span>
+          );
+        }
+
+        return (
+          <span className="dashboard-status in-office-status">
+            {status || "--"}
+          </span>
+        );
       },
     },
   ];
@@ -634,12 +750,12 @@ const AdminDash = () => {
   const displayedNotifications = showUnread
     ? unreadNotifications
     : [...notifications].sort((a, b) => {
-        if (a?.isRead === b?.isRead) {
-          return 0;
-        }
+      if (a?.isRead === b?.isRead) {
+        return 0;
+      }
 
-        return a?.isRead ? 1 : -1;
-      });
+      return a?.isRead ? 1 : -1;
+    });
 
   const stripHtml = (html = "") => {
     const temp = document.createElement("div");
@@ -763,9 +879,9 @@ const AdminDash = () => {
         prev.map((notification) =>
           notification?.id === notificationId
             ? {
-                ...notification,
-                isRead: true,
-              }
+              ...notification,
+              isRead: true,
+            }
             : notification,
         ),
       );
@@ -919,18 +1035,18 @@ const AdminDash = () => {
           : [];
 
       const today = new Date();
-today.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
 
-const filteredBirthdayData = birthdayData.filter((employee) => {
-  if (!employee?.date) return false;
+      const filteredBirthdayData = birthdayData.filter((employee) => {
+        if (!employee?.date) return false;
 
-  const birthdayDate = new Date(employee.date);
-  birthdayDate.setHours(0, 0, 0, 0);
+        const birthdayDate = new Date(employee.date);
+        birthdayDate.setHours(0, 0, 0, 0);
 
-  return birthdayDate >= today;
-});
+        return birthdayDate >= today;
+      });
 
-setBirthday(filteredBirthdayData);
+      setBirthday(filteredBirthdayData);
     } catch (error) {
       console.error("Birthday API Error:", error?.response?.data || error);
 
@@ -974,9 +1090,8 @@ setBirthday(filteredBirthdayData);
 
         title: "Happy Birthday! 🎂",
 
-        message: `Wishing ${
-          employee?.employeeName || "you"
-        } a very Happy Birthday! 🎉 From ${companyName}.`,
+        message: `Wishing ${employee?.employeeName || "you"
+          } a very Happy Birthday! 🎉 From ${companyName}.`,
 
         type: "birthday",
 
@@ -1017,8 +1132,8 @@ setBirthday(filteredBirthdayData);
 
       toast.error(
         error?.response?.data?.message ||
-          error?.response?.data?.responseMessage ||
-          "Unable to send birthday wish",
+        error?.response?.data?.responseMessage ||
+        "Unable to send birthday wish",
       );
     } finally {
       setWishingEmployeeId(null);
@@ -1541,9 +1656,8 @@ setBirthday(filteredBirthdayData);
                 ) : (
                   displayedNotifications.map((notification) => (
                     <div
-                      className={`notification-item ${
-                        notification?.isRead ? "read" : "unread"
-                      }`}
+                      className={`notification-item ${notification?.isRead ? "read" : "unread"
+                        }`}
                       key={notification?.id}
                       onClick={() => handleNotificationClick(notification)}
                     >
@@ -1559,15 +1673,15 @@ setBirthday(filteredBirthdayData);
                         <span className="notification-date">
                           {notification?.createdAt
                             ? new Date(notification.createdAt).toLocaleString(
-                                "en-IN",
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                },
-                              )
+                              "en-IN",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )
                             : "--"}
                         </span>
                       </div>
@@ -1613,14 +1727,14 @@ setBirthday(filteredBirthdayData);
                       <p className="notification-modal-date">
                         {selectedNotification?.createdAt
                           ? new Date(
-                              selectedNotification.createdAt,
-                            ).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
+                            selectedNotification.createdAt,
+                          ).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
                           : "--"}
                       </p>
 
@@ -1640,17 +1754,17 @@ setBirthday(filteredBirthdayData);
                         {String(selectedNotification?.type || "")
                           .trim()
                           .toLowerCase() !== "birthday" && (
-                          <button
-                            type="button"
-                            className="notification-modal-details"
-                            onClick={() =>
-                              handleNotificationDetails(selectedNotification)
-                            }
-                          >
-                            View Details
-                            <span>→</span>
-                          </button>
-                        )}
+                            <button
+                              type="button"
+                              className="notification-modal-details"
+                              onClick={() =>
+                                handleNotificationDetails(selectedNotification)
+                              }
+                            >
+                              View Details
+                              <span>→</span>
+                            </button>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -1684,9 +1798,8 @@ setBirthday(filteredBirthdayData);
 
                     return (
                       <div
-                        className={`birthday-item ${
-                          birthdayToday ? "birthday-today" : ""
-                        }`}
+                        className={`birthday-item ${birthdayToday ? "birthday-today" : ""
+                          }`}
                         key={employeeId || index}
                       >
                         <div className="birthday-avatar">
@@ -1710,23 +1823,22 @@ setBirthday(filteredBirthdayData);
                         <div className="birthday-date">
                           {employee?.date
                             ? new Date(employee.date).toLocaleDateString(
-                                "en-IN",
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                },
-                              )
+                              "en-IN",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                              },
+                            )
                             : "--"}
                         </div>
 
                         {birthdayToday && (
                           <button
                             type="button"
-                            className={`wish-button ${
-                              wishedEmployees.includes(employeeId)
-                                ? "wish-sent"
-                                : ""
-                            }`}
+                            className={`wish-button ${wishedEmployees.includes(employeeId)
+                              ? "wish-sent"
+                              : ""
+                              }`}
                             disabled={
                               wishingEmployeeId === employeeId ||
                               wishedEmployees.includes(employeeId)
