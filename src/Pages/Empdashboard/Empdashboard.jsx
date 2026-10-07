@@ -443,21 +443,62 @@ const EmployeeDash = () => {
     );
   };
 
-  const getTodaydata = async () => {
-    try {
-      // Get today's date in YYYY-MM-DD format
-      const currentDate = new Date().toISOString().split("T")[0];
-      const res = await axios.get(
-        `${BASE_URL2}api/punch/work-session/summary?date=${currentDate}`,
+ const getTodaydata = async () => {
+  try {
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    const [summaryResponse, attendanceResponse] = await Promise.all([
+      axios.get(
+        `${BASE_URL2}api/punch/work-session/summary?date=${currentDate}`
+      ),
+      axios.get(`${BASE_URL2}api/punch/details`),
+    ]);
+
+    const summary = summaryResponse?.data || {};
+    const attendance = Array.isArray(attendanceResponse?.data?.data)
+      ? attendanceResponse.data.data
+      : [];
+
+    const totalEmployees = Number(summary?.totalEmployees || 0);
+
+    const presentEmployees = attendance.filter((item) => {
+      const status = String(item?.status || "")
+        .trim()
+        .toUpperCase();
+
+      return (
+        Boolean(item?.punchIn) ||
+        Boolean(item?.punchInByAdmin) ||
+        status === "FULL_DAY" ||
+        status === "PRESENT" ||
+        status === "HALF_DAY"
       );
+    }).length;
 
-      console.log("TODAY SUMMARY:", res.data);
+    const halfDayEmployees = attendance.filter((item) => {
+      const status = String(item?.status || "")
+        .trim()
+        .toUpperCase();
 
-      setToday(res?.data || {});
-    } catch (error) {
-      console.log("Today Summary API Error:", error);
-    }
-  };
+      return status === "HALF_DAY";
+    }).length;
+
+    const absentEmployees = Math.max(
+      0,
+      totalEmployees - presentEmployees
+    );
+
+    setToday({
+      ...summary,
+      totalEmployees,
+      "In-office": presentEmployees,
+      absent: absentEmployees,
+      halfday: halfDayEmployees,
+    });
+  } catch (error) {
+    console.error("Today Summary API Error:", error);
+  }
+};
   const dashboardCards = [
     {
       id: 1,

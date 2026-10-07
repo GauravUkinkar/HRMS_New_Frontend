@@ -10,12 +10,12 @@ const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 const BASE_URL_USER = import.meta.env.VITE_USER_BACKEND_URL;
 
 const Attendance = () => {
- const navigate = useNavigate();
-const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-const [attendanceFilter, setAttendanceFilter] = useState(
-  searchParams.get("filter") || "all"
-);
+  const [attendanceFilter, setAttendanceFilter] = useState(
+    searchParams.get("filter") || "all"
+  );
 
   const [allEmployees, setAllEmployees] = useState([]);
   const [data, setData] = useState([]);
@@ -27,7 +27,7 @@ const [attendanceFilter, setAttendanceFilter] = useState(
   const [employeeAttendanceList] = useState([]);
   const [employeeAttendanceLoading] = useState(false);
 
- 
+
 
   // ============================================================
   // GET EMPLOYEE ID
@@ -36,13 +36,13 @@ const [attendanceFilter, setAttendanceFilter] = useState(
   const getEmployeeId = (employee) => {
     return String(
       employee?.employeeId ||
-        employee?.employeeID ||
-        employee?.empId ||
-        employee?.empID ||
-        employee?.data?.employeeId ||
-        employee?.data?.employeeID ||
-        employee?.data?.empId ||
-        ""
+      employee?.employeeID ||
+      employee?.empId ||
+      employee?.empID ||
+      employee?.data?.employeeId ||
+      employee?.data?.employeeID ||
+      employee?.data?.empId ||
+      ""
     )
       .trim()
       .toUpperCase();
@@ -52,39 +52,39 @@ const [attendanceFilter, setAttendanceFilter] = useState(
   // GET ALL EMPLOYEES
   // ============================================================
 
-const getAllEmployee = async () => {
-  try {
-    const response = await axios.get(
-      `${BASE_URL_USER}AuthController/GetAllEmployee`,
-      {
-        withCredentials: true,
-      }
-    );
+  const getAllEmployee = async () => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL_USER}AuthController/GetAllEmployee`,
+        {
+          withCredentials: true,
+        }
+      );
 
-    console.log("ALL EMPLOYEE RESPONSE:", response?.data);
+      console.log("ALL EMPLOYEE RESPONSE:", response?.data);
 
-    const employees = Array.isArray(response?.data)
-      ? response.data
-      : Array.isArray(response?.data?.data)
-      ? response.data.data
-      : [];
+      const employees = Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.data?.data)
+          ? response.data.data
+          : [];
 
-    const employeeList = employees
-      .map((item) => item?.data || item)
-      .filter(Boolean);
+      const employeeList = employees
+        .map((item) => item?.data || item)
+        .filter(Boolean);
 
-    console.log("FINAL EMPLOYEE LIST:", employeeList);
-    console.log("EMPLOYEE COUNT:", employeeList.length);
+      console.log("FINAL EMPLOYEE LIST:", employeeList);
+      console.log("EMPLOYEE COUNT:", employeeList.length);
 
-    setAllEmployees(employeeList);
+      setAllEmployees(employeeList);
 
-  } catch (error) {
-    console.error("GET ALL EMPLOYEE ERROR:", error);
-    console.error("ERROR RESPONSE:", error?.response?.data);
+    } catch (error) {
+      console.error("GET ALL EMPLOYEE ERROR:", error);
+      console.error("ERROR RESPONSE:", error?.response?.data);
 
-    setAllEmployees([]);
-  }
-};
+      setAllEmployees([]);
+    }
+  };
   // ============================================================
   // GET TODAY ATTENDANCE
   // ============================================================
@@ -99,11 +99,11 @@ const getAllEmployee = async () => {
 
       console.log("ATTENDANCE RESPONSE:", response?.data);
 
-const attendanceData = Array.isArray(response?.data)
-  ? response.data
-  : Array.isArray(response?.data?.data)
-  ? response.data.data
-  : [];
+      const attendanceData = Array.isArray(response?.data)
+        ? response.data
+        : Array.isArray(response?.data?.data)
+          ? response.data.data
+          : [];
 
       console.log("ATTENDANCE DATA:", attendanceData);
 
@@ -132,33 +132,33 @@ const attendanceData = Array.isArray(response?.data)
           const attendance =
             attendanceMap.get(employeeId);
 
-         let status = "ABSENT";
+          let status = "ABSENT";
 
-if (attendance) {
-  const rawStatus = String(
-    attendance?.status || ""
-  )
-    .trim()
-    .toUpperCase();
+          if (attendance) {
+            const rawStatus = String(
+              attendance?.status || ""
+            )
+              .trim()
+              .toUpperCase();
 
-  if (rawStatus === "HALF_DAY") {
-    status = "HALF_DAY";
-  } else if (
-    rawStatus === "FULL_DAY" ||
-    rawStatus === "PRESENT"
-  ) {
-    status = "FULL_DAY";
-  } else if (rawStatus === "ABSENT") {
-    status = "ABSENT";
-  } else if (
-    attendance?.punchIn ||
-    attendance?.punchInByAdmin
-  ) {
-    status = "IN OFFICE";
-  } else {
-    status = "ABSENT";
-  }
-}
+            if (rawStatus === "HALF_DAY") {
+              status = "HALF_DAY";
+            } else if (
+              rawStatus === "FULL_DAY" ||
+              rawStatus === "PRESENT"
+            ) {
+              status = "FULL_DAY";
+            } else if (rawStatus === "ABSENT") {
+              status = "ABSENT";
+            } else if (
+              attendance?.punchIn ||
+              attendance?.punchInByAdmin
+            ) {
+              status = "IN OFFICE";
+            } else {
+              status = "ABSENT";
+            }
+          }
 
           return {
             key: employeeId || index,
@@ -167,31 +167,31 @@ if (attendance) {
 
             employeeName: String(
               employee?.employeeName ||
-                employee?.data?.employeeName ||
-                ""
+              employee?.data?.employeeName ||
+              ""
             ).toUpperCase(),
 
-employeeDesignation: String(
-  employee?.designation ||
-    employee?.employeeDesignation ||
-    ""
-).toUpperCase(),
+            employeeDesignation: String(
+              employee?.designation ||
+              employee?.employeeDesignation ||
+              ""
+            ).toUpperCase(),
 
             punchIn: attendance?.punchInByAdmin
               ? "Punch In From Admin"
               : attendance?.punchIn
-              ? dayjs(
+                ? dayjs(
                   attendance.punchIn
                 ).format("HH:mm:ss")
-              : "",
+                : "",
 
             punchOut: attendance?.punchOutByAdmin
               ? "Punch Out From Admin"
               : attendance?.punchOut
-              ? dayjs(
+                ? dayjs(
                   attendance.punchOut
                 ).format("HH:mm:ss")
-              : "",
+                : "",
 
             status,
           };
@@ -222,15 +222,15 @@ employeeDesignation: String(
   // LOAD EMPLOYEES
   // ============================================================
 
-useEffect(() => {
-  getAllEmployee();
-}, []);
+  useEffect(() => {
+    getAllEmployee();
+  }, []);
 
-useEffect(() => {
-  if (allEmployees.length > 0) {
-    getEmployeeData();
-  }
-}, [allEmployees]);
+  useEffect(() => {
+    if (allEmployees.length > 0) {
+      getEmployeeData();
+    }
+  }, [allEmployees]);
 
   // ============================================================
   // COUNTS
@@ -258,31 +258,41 @@ useEffect(() => {
     return status === "ABSENT";
   }).length;
 
+
+
+  const halfDayEmployees = data.filter((item) => {
+    const status = String(item?.status || "")
+      .trim()
+      .toUpperCase();
+
+    return status === "HALF_DAY";
+  }).length;
   // ============================================================
   // FILTER DATA
   // ============================================================
+const filteredAttendanceData = data.filter((item) => {
+  const status = String(item?.status || "")
+    .trim()
+    .toUpperCase();
 
-  const filteredAttendanceData = data.filter(
-    (item) => {
-      const status = String(item?.status || "")
-        .trim()
-        .toUpperCase();
+  if (attendanceFilter === "present") {
+    return (
+      status === "IN OFFICE" ||
+      status === "PRESENT" ||
+      status === "FULL_DAY"
+    );
+  }
 
-      if (attendanceFilter === "present") {
-        return (
-          status === "IN OFFICE" ||
-          status === "PRESENT" ||
-          status === "FULL_DAY"
-        );
-      }
+  if (attendanceFilter === "absent") {
+    return status === "ABSENT";
+  }
 
-      if (attendanceFilter === "absent") {
-        return status === "ABSENT";
-      }
+  if (attendanceFilter === "halfday") {
+    return status === "HALF_DAY";
+  }
 
-      return true;
-    }
-  );
+  return true;
+});
 
   // ============================================================
   // TODAY ATTENDANCE COLUMNS
@@ -316,43 +326,43 @@ useEffect(() => {
 
 
     {
-  title: "Status",
-  dataIndex: "status",
-  key: "status",
-  align: "center",
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
 
-  render: (status) => {
-    const normalizedStatus = String(status || "")
-      .trim()
-      .toUpperCase();
+      render: (status) => {
+        const normalizedStatus = String(status || "")
+          .trim()
+          .toUpperCase();
 
-    let displayStatus = "-";
-    let statusClass = "";
+        let displayStatus = "-";
+        let statusClass = "";
 
-    if (normalizedStatus === "FULL_DAY") {
-      displayStatus = "Full Day";
-      statusClass = "full-day-status";
-    } else if (normalizedStatus === "PRESENT") {
-      displayStatus = "Full Day";
-      statusClass = "full-day-status";
-    } else if (normalizedStatus === "HALF_DAY") {
-      displayStatus = "Half Day";
-      statusClass = "half-day-status";
-    } else if (normalizedStatus === "ABSENT") {
-      displayStatus = "Absent";
-      statusClass = "absent-status";
-    } else if (normalizedStatus === "IN OFFICE") {
-      displayStatus = "IN Office";
-      statusClass = "in-office-status";
-    }
+        if (normalizedStatus === "FULL_DAY") {
+          displayStatus = "Full Day";
+          statusClass = "full-day-status";
+        } else if (normalizedStatus === "PRESENT") {
+          displayStatus = "Full Day";
+          statusClass = "full-day-status";
+        } else if (normalizedStatus === "HALF_DAY") {
+          displayStatus = "Half Day";
+          statusClass = "half-day-status";
+        } else if (normalizedStatus === "ABSENT") {
+          displayStatus = "Absent";
+          statusClass = "absent-status";
+        } else if (normalizedStatus === "IN OFFICE") {
+          displayStatus = "IN Office";
+          statusClass = "in-office-status";
+        }
 
-    return (
-      <span className={`attendance-status ${statusClass}`}>
-        {displayStatus}
-      </span>
-    );
-  },
-},
+        return (
+          <span className={`attendance-status ${statusClass}`}>
+            {displayStatus}
+          </span>
+        );
+      },
+    },
   ];
 
   // ============================================================
@@ -467,14 +477,13 @@ useEffect(() => {
 
         return (
           <span
-            className={`attendance-status ${
-              normalizedStatus === "HALF_DAY"
+            className={`attendance-status ${normalizedStatus === "HALF_DAY"
                 ? "half-day-status"
                 : normalizedStatus ===
                   "ABSENT"
-                ? "absent-status"
-                : ""
-            }`}
+                  ? "absent-status"
+                  : ""
+              }`}
           >
             {status || "-"}
           </span>
@@ -514,38 +523,46 @@ useEffect(() => {
             <h1>Today's Attendance</h1>
 
             <div className="btn-group">
-<button
-  type="button"
-  className={`count ${
-    attendanceFilter === "all" ? "active" : ""
-  }`}
-  onClick={() => setAttendanceFilter("all")}
->
-  Total Employee:
-  <span>{totalEmployees}</span>
-</button>
+              <button
+                type="button"
+                className={`count ${attendanceFilter === "all" ? "active" : ""
+                  }`}
+                onClick={() => setAttendanceFilter("all")}
+              >
+                Total Employee:
+                <span>{totalEmployees}</span>
+              </button>
 
-<button
-  type="button"
-  className={`count ${
-    attendanceFilter === "present" ? "active" : ""
-  }`}
-  onClick={() => setAttendanceFilter("present")}
->
-  Present Employee:
-  <span>{presentEmployees}</span>
-</button>
+              <button
+                type="button"
+                className={`count ${attendanceFilter === "present" ? "active" : ""
+                  }`}
+                onClick={() => setAttendanceFilter("present")}
+              >
+                Present Employee:
+                <span>{presentEmployees}</span>
+              </button>
 
-<button
-  type="button"
-  className={`count ${
-    attendanceFilter === "absent" ? "active" : ""
-  }`}
-  onClick={() => setAttendanceFilter("absent")}
->
-  Absent Employee:
-  <span>{absentEmployees}</span>
-</button>
+              <button
+                type="button"
+                className={`count ${attendanceFilter === "absent" ? "active" : ""
+                  }`}
+                onClick={() => setAttendanceFilter("absent")}
+              >
+                Absent Employee:
+                <span>{absentEmployees}</span>
+              </button>
+
+
+              <button
+                type="button"
+                className={`count ${attendanceFilter === "halfday" ? "active" : ""
+                  }`}
+                onClick={() => setAttendanceFilter("halfday")}
+              >
+                Half Day:
+                <span>{halfDayEmployees}</span>
+              </button>
 
 
             </div>
@@ -574,9 +591,8 @@ useEffect(() => {
                 selectedEmployee?.employeeDesignation ||
                 "",
 
-              key: `${
-                item?.date || index
-              }-${index}`,
+              key: `${item?.date || index
+                }-${index}`,
             })
           )}
           loading={employeeAttendanceLoading}
