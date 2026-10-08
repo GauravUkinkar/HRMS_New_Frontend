@@ -151,7 +151,7 @@
             background: rgba(0, 142, 137, 0.082);
             padding: 5px 20px;
             border-radius: 5px;
-            border: 1px solid #003a42;
+            border: 1px solid #498e9767;
             &:hover {
               background: #003a42;
               color: white;
@@ -277,7 +277,7 @@
           background-color: #e4f6f7;
           width: 100%;
           padding: 10px;
-          border: 1px solid var(--accent2);
+          border: 1px solid #498e9767;
           align-items: center;
           border-radius: 5px;
           h3 {
@@ -286,7 +286,7 @@
             width: fit-content;
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid var(--accent2);
+            border: 1px solid #498e9767;
           }
           .buttons {
             display: flex;
@@ -309,7 +309,7 @@
             .btn {
               background-color: #003a42;
               color: #fff;
-              border: 1px solid #003a42;
+              border: 1px solid #498e9767;
 
               &:hover:not(:disabled) {
                 background-color: #00515a;
@@ -321,12 +321,12 @@
             .btn2 {
               background-color: transparent;
               color: #266472;
-              border: 1px solid #266472;
+              border: 1px solid #498e97a4;
 
               &:hover {
                 background-color: #003a42;
                 color: #fff;
-                border-color: #003a42;
+                border-color: #498e9767;
                 transform: translateY(-2px);
               }
             }
@@ -372,7 +372,7 @@
           background: rgba(0, 142, 137, 0.082);
           padding: 5px 20px;
           border-radius: 5px;
-          border: 1px solid #003a42;
+          border: 1px solid #498e9767;
           &:hover {
             background: #003a42;
             color: white;
@@ -1091,7 +1091,7 @@
         .btn {
           background-color: #003a42;
           color: #fff;
-          border: 1px solid #003a42;
+          border: 1px solid #498e9767;
 
           &:hover:not(:disabled) {
             background-color: #00515a;
@@ -1103,7 +1103,7 @@
         .btn2 {
           background-color: transparent;
           color: #266472;
-          border: 1px solid #266472;
+          border: 1px solid #498e9767;
 
           &:hover {
             background-color: #003a42;

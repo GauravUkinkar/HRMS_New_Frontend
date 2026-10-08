@@ -30,6 +30,7 @@ const AddSalary = () => {
     employeeName: "",
     insuranceCorporation: "",
     month: "",
+    salaryMonth:"",
     year: "",
     reimbursement: "",
     employeeId: "",
@@ -192,7 +193,20 @@ const AddSalary = () => {
                 onChange={handleChange}
                 required
               />
-              <SelectInput
+
+
+              
+              <Input
+                name="year"
+                label="Year"
+                value={values.year}
+                error={error.year}
+                onChange={handleChange}
+                required
+              />
+            </div>
+                          <div class="form-row">
+                              <SelectInput
                 label="Select Month"
                 name="month"
                 value={values.month}
@@ -213,15 +227,29 @@ const AddSalary = () => {
                 <MenuItem value="November">November</MenuItem>
                 <MenuItem value="December">December</MenuItem>
               </SelectInput>
-              <Input
-                name="year"
-                label="Year"
-                value={values.year}
-                error={error.year}
+                            <SelectInput
+                label="Select Salary Month"
+                name="month"
+                value={values.salaryMonth}
+                error={error.salaryMonth}
                 onChange={handleChange}
                 required
-              />
-            </div>
+              >
+                <MenuItem value="January">January</MenuItem>
+                <MenuItem value="February">February</MenuItem>
+                <MenuItem value="March">March</MenuItem>
+                <MenuItem value="April">April</MenuItem>
+                <MenuItem value="May">May</MenuItem>
+                <MenuItem value="June">June</MenuItem>
+                <MenuItem value="July">July</MenuItem>
+                <MenuItem value="August">August</MenuItem>
+                <MenuItem value="September">September</MenuItem>
+                <MenuItem value="October">October</MenuItem>
+                <MenuItem value="November">November</MenuItem>
+                <MenuItem value="December">December</MenuItem>
+              </SelectInput>
+
+              </div>
             <div className="form-row">
               <Input
                 name="totalWorkingDay"

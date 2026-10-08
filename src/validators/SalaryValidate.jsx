@@ -10,6 +10,9 @@ export const ValidateSalary = (values) => {
   if (values.month === "") {
     error.month = "Month is Required";
   }
+    if (values.salaryMonth === "") {
+    error.salaryMonth = "Salary Month is Required";
+  }
 
   if (values.year === "") {
     error.year = "Year is Required";

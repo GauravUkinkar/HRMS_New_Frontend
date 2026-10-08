@@ -88,7 +88,7 @@ const LeaveManagement = () => {
     } catch (error) {
       console.error("GET ALL LEAVES ERROR:", error.response?.data || error);
 
-      message.error("No Leaves Data Found");
+      message.error("No Leaves Record Available");
     } finally {
       setLoading(false);
     }
