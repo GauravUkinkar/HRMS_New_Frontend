@@ -85,24 +85,16 @@ const SalaryManagement = () => {
 
           return {
             ...item.data,
-
             key: item.data.sid || index + 1,
-
-            // Employee information
             employeeName: item.data.employeeName || "N/A",
-
             employeeId: item.data.employeeId || "N/A",
-
-            // Company
             companyName:
               item.data.companyName ||
               item.data.company ||
               item.data.company_name ||
               "",
-
-            // Salary period
-            month: item.data.month || "N/A",
-
+            month: item.data.month || item.salaryMonth || "N/A",
+            salaryMonth: item.salaryMonth || item.data.salaryMonth || "N/A",
             year: item.data.year || "N/A",
 
             // Earnings
@@ -252,14 +244,14 @@ const SalaryManagement = () => {
 
           return (
             String(data?.employeeId || "").trim() ===
-            String(employeeId).trim() &&
+              String(employeeId).trim() &&
             String(data?.year || "").trim() === String(year).trim() &&
-            String(data?.month || "")
+            String(data?.salaryMonth || "")
               .trim()
               .toLowerCase() ===
-            String(selectedMonth || "")
-              .trim()
-              .toLowerCase()
+              String(selectedMonth || "")
+                .trim()
+                .toLowerCase()
           );
         }) ||
         salaryList.find((item) => {
@@ -277,12 +269,6 @@ const SalaryManagement = () => {
         toast.error("Payslip data not found");
         return;
       }
-
-      // =========================================================
-      // IMPORTANT:
-      // Do NOT allow empty values from one object to overwrite
-      // valid values from the other object.
-      // =========================================================
 
       const firstNonEmpty = (...values) => {
         return values.find(
@@ -312,7 +298,12 @@ const SalaryManagement = () => {
         ),
 
         // Salary period
-        month: firstNonEmpty(apiPayslip.month, record.month, selectedMonth, ""),
+        month: firstNonEmpty(
+          apiPayslip.salaryMonth,
+          record.salaryMonth,
+          selectedMonth,
+          "",
+        ),
 
         year: firstNonEmpty(apiPayslip.year, record.year, year, ""),
 
@@ -523,14 +514,42 @@ const SalaryManagement = () => {
   // FILTER SALARY DATA
   // ==========================================
   const filteredSalaryData = salaryData.filter((salary) => {
+    const monthMap = {
+      january: "01",
+      february: "02",
+      march: "03",
+      april: "04",
+      may: "05",
+      june: "06",
+      july: "07",
+      august: "08",
+      september: "09",
+      october: "10",
+      november: "11",
+      december: "12",
+    };
+
+    const selectedMonthName = String(selectedMonth || "")
+      .trim()
+      .toLowerCase();
+
+    const selectedMonthNumber = monthMap[selectedMonthName];
+
+    const apiSalaryMonth = String(salary.salaryMonth || "")
+      .trim()
+      .toLowerCase();
+
+    const apiSalaryMonthNumber =
+      monthMap[apiSalaryMonth] || apiSalaryMonth.padStart(2, "0");
+
     const monthMatch =
       !selectedMonth ||
-      String(salary.month || "").trim().toLowerCase() ===
-      selectedMonth.trim().toLowerCase();
+      apiSalaryMonth === selectedMonthName ||
+      apiSalaryMonthNumber === selectedMonthNumber;
 
     const yearMatch =
       !selectedYear ||
-      String(salary.year || "").trim() === String(selectedYear).trim();
+      String(salary.year || "").trim() === String(selectedYear || "").trim();
 
     return monthMatch && yearMatch;
   });
@@ -539,86 +558,86 @@ const SalaryManagement = () => {
   // CLEAR FILTERS
   // ==========================================
 
- const clearFilters = () => {
-  setSelectedMonth("");
-  setSelectedYear("");
-  setCurrentPage(1);
-};
+  const clearFilters = () => {
+    setSelectedMonth("");
+    setSelectedYear("");
+    setCurrentPage(1);
+  };
 
   // ==========================================
   // TABLE COLUMNS
   // ==========================================
- const getColumnSearchProps = (dataIndex) => ({
-  filterDropdown: ({
-    setSelectedKeys,
-    selectedKeys,
-    confirm,
-    clearFilters,
-  }) => (
-    <div
-      style={{
-        padding: 8,
-      }}
-      onKeyDown={(e) => e.stopPropagation()}
-    >
-      <Input
-        placeholder={`Search ${dataIndex}`}
-        value={selectedKeys[0] || ""}
-        onChange={(e) => {
-          setSelectedKeys(e.target.value ? [e.target.value] : []);
-        }}
-        onPressEnter={() => {
-          confirm();
-        }}
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div
         style={{
-          width: 200,
-          marginBottom: 8,
-          display: "block",
+          padding: 8,
         }}
-      />
-
-      <Space>
-        <Button
-          type="primary"
-          onClick={() => confirm()}
-          icon={<SearchOutlined />}
-          size="small"
-          style={{
-            width: 90,
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0] || ""}
+          onChange={(e) => {
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
           }}
-        >
-          Search
-        </Button>
-
-        <Button
-          onClick={() => {
-            clearFilters?.();
+          onPressEnter={() => {
             confirm();
           }}
-          size="small"
           style={{
-            width: 90,
+            width: 200,
+            marginBottom: 8,
+            display: "block",
           }}
-        >
-          Reset
-        </Button>
-      </Space>
-    </div>
-  ),
+        />
 
-  filterIcon: (filtered) => (
-    <SearchOutlined
-      style={{
-        color: filtered ? "#1677ff" : undefined,
-      }}
-    />
-  ),
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => confirm()}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
 
-  onFilter: (value, record) =>
-    String(record?.[dataIndex] ?? "")
-      .toLowerCase()
-      .includes(String(value).toLowerCase()),
-});
+          <Button
+            onClick={() => {
+              clearFilters?.();
+              confirm();
+            }}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? "#1677ff" : undefined,
+        }}
+      />
+    ),
+
+    onFilter: (value, record) =>
+      String(record?.[dataIndex] ?? "")
+        .toLowerCase()
+        .includes(String(value).toLowerCase()),
+  });
   const columns = [
     {
       title: "Employee Name",
@@ -627,9 +646,7 @@ const SalaryManagement = () => {
       ...getColumnSearchProps("employeeName"),
       render: (text, record) => (
         <div className="employee-name">
-          <Avatar>
-            {record?.employeeName?.charAt(0)?.toUpperCase()}
-          </Avatar>
+          <Avatar>{record?.employeeName?.charAt(0)?.toUpperCase()}</Avatar>
           <span>{text}</span>
         </div>
       ),
@@ -660,14 +677,13 @@ const SalaryManagement = () => {
     },
 
     {
-  title: "Gross Salary",
-  dataIndex: "grossSalary",
-  key: "grossSalary",
-  width: 150,
-  ...getColumnSearchProps("grossSalary"),
-  render: (value) =>
-    `₹ ${Number(value || 0).toLocaleString("en-IN")}`,
-},
+      title: "Gross Salary",
+      dataIndex: "grossSalary",
+      key: "grossSalary",
+      width: 150,
+      ...getColumnSearchProps("grossSalary"),
+      render: (value) => `₹ ${Number(value || 0).toLocaleString("en-IN")}`,
+    },
 
     {
       title: "Total Working Days",
@@ -731,15 +747,14 @@ const SalaryManagement = () => {
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
-   {
-  title: "Employee ESIC",
-  dataIndex: "employeeEsic",
-  key: "employeeEsic",
-  width: 160,
-  ...getColumnSearchProps("employeeEsic"),
-  render: (value) =>
-    `₹ ${Number(value || 0).toLocaleString("en-IN")}`,
-},
+    {
+      title: "Employee ESIC",
+      dataIndex: "employeeEsic",
+      key: "employeeEsic",
+      width: 160,
+      ...getColumnSearchProps("employeeEsic"),
+      render: (value) => `₹ ${Number(value || 0).toLocaleString("en-IN")}`,
+    },
 
     {
       title: "Advance Salary",
@@ -790,18 +805,16 @@ const SalaryManagement = () => {
       render: (value) => `₹ ${Number(value).toLocaleString("en-IN")}`,
     },
 
-   {
-  title: "Net Salary",
-  dataIndex: "netSalary",
-  key: "netSalary",
-  width: 150,
-  ...getColumnSearchProps("netSalary"),
-  render: (value) => (
-    <strong>
-      ₹ {Number(value || 0).toLocaleString("en-IN")}
-    </strong>
-  ),
-},
+    {
+      title: "Net Salary",
+      dataIndex: "netSalary",
+      key: "netSalary",
+      width: 150,
+      ...getColumnSearchProps("netSalary"),
+      render: (value) => (
+        <strong>₹ {Number(value || 0).toLocaleString("en-IN")}</strong>
+      ),
+    },
 
     // ==========================================
     // ACTIONS
@@ -952,7 +965,7 @@ const SalaryManagement = () => {
             pageSize: pageSize,
             total: filteredSalaryData.length,
             showSizeChanger: true,
-            pageSizeOptions: [ "10", "20", "50"],
+            pageSizeOptions: ["10", "20", "50"],
             onChange: (page, size) => {
               setCurrentPage(page);
               setPageSize(size);

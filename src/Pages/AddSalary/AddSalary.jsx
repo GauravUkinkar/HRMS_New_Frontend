@@ -14,12 +14,12 @@ import { useNavigate } from "react-router-dom";
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 
 const AddSalary = () => {
-     const navigate = useNavigate();
+  const navigate = useNavigate();
   const { user } = useContext(UserContext);
   const [employees, setEmployees] = useState([]);
-  const [loader, setLoader]=useState(false);
+  const [loader, setLoader] = useState(false);
   const formObj = {
-    email:"",
+    email: "",
     employeeSalary: "",
     presentDay: "",
     paydate: "",
@@ -30,7 +30,7 @@ const AddSalary = () => {
     employeeName: "",
     insuranceCorporation: "",
     month: "",
-    salaryMonth:"",
+    salaryMonth: "",
     year: "",
     reimbursement: "",
     employeeId: "",
@@ -38,7 +38,6 @@ const AddSalary = () => {
 
   const getEmployees = async () => {
     try {
-      
       const res = await axios.get(
         "https://userservicetest.pandozasolutions.com/Admin/GetAllEmployee",
         {
@@ -66,55 +65,46 @@ const AddSalary = () => {
         },
       );
       toast.success("Salary added Successfully!");
-     setValues({ ...formObj });
-     
-    setError({});
+      setValues({ ...formObj });
+
+      setError({});
 
       console.log("Add Salary Response:", response.data);
     } catch (error) {
       toast.error("Salary already exists");
       console.error("Status:", error.response?.status);
       console.error("Response:", error.response?.data);
-    }finally{
+    } finally {
       setLoader(false);
     }
   };
 
-  const {
-  handleChange,
-  setValues,
-  values,
-  error,
-  setError,
-  handleSubmit,
-} = UseForm(formObj, ValidateSalary, generateSalary);
+  const { handleChange, setValues, values, error, setError, handleSubmit } =
+    UseForm(formObj, ValidateSalary, generateSalary);
 
   return (
     <>
       <MainPanel
-            breadcrumbs={[
-        { label: "Dashboard", link: "/dashboard" },
-        { label: "Add Salary" },
-      ]}
-      title={
-        String(user?.role || user?.crmRole || "")
-          .trim()
-          .toUpperCase() === "ADMIN"
-          ? "Admin Dashboard"
-          : "Add Salary"
-      }
+        breadcrumbs={[
+          { label: "Dashboard", link: "/dashboard" },
+          { label: "Add Salary" },
+        ]}
+        title={
+          String(user?.role || user?.crmRole || "")
+            .trim()
+            .toUpperCase() === "ADMIN"
+            ? "Admin Dashboard"
+            : "Add Salary"
+        }
       >
-
-                  <button
-            type="button"
-            className="back-btn"
-            onClick={() =>
-              navigate("/salaryManagement")
-            }
-          >
-            ← Back
-          </button>
-        {loader && <Loader/>}
+        <button
+          type="button"
+          className="back-btn"
+          onClick={() => navigate("/salaryManagement")}
+        >
+          ← Back
+        </button>
+        {loader && <Loader />}
         <form onSubmit={handleSubmit} className="salary-parent">
           <h1>Generate Salary Slip</h1>
 
@@ -194,8 +184,6 @@ const AddSalary = () => {
                 required
               />
 
-
-              
               <Input
                 name="year"
                 label="Year"
@@ -205,8 +193,8 @@ const AddSalary = () => {
                 required
               />
             </div>
-                          <div class="form-row">
-                              <SelectInput
+            <div class="form-row">
+              <SelectInput
                 label="Select Month"
                 name="month"
                 value={values.month}
@@ -227,9 +215,9 @@ const AddSalary = () => {
                 <MenuItem value="November">November</MenuItem>
                 <MenuItem value="December">December</MenuItem>
               </SelectInput>
-                            <SelectInput
+              <SelectInput
                 label="Select Salary Month"
-                name="month"
+                name="salaryMonth"
                 value={values.salaryMonth}
                 error={error.salaryMonth}
                 onChange={handleChange}
@@ -248,8 +236,7 @@ const AddSalary = () => {
                 <MenuItem value="November">November</MenuItem>
                 <MenuItem value="December">December</MenuItem>
               </SelectInput>
-
-              </div>
+            </div>
             <div className="form-row">
               <Input
                 name="totalWorkingDay"
@@ -300,13 +287,13 @@ const AddSalary = () => {
               />
             </div>
             <div className="form-row">
-            <Input
-              name="professionalTax"
-              label="Professional Tax"
-              error={error?.professionalTax}
-              value={values.professionalTax || ""}
-              onChange={handleChange}
-            />
+              <Input
+                name="professionalTax"
+                label="Professional Tax"
+                error={error?.professionalTax}
+                value={values.professionalTax || ""}
+                onChange={handleChange}
+              />
               <Input
                 name="reimbursement"
                 label="Riembursement"
