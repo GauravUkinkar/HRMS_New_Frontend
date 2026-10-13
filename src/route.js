@@ -11,6 +11,9 @@ import Leave_details from "./Pages/LeaveManagement/Leave_details";
 const Payslip = lazy(() =>
   import("./Pages/Payslip/Payslip")
 );
+const HolidayCalender = lazy(() =>
+  import("./Pages/HolidayCalender/HolidayCalender")
+);
 const AddLeave = lazy(() =>
   import("./Pages/LeaveManagement/AddLeave")
 );
@@ -27,6 +30,9 @@ const TeamManagement = lazy(() =>
 
 const AddEmployee = lazy(() =>
   import("./Pages/AddEmployee/AddEmployee")
+);
+const AddHoliday = lazy(() =>
+  import("./Pages/HolidayCalender/AddHoliday")
 );
 
 const OfficialNotes = lazy(() =>
@@ -126,6 +132,9 @@ const EmpLeaveManagement = lazy(() =>
 const PayslipManagement = lazy(() =>
   import("./Pages/PayslipManagement/Payslipmanagement")
 );
+const RegisterDevice = lazy(() =>
+  import("./Pages/RegisterDevice/RegisterDevice")
+);
 
 export const routes = [
 
@@ -135,6 +144,13 @@ export const routes = [
     comp: EmpList,
     adminonly: false,
     employeeonly: false,
+  },
+  
+  {
+    name: "RegisterDevice",
+    path: "/registerDevice",
+    comp: RegisterDevice,
+
   },
 
   {
@@ -421,6 +437,20 @@ export const routes = [
     path: "/teamManagement",
     comp: TeamManagement,
     adminonly: true,
+
+  },
+          {
+    name: "HolidayCalender",
+    path: "/holidayCalender",
+    comp: HolidayCalender,
+
+
+  },
+            {
+    name: "AddHoliday",
+    path: "/addHoliday",
+    comp: AddHoliday,
+
 
   },
 ];

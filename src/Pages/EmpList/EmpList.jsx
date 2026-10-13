@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Table, Avatar, Tag, Space, Input, Button } from "antd";
+import { Table, Avatar, Tag, Space, Input, Button, Modal } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UserContext } from "../../../Context";
@@ -16,11 +16,16 @@ import { Link, useNavigate } from "react-router-dom";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import axios from "axios";
 import dayjs from "dayjs";
+import { BsPcDisplay } from "react-icons/bs";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 
 const EmpList = () => {
+  const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
+  const [enrollmentCode, setEnrollmentCode] = useState("");
+  const [enrollmentExpiry, setEnrollmentExpiry] = useState("");
+  const [enrollmentLoading, setEnrollmentLoading] = useState(false);
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
@@ -43,29 +48,77 @@ const EmpList = () => {
 
       const employees = Array.isArray(res?.data)
         ? res.data
-          .map((item, index) => ({
-            key: item?.data?.uid || item?.data?.employeeId || index + 1,
-            name: item?.data?.employeeName || "",
-            empId: item?.data?.employeeId || "",
-            department: item?.data?.department || "",
-            designation: item?.data?.designation || "",
-            email: item?.data?.email || "",
-            phone: item?.data?.contactNumber || "",
-            dob: item?.data?.dateOfBirth || "",
-            address: item?.data?.currentAddress || "",
-            status: item?.data?.employeeStatus || "",
-            uid: item?.data?.uid || "",
-          }))
-          .filter((item) => item.empId || item.uid)
+            .map((item, index) => ({
+              key: item?.data?.uid || item?.data?.employeeId || index + 1,
+              name: item?.data?.employeeName || "",
+              empId: item?.data?.employeeId || "",
+              department: item?.data?.department || "",
+              designation: item?.data?.designation || "",
+              email: item?.data?.email || "",
+              phone: item?.data?.contactNumber || "",
+              dob: item?.data?.dateOfBirth || "",
+              address: item?.data?.currentAddress || "",
+              status: item?.data?.employeeStatus || "",
+              uid: item?.data?.uid || "",
+            }))
+            .filter((item) => item.empId || item.uid)
         : [];
 
       setAllEmployee(employees);
     } catch (error) {
       console.error("Get All Employee Error:", error);
 
-      toast.error(
-        error?.response?.data?.message || "Failed to load employees"
+      toast.error(error?.response?.data?.message || "Failed to load employees");
+    }
+  };
+
+  const registerEmployeeDevice = async (employee) => {
+    try {
+      const employeeName = employee.name;
+      const employeeUid = employee.uid;
+
+      if (!employeeName?.trim()) {
+        toast.error("Employee name is missing.");
+        return;
+      }
+
+      if (!employeeUid) {
+        toast.error("Employee UID is missing.");
+        return;
+      }
+
+      setEnrollmentLoading(true);
+
+      const response = await axios.post(
+        `https://jenkins.pandozasolutions.com/AuthController/passkey/admin/${employeeUid}/registration-options`,
+        {
+          deviceName: employeeName.trim(),
+        },
+        {
+          withCredentials: true,
+        },
       );
+
+      const data = response.data?.data || response.data;
+
+      if (!data?.enrollmentCode) {
+        toast.error("Enrollment code was not received.");
+        return;
+      }
+
+      setEnrollmentCode(data.enrollmentCode);
+      setEnrollmentExpiry(data.expiresAt || "");
+      setShowEnrollmentModal(true);
+    } catch (error) {
+      console.error("Device registration error:", error);
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+          error.response?.data?.message ||
+          "Unable to generate enrollment code.",
+      );
+    } finally {
+      setEnrollmentLoading(false);
     }
   };
 
@@ -76,7 +129,7 @@ const EmpList = () => {
     }
 
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this employee?"
+      "Are you sure you want to delete this employee?",
     );
 
     if (!confirmDelete) return;
@@ -93,16 +146,12 @@ const EmpList = () => {
       console.error("Delete Employee Error:", error);
 
       toast.error(
-        error?.response?.data?.message || "Failed to delete employee"
+        error?.response?.data?.message || "Failed to delete employee",
       );
     }
   };
 
-  const getEmployeeMonthlyAttendance = async (
-    employeeId,
-    month,
-    year
-  ) => {
+  const getEmployeeMonthlyAttendance = async (employeeId, month, year) => {
     if (!employeeId) {
       setEmployeeAttendanceList([]);
       toast.error("Employee ID is missing");
@@ -122,7 +171,7 @@ const EmpList = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const attendanceList = Array.isArray(response?.data)
@@ -140,8 +189,7 @@ const EmpList = () => {
       setEmployeeAttendanceList([]);
 
       toast.error(
-        error?.response?.data?.message ||
-        "Unable to load employee attendance"
+        error?.response?.data?.message || "Unable to load employee attendance",
       );
     } finally {
       setEmployeeAttendanceLoading(false);
@@ -161,7 +209,7 @@ const EmpList = () => {
     await getEmployeeMonthlyAttendance(
       record?.empId,
       currentMonth,
-      currentYear
+      currentYear,
     );
   };
 
@@ -173,7 +221,7 @@ const EmpList = () => {
     await getEmployeeMonthlyAttendance(
       selectedEmployee?.empId,
       month,
-      selectedYear
+      selectedYear,
     );
   };
 
@@ -185,7 +233,7 @@ const EmpList = () => {
     await getEmployeeMonthlyAttendance(
       selectedEmployee?.empId,
       selectedMonth,
-      year
+      year,
     );
   };
 
@@ -218,9 +266,7 @@ const EmpList = () => {
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0] || ""}
           onChange={(event) => {
-            setSelectedKeys(
-              event.target.value ? [event.target.value] : []
-            );
+            setSelectedKeys(event.target.value ? [event.target.value] : []);
           }}
           onPressEnter={() => {
             confirm();
@@ -254,11 +300,7 @@ const EmpList = () => {
             Reset
           </Button>
 
-          <Button
-            type="link"
-            size="small"
-            onClick={() => close()}
-          >
+          <Button type="link" size="small" onClick={() => close()}>
             Close
           </Button>
         </Space>
@@ -304,8 +346,7 @@ const EmpList = () => {
       key: "date",
       align: "center",
 
-      render: (date) =>
-        date ? dayjs(date).format("YYYY-MM-DD") : "-",
+      render: (date) => (date ? dayjs(date).format("YYYY-MM-DD") : "-"),
     },
 
     {
@@ -315,9 +356,7 @@ const EmpList = () => {
       align: "center",
 
       render: (_, record) =>
-        record?.employeeName ||
-        selectedEmployee?.name ||
-        "-",
+        record?.employeeName || selectedEmployee?.name || "-",
     },
 
     {
@@ -327,9 +366,7 @@ const EmpList = () => {
       align: "center",
 
       render: (_, record) =>
-        record?.employeeDesignation ||
-        selectedEmployee?.designation ||
-        "-",
+        record?.employeeDesignation || selectedEmployee?.designation || "-",
     },
 
     {
@@ -415,22 +452,14 @@ const EmpList = () => {
           displayStatus = "ABSENT";
         }
 
-        return (
-          <span className={className}>
-            {displayStatus}
-          </span>
-        );
+        return <span className={className}>{displayStatus}</span>;
       },
     },
   ];
 
   const columns = [
     {
-      title: (
-        <>
-          Name
-        </>
-      ),
+      title: <>Name</>,
       dataIndex: "name",
       key: "name",
       width: 220,
@@ -444,15 +473,12 @@ const EmpList = () => {
 
         const initials =
           nameParts.length > 1
-            ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]
-            }`
+            ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`
             : nameParts[0]?.[0] || "?";
 
         return (
           <Space>
-            <Avatar className="avatar">
-              {initials.toUpperCase()}
-            </Avatar>
+            <Avatar className="avatar">{initials.toUpperCase()}</Avatar>
 
             {name}
           </Space>
@@ -461,11 +487,7 @@ const EmpList = () => {
     },
 
     {
-      title: (
-        <>
-          Employee ID
-        </>
-      ),
+      title: <>Employee ID</>,
       dataIndex: "empId",
       key: "empId",
       width: 150,
@@ -490,11 +512,7 @@ const EmpList = () => {
     },
 
     {
-      title: (
-        <>
-          Email 
-        </>
-      ),
+      title: <>Email</>,
       dataIndex: "email",
       key: "email",
       width: 260,
@@ -516,8 +534,7 @@ const EmpList = () => {
       width: 150,
       ...getColumnSearchProps("dob"),
 
-      render: (dob) =>
-        dob ? dayjs(dob).format("YYYY-MM-DD") : "-",
+      render: (dob) => (dob ? dayjs(dob).format("YYYY-MM-DD") : "-"),
     },
 
     {
@@ -552,9 +569,7 @@ const EmpList = () => {
       ...getColumnSearchProps("status"),
 
       render: (status) => (
-        <Tag color={status ? "success" : "default"}>
-          {status || "N/A"}
-        </Tag>
+        <Tag color={status ? "success" : "default"}>{status || "N/A"}</Tag>
       ),
     },
 
@@ -568,33 +583,28 @@ const EmpList = () => {
         <Space size="middle">
           <EyeOutlined
             className="view"
-            onClick={() =>
-              navigate(
-                `/EmployeeProfile/${record.empId}`
-              )
-            }
+            onClick={() => navigate(`/EmployeeProfile/${record.empId}`)}
           />
 
           <EditOutlined
             className="edit"
-            onClick={() =>
-              navigate(
-                `/editEmployee/${record.empId}`
-              )
-            }
+            onClick={() => navigate(`/editEmployee/${record.empId}`)}
           />
 
           <DeleteOutlined
             className="delete"
-            onClick={() =>
-              handleDeleteEmployee(record.uid)
-            }
+            onClick={() => handleDeleteEmployee(record.uid)}
           />
 
           <SlCalender
             className="date"
             title="View Attendance"
             onClick={() => handleCalendar(record)}
+          />
+          <BsPcDisplay
+            title="Register Employee Device"
+            style={{ cursor: "pointer", fontSize: "18px" }}
+            onClick={() => registerEmployeeDevice(record)}
           />
         </Space>
       ),
@@ -645,9 +655,7 @@ const EmpList = () => {
             <div className="attendance-header">
               <h1 className="empname">
                 Check Employee Attendance -{" "}
-                <span>
-                  {selectedEmployee?.name || ""}
-                </span>
+                <span>{selectedEmployee?.name || ""}</span>
               </h1>
             </div>
 
@@ -657,24 +665,17 @@ const EmpList = () => {
 
                 <select
                   value={selectedMonth}
-                  onChange={
-                    handleEmployeeMonthChange
-                  }
+                  onChange={handleEmployeeMonthChange}
                 >
                   {Array.from(
                     {
                       length: 12,
                     },
                     (_, index) => (
-                      <option
-                        key={index + 1}
-                        value={index + 1}
-                      >
-                        {dayjs()
-                          .month(index)
-                          .format("MMMM")}
+                      <option key={index + 1} value={index + 1}>
+                        {dayjs().month(index).format("MMMM")}
                       </option>
-                    )
+                    ),
                   )}
                 </select>
               </div>
@@ -685,18 +686,14 @@ const EmpList = () => {
                 <input
                   type="number"
                   value={selectedYear}
-                  onChange={
-                    handleEmployeeYearChange
-                  }
+                  onChange={handleEmployeeYearChange}
                 />
               </div>
 
               <button
                 type="button"
                 className="back-btn"
-                onClick={
-                  closeEmployeeAttendance
-                }
+                onClick={closeEmployeeAttendance}
               >
                 ← Back
               </button>
@@ -704,29 +701,21 @@ const EmpList = () => {
 
             <Table
               columns={employeeAttendanceColumns}
-              dataSource={employeeAttendanceList.map(
-                (item, index) => ({
-                  ...item,
+              dataSource={employeeAttendanceList.map((item, index) => ({
+                ...item,
 
-                  employeeId:
-                    item?.employeeId ||
-                    selectedEmployee?.empId ||
-                    "",
+                employeeId: item?.employeeId || selectedEmployee?.empId || "",
 
-                  employeeName:
-                    item?.employeeName ||
-                    selectedEmployee?.name ||
-                    "",
+                employeeName:
+                  item?.employeeName || selectedEmployee?.name || "",
 
-                  employeeDesignation:
-                    item?.employeeDesignation ||
-                    selectedEmployee?.designation ||
-                    "",
+                employeeDesignation:
+                  item?.employeeDesignation ||
+                  selectedEmployee?.designation ||
+                  "",
 
-                  key: `${item?.date || index
-                    }-${index}`,
-                })
-              )}
+                key: `${item?.date || index}-${index}`,
+              }))}
               loading={employeeAttendanceLoading}
               bordered
               scroll={{
@@ -735,11 +724,7 @@ const EmpList = () => {
               pagination={{
                 defaultPageSize: 10,
                 showSizeChanger: true,
-                pageSizeOptions: [
-                  "10",
-                  "20",
-                  "50",
-                ],
+                pageSizeOptions: ["10", "20", "50"],
               }}
             />
           </div>
@@ -750,21 +735,14 @@ const EmpList = () => {
 
               <div className="employee-list-actions">
                 <div className="count">
-                  Total Number Of Employee:{" "}
-                  <span>
-                    {allemployee.length}
-                  </span>
+                  Total Number Of Employee: <span>{allemployee.length}</span>
                 </div>
 
                 <div className="add">
-                  <Link
-                    className="add"
-                    to="/addEmployee"
-                  >
+                  <Link className="add" to="/addEmployee">
                     <span>
                       <FaPlus />
                     </span>
-
                     Add Employee
                   </Link>
                 </div>
@@ -782,29 +760,61 @@ const EmpList = () => {
                 defaultCurrent: 1,
                 defaultPageSize: 5,
                 showSizeChanger: true,
-                pageSizeOptions: [
-                  "5",
-                  "10",
-                  "20",
-                  "50",
-                ],
+                pageSizeOptions: ["5", "10", "20", "50"],
                 showQuickJumper: true,
 
-                showTotal: (
-                  total,
-                  range
-                ) =>
+                showTotal: (total, range) =>
                   `${range[0]}-${range[1]} of ${total} employees`,
               }}
               rowClassName={(_, index) =>
-                index % 2 === 0
-                  ? "table-row-light"
-                  : "table-row-dark"
+                index % 2 === 0 ? "table-row-light" : "table-row-dark"
               }
             />
           </div>
         )}
       </MainPanel>
+
+      <Modal
+        title="Employee Device Registration"
+        open={showEnrollmentModal}
+        onCancel={() => setShowEnrollmentModal(false)}
+        footer={[
+          <Button key="close" onClick={() => setShowEnrollmentModal(false)}>
+            Close
+          </Button>,
+          <Button
+            key="copy"
+            type="primary"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(enrollmentCode);
+                toast.success("Enrollment code copied successfully!");
+              } catch {
+                toast.error("Unable to copy enrollment code.");
+              }
+            }}
+          >
+            Copy Code
+          </Button>,
+        ]}
+        centered
+      >
+        <p>Copy this enrollment code and send it to the employee.</p>
+
+        <Input
+          value={enrollmentCode}
+          readOnly
+          size="large"
+          style={{ fontWeight: 600, marginBottom: 12 }}
+        />
+
+        {enrollmentExpiry && (
+          <p>
+            <strong>Expires at:</strong>{" "}
+            {new Date(enrollmentExpiry).toLocaleString()}
+          </p>
+        )}
+      </Modal>
     </>
   );
 };

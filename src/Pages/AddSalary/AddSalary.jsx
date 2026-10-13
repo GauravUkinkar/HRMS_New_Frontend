@@ -195,7 +195,7 @@ const AddSalary = () => {
             </div>
             <div class="form-row">
               <SelectInput
-                label="Select Month"
+                label="Select Pay Month"
                 name="month"
                 value={values.month}
                 error={error.month}

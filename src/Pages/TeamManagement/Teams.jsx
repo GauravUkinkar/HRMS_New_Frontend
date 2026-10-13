@@ -307,16 +307,7 @@ const Teams = () => {
             />
           </div>
 
-          <Select
-            value={memberFilter}
-            onChange={(e) => setMemberFilter(e.target.value)}
-            className="team-filter"
-            displayEmpty
-          >
-            <MenuItem value="all">All Teams</MenuItem>
-            <MenuItem value="hasMembers">Teams With Members</MenuItem>
-            <MenuItem value="empty">No Members</MenuItem>
-          </Select>
+
         </div>
 
         {/* SECTION HEADING */}

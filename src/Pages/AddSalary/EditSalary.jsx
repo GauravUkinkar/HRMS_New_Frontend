@@ -32,6 +32,7 @@ const EditSalary = () => {
     employeeName: "",
     insuranceCorporation: "",
     month: "",
+    salaryMonth: "",
     year: "",
     reimbursement: "",
     employeeId: "",
@@ -90,6 +91,7 @@ const EditSalary = () => {
         employeeName: salary.employeeName ?? "",
         insuranceCorporation: salary.insuranceCorporation ?? "",
         month: salary.month ?? "",
+        salaryMonth:salary.salaryMonth ?? "",
         year: salary.year ?? "",
         reimbursement: salary.reimbursement ?? "",
         employeeId: salary.employeeId ?? "",
@@ -210,29 +212,6 @@ const EditSalary = () => {
               onChange={handleChange}
               required
             />
-
-            <SelectInput
-              label="Select Month"
-              name="month"
-              value={salaryData.month || ""}
-              error={error?.month}
-              onChange={handleChange}
-              required
-            >
-              <MenuItem value="January">January</MenuItem>
-              <MenuItem value="February">February</MenuItem>
-              <MenuItem value="March">March</MenuItem>
-              <MenuItem value="April">April</MenuItem>
-              <MenuItem value="May">May</MenuItem>
-              <MenuItem value="June">June</MenuItem>
-              <MenuItem value="July">July</MenuItem>
-              <MenuItem value="August">August</MenuItem>
-              <MenuItem value="September">September</MenuItem>
-              <MenuItem value="October">October</MenuItem>
-              <MenuItem value="November">November</MenuItem>
-              <MenuItem value="December">December</MenuItem>
-            </SelectInput>
-
             <Input
               name="year"
               label="Year"
@@ -242,6 +221,50 @@ const EditSalary = () => {
               required
             />
           </div>
+                      <div class="form-row">
+              <SelectInput
+                label="Select Pay Month"
+                name="month"
+                value={salaryData.month}
+                error={error.month}
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value="January">January</MenuItem>
+                <MenuItem value="February">February</MenuItem>
+                <MenuItem value="March">March</MenuItem>
+                <MenuItem value="April">April</MenuItem>
+                <MenuItem value="May">May</MenuItem>
+                <MenuItem value="June">June</MenuItem>
+                <MenuItem value="July">July</MenuItem>
+                <MenuItem value="August">August</MenuItem>
+                <MenuItem value="September">September</MenuItem>
+                <MenuItem value="October">October</MenuItem>
+                <MenuItem value="November">November</MenuItem>
+                <MenuItem value="December">December</MenuItem>
+              </SelectInput>
+              <SelectInput
+                label="Select Salary Month"
+                name="salaryMonth"
+                value={salaryData.salaryMonth}
+                error={error.salaryMonth}
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value="January">January</MenuItem>
+                <MenuItem value="February">February</MenuItem>
+                <MenuItem value="March">March</MenuItem>
+                <MenuItem value="April">April</MenuItem>
+                <MenuItem value="May">May</MenuItem>
+                <MenuItem value="June">June</MenuItem>
+                <MenuItem value="July">July</MenuItem>
+                <MenuItem value="August">August</MenuItem>
+                <MenuItem value="September">September</MenuItem>
+                <MenuItem value="October">October</MenuItem>
+                <MenuItem value="November">November</MenuItem>
+                <MenuItem value="December">December</MenuItem>
+              </SelectInput>
+            </div>
 
           {/* Working Days */}
           <div className="form-row">

@@ -1,0 +1,79 @@
+.calender-header {
+  display: flex;
+  justify-content: space-between;
+  background-color: var(--accent2);
+  align-items: center;
+  padding: 5px 10px;
+  color: white;
+  border-radius: 5px;
+
+  .add {
+    background-color: white !important;
+    color: var(--accent2) !important;
+    font-weight: 600;
+    border: 1px solid white;
+
+    &:hover,
+    &:focus-visible {
+      background-color: #002035 !important;
+      color: white !important;
+      border-color: #002035 !important;
+    }
+  }
+}
+.holiday-table {
+  width: 100%;
+  margin-top: 20px;
+
+  .cancelled-holiday {
+    td {
+      position: relative;
+      color: red !important;
+    }
+
+    .ant-tag {
+      color: red !important;
+    }
+
+    // Strike through Date, Day, and Description only
+    td:not(:has(button))::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      background-color: black;
+      z-index: 2;
+      pointer-events: none;
+    }
+  }
+
+  .ant-table {
+    border-radius: 5px;
+  }
+
+  .ant-table-thead > tr > th {
+    background: #002035;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 16px;
+  }
+
+  .ant-table-tbody > tr > td {
+    padding: 16px;
+    vertical-align: top;
+  }
+
+  .ant-table-tbody > tr.table-row-light > td {
+    background: #eafafa !important;
+  }
+
+  .ant-table-tbody > tr.table-row-dark > td {
+    background: #ffffff !important;
+  }
+
+  .ant-table-tbody > tr:hover > td {
+    background: #dff6f6 !important;
+  }
+}

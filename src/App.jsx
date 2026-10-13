@@ -15,15 +15,13 @@ import { UserContext } from "../Context";
 import LeaveApplication from "./Pages/LeaveApplication/LeaveApplication";
 import PageNotFound from "./Pages/PageNotFound/PageNotFound";
 
-
 function App() {
-  const { loader } = useContext(UserContext)
+  const { loader } = useContext(UserContext);
   return (
     <>
       <ToastContainer />
       {loader && <Loader />}
       <Routes>
-
         <Route path="/LeaveApplication" element={<LeaveApplication />} />
         <Route path="/login" element={<Login />} />
         <Route path="/otpverification" element={<OtpVerification />} />
@@ -32,13 +30,25 @@ function App() {
         <Route path="/forgot" element={<Forgot />} />
 
         {routes.map((item, index) => (
-          <Route key={index} path={item.path} element={<AuthRoute adminonly={item.adminonly} employeeonly={item.employeeonly}><item.comp /></AuthRoute>} />
+          <Route
+            key={index}
+            path={item.path}
+            element={
+              item.path === "/registerDevice" ? (
+                <item.comp />
+              ) : (
+                <AuthRoute
+                  adminonly={item.adminonly}
+                  employeeonly={item.employeeonly}
+                >
+                  <item.comp />
+                </AuthRoute>
+              )
+            }
+          />
         ))}
 
-           <Route
-          path="*"
-          element={<PageNotFound />}
-        />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </>
   );

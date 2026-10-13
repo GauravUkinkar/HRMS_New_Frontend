@@ -93,8 +93,11 @@ const SalaryManagement = () => {
               item.data.company ||
               item.data.company_name ||
               "",
-            month: item.data.month || item.salaryMonth || "N/A",
+            month: item.payMonth || item.data.month || "N/A",
             salaryMonth: item.salaryMonth || item.data.salaryMonth || "N/A",
+
+            
+
             year: item.data.year || "N/A",
 
             // Earnings
@@ -238,32 +241,23 @@ const SalaryManagement = () => {
       // FIND THE EXACT EMPLOYEE + YEAR + MONTH RECORD
       // =========================================================
 
-      const matchingSalary =
-        salaryList.find((item) => {
-          const data = item?.data;
+const matchingSalary = salaryList.find((item) => {
+  const data = item?.data;
 
-          return (
-            String(data?.employeeId || "").trim() ===
-              String(employeeId).trim() &&
-            String(data?.year || "").trim() === String(year).trim() &&
-            String(data?.salaryMonth || "")
-              .trim()
-              .toLowerCase() ===
-              String(selectedMonth || "")
-                .trim()
-                .toLowerCase()
-          );
-        }) ||
-        salaryList.find((item) => {
-          const data = item?.data;
+  return (
+    String(data?.employeeId ?? "").trim() === String(employeeId).trim() &&
+    String(data?.year ?? "").trim() === String(year).trim() &&
+    String(data?.month ?? "").trim().toLowerCase() ===
+      String(selectedMonth ?? "").trim().toLowerCase()
+  );
+});
 
-          return (
-            String(data?.employeeId || "").trim() === String(employeeId).trim()
-          );
-        }) ||
-        salaryList[0];
+if (!matchingSalary?.data) {
+  toast.error("Payslip not found for the selected month and year");
+  return;
+}
 
-      const apiPayslip = matchingSalary?.data;
+const apiPayslip = matchingSalary.data;
 
       if (!apiPayslip) {
         toast.error("Payslip data not found");
@@ -299,6 +293,12 @@ const SalaryManagement = () => {
 
         // Salary period
         month: firstNonEmpty(
+          apiPayslip.month,
+          record.month,
+          selectedMonth,
+          "",
+        ),
+                salaryMonth: firstNonEmpty(
           apiPayslip.salaryMonth,
           record.salaryMonth,
           selectedMonth,
@@ -513,47 +513,44 @@ const SalaryManagement = () => {
   // ==========================================
   // FILTER SALARY DATA
   // ==========================================
-  const filteredSalaryData = salaryData.filter((salary) => {
-    const monthMap = {
-      january: "01",
-      february: "02",
-      march: "03",
-      april: "04",
-      may: "05",
-      june: "06",
-      july: "07",
-      august: "08",
-      september: "09",
-      october: "10",
-      november: "11",
-      december: "12",
-    };
+const filteredSalaryData = salaryData.filter((salary) => {
+  const monthMap = {
+    january: "01",
+    february: "02",
+    march: "03",
+    april: "04",
+    may: "05",
+    june: "06",
+    july: "07",
+    august: "08",
+    september: "09",
+    october: "10",
+    november: "11",
+    december: "12",
+  };
 
-    const selectedMonthName = String(selectedMonth || "")
-      .trim()
-      .toLowerCase();
+  const normalizeMonth = (value) => {
+    const month = String(value ?? "").trim().toLowerCase();
 
-    const selectedMonthNumber = monthMap[selectedMonthName];
+    if (monthMap[month]) return monthMap[month];
 
-    const apiSalaryMonth = String(salary.salaryMonth || "")
-      .trim()
-      .toLowerCase();
+    if (/^(0?[1-9]|1[0-2])$/.test(month)) {
+      return month.padStart(2, "0");
+    }
 
-    const apiSalaryMonthNumber =
-      monthMap[apiSalaryMonth] || apiSalaryMonth.padStart(2, "0");
+    return "";
+  };
 
-    const monthMatch =
-      !selectedMonth ||
-      apiSalaryMonth === selectedMonthName ||
-      apiSalaryMonthNumber === selectedMonthNumber;
+  const monthMatch =
+    !selectedMonth ||
+    normalizeMonth(salary.salaryMonth) === normalizeMonth(selectedMonth);
 
-    const yearMatch =
-      !selectedYear ||
-      String(salary.year || "").trim() === String(selectedYear || "").trim();
+  const yearMatch =
+    !selectedYear ||
+    String(salary.year ?? "").trim() === String(selectedYear).trim();
 
-    return monthMatch && yearMatch;
-  });
-
+  return monthMatch && yearMatch;
+});
   // ==========================================
   // CLEAR FILTERS
   // ==========================================
@@ -661,8 +658,15 @@ const SalaryManagement = () => {
     },
 
     {
-      title: "Month",
+      title: "Pay Month",
       dataIndex: "month",
+      key: "month",
+      width: 130,
+      ...getColumnSearchProps("month"),
+    },
+        {
+      title: "Salary Month",
+      dataIndex: "salaryMonth",
       key: "month",
       width: 130,
       ...getColumnSearchProps("month"),
