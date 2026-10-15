@@ -4,7 +4,7 @@ import "./ViewApprovals.scss";
 import { FaPlus } from "react-icons/fa";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 
-import { Table, Space, Tag, Avatar } from "antd";
+import { Table, Space, Tag, Avatar, Popover } from "antd";
 
 import { MdEdit, MdDelete } from "react-icons/md";
 
@@ -176,7 +176,7 @@ const ViewApproval = () => {
 
         price: item.price,
 
-        approvebByMam: item.approvebByMam,
+
 
         approvedByFinance: item.approvedByFinance,
 
@@ -544,17 +544,46 @@ const ViewApproval = () => {
     // SUBJECT
     // ================================================
 
-    {
-      title: "Subject",
 
-      dataIndex: "subject",
 
-      key: "subject",
 
-      width: 250,
+{
+  title: "Subject",
+  dataIndex: "subject",
+  key: "subject",
+  width: 250,
+  render: (subject, record) => (
+    <Popover
+      trigger="click"
+      title={subject || "Subject"}
+      content={
+        <div
+          style={{
+            maxWidth: 450,
+            maxHeight: 350,
+            overflowY: "auto",
+            overflowWrap: "anywhere",
+            lineHeight: 1.7,
+          }}
+          dangerouslySetInnerHTML={{
+            __html: record.content || "No message available",
+          }}
+        />
+      }
+    >
+      <span
+        style={{
+          cursor: "pointer",
 
-      render: (subject) => subject || "N/A",
-    },
+        }}
+        title="Click to view full message"
+      >
+        {subject || "N/A"}
+      </span>
+    </Popover>
+  ),
+},
+
 
     // ================================================
     // START DATE
@@ -626,48 +655,7 @@ const ViewApproval = () => {
       },
     },
 
-    // ================================================
-    // APPROVED BY MAM
-    // ================================================
 
-    {
-      title: "Approved By Mam",
-
-      dataIndex: "approvebByMam",
-
-      key: "approvebByMam",
-
-      width: 190,
-
-      render: (text, record) => (
-        <>
-          {user?.role === "ADMIN" && edit === record.id ? (
-            <SelectInput
-              label="Select Option"
-              value={record.approvebByMam || ""}
-              onChange={(e) => changemamStatus(e, record.id)}
-              disabled={statusLoader}
-            >
-              <MenuItem value="Approved">Approved</MenuItem>
-
-              <MenuItem value="Rejected">Rejected</MenuItem>
-            </SelectInput>
-          ) : (
-            <Tag
-              color={
-                record.approvebByMam === "Approved"
-                  ? "green"
-                  : record.approvebByMam === "Rejected"
-                    ? "red"
-                    : "gold"
-              }
-            >
-              {record.approvebByMam || "Pending"}
-            </Tag>
-          )}
-        </>
-      ),
-    },
 
     // ================================================
     // APPROVED BY FINANCE
@@ -716,43 +704,27 @@ const ViewApproval = () => {
     // OVERALL STATUS
     // ================================================
 
-    {
-      title: "Status",
 
-      dataIndex: "status",
+{
+  title: "Status",
+  dataIndex: "status",
+  key: "status",
+  width: 160,
+  render: (status) => (
+    <Tag
+      color={
+        status === "Approved"
+          ? "green"
+          : status === "Rejected"
+            ? "red"
+            : "gold"
+      }
+    >
+      {status || "Pending"}
+    </Tag>
+  ),
+},
 
-      key: "status",
-
-      width: 160,
-
-      render: (text, record) => (
-        <>
-          {user?.role === "ADMIN" && edit === record.id ? (
-            <SelectInput
-              label="Select Option"
-              value={record.status || ""}
-              onChange={(e) => changeoverStatus(e, record.id)}
-            >
-              <MenuItem value="Approved">Approved</MenuItem>
-
-              <MenuItem value="Rejected">Rejected</MenuItem>
-            </SelectInput>
-          ) : (
-            <Tag
-              color={
-                record.status === "Approved"
-                  ? "green"
-                  : record.status === "Rejected"
-                    ? "red"
-                    : "gold"
-              }
-            >
-              {record.status || "Pending"}
-            </Tag>
-          )}
-        </>
-      ),
-    },
 
     // ================================================
     // ACTIONS

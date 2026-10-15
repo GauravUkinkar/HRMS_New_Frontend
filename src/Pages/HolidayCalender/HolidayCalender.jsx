@@ -42,7 +42,11 @@ const HolidayCalender = () => {
       okButtonProps: { danger: true },
       cancelText: "No",
       onOk: async () => {
-        // Call your holiday deletion API here.
+        const holidayId = record ?? record.holidayId;
+        if (HolidayId) {
+          toast.error("Holiday ID not found")
+        }
+       
         toast.info("Connect the Delete Holiday API here.");
       },
     });
