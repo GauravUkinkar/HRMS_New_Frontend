@@ -379,7 +379,7 @@ const Payslip = () => {
       );
 
       pdf.save(
-        `Payslip-${payslip?.employeeId || "Employee"}-${payslip?.month || ""}-${
+        `Payslip-${payslip?.employeeId || "Employee"}-${payslip?.salaryMonth  || ""}-${
           payslip?.year || ""
         }.pdf`,
       );

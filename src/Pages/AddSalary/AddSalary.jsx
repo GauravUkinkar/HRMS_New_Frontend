@@ -11,7 +11,9 @@ import { toast } from "react-toastify";
 import Loader from "../../comp/Loader/Loader";
 import { UserContext } from "../../../Context";
 import { useNavigate } from "react-router-dom";
-const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
+const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+const BASE_URL2 = import.meta.env.VITE_SALARY_BACKEND_URL;
+
 
 const AddSalary = () => {
   const navigate = useNavigate();
@@ -38,13 +40,10 @@ const AddSalary = () => {
 
   const getEmployees = async () => {
     try {
-      const res = await axios.get(
-        "https://userservicetest.pandozasolutions.com/Admin/GetAllEmployee",
-        {
-          withCredentials: true,
-        },
-      );
-      console.log(res.data, "tfdghfghdfgduyghdfgdffd");
+      const res = await axios.get(`${BASE_URL}Admin/GetAllEmployee`, {
+        withCredentials: true,
+      });
+
       setEmployees(res?.data);
     } catch (error) {
       console.log(error);
@@ -58,7 +57,7 @@ const AddSalary = () => {
     try {
       setLoader(true);
       const response = await axios.post(
-        `${BASE_URL}admin/addNewSalary`,
+        `${BASE_URL2}admin/addNewSalary`,
         values,
         {
           withCredentials: true,

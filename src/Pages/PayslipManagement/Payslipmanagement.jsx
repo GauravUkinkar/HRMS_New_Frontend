@@ -10,59 +10,71 @@ import { useNavigate } from "react-router-dom";
 import { IoMdArrowBack } from "react-icons/io";
 import { Link } from "react-router-dom";
 
-
 const Payslipmanagement = () => {
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
 
-const employeeId = user?.employeeId;
+  const employeeId = user?.employeeId;
   const [allemployee, setAllEmployee] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
-useEffect(() => {
-  if (!employeeId) return;
+  useEffect(() => {
+    if (!employeeId) return;
 
-  const currentDate = new Date();
+    const currentDate = new Date();
 
-  const month = currentDate.toLocaleString("en-US", {
-    month: "long",
-  });
+    const month = currentDate.toLocaleString("en-US", {
+      month: "long",
+    });
 
-  const year = currentDate.getFullYear().toString();
+    const year = currentDate.getFullYear().toString();
 
-  getPayslip(month, year);
-}, [employeeId]);
-const getPayslip = async (month, year) => {
-  try {
-    if (!employeeId) {
-      console.error("Employee ID not found");
-      return;
-    }
-
-    setLoading(true);
-
-    const response = await axios.get(
-      `${BASE_URL}AuthController/getByMonthYearAndEmployeeId`,
-      {
-        params: {
-          month,
-          employeeId,
-          year,
-        },
-        withCredentials: true,
+    getPayslip(month, year);
+  }, [employeeId]);
+  const getPayslip = async (month, year) => {
+    try {
+      if (!employeeId) {
+        console.error("Employee ID not found");
+        return;
       }
-    );
 
-    console.log("Payslip API Response:", response.data);
+      setLoading(true);
 
-    const salaryData = response?.data?.[0]?.data;
+      const response = await axios.get(
+        `${BASE_URL}AuthController/getByMonthYearAndEmployeeId`,
+        {
+          params: {
+            month,
+            employeeId,
+            year,
+          },
+          withCredentials: true,
+        },
+      );
 
-    console.log("Salary Data:", salaryData);
+      console.log("Payslip API Response:", response.data);
 
-    if (salaryData) {
-      setAllEmployee([salaryData]);
-    } else {
+      const salaryData = response?.data?.[0]?.data;
+
+      console.log("Salary Data:", salaryData);
+
+      if (salaryData) {
+        setAllEmployee([salaryData]);
+      } else {
+        setAllEmployee([
+          {
+            sid: "no-salary",
+            employeeId,
+            employeeName: user?.employeeName || "-",
+            month,
+            year,
+            noSalaryData: true,
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error("Payslip API Error:", error);
       setAllEmployee([
         {
           sid: "no-salary",
@@ -73,23 +85,10 @@ const getPayslip = async (month, year) => {
           noSalaryData: true,
         },
       ]);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Payslip API Error:", error);
-    setAllEmployee([
-          {  sid: "no-salary",
-      employeeId,
-      employeeName: user?.employeeName || "-",
-      month,
-      year,
-      noSalaryData: true,
-          },
-    ]);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const formatAmount = (value) => {
     const amount = Number(value || 0);
@@ -117,13 +116,18 @@ const getPayslip = async (month, year) => {
     },
 
     {
-      title: "Month",
+      title: "Pay Month",
       key: "month",
       render: (_, record) => (
         <span>
           {record.month} {record.year}
         </span>
       ),
+    },
+    {
+      title:"Salary Month",
+      dataIndex:"salaryMonth",
+      key:"month",
     },
 
     {
@@ -275,36 +279,36 @@ const getPayslip = async (month, year) => {
       dataIndex: "uanNo",
       key: "uanNo",
     },
-{
-  title: "Action",
-  key: "action",
-  fixed: "right",
-  width: 80,
-  align: "center",
-  className: "action-column",
-  render: (_, record) => {
-    const disabled = record.noSalaryData;
+    {
+      title: "Action",
+      key: "action",
+      fixed: "right",
+      width: 80,
+      align: "center",
+      className: "action-column",
+      render: (_, record) => {
+        const disabled = record.noSalaryData;
 
-    return (
-      <button
-        type="button"
-        className={`view-btn ${disabled ? "disabled" : ""}`}
-        disabled={disabled}
-        onClick={() => {
-          if (!disabled) {
-            navigate("/Payslip", {
-              state:{
-                payslip:record,
-              },
-            });
-          }
-        }}
-      >
-        <IoEyeOutline size={20} />
-      </button>
-    );
-  },
-},
+        return (
+          <button
+            type="button"
+            className={`view-btn ${disabled ? "disabled" : ""}`}
+            disabled={disabled}
+            onClick={() => {
+              if (!disabled) {
+                navigate("/Payslip", {
+                  state: {
+                    payslip: record,
+                  },
+                });
+              }
+            }}
+          >
+            <IoEyeOutline size={20} />
+          </button>
+        );
+      },
+    },
   ];
 
   return (
@@ -313,48 +317,38 @@ const getPayslip = async (month, year) => {
         { label: "Dashboard", link: "/dashboard" },
         { label: "PayslipManagement" },
       ]}
-              title={
-          String(user?.role || user?.crmRole || "")
-            .trim()
-            .toUpperCase() === "EMPLOYEE"
-            ? "Employee Dashboard"
-            : "Admin Dashboard"
-        }
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "EMPLOYEE"
+          ? "Employee Dashboard"
+          : "Admin Dashboard"
+      }
     >
-          <button
-            type="button"
-            className="back-btn"
-            onClick={() =>
-              navigate("/")
-            }
-          >
-            ← Back
-          </button>
+      <button type="button" className="back-btn" onClick={() => navigate("/")}>
+        ← Back
+      </button>
       <div className="payslip-list">
         <div className="page-header">
           <h2>Salary Slip</h2>
 
-         
+          <DatePicker
+            picker="month"
+            format="MMMM YYYY"
+            placeholder="Select Month & Year"
+            defaultValue={dayjs()}
+            onChange={(date) => {
+              if (!date) {
+                setAllEmployee([]);
+                return;
+              }
 
-<DatePicker
-  picker="month"
-  format="MMMM YYYY"
-  placeholder="Select Month & Year"
-  defaultValue={dayjs()}
+              const month = date.format("MMMM");
+              const year = date.format("YYYY");
 
-  onChange={(date) => {
-    if (!date) {
-      setAllEmployee([]);
-      return;
-    }
-
-    const month = date.format("MMMM");
-    const year = date.format("YYYY");
-
-    getPayslip(month, year);
-  }}
-/>
-         
+              getPayslip(month, year);
+            }}
+          />
         </div>
 
         <Table
