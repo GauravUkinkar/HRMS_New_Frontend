@@ -132,10 +132,14 @@ const EmployeeDash = () => {
   const [punchingOut, setPunchingOut] = useState(false);
   const remainingTimerRef = useRef(null);
   const remainingSecondsRef = useRef(0);
+  const remainingEndTimeRef = useRef(null);
 
+  // Set a new countdown based on the latest remaining seconds from the API.
   const updateRemainingSeconds = (seconds) => {
     const value = Math.max(0, Number(seconds) || 0);
+
     remainingSecondsRef.current = value;
+    remainingEndTimeRef.current = value > 0 ? Date.now() + value * 1000 : null;
     setRemainingSeconds(value);
   };
   //to get employee id
@@ -292,17 +296,30 @@ const EmployeeDash = () => {
   useEffect(() => {
     if (user?.employeeId) {
       getEmployeeWorkSession();
+    } else {
+      updateRemainingSeconds(0);
+      setPunchInTime(null);
+      setPunchOutTime(null);
     }
   }, [user?.employeeId]);
 
+  // Keep the countdown aligned with real elapsed time, even if the browser
+  // throttles intervals while the tab is in the background.
   useEffect(() => {
     remainingTimerRef.current = setInterval(() => {
-      if (remainingSecondsRef.current <= 0) {
-        return;
-      }
+      if (!remainingEndTimeRef.current) return;
 
-      remainingSecondsRef.current -= 1;
-      setRemainingSeconds(remainingSecondsRef.current);
+      const nextSeconds = Math.max(
+        0,
+        Math.ceil((remainingEndTimeRef.current - Date.now()) / 1000),
+      );
+
+      remainingSecondsRef.current = nextSeconds;
+      setRemainingSeconds(nextSeconds);
+
+      if (nextSeconds === 0) {
+        remainingEndTimeRef.current = null;
+      }
     }, 1000);
 
     return () => {
@@ -1117,18 +1134,37 @@ setBirthdayEmployees(formattedBirthdays);
   // =========================
   useEffect(() => {
     const handlePunchUpdated = async (event) => {
-      const detail = event?.detail;
+      const detail = event?.detail || {};
 
-      if (!detail) return;
-      if (detail.employeeId !== user?.employeeId) return;
+      // Ignore events explicitly meant for another employee. Some callers may
+      // not include employeeId, so in that case sync from the logged-in user API.
+      if (detail.employeeId && String(detail.employeeId) !== String(user?.employeeId)) return;
+      if (!user?.employeeId) return;
 
-      setPunchInTime(detail.punchInTime || null);
-      setPunchOutTime(detail.punchOutTime || null);
-      updateRemainingSeconds(detail.remainingSeconds);
+      const hasValidRemainingSeconds =
+        detail.remainingSeconds !== undefined &&
+        detail.remainingSeconds !== null &&
+        Number.isFinite(Number(detail.remainingSeconds));
 
-      await getEmployeeData();
-      await getTodaydata();
-      await fetchAttendance();
+      if (hasValidRemainingSeconds) {
+        if (Object.prototype.hasOwnProperty.call(detail, "punchInTime")) {
+          setPunchInTime(detail.punchInTime || null);
+        }
+        if (Object.prototype.hasOwnProperty.call(detail, "punchOutTime")) {
+          setPunchOutTime(detail.punchOutTime || null);
+        }
+        updateRemainingSeconds(detail.remainingSeconds);
+      } else {
+        // MainPanel may dispatch only the punch action without countdown data.
+        // Fetch the authoritative session instead of resetting the timer to 0.
+        await getEmployeeWorkSession();
+      }
+
+      await Promise.all([
+        getEmployeeData(),
+        getTodaydata(),
+        fetchAttendance(),
+      ]);
     };
 
     window.addEventListener("punchUpdated", handlePunchUpdated);
