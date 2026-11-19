@@ -1819,8 +1819,7 @@ setBirthdayEmployees(formattedBirthdays);
                   <LuCake />
                   <span>Birthdays This Month</span>
                 </div>
-              </div>
-              
+              </div>             
               {/* Birthday List */}
               <div className="birthday-list">
                 {birthdayLoader ? (
