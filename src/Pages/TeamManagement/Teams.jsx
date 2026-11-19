@@ -116,11 +116,46 @@ const [teamsLoading, setTeamsLoading] = useState(false);
   const addMember = () => {
     console.log(`Add member to ${selectedTeam?.name}`);
   };
-  // const fetchTeams = async () => {
-  //   try {
+  const fetchTeams = async () => {
+    try {
+      setTeamsLoading(true);
 
-  //   }
-  // }
+      const response = await axios.get(
+        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams"
+      );
+      const teamColors = [
+        "blue",
+        "pink",
+        "green",
+        "purple",
+        "orange",
+      ];
+
+      const teamData = response.data.map((item, index) => {
+        const team = item.data;
+
+        return {
+          id:team.id,
+          name:team.name,
+          leader:team.manegerName ||"N/A",
+          members:team.memberCount || 0,
+          idealCount:team.idealCount ||0,
+          color: teamColors[index%teamColors.length],
+          membersList:[],
+        };
+      });
+
+      setTeams(teamData);
+        } catch(error) {
+          console.error("Error fetching teams:", error);
+          setTeams([]);
+        } finally {
+          setTeamsLoading(false);
+        }
+  };
+  useEffect(() => {
+  fetchTeams();
+}, []);
 
   return (
     <MainPanel
@@ -237,116 +272,133 @@ const [teamsLoading, setTeamsLoading] = useState(false);
           </div>
         </div>
 
-        {/* TEAM GRID */}
-        <div className="team-grid">
-          {filteredTeams.map((team) => (
-            <div className="team-card" key={team.id}>
-              <div className={`team-card-top ${team.color}`} />
 
-              <div className="team-card-content">
-                {/* CARD HEADER */}
-                <div className="team-card-header">
-                  <div className="team-name-wrapper">
-                    <div
-                      className={`team-icon ${colorClasses[team.color].icon}`}
-                    >
-                      <FiUsers />
-                    </div>
+{/* TEAM GRID */}
+<div className="team-grid">
+  {teamsLoading ? (
+    <div className="team-loading">
+      Loading teams...
+    </div>
+  ) : filteredTeams.length > 0 ? (
+    filteredTeams.map((team) => (
+      <div className="team-card" key={team.id}>
+        <div className={`team-card-top ${team.color}`} />
 
-                    <div>
-                      <h3>{team.name}</h3>
+        <div className="team-card-content">
 
-                      <span
-                        className={`team-status ${
-                          team.members > 0 ? "active" : "empty"
-                        }`}
-                      >
-                        <span className="status-dot" />
+          {/* CARD HEADER */}
+          <div className="team-card-header">
+            <div className="team-name-wrapper">
+              <div
+                className={`team-icon ${
+                  colorClasses[team.color]?.icon || "team-blue"
+                }`}
+              >
+                <FiUsers />
+              </div>
 
-                        {team.members > 0 ? "Active" : "No members"}
-                      </span>
-                    </div>
-                  </div>
+              <div>
+                <h3>{team.name}</h3>
 
-                  <IconButton className="more-btn">
-                    <FiMoreVertical />
-                  </IconButton>
-                </div>
-
-                {/* TEAM LEADER */}
-                <div className="team-leader">
-                  <span>Team Leader</span>
-
-                  <div className="leader-info">
-                    <Avatar>{team.leader.charAt(0).toUpperCase()}</Avatar>
-
-                    <p>{team.leader}</p>
-                  </div>
-                </div>
-
-                <div className="team-divider" />
-
-                {/* MEMBERS */}
-                {team.members > 0 ? (
-                  <div className="team-member-preview">
-                    <div className="avatar-stack">
-                      {team.membersList.slice(0, 4).map((member, index) => (
-                        <Avatar
-                          key={member.employeeId}
-                          className={`avatar-${index}`}
-                        >
-                          {member.name.charAt(0)}
-                        </Avatar>
-                      ))}
-
-                      {team.members > 4 && (
-                        <div className="more-members">+{team.members - 4}</div>
-                      )}
-                    </div>
-
-                    <span className="member-count">
-                      {team.members} {team.members === 1 ? "Member" : "Members"}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="empty-members">
-                    <div className="empty-members-icon">
-                      <FiUserPlus />
-                    </div>
-
-                    <div>
-                      <strong>No members assigned</strong>
-                      <span>Add employees to this team</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* FOOTER */}
-                <div className="team-card-footer">
-                  {team.members === 0 ? (
-                    <button
-                      className="add-member-link"
-                      onClick={() => openTeam(team)}
-                    >
-                      <FiPlus />
-                      Add Member
-                    </button>
-                  ) : (
-                    <span className="member-label">{team.members} Members</span>
-                  )}
-
-                  <button
-                    className="view-team-btn"
-                    onClick={() => openTeam(team)}
-                  >
-                    View Team
-                    <FiArrowRight />
-                  </button>
-                </div>
+                <span
+                  className={`team-status ${
+                    team.members > 0 ? "active" : "empty"
+                  }`}
+                >
+                  <span className="status-dot" />
+                  {team.members > 0 ? "Active" : "No members"}
+                </span>
               </div>
             </div>
-          ))}
+
+            <IconButton className="more-btn">
+              <FiMoreVertical />
+            </IconButton>
+          </div>
+
+          {/* TEAM LEADER */}
+          <div className="team-leader">
+            <span>Team Leader</span>
+
+            <div className="leader-info">
+              <Avatar>
+                {team.leader.charAt(0).toUpperCase()}
+              </Avatar>
+
+              <p>{team.leader}</p>
+            </div>
+          </div>
+
+          <div className="team-divider" />
+
+          {/* MEMBERS */}
+          {team.members > 0 ? (
+            <div className="team-member-preview">
+              <div className="avatar-stack">
+                {team.membersList.slice(0, 4).map((member, index) => (
+                  <Avatar
+                    key={member.employeeId}
+                    className={`avatar-${index}`}
+                  >
+                    {member.name.charAt(0)}
+                  </Avatar>
+                ))}
+
+                {team.members > 4 && (
+                  <div className="more-members">
+                    +{team.members - 4}
+                  </div>
+                )}
+              </div>
+
+              <span className="member-count">
+                {team.idealCount} Members
+              </span>
+            </div>
+          ) : (
+            <div className="empty-members">
+              <div className="empty-members-icon">
+                <FiUserPlus />
+              </div>
+
+              <div>
+                <strong>No members assigned</strong>
+                <span>Add employees to this team</span>
+              </div>
+            </div>
+          )}
+
+          {/* FOOTER */}
+          <div className="team-card-footer">
+            <button
+              className="add-member-link"
+              onClick={() => openTeam(team)}
+            >
+              <FiPlus />
+              Add Member
+            </button>
+
+            <button
+              className="view-team-btn"
+              onClick={() => openTeam(team)}
+            >
+              View Team
+              <FiArrowRight />
+            </button>
+          </div>
+
         </div>
+      </div>
+    ))
+  ) : (
+    <div className="no-teams">
+      <FiSearch />
+      <h3>No teams found</h3>
+      <p>Try changing your search or filter to find a team.</p>
+    </div>
+  )}
+</div>
+
 
         {/* EMPTY SEARCH STATE */}
         {filteredTeams.length === 0 && (
