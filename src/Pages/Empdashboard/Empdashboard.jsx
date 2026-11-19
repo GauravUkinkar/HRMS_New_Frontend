@@ -1820,8 +1820,6 @@ setBirthdayEmployees(formattedBirthdays);
                   <span>Birthdays This Month</span>
                 </div>
               </div>
-              
-
               {/* Birthday List */}
               <div className="birthday-list">
                 {birthdayLoader ? (
