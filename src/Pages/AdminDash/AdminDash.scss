@@ -359,12 +359,19 @@ scrollbar-width: none;
         flex-direction: column;
         gap: 20px;
       }
-
+.team-row{
+  cursor: pointer;
+  &:hover{
+    transform: translateY(-2px);
+    transition: var(--trans-q);
+  }
+}
       .box4-heading {
         display: flex;
         align-items: center;
         justify-content: space-between;
         margin-bottom: 12px;
+        
 
         .heading-title {
           display: flex;

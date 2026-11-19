@@ -836,6 +836,15 @@
   &:hover {
     border-color: #cbdcde;
   }
+  .member-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .member-details {
+      flex: 1;
+    }
+  }
 
   .MuiAvatar-root {
     width: 35px;
@@ -846,6 +855,25 @@
 
     font-size: 12px;
     font-weight: 600;
+  }
+    .delete-member-btn {
+    border: none;
+    background: #fff0f0;
+    color: #e53935;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    cursor: pointer;
+    transition: 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      transition: var(--trans-q);
+    }
   }
 }
 

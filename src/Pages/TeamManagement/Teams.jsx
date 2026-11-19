@@ -1,6 +1,14 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, {
+  useContext,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
+
+import axios from "axios";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { UserContext } from "../../../Context";
+import { MdDelete } from "react-icons/md";
 
 import {
   Avatar,
@@ -21,123 +29,13 @@ import {
   FiArrowRight,
   FiX,
   FiMail,
-
   FiBriefcase,
 } from "react-icons/fi";
 
 import "./Teams.scss";
+import { useNavigate } from "react-router-dom";
 
-const teamsData = [
-  {
-    id: 1,
-    name: "Website Team",
-    leader: "shelkesunil072@gmail.com",
-    members: 7,
-    color: "blue",
-    membersList: [
-      {
-        name: "Sunil Shelke",
-        employeeId: "PSPL1001",
-        role: "Team Leader",
-        email: "shelkesunil072@gmail.com",
-      },
-      {
-        name: "Amit Patil",
-        employeeId: "PSPL1002",
-        role: "Developer",
-        email: "amit@diwise.in",
-      },
-      {
-        name: "Rahul More",
-        employeeId: "PSPL1003",
-        role: "Developer",
-        email: "rahul@diwise.in",
-      },
-      {
-        name: "Sneha Joshi",
-        employeeId: "PSPL1004",
-        role: "Designer",
-        email: "sneha@diwise.in",
-      },
-      {
-        name: "Akshay Shah",
-        employeeId: "PSPL1005",
-        role: "Developer",
-        email: "akshay@diwise.in",
-      },
-      {
-        name: "Pooja Patil",
-        employeeId: "PSPL1006",
-        role: "Tester",
-        email: "pooja@diwise.in",
-      },
-      {
-        name: "Rohit More",
-        employeeId: "PSPL1007",
-        role: "Developer",
-        email: "rohit@diwise.in",
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "Political Team",
-    leader: "kartik@diwise",
-    members: 0,
-    color: "pink",
-    membersList: [],
-  },
-  {
-    id: 3,
-    name: "Non Political",
-    leader: "Deeksha@diwise",
-    members: 0,
-    color: "green",
-    membersList: [],
-  },
-  {
-    id: 4,
-    name: "Office Operations",
-    leader: "Gaurav@diwise",
-    members: 3,
-    color: "purple",
-    membersList: [
-      {
-        name: "Gaurav Sharma",
-        employeeId: "PSPL1010",
-        role: "Team Leader",
-        email: "gaurav@diwise.in",
-      },
-      {
-        name: "Neha Patil",
-        employeeId: "PSPL1011",
-        role: "HR Executive",
-        email: "neha@diwise.in",
-      },
-      {
-        name: "Kunal More",
-        employeeId: "PSPL1012",
-        role: "Operations",
-        email: "kunal@diwise.in",
-      },
-    ],
-  },
-  {
-    id: 5,
-    name: "Sales Team Dubai",
-    leader: "chitralekha@diwise",
-    members: 1,
-    color: "orange",
-    membersList: [
-      {
-        name: "Chitralekha",
-        employeeId: "PSPL1020",
-        role: "Team Leader",
-        email: "chitralekha@diwise.in",
-      },
-    ],
-  },
-];
+
 
 const colorClasses = {
   blue: {
@@ -159,13 +57,24 @@ const colorClasses = {
 
 const Teams = () => {
   const { user } = useContext(UserContext);
-
-  const [teams, setTeams] = useState(teamsData);
+  const navigate = useNavigate();
+const [teams, setTeams] = useState([]);
+const [teamsLoading, setTeamsLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [memberFilter, setMemberFilter] = useState("all");
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const handleDeleteMember = (employeeId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to remove this member?",
+    );
 
+    if (!confirmDelete) return;
+
+    setMembers((prev) =>
+      prev.filter((member) => member.employeeId !== employeeId),
+    );
+  };
   const filteredTeams = useMemo(() => {
     return teams.filter((team) => {
       const searchValue = search.toLowerCase();
@@ -189,7 +98,7 @@ const Teams = () => {
 
   const teamLeaders = teams.length;
 
-  const activeTeams = teams.filter((team) => team.members > 0).length;
+  // const activeTeams = teams.filter((team) => team.members > 0).length;
 
   const openTeam = (team) => {
     setSelectedTeam(team);
@@ -207,11 +116,16 @@ const Teams = () => {
   const addMember = () => {
     console.log(`Add member to ${selectedTeam?.name}`);
   };
+  // const fetchTeams = async () => {
+  //   try {
+
+  //   }
+  // }
 
   return (
     <MainPanel
       breadcrumbs={[
-        { label: "Dashboard", link: "/dashboard" },
+        { label: "Dashboard", link: "/" },
         { label: "Team Management" },
       ]}
       title={
@@ -222,6 +136,9 @@ const Teams = () => {
           : "Team Management"
       }
     >
+      <button type="button" className="back-btn" onClick={() => navigate("/")}>
+        ← Back
+      </button>
       <div className="team-management-page">
         {/* HEADER */}
         <div className="team-page-header">
@@ -288,8 +205,8 @@ const Teams = () => {
             </div>
 
             <div>
-              <span>Active Teams</span>
-              <h2>{activeTeams}</h2>
+              <span>Managers</span>
+              <h2>{2}</h2>
             </div>
           </div>
         </div>
@@ -306,8 +223,6 @@ const Teams = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-
-
         </div>
 
         {/* SECTION HEADING */}
@@ -526,13 +441,20 @@ const Teams = () => {
 
                       <div className="member-details">
                         <strong>{member.name}</strong>
-
                         <span>{member.employeeId}</span>
                       </div>
 
                       <div className="member-role">
                         <span>{member.role}</span>
                       </div>
+
+                      <button
+                        className="delete-member-btn"
+                        onClick={() => handleDeleteMember(member.employeeId)}
+                        title="Delete Member"
+                      >
+                        <MdDelete />
+                      </button>
                     </div>
                   ))}
                 </div>
