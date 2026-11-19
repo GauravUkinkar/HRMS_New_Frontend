@@ -28,10 +28,10 @@ jobs:
       - name: Deploy to MilesWeb
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.MILESWEB_HOST }}
+          username: ${{ secrets.MILESWEB_USERNAME }}
+          password: ${{ secrets.MILESWEB_PASSWORD }}
           protocol: ftp
           port: 21
           local-dir: ./dist/
-          server-dir: /public_html/hrmstest.pandozasolutions.com/
+          server-dir: ${{ secrets.MILESWEB_PATH }}
