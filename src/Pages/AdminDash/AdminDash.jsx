@@ -39,7 +39,15 @@ const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 const BASE_URL = import.meta.env.VITE_SALARY_BACKEND_URL;
 const BASE_URL3 = import.meta.env.VITE_TEAM_URL;
 
+
 const AdminDash = () => {
+
+  const formatName = (name = "") => {
+  return String(name)
+    .toLowerCase()
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
   const navigate = useNavigate();
 
   // =========================================================
@@ -119,11 +127,11 @@ const AdminDash = () => {
   const getEmployeeKey = (employee) => {
     return String(
       employee?.employeeId ??
-        employee?.employeeID ??
-        employee?.empId ??
-        employee?.id ??
-        employee?.uid ??
-        "",
+      employee?.employeeID ??
+      employee?.empId ??
+      employee?.id ??
+      employee?.uid ??
+      "",
     ).trim();
   };
 
@@ -279,7 +287,7 @@ const AdminDash = () => {
         return {
           key: item?.employeeId || index,
           employeeId: item?.employeeId || "",
-          employeeName: item?.employeeName?.toUpperCase() || "",
+          employeeName: formatName(item?.employeeName),
           employeeDesignation: item?.employeeDesignation || "",
 
           punchIn: punchInTime,
@@ -406,7 +414,7 @@ const AdminDash = () => {
       width: 170,
 
       render: (name) => (
-        <span className="employee-name-text">{name || "N/A"}</span>
+        <span className="employee-name-text">{formatName(name) || "N/A"}</span>
       ),
     },
 
@@ -555,6 +563,10 @@ const AdminDash = () => {
   );
 
   const [attendanceData, setAttendanceData] = useState([]);
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
+  const [attendanceModalOpen, setAttendanceModalOpen] = useState(false);
+  const [selectedAttendanceDate, setSelectedAttendanceDate] = useState("");
+  const [attendanceStatusFilter, setAttendanceStatusFilter] = useState("ALL");
 
   const [attendanceLoader, setAttendanceLoader] = useState(false);
 
@@ -606,7 +618,7 @@ const AdminDash = () => {
       const records = Array.isArray(response?.data?.data)
         ? response.data.data
         : [];
-
+      setAttendanceRecords(records);
       const days = [];
 
       for (let day = 1; day <= lastDay; day++) {
@@ -675,6 +687,16 @@ const AdminDash = () => {
     }
   };
 
+  const handleAttendanceBarClick = (data) => {
+    const date = data?.fullDate || data?.payload?.fullDate;
+
+    if (!date) return;
+
+    setSelectedAttendanceDate(date);
+    setAttendanceStatusFilter("ALL");
+    setAttendanceModalOpen(true);
+  };
+
   useEffect(() => {
     getMonthlyAttendance(selectedMonth, selectedYear);
   }, [selectedMonth, selectedYear]);
@@ -730,12 +752,12 @@ const AdminDash = () => {
   const displayedNotifications = showUnread
     ? unreadNotifications
     : [...notifications].sort((a, b) => {
-        if (a?.isRead === b?.isRead) {
-          return 0;
-        }
+      if (a?.isRead === b?.isRead) {
+        return 0;
+      }
 
-        return a?.isRead ? 1 : -1;
-      });
+      return a?.isRead ? 1 : -1;
+    });
 
   const stripHtml = (html = "") => {
     const temp = document.createElement("div");
@@ -859,9 +881,9 @@ const AdminDash = () => {
         prev.map((notification) =>
           notification?.id === notificationId
             ? {
-                ...notification,
-                isRead: true,
-              }
+              ...notification,
+              isRead: true,
+            }
             : notification,
         ),
       );
@@ -1096,9 +1118,7 @@ const AdminDash = () => {
 
         title: "Happy Birthday! 🎂",
 
-        message: `Wishing ${
-          employee?.employeeName || "you"
-        } a very Happy Birthday! 🎉 From ${companyName}.`,
+        message: `Wishing ${formatName(employee?.employeeName || "you")} a very Happy Birthday! 🎉 From ${companyName}.`,
 
         type: "birthday",
 
@@ -1129,7 +1149,7 @@ const AdminDash = () => {
       });
 
       toast.success(
-        `Birthday wish sent to ${employee?.employeeName || "employee"}! 🎉`,
+        `Birthday wish sent to ${formatName(employee?.employeeName || "employee")}! 🎉`,
       );
     } catch (error) {
       console.error(
@@ -1139,8 +1159,8 @@ const AdminDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          error?.response?.data?.responseMessage ||
-          "Unable to send birthday wish",
+        error?.response?.data?.responseMessage ||
+        "Unable to send birthday wish",
       );
     } finally {
       setWishingEmployeeId(null);
@@ -1168,6 +1188,56 @@ const AdminDash = () => {
 
     loadDashboard();
   }, []);
+
+
+  const selectedDateAttendance = attendanceRecords
+  .filter((item) => {
+    const recordDate =
+      item?.attendanceDate?.split("T")[0] ||
+      item?.date?.split("T")[0] ||
+      item?.punchIn?.split("T")[0] ||
+      item?.createdAt?.split("T")[0];
+
+    return recordDate === selectedAttendanceDate;
+  })
+  .map((item) => {
+    const status = normalizeStatus(item?.status);
+
+    let attendanceStatus = "FULL_DAY";
+
+    if (status === "absent") {
+      attendanceStatus = "ABSENT";
+    } else if (status === "half day" || status === "halfday") {
+      attendanceStatus = "HALF_DAY";
+    } else if (
+      status === "full day" ||
+      status === "present" ||
+      status === "in office" ||
+      status === "in progress" ||
+      status === "inprogress"
+    ) {
+      attendanceStatus = "FULL_DAY";
+    }
+
+    return {
+      employeeId: getEmployeeKey(item),
+      employeeName:
+        formatName(item?.employeeName) ||
+        formatName(item?.name) ||
+        formatName(item?.fullName) ||
+        "-",
+      status: attendanceStatus,
+    };
+  });
+
+const filteredSelectedDateAttendance =
+  selectedDateAttendance.filter((employee) => {
+    if (attendanceStatusFilter === "ALL") {
+      return true;
+    }
+
+    return employee.status === attendanceStatusFilter;
+  });
 
   // =========================================================
   // RETURN
@@ -1334,6 +1404,10 @@ const AdminDash = () => {
                         fill="#20ad9b"
                         radius={[2, 2, 0, 0]}
                         barSize={8}
+                        cursor="pointer"
+                        onClick={(data) =>
+                          handleAttendanceBarClick(data?.payload || data)
+                        }
                       />
 
                       <Bar
@@ -1341,6 +1415,10 @@ const AdminDash = () => {
                         fill="#ff3b3bdd"
                         radius={[2, 2, 0, 0]}
                         barSize={8}
+                        cursor="pointer"
+                        onClick={(data) =>
+                          handleAttendanceBarClick(data?.payload || data)
+                        }
                       />
 
                       <Bar
@@ -1348,6 +1426,10 @@ const AdminDash = () => {
                         fill="#ffc62b9c"
                         radius={[2, 2, 0, 0]}
                         barSize={8}
+                        cursor="pointer"
+                        onClick={(data) =>
+                          handleAttendanceBarClick(data?.payload || data)
+                        }
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -1668,9 +1750,8 @@ const AdminDash = () => {
                 ) : (
                   displayedNotifications.map((notification) => (
                     <div
-                      className={`notification-item ${
-                        notification?.isRead ? "read" : "unread"
-                      }`}
+                      className={`notification-item ${notification?.isRead ? "read" : "unread"
+                        }`}
                       key={notification?.id}
                       onClick={() => handleNotificationClick(notification)}
                     >
@@ -1686,15 +1767,15 @@ const AdminDash = () => {
                         <span className="notification-date">
                           {notification?.createdAt
                             ? new Date(notification.createdAt).toLocaleString(
-                                "en-IN",
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                },
-                              )
+                              "en-IN",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )
                             : "--"}
                         </span>
                       </div>
@@ -1740,14 +1821,14 @@ const AdminDash = () => {
                       <p className="notification-modal-date">
                         {selectedNotification?.createdAt
                           ? new Date(
-                              selectedNotification.createdAt,
-                            ).toLocaleString("en-IN", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
+                            selectedNotification.createdAt,
+                          ).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
                           : "--"}
                       </p>
 
@@ -1767,17 +1848,17 @@ const AdminDash = () => {
                         {String(selectedNotification?.type || "")
                           .trim()
                           .toLowerCase() !== "birthday" && (
-                          <button
-                            type="button"
-                            className="notification-modal-details"
-                            onClick={() =>
-                              handleNotificationDetails(selectedNotification)
-                            }
-                          >
-                            View Details
-                            <span>→</span>
-                          </button>
-                        )}
+                            <button
+                              type="button"
+                              className="notification-modal-details"
+                              onClick={() =>
+                                handleNotificationDetails(selectedNotification)
+                              }
+                            >
+                              View Details
+                              <span>→</span>
+                            </button>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -1811,13 +1892,12 @@ const AdminDash = () => {
 
                     return (
                       <div
-                        className={`birthday-item ${
-                          birthdayToday ? "birthday-today" : ""
-                        }`}
+                        className={`birthday-item ${birthdayToday ? "birthday-today" : ""
+                          }`}
                         key={employeeId || index}
                       >
                         <div className="birthday-avatar">
-                          {(employee?.employeeName || "N/A")
+                          {formatName(employee?.employeeName || "N/A")
                             .split(" ")
                             .map((word) => word[0])
                             .join("")
@@ -1825,7 +1905,7 @@ const AdminDash = () => {
                         </div>
 
                         <div className="birthday-info">
-                          <h4>{employee?.employeeName || "N/A"}</h4>
+                          <h4>{formatName(employee?.employeeName || "N/A")}</h4>
 
                           {birthdayToday && (
                             <span className="birthday-today-text">
@@ -1837,20 +1917,19 @@ const AdminDash = () => {
                         <div className="birthday-date">
                           {employee?.date
                             ? (() => {
-                                const [day, month] = employee.date.split(" ");
-                                return `${day} ${month.substring(0, 3)}`;
-                              })()
+                              const [day, month] = employee.date.split(" ");
+                              return `${day} ${month.substring(0, 3)}`;
+                            })()
                             : "--"}
                         </div>
 
                         {birthdayToday && (
                           <button
                             type="button"
-                            className={`wish-button ${
-                              wishedEmployees.includes(employeeId)
-                                ? "wish-sent"
-                                : ""
-                            }`}
+                            className={`wish-button ${wishedEmployees.includes(employeeId)
+                              ? "wish-sent"
+                              : ""
+                              }`}
                             disabled={
                               wishingEmployeeId === employeeId ||
                               wishedEmployees.includes(employeeId)
@@ -1874,6 +1953,124 @@ const AdminDash = () => {
             </div>
           </div>
         </div>
+
+{attendanceModalOpen && (
+  <div
+    className="attendance-detail-overlay"
+    onClick={() => setAttendanceModalOpen(false)}
+  >
+    <div
+      className="attendance-detail-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="attendance-detail-header">
+        <div>
+          <h3>Attendance Details</h3>
+
+          <p>
+            {selectedAttendanceDate &&
+              new Date(
+                `${selectedAttendanceDate}T00:00:00`,
+              ).toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className="attendance-detail-close"
+          onClick={() => setAttendanceModalOpen(false)}
+        >
+          ×
+        </button>
+      </div>
+
+      <div className="attendance-filter-buttons">
+        {[
+          { key: "ALL", label: "All" },
+          { key: "FULL_DAY", label: "Present" },
+          { key: "HALF_DAY", label: "Half Day" },
+          { key: "ABSENT", label: "Absent" },
+        ].map((filter) => (
+          <button
+            key={filter.key}
+            type="button"
+            className={
+              attendanceStatusFilter === filter.key
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setAttendanceStatusFilter(filter.key)
+            }
+          >
+            {filter.label} (
+              {
+                selectedDateAttendance.filter(
+                  (employee) =>
+                    filter.key === "ALL" ||
+                    employee.status === filter.key,
+                ).length
+              }
+            )
+          </button>
+        ))}
+      </div>
+
+      <div className="attendance-detail-table-wrapper">
+        <table className="attendance-detail-table">
+          <thead>
+            <tr>
+              <th>Employee ID</th>
+              <th>Employee Name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {filteredSelectedDateAttendance.length > 0 ? (
+              filteredSelectedDateAttendance.map(
+                (employee, index) => (
+                  <tr key={employee.employeeId || index}>
+                    <td>{employee.employeeId || "-"}</td>
+
+                    <td>{formatName(employee.employeeName || "-")}</td>
+
+                    <td>
+                      <span
+                        className={`attendance-status ${employee.status
+                          .toLowerCase()
+                          .replace("_", "-")}`}
+                      >
+                        {employee.status.replace("_", " ")}
+                      </span>
+                    </td>
+                  </tr>
+                ),
+              )
+            ) : (
+              <tr>
+                <td
+                  colSpan={3}
+                  className="no-attendance-data"
+                >
+                  No employees found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
+
       </MainPanel>
     </>
   );
