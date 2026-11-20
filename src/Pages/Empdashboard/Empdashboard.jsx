@@ -24,6 +24,13 @@ const BASE_URL2 = import.meta.env.VITE_ATTENDANCE_URL;
 const BASE_URL1 = import.meta.env.VITE_SALARY_BACKEND_URL;
 const BASE_URL_USER = import.meta.env.VITE_USER_BACKEND_URL;
 const EmployeeDash = () => {
+  // Name Foramtor 
+  const formatName = (name = "") => {
+    return String(name)
+      .toLowerCase()
+      .trim()
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const quotes = [
@@ -97,7 +104,7 @@ const EmployeeDash = () => {
           normalizedStatus === "halfday"
         ) {
           color = "warning";
-          
+
         }
 
         return <Tag color={color}>{status || "N/A"}</Tag>;
@@ -124,7 +131,12 @@ const EmployeeDash = () => {
   const secondAngle = seconds * 6;
   const minuteAngle = minutes * 6 + seconds * 0.1;
   const hourAngle = (hours % 12) * 30 + minutes * 0.5;
-  const [today, setToday] = useState({});
+  const [today, setToday] = useState({
+    totalEmployees: 0,
+    present: 0,
+    absent: 0,
+    halfday: 0,
+  });
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [punchInTime, setPunchInTime] = useState(null);
   const [punchOutTime, setPunchOutTime] = useState(null);
@@ -236,7 +248,7 @@ const EmployeeDash = () => {
       const response = await axios.post(
         `${BASE_URL2}api/punch/in/${employeeId}/false`,
         {
-          employeeName: user?.employeeName || "",
+          employeeName: formatName(user?.employeeName || ""),
           employeeDesignation,
         },
         {
@@ -282,7 +294,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to punch in. Please try again.",
+        "Unable to punch in. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -405,7 +417,7 @@ const EmployeeDash = () => {
 
       toast.error(
         error?.response?.data?.message ||
-          "Unable to punch out. Please try again.",
+        "Unable to punch out. Please try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -460,62 +472,76 @@ const EmployeeDash = () => {
     );
   };
 
- const getTodaydata = async () => {
-  try {
-    const currentDate = new Date().toISOString().split("T")[0];
+  const getTodaydata = async () => {
+    try {
+      const [employeeResponse, attendanceResponse] = await Promise.all([
+        axios.get(`${BASE_URL_USER}AuthController/GetAllEmployee`, {
+          withCredentials: true,
+        }),
+        axios.get(`${BASE_URL2}api/punch/details`, {
+          withCredentials: true,
+        }),
+      ]);
 
-    const [summaryResponse, attendanceResponse] = await Promise.all([
-      axios.get(
-        `${BASE_URL2}api/punch/work-session/summary?date=${currentDate}`
-      ),
-      axios.get(`${BASE_URL2}api/punch/details`),
-    ]);
+      const employees = Array.isArray(employeeResponse?.data)
+        ? employeeResponse.data
+        : Array.isArray(employeeResponse?.data?.data)
+          ? employeeResponse.data.data
+          : [];
 
-    const summary = summaryResponse?.data || {};
-    const attendance = Array.isArray(attendanceResponse?.data?.data)
-      ? attendanceResponse.data.data
-      : [];
+      const attendance = Array.isArray(attendanceResponse?.data?.data)
+        ? attendanceResponse.data.data
+        : [];
 
-    const totalEmployees = Number(summary?.totalEmployees || 0);
+      const totalEmployees = employees.length;
 
-    const presentEmployees = attendance.filter((item) => {
-      const status = String(item?.status || "")
-        .trim()
-        .toUpperCase();
+      // SAME LOGIC AS ADMIN DASHBOARD
+      const presentEmployees = attendance.filter((item) => {
+        const status = String(item?.status || "")
+          .trim()
+          .toUpperCase();
 
-      return (
-        Boolean(item?.punchIn) ||
-        Boolean(item?.punchInByAdmin) ||
-        status === "FULL_DAY" ||
-        status === "PRESENT" ||
-        status === "HALF_DAY"
+        return (
+          Boolean(item?.punchIn) ||
+          Boolean(item?.punchInByAdmin) ||
+          status === "FULL_DAY" ||
+          status === "PRESENT" ||
+          status === "HALF_DAY"
+        );
+      }).length;
+
+      // SAME LOGIC AS ADMIN DASHBOARD
+      const halfDayEmployees = attendance.filter((item) => {
+        return String(item?.status || "")
+          .trim()
+          .toUpperCase() === "HALF_DAY";
+      }).length;
+
+      const absentEmployees = Math.max(
+        0,
+        totalEmployees - presentEmployees,
       );
-    }).length;
 
-    const halfDayEmployees = attendance.filter((item) => {
-      const status = String(item?.status || "")
-        .trim()
-        .toUpperCase();
+      setToday({
+        totalEmployees,
+        "In-office": presentEmployees,
+        absent: absentEmployees,
+        halfday: halfDayEmployees,
+      });
 
-      return status === "HALF_DAY";
-    }).length;
-
-    const absentEmployees = Math.max(
-      0,
-      totalEmployees - presentEmployees
-    );
-
-    setToday({
-      ...summary,
-      totalEmployees,
-      "In-office": presentEmployees,
-      absent: absentEmployees,
-      halfday: halfDayEmployees,
-    });
-  } catch (error) {
-    console.error("Today Summary API Error:", error);
-  }
-};
+      console.log("EMPLOYEE DASHBOARD DATA:", {
+        totalEmployees,
+        "In-office": presentEmployees,
+        absent: absentEmployees,
+        halfday: halfDayEmployees,
+      });
+    } catch (error) {
+      console.error(
+        "Dashboard Attendance Error:",
+        error?.response?.data || error,
+      );
+    }
+  };
   const dashboardCards = [
     {
       id: 1,
@@ -567,7 +593,7 @@ const EmployeeDash = () => {
           .map((item, index) => ({
             key: item?.employeeId || index,
             employeeId: item?.employeeId || "",
-            employeeName: item?.employeeName?.toUpperCase() || "",
+            employeeName: formatName(item?.employeeName?.toUpperCase() || ""),
             punchIn: item?.punchInByAdmin
               ? "Punch In From Admin"
               : item?.punchIn
@@ -704,10 +730,10 @@ const EmployeeDash = () => {
   const getNotificationType = (notification) => {
     return String(
       notification?.type ||
-        notification?.notificationType ||
-        notification?.category ||
-        notification?.module ||
-        "",
+      notification?.notificationType ||
+      notification?.category ||
+      notification?.module ||
+      "",
     )
       .trim()
       .toUpperCase();
@@ -999,17 +1025,17 @@ const EmployeeDash = () => {
         (a, b) =>
           new Date(
             b.entryDate ||
-              b.entry_date ||
-              b.startingDate ||
-              b.starting_date ||
-              0,
+            b.entry_date ||
+            b.startingDate ||
+            b.starting_date ||
+            0,
           ) -
           new Date(
             a.entryDate ||
-              a.entry_date ||
-              a.startingDate ||
-              a.starting_date ||
-              0,
+            a.entry_date ||
+            a.startingDate ||
+            a.starting_date ||
+            0,
           ),
       );
 
@@ -1049,56 +1075,56 @@ const EmployeeDash = () => {
 
       const birthdayData = response?.data?.data || [];
 
-const today = new Date();
-today.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-const formattedBirthdays = birthdayData
-  .filter((employee) => {
-    if (!employee.date) return false;
+      const formattedBirthdays = birthdayData
+        .filter((employee) => {
+          if (!employee.date) return false;
 
-    const [day, monthText] = employee.date.split(" ");
+          const [day, monthText] = employee.date.split(" ");
 
-    const monthIndex = [
-      "jan",
-      "feb",
-      "mar",
-      "apr",
-      "may",
-      "jun",
-      "jul",
-      "aug",
-      "sep",
-      "oct",
-      "nov",
-      "dec",
-    ].indexOf(monthText.toLowerCase());
+          const monthIndex = [
+            "jan",
+            "feb",
+            "mar",
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "aug",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+          ].indexOf(monthText.toLowerCase());
 
-    if (monthIndex === -1) return false;
+          if (monthIndex === -1) return false;
 
-    // Use current year, not birth year
-    const birthdayDate = new Date(
-      today.getFullYear(),
-      monthIndex,
-      Number(day)
-    );
+          // Use current year, not birth year
+          const birthdayDate = new Date(
+            today.getFullYear(),
+            monthIndex,
+            Number(day)
+          );
 
-    birthdayDate.setHours(0, 0, 0, 0);
+          birthdayDate.setHours(0, 0, 0, 0);
 
-    // Only today's and future birthdays
-    return birthdayDate >= today;
-  })
-  .map((employee) => {
-    const [day, monthText] = employee.date.split(" ");
+          // Only today's and future birthdays
+          return birthdayDate >= today;
+        })
+        .map((employee) => {
+          const [day, monthText] = employee.date.split(" ");
 
-    return {
-      id: employee.uid,
-      name: employee.employeeName || "Unknown",
-      birthday: `${day} ${monthText.substring(0, 3)}`,
-      designation: employee.designation || "Employee",
-    };
-  });
+          return {
+            id: employee.uid,
+            name: formatName(employee.employeeName || "Unknown"),
+            birthday: `${day} ${monthText.substring(0, 3)}`,
+            designation: employee.designation || "Employee",
+          };
+        });
 
-setBirthdayEmployees(formattedBirthdays);
+      setBirthdayEmployees(formattedBirthdays);
     } catch (error) {
       console.error("Birthday API Error:", error);
       setBirthdayEmployees([]);
@@ -1188,7 +1214,7 @@ setBirthdayEmployees(formattedBirthdays);
             {/* Welcome + Quote */}
             <div className="box1">
               <div className="welcome-text">
-                <h2>Hello, {user?.employeeName || "Employee"}! 👋</h2>
+                <h2>Hello, {formatName(user?.employeeName || "Employee")}! 👋</h2>
 
                 <span>
                   Here's what's happening with your organization today.
@@ -1365,7 +1391,7 @@ setBirthdayEmployees(formattedBirthdays);
                       )}&password=${encodeURIComponent(
                         user?.password || "",
                       )}&empName=${encodeURIComponent(
-                        user?.employeeName || "",
+                        formatName(user?.employeeName || ""),
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1449,10 +1475,10 @@ setBirthdayEmployees(formattedBirthdays);
                         render: (date) =>
                           date
                             ? new Date(date).toLocaleDateString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              })
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            })
                             : "--",
                       },
 
@@ -1595,9 +1621,8 @@ setBirthdayEmployees(formattedBirthdays);
                   ) : (
                     displayedNotifications.map((notification) => (
                       <div
-                        className={`notification-item ${
-                          notification?.isRead ? "read" : "unread"
-                        }`}
+                        className={`notification-item ${notification?.isRead ? "read" : "unread"
+                          }`}
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
                       >
@@ -1615,15 +1640,15 @@ setBirthdayEmployees(formattedBirthdays);
                           <span className="notification-date">
                             {notification?.createdAt
                               ? new Date(notification.createdAt).toLocaleString(
-                                  "en-IN",
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  },
-                                )
+                                "en-IN",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
                               : "--"}
                           </span>
                         </div>
@@ -1673,14 +1698,14 @@ setBirthdayEmployees(formattedBirthdays);
                         <p className="notification-modal-date">
                           {selectedNotification?.createdAt
                             ? new Date(
-                                selectedNotification.createdAt,
-                              ).toLocaleString("en-IN", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                              selectedNotification.createdAt,
+                            ).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                             : "--"}
                         </p>
 
@@ -1762,7 +1787,7 @@ setBirthdayEmployees(formattedBirthdays);
                   ))}
                 </div>
               </div>
-              <div class="buttons">
+              <div className="buttons">
                 <Link to="/leaveApplication">
                   <button className="btn">Apply Leave</button>
                 </Link>
@@ -1819,8 +1844,8 @@ setBirthdayEmployees(formattedBirthdays);
                   <LuCake />
                   <span>Birthdays This Month</span>
                 </div>
-              </div>   
-                        
+              </div>
+
               {/* Birthday List */}
               <div className="birthday-list">
                 {birthdayLoader ? (

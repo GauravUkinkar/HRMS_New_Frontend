@@ -250,7 +250,7 @@ const AdminDash = () => {
 
       const response = await axios.get(`${BASE_URL2}api/punch/details`);
 
-      console.log("TODAY ATTENDANCE API:", response.data);
+      console.log("TODAY ATTENDANCE API sdffd sdsf sds fdsd sd ffds:", response.data);
 
       const records = Array.isArray(response?.data?.data)
         ? response.data.data
