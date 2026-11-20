@@ -1,10 +1,16 @@
-import React, { useContext, useEffect, useState } from "react";
+
+import React, { useContext, useEffect, useState, useRef } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import { UserContext } from "../../../Context";
 import "./ReleavingLetter.scss";
+
 import { FaGlobe, FaLocationDot, FaPhoneVolume } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { IoIosMail } from "react-icons/io";
+
 import Input from "../../comp/input/Input";
 import { MenuItem } from "@mui/material";
 import SelectInput from "../../comp/selectInput/SelectInput";
@@ -66,8 +72,10 @@ const companyConfig = {
 };
 
 const ReleavingLetter = () => {
+  const pdfRef = useRef(null);
+
   const { user } = useContext(UserContext);
-  console.log("USER CONTEXT DATA:", user);
+
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
   const [loading, setLoading] = useState(false);
@@ -88,6 +96,7 @@ const ReleavingLetter = () => {
     companyConfig[formData.companyName] ||
     companyConfig["Pandoza Solutions Pvt.Ltd"];
 
+  // Fetch employees based on selected company
   useEffect(() => {
     const getEmployeesByCompany = async () => {
       if (!formData.companyName) {
@@ -105,7 +114,7 @@ const ReleavingLetter = () => {
               companyName: formData.companyName,
             },
             withCredentials: true,
-          },
+          }
         );
 
         console.log("FULL API RESPONSE:", response.data);
@@ -117,30 +126,24 @@ const ReleavingLetter = () => {
             .map((item) => item?.data || item)
             .filter(Boolean);
 
-          console.log("EMPLOYEE LIST:", employeeList);
-
-          console.log(
-            "EMPLOYEE LIST JSON:",
-            JSON.stringify(employeeList, null, 2),
-          );
-
           setEmployee(employeeList);
+
+          console.log("EMPLOYEE LIST:", employeeList);
         } else {
           setEmployee([]);
-
-          toast.error(response.data?.responseMessage || "No employees found");
+          toast.error(
+            response.data?.responseMessage || "No employees found"
+          );
         }
       } catch (error) {
         console.error("Get Employees By Company Error:", error);
-        console.error("Status:", error.response?.status);
-        console.error("Response:", error.response?.data);
 
         setEmployee([]);
 
         toast.error(
           error.response?.data?.responseMessage ||
             error.response?.data?.message ||
-            "Unable to fetch employee",
+            "Unable to fetch employee"
         );
       } finally {
         setEmployeeLoading(false);
@@ -150,6 +153,7 @@ const ReleavingLetter = () => {
     getEmployeesByCompany();
   }, [formData.companyName, BASE_URL]);
 
+  // Format date for input
   const formatDateForInput = (dateString) => {
     if (!dateString) return "";
 
@@ -162,6 +166,7 @@ const ReleavingLetter = () => {
     return date.toISOString().split("T")[0];
   };
 
+  // Format date for PDF preview
   const formatPreviewDate = (date) => {
     if (!date) return "DD-MM-YYYY";
 
@@ -174,23 +179,13 @@ const ReleavingLetter = () => {
     return `${parts[2]}-${parts[1]}-${parts[0]}`;
   };
 
+  // Employee selection
   const handleEmployeeChange = (e) => {
     const employeeName = e.target.value;
 
     const selectedEmployee = employee.find(
-      (emp) => emp.employeeName === employeeName,
+      (emp) => emp.employeeName === employeeName
     );
-
-    console.log(
-      "SELECTED EMPLOYEE JSON:",
-      JSON.stringify(selectedEmployee, null, 2),
-    );
-
-    console.log("UID:", selectedEmployee?.uid);
-    console.log("EMPLOYEE TYPE:", selectedEmployee?.employeeType);
-    console.log("DEPARTMENT:", selectedEmployee?.department);
-    console.log("GENDER:", selectedEmployee?.gender);
-    console.log("SALARY:", selectedEmployee?.salary);
 
     if (!selectedEmployee) {
       setFormData((prev) => ({
@@ -207,10 +202,12 @@ const ReleavingLetter = () => {
       ...prev,
       employeeName: selectedEmployee.employeeName || "",
       designation: selectedEmployee.designation || "",
-      dateOfJoining: formatDateForInput(selectedEmployee.dateOfJoining) || "",
+      dateOfJoining:
+        formatDateForInput(selectedEmployee.dateOfJoining) || "",
     }));
   };
 
+  // Form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -233,361 +230,431 @@ const ReleavingLetter = () => {
     }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  // Generate PDF
+  const generateReleavingLetterPDF = async () => {
+    if (!pdfRef.current) {
+      throw new Error("Relieving letter preview not found");
+    }
 
-  try {
-    setLoading(true);
+    // Wait for fonts
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
 
-    const selectedEmployee = employee.find(
-      (emp) => emp.employeeName === formData.employeeName
+    // Wait for images inside the letter
+    const images = Array.from(
+      pdfRef.current.querySelectorAll("img")
     );
 
-    if (!selectedEmployee) {
-      toast.error("Please select an employee");
+    await Promise.all(
+      images.map((img) => {
+        if (img.complete) {
+          return Promise.resolve();
+        }
+
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      })
+    );
+
+    const canvas = await html2canvas(pdfRef.current, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+    });
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.95);
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+      compress: true,
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    const imageWidth = canvas.width;
+    const imageHeight = canvas.height;
+
+    const ratio = Math.min(
+      pdfWidth / imageWidth,
+      pdfHeight / imageHeight
+    );
+
+    const finalWidth = imageWidth * ratio;
+    const finalHeight = imageHeight * ratio;
+
+    const x = (pdfWidth - finalWidth) / 2;
+    const y = 0;
+
+    pdf.addImage(
+      imgData,
+      "JPEG",
+      x,
+      y,
+      finalWidth,
+      finalHeight,
+      undefined,
+      "FAST"
+    );
+
+    return pdf;
+  };
+
+  // Submit and download PDF directly
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.companyName || !formData.employeeName) {
+      toast.error("Please select company and employee");
       return;
     }
 
-    const payload = {
-      issuedDate: formData.issuedDate,
-      companyName: formData.companyName,
-      employeeName: formData.employeeName,
-      designation: formData.designation,
-      department: selectedEmployee?.department || null,
-      hrManagerName: formData.hrManagerName,
-      salary: Number(selectedEmployee?.salary) || 0,
-      gender: selectedEmployee?.gender || null,
-      employeeType: selectedEmployee?.employeeType || null,
-      documentName: "Relieving Letter",
-      uid: selectedEmployee?.uid,
-      dateOfjoining: formData.dateOfJoining,
-      endDate: formData.endDate,
-      newDesignation: null,
-      terminationType: null,
-      worningType: null,
-      documentUrl: null,
-    };
-
-    console.log(
-      "RELIEVING LETTER PAYLOAD:",
-      JSON.stringify(payload, null, 2)
-    );
-
-    const requestData = new FormData();
-
-    // Backend expects @RequestPart("data")
-    requestData.append("data", JSON.stringify(payload));
-
-    // No file is required because backend has required = false
-
-    const response = await axios.post(
-      `${BASE_URL}Admin/addOfficialLetter`,
-      requestData,
-      {
-        withCredentials: true,
-      }
-    );
-
-    console.log(
-      "ADD OFFICIAL LETTER RESPONSE:",
-      response.data
-    );
-
-    if (response.data?.HttpStatus === "OK") {
-      toast.success("Relieving letter added successfully!");
-
-      setFormData({
-        issuedDate: new Date().toISOString().split("T")[0],
-        companyName: "",
-        employeeName: "",
-        designation: "",
-        dateOfJoining: "",
-        endDate: "",
-        hrManagerName: "",
-      });
-    } else {
-      toast.error(
-        response.data?.message ||
-          response.data?.responseMessage ||
-          "Failed to add relieving letter"
-      );
+    if (!formData.endDate || !formData.hrManagerName) {
+      toast.error("Please fill all required fields");
+      return;
     }
-  } catch (error) {
-    console.error("ADD OFFICIAL LETTER ERROR:", error);
-    console.error("STATUS:", error.response?.status);
-    console.error("RESPONSE:", error.response?.data);
 
-    toast.error(
-      error.response?.data?.message ||
-        error.response?.data?.responseMessage ||
-        "Something went wrong while adding relieving letter"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+    if (!pdfRef.current) {
+      toast.error("Unable to generate PDF");
+      return;
+    }
 
+    try {
+      setLoading(true);
+
+      const pdf = await generateReleavingLetterPDF();
+
+      const employeeName = formData.employeeName
+        .trim()
+        .replace(/[^a-zA-Z0-9]/g, "_");
+
+      pdf.save(`Relieving_Letter_${employeeName}.pdf`);
+
+      toast.success("Relieving letter PDF downloaded successfully!");
+    } catch (error) {
+      console.error("PDF Download Error:", error);
+
+      toast.error("Unable to download PDF");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <>
-      <MainPanel>
-        <div className="releavingletter-parent parent">
-          <div className="releavingletter-cont cont">
-            <form className="left-releaving" onSubmit={handleSubmit}>
-              <Input
-                label="Releaving-Letter Date"
-                type="date"
-                name="issuedDate"
-                value={formData.issuedDate.split("T")[0]}
-                onChange={handleChange}
-                required
-              />
+    <MainPanel>
+      <div className="releavingletter-parent parent">
+        <div className="releavingletter-cont cont">
 
-              <SelectInput
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleChange}
-                label="Select Company Name"
-                required
-              >
-                <MenuItem value="The Indian Journey">
-                  The Indian Journey
+          {/* FORM */}
+          <form className="left-releaving" onSubmit={handleSubmit}>
+            <Input
+              label="Relieving Letter Date"
+              type="date"
+              name="issuedDate"
+              value={formData.issuedDate.split("T")[0]}
+              onChange={handleChange}
+              required
+            />
+
+            <SelectInput
+              name="companyName"
+              value={formData.companyName}
+              onChange={handleChange}
+              label="Select Company Name"
+              required
+            >
+              <MenuItem value="The Indian Journey">
+                The Indian Journey
+              </MenuItem>
+
+              <MenuItem value="Pandoza Solutions Pvt.Ltd">
+                Pandoza Solutions Pvt.Ltd
+              </MenuItem>
+
+              <MenuItem value="Akka Foundation">
+                Akka Foundation
+              </MenuItem>
+
+              <MenuItem value="Nvm Infratech Pvt.Ltd">
+                Nvm Infratech Pvt.Ltd
+              </MenuItem>
+            </SelectInput>
+
+            <SelectInput
+              label="Employee Name"
+              name="employeeName"
+              value={formData.employeeName}
+              onChange={handleEmployeeChange}
+              required
+            >
+              {employeeLoading ? (
+                <MenuItem disabled>
+                  Loading employees...
                 </MenuItem>
-
-                <MenuItem value="Pandoza Solutions Pvt.Ltd">
-                  Pandoza Solutions Pvt.Ltd
+              ) : employee.length === 0 ? (
+                <MenuItem disabled>
+                  No employees found
                 </MenuItem>
+              ) : (
+                employee.map((emp, index) => (
+                  <MenuItem
+                    key={emp.employeeId || emp.eid || index}
+                    value={emp.employeeName}
+                  >
+                    {emp.employeeName}
+                  </MenuItem>
+                ))
+              )}
+            </SelectInput>
 
-                <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
+            <Input
+              label="Designation"
+              name="designation"
+              value={formData.designation}
+              onChange={handleChange}
+              required
+            />
 
-                <MenuItem value="Nvm Infratech Pvt.Ltd">
-                  Nvm Infratech Pvt.Ltd
-                </MenuItem>
-              </SelectInput>
+            <Input
+              label="Joining Date"
+              name="dateOfJoining"
+              value={formData.dateOfJoining}
+              onChange={handleChange}
+              type="date"
+              required
+            />
 
-              <SelectInput
-                label="Employee Name"
-                name="employeeName"
-                value={formData.employeeName}
-                onChange={handleEmployeeChange}
-                required
-              >
-                {employeeLoading ? (
-                  <MenuItem disabled>Loading employees...</MenuItem>
-                ) : employee.length === 0 ? (
-                  <MenuItem disabled>No employees found</MenuItem>
-                ) : (
-                  employee.map((emp, index) => (
-                    <MenuItem
-                      key={emp.employeeId || emp.eid || index}
-                      value={emp.employeeName}
-                    >
-                      {emp.employeeName}
-                    </MenuItem>
-                  ))
-                )}
-              </SelectInput>
+            <Input
+              label="Relieving Date"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleChange}
+              type="date"
+              required
+            />
 
-              <Input
-                label="Designation"
-                name="designation"
-                value={formData.designation}
-                onChange={handleChange}
-                required
+            <Input
+              label="HR Manager Name"
+              name="hrManagerName"
+              value={formData.hrManagerName}
+              onChange={handleChange}
+              required
+            />
+
+            <button
+              className="btn"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Downloading..." : "Submit"}
+            </button>
+          </form>
+
+          {/* LETTER PREVIEW */}
+          <div className="right-releaving">
+            <div className="releaving-pdf-page" ref={pdfRef}>
+
+              <img
+                className="leftcorner"
+                src={left_corner}
+                alt="left-corner"
               />
 
-              <Input
-                label="Joining Date"
-                name="dateOfJoining"
-                value={formData.dateOfJoining}
-                onChange={handleChange}
-                type="date"
-                required
+              <img
+                className="pan-water-mark"
+                src={selectedCompany.watermark}
+                alt="Company Watermark"
               />
 
-              <Input
-                label="Relieving Date"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                type="date"
-                required
-              />
+              <div className="top">
+                <div className="date">
+                  Date: {formatPreviewDate(formData.issuedDate)}
+                </div>
 
-              <Input
-                label="Hr Manager Name"
-                name="hrManagerName"
-                value={formData.hrManagerName}
-                onChange={handleChange}
-                required
-              />
+                <div className="logo">
+                  <img
+                    src={selectedCompany.logo}
+                    alt={formData.companyName || "Company Logo"}
+                  />
+                </div>
+              </div>
 
-              <button className="btn" type="submit" disabled={loading}>
-                {loading ? "Submitting..." : "Submit"}
-              </button>
-            </form>
+              <div className="heading">
+                <h3>Relieving Letter</h3>
+              </div>
 
-            <div className="right-releaving">
-              <div className="releaving-pdf-page">
-                <img
-                  className="leftcorner"
-                  src={left_corner}
-                  alt="left-corner"
-                />
+              <div className="name">
+                <p>Dear</p>
+                <h4>{formData.employeeName || "Employee Name"}</h4>
+              </div>
 
-                <img
-                  className="pan-water-mark"
-                  src={selectedCompany.watermark}
-                  alt="Company Watermark"
-                />
+              <div className="gap"></div>
 
-                <div className="top">
-                  <div className="date">
-                    Date:
-                    {formatPreviewDate(formData.issuedDate)}
+              <p>
+                This is to certify that{" "}
+                <strong>
+                  {formData.employeeName || "Employee Name"}
+                </strong>{" "}
+                was employed with{" "}
+                <strong>
+                  {formData.companyName || "Company Name"}
+                </strong>{" "}
+                as a{" "}
+                <strong>
+                  {formData.designation || "Designation"}
+                </strong>{" "}
+                from{" "}
+                <strong>
+                  {formatPreviewDate(formData.dateOfJoining)}
+                </strong>{" "}
+                to{" "}
+                <strong>
+                  {formatPreviewDate(formData.endDate)}
+                </strong>.
+              </p>
+
+              <div className="gap"></div>
+
+              <p>
+                We hereby confirm that{" "}
+                <strong>
+                  {formData.employeeName || "the employee"}
+                </strong>{" "}
+                has been relieved from their duties with the organization
+                with effect from{" "}
+                <strong>
+                  {formatPreviewDate(formData.endDate)}
+                </strong>
+                , after completing all the required formalities and
+                handing over their responsibilities.
+              </p>
+
+              <div className="gap"></div>
+
+              <p>
+                We are pleased to confirm that{" "}
+                <strong>
+                  {formData.employeeName || "the employee"}
+                </strong>{" "}
+                has successfully completed their notice period in
+                accordance with the organization's policies and
+                requirements.
+              </p>
+
+              <div className="gap"></div>
+
+              <p>
+                During their tenure with the organization, their conduct
+                and performance were found to be satisfactory.
+              </p>
+
+              <div className="gap"></div>
+
+              <p>
+                We appreciate their contributions to{" "}
+                <strong>
+                  {formData.companyName || "the organization"}
+                </strong>{" "}
+                and wish them all the very best in their future endeavour.
+              </p>
+
+              <div className="gap"></div>
+
+              <p>Thanking you,</p>
+              <p>Sincerely</p>
+
+              <h4>
+                For {formData.companyName || "Company Name"}
+              </h4>
+
+              <div className="gap"></div>
+              <div className="gap"></div>
+              <div className="gap"></div>
+              <div className="gap"></div>
+
+              <p>HR Admin &amp; Finance</p>
+              <p>{formData.hrManagerName || "HR Manager"}</p>
+
+              {/* FOOTER */}
+              <div className="footer">
+                <Link
+                  className="left"
+                  to="#"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <div className="icon">
+                    <FaLocationDot />
                   </div>
 
-                  <div className="logo">
-                    <img
-                      src={selectedCompany.logo}
-                      alt={formData.companyName || "Company Logo"}
-                    />
+                  <div className="address">
+                    <h4>
+                      {formData.companyName || "Company Name"}
+                    </h4>
+
+                    <p>
+                      {selectedCompany.address}
+                      <br />
+                      CONTACT: {selectedCompany.contact}
+                    </p>
                   </div>
-                </div>
+                </Link>
 
-                <div className="heading">
-                  <h3>Releaving Letter</h3>
-                </div>
-
-                <div className="name">
-                  <p>Dear</p>
-
-                  <h4>{formData.employeeName || "Employee Name"}</h4>
-                </div>
-
-                <div className="gap"></div>
-
-                <p>
-                  This is to certify that{" "}
-                  <strong>{formData.employeeName || "Employee Name"}</strong>{" "}
-                  was employed with{" "}
-                  <strong>{formData.companyName || "Company Name"}</strong> as a{" "}
-                  <strong>{formData.designation || "Designation"}</strong> from{" "}
-                  <strong>{formatPreviewDate(formData.dateOfJoining)}</strong>{" "}
-                  to <strong>{formatPreviewDate(formData.endDate)}</strong>.
-                </p>
-
-                <div className="gap"></div>
-
-                <p>
-                  We hereby confirm that{" "}
-                  <strong>{formData.employeeName || "the employee"}</strong> has
-                  been relieved from their duties with the organization with
-                  effect from{" "}
-                  <strong>{formatPreviewDate(formData.endDate)}</strong>, after
-                  completing all the required formalities and handing over their
-                  responsibilities.
-                </p>
-
-                <div className="gap"></div>
-
-                <p>
-                  During their tenure with the organization, their conduct and
-                  performance were found to be satisfactory.
-                </p>
-
-                <div className="gap"></div>
-
-                <p>
-                  We appreciate their contributions to{" "}
-                  <strong>{formData.companyName || "the organization"}</strong>{" "}
-                  and wish them all the very best in their future endeavors.
-                </p>
-
-                <div className="gap"></div>
-
-                <p>Thanking you,</p>
-
-                <p>Sincerely</p>
-
-                <h4>For {formData.companyName || "Company Name"}</h4>
-
-                <div className="gap"></div>
-                <div className="gap"></div>
-                <div className="gap"></div>
-                <div className="gap"></div>
-
-                <p>Hr Admin & Finance</p>
-
-                <p>{formData.hrManagerName || "HR Manager"}</p>
-
-                <div className="footer">
+                <div className="right">
                   <Link
-                    className="left"
+                    className="contact"
                     to="#"
                     onClick={(e) => e.preventDefault()}
                   >
                     <div className="icon">
-                      <FaLocationDot />
+                      <FaPhoneVolume />
                     </div>
-
-                    <div className="address">
-                      <h4>{formData.companyName || "Company Name"}</h4>
-
-                      <p>
-                        {selectedCompany.address}
-                        <br />
-                        CONTACT: {selectedCompany.contact}
-                      </p>
-                    </div>
+                    <p>{selectedCompany.contact}</p>
                   </Link>
 
-                  <div className="right">
-                    <Link
-                      className="contact"
-                      to="#"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <div className="icon">
-                        <FaPhoneVolume />
-                      </div>
+                  <Link
+                    className="mail"
+                    to="#"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <div className="icon">
+                      <IoIosMail />
+                    </div>
+                    <p>{selectedCompany.email}</p>
+                  </Link>
 
-                      <p>{selectedCompany.contact}</p>
-                    </Link>
+                  <Link
+                    className="globe"
+                    to="#"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <div className="icon">
+                      <FaGlobe />
+                    </div>
+                    <p>{selectedCompany.location}</p>
+                  </Link>
 
-                    <Link
-                      className="mail"
-                      to="#"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <div className="icon">
-                        <IoIosMail />
-                      </div>
-
-                      <p>{selectedCompany.email}</p>
-                    </Link>
-
-                    <Link
-                      className="globe"
-                      to="#"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      <div className="icon">
-                        <FaGlobe />
-                      </div>
-
-                      <p>{selectedCompany.location}</p>
-                    </Link>
-
-                    <img src={right_corner} alt="right-corner" />
-                  </div>
+                  <img
+                    src={right_corner}
+                    alt="right-corner"
+                  />
                 </div>
               </div>
+
             </div>
           </div>
+
         </div>
-      </MainPanel>
-    </>
+      </div>
+    </MainPanel>
   );
 };
 

@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
+
+import React, { useEffect, useState, useRef } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./ExperienceLetter.scss";
 import SelectInput from "../../comp/selectInput/SelectInput";
 import { MenuItem } from "@mui/material";
 import Input from "../../comp/input/Input";
+
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 import {
   FaGlobe,
@@ -36,42 +40,44 @@ const companyConfig = {
   "The Indian Journey": {
     logo: indianJourneyLogo,
     watermark: indianJourneyWatermark,
-    address:
-      "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
+    address: "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
     contact: "+91 76666 01972",
     location: "Pune",
+    email: "info@pandozasolutions.com",
   },
 
-  "Pandoza Solutions Pvt.Ltd.": {
+  "Pandoza Solutions Pvt.Ltd": {
     logo: logo_pan,
     watermark: PanLogo,
-    address:
-      "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
+    address: "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
     contact: "+91 76666 01972",
     location: "Pune",
+    email: "info@pandozasolutions.com",
   },
 
   "Akka Foundation": {
     logo: akkaLogo,
     watermark: akkaWatermark,
-    address:
-      "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
+    address: "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
     contact: "+91 76666 01972",
     location: "Pune",
+    email: "info@pandozasolutions.com",
   },
 
   "Nvm Infratech Pvt.Ltd": {
     logo: nvmLogo,
     watermark: nvmWatermark,
-    address:
-      "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
+    address: "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
     contact: "+91 76666 01972",
     location: "Pune",
+    email: "info@pandozasolutions.com",
   },
 };
 
 const ExperienceLetter = () => {
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+
+  const pdfRef = useRef(null);
 
   const [loading, setLoading] = useState(false);
   const [employee, setEmployee] = useState([]);
@@ -90,8 +96,9 @@ const ExperienceLetter = () => {
 
   const selectedCompany =
     companyConfig[formData.companyName] ||
-    companyConfig["Pandoza Solutions Pvt.Ltd."];
+    companyConfig["Pandoza Solutions Pvt.Ltd"];
 
+  // Fetch employees by company
   useEffect(() => {
     const getEmployeesByCompany = async () => {
       if (!formData.companyName) {
@@ -112,63 +119,32 @@ const ExperienceLetter = () => {
           }
         );
 
-        console.log(
-          "FULL API RESPONSE:",
-          response.data
-        );
+        console.log("FULL API RESPONSE:", response.data);
 
         if (response.data?.status === "OK") {
-          const employeeData =
-            response.data?.data || [];
+          const employeeData = response.data?.data || [];
 
           const employeeList = employeeData
             .map((item) => item?.data || item)
             .filter(Boolean);
 
-          console.log(
-            "EMPLOYEE LIST:",
-            employeeList
-          );
-
-          console.log(
-            "EMPLOYEE LIST JSON:",
-            JSON.stringify(
-              employeeList,
-              null,
-              2
-            )
-          );
-
           setEmployee(employeeList);
+
+          console.log("EMPLOYEE LIST:", employeeList);
         } else {
           setEmployee([]);
 
           toast.error(
-            response.data?.responseMessage ||
-              "No Employees found"
+            response.data?.responseMessage || "No Employees found"
           );
         }
       } catch (error) {
-        console.error(
-          "Get Employees By Company Error:",
-          error
-        );
-
-        console.error(
-          "Status:",
-          error.response?.status
-        );
-
-        console.error(
-          "Response:",
-          error.response?.data
-        );
+        console.error("Get Employees By Company Error:", error);
 
         setEmployee([]);
 
         toast.error(
-          error.response?.data
-            ?.responseMessage ||
+          error.response?.data?.responseMessage ||
             error.response?.data?.message ||
             "Unable to fetch employees"
         );
@@ -180,6 +156,7 @@ const ExperienceLetter = () => {
     getEmployeesByCompany();
   }, [formData.companyName, BASE_URL]);
 
+  // Format date for input
   const formatDateForInput = (dateString) => {
     if (!dateString) return "";
 
@@ -192,18 +169,28 @@ const ExperienceLetter = () => {
     return date.toISOString().split("T")[0];
   };
 
+  // Format date for preview
+  const formatPreviewDate = (date) => {
+    if (!date) return "DD-MM-YYYY";
+
+    const parts = date.split("-");
+
+    if (parts.length !== 3) {
+      return date;
+    }
+
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  };
+
+  // Employee selection
   const handleEmployeeChange = (e) => {
     const employeeName = e.target.value;
 
     const selectedEmployee = employee.find(
-      (employee) =>
-        employee.employeeName === employeeName
+      (emp) => emp.employeeName === employeeName
     );
 
-    console.log(
-      "Selected Employee:",
-      selectedEmployee
-    );
+    console.log("SELECTED EMPLOYEE:", selectedEmployee);
 
     if (!selectedEmployee) {
       setFormData((prev) => ({
@@ -219,19 +206,14 @@ const ExperienceLetter = () => {
 
     setFormData((prev) => ({
       ...prev,
-      employeeName:
-        selectedEmployee.employeeName || "",
-      employeeId:
-        selectedEmployee.employeeId || "",
-      designation:
-        selectedEmployee.designation || "",
-      startDate:
-        formatDateForInput(
-          selectedEmployee.dateOfJoining
-        ) || "",
+      employeeName: selectedEmployee.employeeName || "",
+      employeeId: selectedEmployee.employeeId || "",
+      designation: selectedEmployee.designation || "",
+      startDate: formatDateForInput(selectedEmployee.dateOfJoining) || "",
     }));
   };
 
+  // Form changes
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -243,7 +225,9 @@ const ExperienceLetter = () => {
         employeeId: "",
         designation: "",
         startDate: "",
+        endDate: "",
       }));
+
       return;
     }
 
@@ -253,466 +237,433 @@ const ExperienceLetter = () => {
     }));
   };
 
+  // Generate PDF
+  const generateExperienceLetterPDF = async () => {
+    if (!pdfRef.current) {
+      throw new Error("Experience letter preview not found");
+    }
+
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+
+    // Wait for images to load
+    const images = Array.from(
+      pdfRef.current.querySelectorAll("img")
+    );
+
+    await Promise.all(
+      images.map((img) => {
+        if (img.complete) {
+          return Promise.resolve();
+        }
+
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      })
+    );
+
+    const canvas = await html2canvas(pdfRef.current, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+    });
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.95);
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+      compress: true,
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    const imageWidth = canvas.width;
+    const imageHeight = canvas.height;
+
+    // Fit letter inside A4
+    const ratio = Math.min(
+      pdfWidth / imageWidth,
+      pdfHeight / imageHeight
+    );
+
+    const finalWidth = imageWidth * ratio;
+    const finalHeight = imageHeight * ratio;
+
+    const x = (pdfWidth - finalWidth) / 2;
+
+    pdf.addImage(
+      imgData,
+      "JPEG",
+      x,
+      0,
+      finalWidth,
+      finalHeight,
+      undefined,
+      "FAST"
+    );
+
+    return pdf;
+  };
+
+  // Submit and download PDF directly
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(
-      "FORM DATA:",
-      formData
-    );
+    if (
+      !formData.companyName ||
+      !formData.employeeName ||
+      !formData.startDate ||
+      !formData.endDate ||
+      !formData.hrManagerName
+    ) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    if (!pdfRef.current) {
+      toast.error("Experience letter preview not found");
+      return;
+    }
 
     try {
       setLoading(true);
 
-      const payload = {
-        issuedDate: formData.issuedDate,
-        companyName: formData.companyName,
-        employeeName: formData.employeeName,
-        designation: formData.designation,
-        endDate: formData.endDate,
-        startDate: formData.startDate,
-        hrManagerName: formData.hrManagerName,
-        documentName: "Experience Letter",
-      };
+      const pdf = await generateExperienceLetterPDF();
 
-      console.log(
-        "API PAYLOAD:",
-        payload
-      );
+      const employeeName = formData.employeeName
+        .trim()
+        .replace(/[^a-zA-Z0-9]/g, "_");
 
-      const response = await axios.post(
-        `${BASE_URL}Admin/addOfficialLetter`,
-        payload,
-        {
-          withCredentials: true,
-        }
-      );
+      pdf.save(`Experience_Letter_${employeeName}.pdf`);
 
-      console.log(
-        "API RESPONSE:",
-        response
-      );
-
-      if (response.data?.status === "OK") {
-        toast.success(
-          "Experience letter added successfully!"
-        );
-
-        setFormData({
-          issuedDate:
-            new Date()
-              .toISOString()
-              .split("T")[0],
-          companyName: "",
-          employeeName: "",
-          employeeId: "",
-          designation: "",
-          endDate: "",
-          startDate: "",
-          hrManagerName: "",
-        });
-      } else {
-        toast.error(
-          response.data?.responseMessage ||
-            "Failed to add letter"
-        );
-      }
+      toast.success("Experience letter PDF downloaded successfully!");
     } catch (error) {
-      console.error(
-        "API ERROR:",
-        error
-      );
+      console.error("EXPERIENCE LETTER PDF ERROR:", error);
 
-      console.error(
-        "API ERROR RESPONSE:",
-        error.response
-      );
-
-      console.error(
-        "API ERROR DATA:",
-        error.response?.data
-      );
-
-      toast.error(
-        error.response?.data
-          ?.responseMessage ||
-          error.response?.data?.message ||
-          "Something went wrong while adding experience letter"
-      );
+      toast.error("Unable to download experience letter PDF");
     } finally {
       setLoading(false);
     }
   };
 
-  const formatPreviewDate = (date) => {
-    if (!date) return "DD-MM-YYYY";
-
-    const parts = date.split("-");
-
-    if (parts.length !== 3) {
-      return date;
-    }
-
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-  };
-
   return (
-    <>
-      <MainPanel>
-        <div className="experienceletter-parent parent">
-          <div className="experienceletter-cont cont">
-            <form
-              className="left-experience"
-              onSubmit={handleSubmit}
+    <MainPanel>
+      <div className="experienceletter-parent parent">
+        <div className="experienceletter-cont cont">
+
+          {/* FORM */}
+          <form
+            className="left-experience"
+            onSubmit={handleSubmit}
+          >
+            <Input
+              label="Experience Letter Date"
+              type="date"
+              name="issuedDate"
+              value={formData.issuedDate.split("T")[0]}
+              onChange={handleChange}
+              required
+            />
+
+            <SelectInput
+              name="companyName"
+              value={formData.companyName}
+              onChange={handleChange}
+              label="Select Company Name"
+              required
             >
-              <Input
-                label="Experience-Letter Date"
-                type="date"
-                name="issuedDate"
-                value={
-                  formData.issuedDate.split("T")[0]
-                }
-                onChange={handleChange}
-                required
-              />
+              <MenuItem value="The Indian Journey">
+                The Indian Journey
+              </MenuItem>
 
-              <SelectInput
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleChange}
-                label="Select Company Name"
-                required
-              >
-                <MenuItem value="The Indian Journey">
-                  The Indian Journey
+              <MenuItem value="Pandoza Solutions Pvt.Ltd">
+                Pandoza Solutions Pvt.Ltd
+              </MenuItem>
+
+              <MenuItem value="Akka Foundation">
+                Akka Foundation
+              </MenuItem>
+
+              <MenuItem value="Nvm Infratech Pvt.Ltd">
+                Nvm Infratech Pvt.Ltd
+              </MenuItem>
+            </SelectInput>
+
+            <SelectInput
+              label="Employee Name"
+              name="employeeName"
+              value={formData.employeeName}
+              onChange={handleEmployeeChange}
+              required
+            >
+              {employeeLoading ? (
+                <MenuItem disabled>
+                  Loading employees...
                 </MenuItem>
-
-                <MenuItem value="Pandoza Solutions Pvt.Ltd.">
-                  Pandoza Solutions Pvt.Ltd.
+              ) : employee.length === 0 ? (
+                <MenuItem disabled>
+                  No employees found
                 </MenuItem>
-
-                <MenuItem value="Akka Foundation">
-                  Akka Foundation
-                </MenuItem>
-
-                <MenuItem value="Nvm Infratech Pvt.Ltd">
-                  Nvm Infratech Pvt.Ltd
-                </MenuItem>
-              </SelectInput>
-
-              <SelectInput
-                label="Employee Name"
-                name="employeeName"
-                value={formData.employeeName}
-                onChange={handleEmployeeChange}
-                required
-              >
-                {employeeLoading ? (
-                  <MenuItem disabled>
-                    Loading employees...
+              ) : (
+                employee.map((emp, index) => (
+                  <MenuItem
+                    key={emp.employeeId || emp.eid || index}
+                    value={emp.employeeName}
+                  >
+                    {emp.employeeName}
                   </MenuItem>
-                ) : employee.length === 0 ? (
-                  <MenuItem disabled>
-                    No employees found
-                  </MenuItem>
-                ) : (
-                  employee.map((emp, index) => (
-                    <MenuItem
-                      key={
-                        emp.employeeId ||
-                        emp.eid ||
-                        index
-                      }
-                      value={emp.employeeName}
-                    >
-                      {emp.employeeName}
-                    </MenuItem>
-                  ))
-                )}
-              </SelectInput>
+                ))
+              )}
+            </SelectInput>
 
-              <Input
-                label="Designation"
-                name="designation"
-                value={formData.designation}
-                onChange={handleChange}
-                required
+            <Input
+              label="Designation"
+              name="designation"
+              value={formData.designation}
+              onChange={handleChange}
+              required
+            />
+
+            <Input
+              label="Joining Date"
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleChange}
+              type="date"
+              required
+            />
+
+            <Input
+              label="Relieving Date"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleChange}
+              type="date"
+              required
+            />
+
+            <Input
+              label="HR Manager Name"
+              name="hrManagerName"
+              value={formData.hrManagerName}
+              onChange={handleChange}
+              required
+            />
+
+            <button
+              className="btn"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Downloading..." : "Submit"}
+            </button>
+          </form>
+
+          {/* EXPERIENCE LETTER PREVIEW */}
+          <div className="right-experience">
+            <div
+              className="experience-pdf-page"
+              ref={pdfRef}
+            >
+              <img
+                className="leftcorner"
+                src={left_corner}
+                alt="left-corner"
               />
 
-              <Input
-                label="Joining Date"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleChange}
-                type="date"
-                required
+              <img
+                className="pan-water-mark"
+                src={selectedCompany.watermark}
+                alt="Company Watermark"
               />
 
-              <Input
-                label="Relieving Date"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                type="date"
-                required
-              />
-
-              <Input
-                label="Hr Manager Name"
-                name="hrManagerName"
-                value={formData.hrManagerName}
-                onChange={handleChange}
-                required
-              />
-
-              <button
-                className="btn"
-                type="submit"
-                disabled={loading}
-              >
-                {loading
-                  ? "Submitting..."
-                  : "Submit"}
-              </button>
-            </form>
-
-            <div className="right-experience">
-              <div className="experience-pdf-page">
-                <img
-                  className="leftcorner"
-                  src={left_corner}
-                  alt="left-corner"
-                />
-
-                <img
-                  className="pan-water-mark"
-                  src={selectedCompany.watermark}
-                  alt="Company Watermark"
-                />
-
-                <div className="top">
-                  <div className="date">
-                    Date:
-                    {formatPreviewDate(
-                      formData.issuedDate
-                    )}
-                  </div>
-
-                  <div className="logo">
-                    <img
-                      src={selectedCompany.logo}
-                      alt={
-                        formData.companyName ||
-                        "Company Logo"
-                      }
-                    />
-                  </div>
+              <div className="top">
+                <div className="date">
+                  Date: {formatPreviewDate(formData.issuedDate)}
                 </div>
 
-                <div className="heading">
-                  <h3>Experience Letter</h3>
+                <div className="logo">
+                  <img
+                    src={selectedCompany.logo}
+                    alt={formData.companyName || "Company Logo"}
+                  />
                 </div>
+              </div>
 
-                <div className="name">
-                  <p>Dear</p>
+              <div className="heading">
+                <h3>Experience Letter</h3>
+              </div>
 
-                  <h4>
-                    {formData.employeeName ||
-                      "Employee Name"}
-                  </h4>
-                </div>
-
-                <div className="gap"></div>
-
-                <p>
-                  This is to certify that{" "}
-                  <strong>
-                    {formData.employeeName ||
-                      "Employee Name"}
-                  </strong>{" "}
-                  was employed with{" "}
-                  <strong>
-                    {formData.companyName ||
-                      "Company Name"}
-                  </strong>{" "}
-                  as a{" "}
-                  <strong>
-                    {formData.designation ||
-                      "Designation"}
-                  </strong>{" "}
-                  from{" "}
-                  <strong>
-                    {formatPreviewDate(
-                      formData.startDate
-                    )}
-                  </strong>{" "}
-                  to{" "}
-                  <strong>
-                    {formatPreviewDate(
-                      formData.endDate
-                    )}
-                  </strong>
-                  .
-                </p>
-
-                <div className="gap"></div>
-
-                <p>
-                  During his tenure with the
-                  organization, he was responsible for
-                  carrying out his assigned duties and
-                  responsibilities efficiently and
-                  professionally.
-                </p>
-
-                <div className="gap"></div>
-
-                <p>
-                  We found him to be sincere,
-                  hardworking, dedicated, and committed
-                  towards his work. His conduct and
-                  performance during his employment were
-                  satisfactory.
-                </p>
-
-                <div className="gap"></div>
-
-                <p>
-                  We truly appreciate your performance
-                  and look forward to your continued
-                  contribution to the growth and success
-                  of{" "}
-                  <strong>
-                    {formData.companyName ||
-                      "Company Name"}
-                  </strong>
-                  .
-                </p>
-
-                <div className="gap"></div>
-
-                <p>
-                  We wish him all the very best for his
-                  future endeavors.
-                </p>
-
-                <div className="gap"></div>
-
-                <div className="gap"></div>
-
-                <p>Thanking you,</p>
-
-                <p>Sincerely</p>
+              <div className="name">
+                <p>Dear</p>
 
                 <h4>
-                  For{" "}
-                  {formData.companyName ||
-                    "Company Name"}
+                  {formData.employeeName || "Employee Name"}
                 </h4>
+              </div>
 
-                <div className="gap"></div>
+              <div className="gap"></div>
 
-                <div className="gap"></div>
+              <p>
+                This is to certify that{" "}
+                <strong>
+                  {formData.employeeName || "Employee Name"}
+                </strong>{" "}
+                was employed with{" "}
+                <strong>
+                  {formData.companyName || "Company Name"}
+                </strong>{" "}
+                as a{" "}
+                <strong>
+                  {formData.designation || "Designation"}
+                </strong>{" "}
+                from{" "}
+                <strong>
+                  {formatPreviewDate(formData.startDate)}
+                </strong>{" "}
+                to{" "}
+                <strong>
+                  {formatPreviewDate(formData.endDate)}
+                </strong>.
+              </p>
 
-                <div className="gap"></div>
+              <div className="gap"></div>
 
-                <div className="gap"></div>
+              <p>
+                During his tenure with the organization, he was responsible
+                for carrying out his assigned duties and responsibilities
+                efficiently and professionally.
+              </p>
 
-                <p>Hr Admin & Finance</p>
+              <div className="gap"></div>
 
-                <p>
-                  {formData.hrManagerName ||
-                    "HR Manager"}
-                </p>
+              <p>
+                We found him to be sincere, hardworking, dedicated, and
+                committed towards his work. His conduct and performance
+                during his employment were satisfactory.
+              </p>
 
-                <div className="footer">
+              <div className="gap"></div>
+
+              <p>
+                We truly appreciate your performance and look forward to
+                your continued contribution to the growth and success of{" "}
+                <strong>
+                  {formData.companyName || "Company Name"}
+                </strong>.
+              </p>
+
+              <div className="gap"></div>
+
+              <p>
+                We wish him all the very best for his future endeavour .
+              </p>
+
+              <div className="gap"></div>
+              <div className="gap"></div>
+
+              <p>Thanking you,</p>
+
+              <p>Sincerely</p>
+
+              <h4>
+                For {formData.companyName || "Company Name"}
+              </h4>
+
+              <div className="gap"></div>
+              <div className="gap"></div>
+              <div className="gap"></div>
+              <div className="gap"></div>
+
+              <p>HR Admin &amp; Finance</p>
+
+              <p>
+                {formData.hrManagerName || "HR Manager"}
+              </p>
+
+              {/* FOOTER */}
+              <div className="footer">
+                <Link
+                  className="left"
+                  to="#"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  <div className="icon">
+                    <FaLocationDot />
+                  </div>
+
+                  <div className="address">
+                    <h4>
+                      {formData.companyName || "Company Name"}
+                    </h4>
+
+                    <p>
+                      {selectedCompany.address}
+                      <br />
+                      CONTACT: {selectedCompany.contact}
+                    </p>
+                  </div>
+                </Link>
+
+                <div className="right">
                   <Link
-                    className="left"
+                    className="contact"
                     to="#"
-                    onClick={(e) =>
-                      e.preventDefault()
-                    }
+                    onClick={(e) => e.preventDefault()}
                   >
                     <div className="icon">
-                      <FaLocationDot />
+                      <FaPhoneVolume />
                     </div>
 
-                    <div className="address">
-                      <h4>
-                        {formData.companyName ||
-                          "Pandoza Solutions Pvt. Ltd."}
-                      </h4>
-
-                      <p>
-                        {selectedCompany.address}
-                        <br />
-                        CONTACT:{" "}
-                        {selectedCompany.contact}
-                      </p>
-                    </div>
+                    <p>{selectedCompany.contact}</p>
                   </Link>
 
-                  <div className="right">
-                    <Link
-                      className="contact"
-                      to="#"
-                      onClick={(e) =>
-                        e.preventDefault()
-                      }
-                    >
-                      <div className="icon">
-                        <FaPhoneVolume />
-                      </div>
+                  <Link
+                    className="mail"
+                    to="#"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <div className="icon">
+                      <IoIosMail />
+                    </div>
 
-                      <p>
-                        {selectedCompany.contact}
-                      </p>
-                    </Link>
+                    <p>{selectedCompany.email}</p>
+                  </Link>
 
-                    <Link
-                      className="mail"
-                      to="#"
-                      onClick={(e) =>
-                        e.preventDefault()
-                      }
-                    >
-                      <div className="icon">
-                        <IoIosMail />
-                      </div>
+                  <Link
+                    className="globe"
+                    to="#"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <div className="icon">
+                      <FaGlobe />
+                    </div>
 
-                      <p>
-                        info@pandozasolutions.com
-                      </p>
-                    </Link>
+                    <p>{selectedCompany.location}</p>
+                  </Link>
 
-                    <Link
-                      className="globe"
-                      to="#"
-                      onClick={(e) =>
-                        e.preventDefault()
-                      }
-                    >
-                      <div className="icon">
-                        <FaGlobe />
-                      </div>
-
-                      <p>
-                        {selectedCompany.location}
-                      </p>
-                    </Link>
-
-                    <img
-                      src={right_corner}
-                      alt="right-corner"
-                    />
-                  </div>
+                  <img
+                    src={right_corner}
+                    alt="right-corner"
+                  />
                 </div>
               </div>
             </div>
           </div>
+
         </div>
-      </MainPanel>
-    </>
+      </div>
+    </MainPanel>
   );
 };
 
