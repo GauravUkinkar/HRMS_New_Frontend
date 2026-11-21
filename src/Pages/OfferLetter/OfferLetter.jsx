@@ -173,6 +173,7 @@ const OfferLetter = () => {
     dateOfjoining: "",
     hrManagerName: "",
     salary: "",
+    email: "",
     gender: "",
     employeeType: "",
   });
@@ -193,36 +194,95 @@ const OfferLetter = () => {
 
   const formatDate = (date) => {
     if (!date) {
-      return "DD-MM-YYYY";
+      return "DD MMM YYYY";
     }
 
     const parts = date.split("-");
 
     if (parts.length === 3) {
-      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+
+      const monthNames = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ];
+
+      return `${day} ${monthNames[Number(month) - 1]} ${year}`;
     }
 
     return date;
   };
 
 
+
   const monthlySalary = Number(formData.salary) || 0;
   const annualSalary = monthlySalary * 12;
 
-  // Salary breakup
-  const basic = monthlySalary * 0.5;
-  const da = monthlySalary * 0.2;
-  const hra = monthlySalary * 0.1;
-  const otherAllowance = Math.max(
-    monthlySalary - basic - da - hra,
-    0
-  );
+  // Salary Breakup
+  const basic = monthlySalary * 0.50;
+  const da = basic * 0.20;
+  const hra = basic * 0.50;
+  const otherAllowance = basic * 0.30;
 
+  // Annual Salary Components
   const annualBasic = basic * 12;
   const annualDa = da * 12;
   const annualHra = hra * 12;
-  const annualOtherAllowance =
-    otherAllowance * 12;
+  const annualOtherAllowance = otherAllowance * 12;
+
+  // Professional Tax
+  const pt = 200;
+  const annualPt = pt * 12;
+
+  // PF Calculation
+  const pfBase = basic + da;
+
+  let pf = 0;
+
+  if (monthlySalary > 25000) {
+    pf = 3000;
+  } else if (monthlySalary > 15000) {
+    pf = pfBase * 0.12;
+  } else {
+    pf = 0;
+  }
+
+  const annualPf = pf * 12;
+
+  // ESIC Calculation
+  const esicBase = basic + da;
+  const esicApplicable = esicBase <= 21000;
+
+  // Using the percentages specified by you
+  const employeeEsic = esicApplicable
+    ? esicBase * 0.00075
+    : 0;
+
+  const employerEsic = esicApplicable
+    ? esicBase * 0.000325
+    : 0;
+
+  const annualEmployeeEsic = employeeEsic * 12;
+  const annualEmployerEsic = employerEsic * 12;
+
+  // Total Employee Deductions
+  const totalDeduction = pt + pf + employeeEsic;
+  const annualTotalDeduction =
+    annualPt + annualPf + annualEmployeeEsic;
+
+  // Net Salary
+  const netSalary = monthlySalary - totalDeduction;
+  const annualNetSalary = annualSalary - annualTotalDeduction;
+
+  // Employer Contribution
+  const totalEmployerContribution = employerEsic;
+
+  // CTC
+  const monthlyCtc = monthlySalary + totalEmployerContribution;
+  const annualCtc = monthlyCtc * 12;
+
 
 
   const formatAmount = (amount) => {
@@ -265,7 +325,7 @@ const OfferLetter = () => {
       const page = pdfPages[i];
 
       const canvas = await html2canvas(page, {
-        scale: 2,
+        scale: 1.3,
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#ffffff",
@@ -274,7 +334,7 @@ const OfferLetter = () => {
 
       const imgData = canvas.toDataURL(
         "image/jpeg",
-        0.95
+        0.65
       );
 
       const pageWidth = 700;
@@ -287,6 +347,7 @@ const OfferLetter = () => {
           unit: "px",
           format: [pageWidth, pageHeight],
           compress: true,
+          precision: 2,
         });
 
       } else {
@@ -315,17 +376,18 @@ const OfferLetter = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("=================================");
-    console.log("SUBMIT BUTTON CLICKED");
-    console.log("FORM DATA:", formData);
-    console.log("=================================");
+    console.group("🚀 OFFER LETTER SUBMISSION");
+    console.log("📝 FORM DATA:", formData);
+    console.table(formData);
+    console.groupEnd();
 
     try {
       setLoading(true);
 
       // ==========================================
-      // STEP 1: GENERATE PDF FROM PREVIEW
+      // STEP 1: GENERATE PDF
       // ==========================================
+      console.group("📄 PDF GENERATION");
 
       console.log("Generating offer letter PDF...");
 
@@ -335,19 +397,43 @@ const OfferLetter = () => {
         throw new Error("PDF generation failed");
       }
 
-      console.log("PDF generated successfully");
-      console.log("PDF SIZE:", pdfBlob.size);
+      // ==========================================
+      // CHECK PDF SIZE
+      // ==========================================
 
+      const pdfSizeMB = pdfBlob.size / (1024 * 1024);
+
+      console.log("📄 PDF SIZE:", pdfSizeMB.toFixed(2), "MB");
+
+      if (pdfSizeMB > 2) {
+        console.error("❌ PDF exceeds 2 MB limit");
+
+        toast.error(
+          `PDF size is ${pdfSizeMB.toFixed(2)} MB. Maximum allowed size is 2 MB.`
+        );
+
+        return;
+      }
+
+      if (!pdfBlob) {
+        throw new Error("PDF generation failed");
+      }
+
+      console.log("✅ PDF generated successfully");
+      console.log("PDF Blob:", pdfBlob);
+      console.log("PDF Size:", pdfBlob.size, "bytes");
+      console.log("PDF Size:", (pdfBlob.size / 1024).toFixed(2), "KB");
+      console.log("PDF Type:", pdfBlob.type);
+
+      console.groupEnd();
 
       // ==========================================
       // STEP 2: CREATE PDF FILE
       // ==========================================
-
       const employeeName =
         formData.employeeName?.trim() || "Employee";
 
-      const pdfFileName =
-        `${employeeName}_Offer_Letter.pdf`;
+      const pdfFileName = `${employeeName}_Offer_Letter.pdf`;
 
       const pdfFile = new File(
         [pdfBlob],
@@ -357,149 +443,177 @@ const OfferLetter = () => {
         }
       );
 
-      console.log("PDF FILE:", pdfFile);
+      console.group("📁 PDF FILE DETAILS");
 
+      console.log("File Name:", pdfFile.name);
+      console.log("File Size:", pdfFile.size, "bytes");
+      console.log(
+        "File Size:",
+        (pdfFile.size / 1024).toFixed(2),
+        "KB"
+      );
+      console.log("File Type:", pdfFile.type);
+      console.log("Last Modified:", pdfFile.lastModified);
+
+      console.groupEnd();
 
       // ==========================================
-      // STEP 3: CREATE JSON DATA
+      // STEP 3: CREATE API PAYLOAD
       // ==========================================
 
-      const data = {
+      const offerAndJoiningLetterDto = {
         issuedDate: formData.issuedDate,
-
         companyName: formData.companyName,
-
         employeeName: formData.employeeName,
-
         designation: formData.designation,
-
         department: formData.department,
-
         dateOfjoining: formData.dateOfjoining,
-
         hrManagerName: formData.hrManagerName,
-
         salary: Number(formData.salary) || 0,
-
         gender: formData.gender,
-
+        email: formData.email,
         employeeType: formData.employeeType,
-
         documentName: "Offer Letter",
+
       };
 
+      console.group("📦 API PAYLOAD DATA");
+
+      console.log("Payload Object:", offerAndJoiningLetterDto);
+
       console.log(
-        "DATA TO SEND:",
-        JSON.stringify(data, null, 2)
+        "Payload JSON:",
+        JSON.stringify(offerAndJoiningLetterDto, null, 2)
       );
 
+      console.table(offerAndJoiningLetterDto);
+
+      console.groupEnd();
 
       // ==========================================
-      // STEP 4: CREATE MULTIPART FORM DATA
+      // STEP 4: CREATE FORMDATA
       // ==========================================
 
       const formDataToSend = new FormData();
 
-
-      // API FIELD 1
-      // Swagger says: file
-      formDataToSend.append(
-        "file",
-        pdfFile
-      );
-
-
-      // API FIELD 2
-      // Swagger says: data
-      formDataToSend.append(
-        "data",
-        JSON.stringify(data)
-      );
-
+      formDataToSend.append("file", pdfFile);
+      formDataToSend.append("offerAndJoiningLetterDto ", JSON.stringify(offerAndJoiningLetterDto));
 
       // ==========================================
-      // STEP 5: CHECK FOR DEBUG
+      // STEP 5: CHECK FORMDATA
       // ==========================================
 
-      console.log("=================================");
-      console.log("MULTIPART DATA");
-      console.log("=================================");
+      console.group("📤 MULTIPART FORMDATA");
 
       for (const [key, value] of formDataToSend.entries()) {
+        if (value instanceof File) {
+          console.log("FILE FIELD:", key);
 
-        console.log(
-          key,
-          value
-        );
+          console.table({
+            fieldName: key,
+            fileName: value.name,
+            fileSize: value.size,
+            fileType: value.type,
+          });
+        } else {
+          console.log("DATA FIELD:", key);
+          console.log("VALUE:", value);
+
+          try {
+            console.log(
+              "PARSED JSON:",
+              JSON.parse(value)
+            );
+
+            console.table(JSON.parse(value));
+          } catch (error) {
+            console.log(error);
+          }
+        }
       }
 
+      console.groupEnd();
 
       // ==========================================
-      // STEP 6: CALL API
+      // STEP 6: API URL
       // ==========================================
 
-      console.log(
-        "API URL:",
-        `${BASE_URL}Admin/addOfficialLetter`
-      );
+      const apiUrl = `${BASE_URL}Admin/AddOfferAndJoiningLetter`;
 
+      console.group("🌐 API REQUEST");
+
+      console.log("API URL:", apiUrl);
+      console.log("Method:", "POST");
+      console.log("Credentials:", "withCredentials: true");
+      console.log("Content Type:", "multipart/form-data");
+
+      console.groupEnd();
+
+      // ==========================================
+      // STEP 7: CALL API
+      // ==========================================
+
+      console.log("⏳ Sending request to API...");
+      console.log("📤 FINAL JSON SENT TO BACKEND:", offerAndJoiningLetterDto);
+      console.log("📤 PDF FILE SENT:", {
+        name: pdfFile.name,
+        size: pdfFile.size,
+        sizeMB: (pdfFile.size / (1024 * 1024)).toFixed(2),
+        type: pdfFile.type,
+      });
       const response = await axios.post(
-        `${BASE_URL}Admin/addOfficialLetter`,
+        apiUrl,
         formDataToSend,
         {
           withCredentials: true,
         }
       );
 
+      // ==========================================
+      // STEP 8: API RESPONSE
+      // ==========================================
+
+      console.group("✅ API RESPONSE");
+
+      console.log("Response Status:", response.status);
+      console.log("Response Headers:", response.headers);
+      console.log("Response Data:", response.data);
+      console.table(response.data);
+
+      console.groupEnd();
 
       // ==========================================
-      // STEP 7: API RESPONSE
-      // ==========================================
-
-      console.log(
-        "API RESPONSE:",
-        response.data
-      );
-
-
-      // ==========================================
-      // STEP 8: SUCCESS
+      // STEP 9: SUCCESS
       // ==========================================
 
       if (response.data?.status === "OK") {
-
         toast.success(
           response.data?.responseMessage ||
           "Offer letter added successfully!"
         );
 
+        console.log("🎉 OFFER LETTER SUBMITTED SUCCESSFULLY");
 
-        // Reset form
+        // Reset Form
         setFormData({
           issuedDate: new Date()
             .toISOString()
             .split("T")[0],
 
           companyName: "",
-
           employeeName: "",
-
           designation: "",
-
           department: "",
-
           dateOfjoining: "",
-
           hrManagerName: "",
-
           salary: "",
-
           gender: "",
-
+          email: "",
           employeeType: "",
         });
 
       } else {
+        console.warn("⚠️ API returned unsuccessful response");
 
         toast.error(
           response.data?.responseMessage ||
@@ -509,32 +623,21 @@ const OfferLetter = () => {
 
     } catch (error) {
 
-      console.error(
-        "================================="
-      );
+      // ==========================================
+      // STEP 10: ERROR DETAILS
+      // ==========================================
 
-      console.error(
-        "OFFER LETTER ERROR"
-      );
+      console.group("❌ OFFER LETTER API ERROR");
 
-      console.error(
-        "================================="
-      );
+      console.error("Full Error:", error);
+      console.error("Error Message:", error.message);
+      console.error("Error Response:", error.response);
+      console.error("Error Response Data:", error.response?.data);
+      console.error("Error Status:", error.response?.status);
+      console.error("Error Headers:", error.response?.headers);
+      console.error("Request Config:", error.config);
 
-      console.error(
-        error
-      );
-
-      console.error(
-        "ERROR RESPONSE:",
-        error.response
-      );
-
-      console.error(
-        "ERROR DATA:",
-        error.response?.data
-      );
-
+      console.groupEnd();
 
       toast.error(
         error.response?.data?.responseMessage ||
@@ -544,7 +647,6 @@ const OfferLetter = () => {
       );
 
     } finally {
-
       setLoading(false);
     }
   };
@@ -621,7 +723,15 @@ const OfferLetter = () => {
               />
 
 
-
+              <Input
+                label="Email ID"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
               <SelectInput
                 label="Gender"
                 name="gender"
@@ -1034,344 +1144,170 @@ const OfferLetter = () => {
                       <div className="gap"></div>
 
                       <table className="salary-table">
-
                         <thead>
-
                           <tr>
-
-                            <th>
-                              No.
-                            </th>
-
-                            <th>
-                              Component of Salary
-                            </th>
-
-                            <th>
-                              Amount Rs (Monthly)
-                            </th>
-
-                            <th>
-                              Amount Rs (Annually)
-                            </th>
-
+                            <th>No.</th>
+                            <th>Component of Salary</th>
+                            <th>Amount Rs (Monthly)</th>
+                            <th>Amount Rs (Annually)</th>
                           </tr>
-
                         </thead>
 
                         <tbody>
-
                           {/* A */}
-
                           <tr>
-
+                            <td>A</td>
                             <td>
-                              A
+                              <strong>Monthly Salary components</strong>
                             </td>
-
-                            <td>
-                              <strong>
-                                Monthly Salary
-                                components
-                              </strong>
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                monthlySalary
-                              )}
-                              /-
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                annualSalary
-                              )}
-                              /-
-                            </td>
-
+                            <td>{formatAmount(monthlySalary)}/-</td>
+                            <td>{formatAmount(annualSalary)}/-</td>
                           </tr>
 
                           {/* BASIC */}
-
                           <tr>
-
                             <td></td>
-
-                            <td>
-                              Basic
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                basic
-                              )}
-                              /-
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                annualBasic
-                              )}
-                              /-
-                            </td>
-
+                            <td>Basic</td>
+                            <td>{formatAmount(basic)}/-</td>
+                            <td>{formatAmount(annualBasic)}/-</td>
                           </tr>
 
                           {/* DA */}
-
                           <tr>
-
                             <td></td>
-
-                            <td>
-                              DA
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                da
-                              )}
-                              /-
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                annualDa
-                              )}
-                              /-
-                            </td>
-
+                            <td>DA</td>
+                            <td>{formatAmount(da)}/-</td>
+                            <td>{formatAmount(annualDa)}/-</td>
                           </tr>
 
                           {/* HRA */}
-
                           <tr>
-
                             <td></td>
-
-                            <td>
-                              HRA
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                hra
-                              )}
-                              /-
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                annualHra
-                              )}
-                              /-
-                            </td>
-
+                            <td>HRA</td>
+                            <td>{formatAmount(hra)}/-</td>
+                            <td>{formatAmount(annualHra)}/-</td>
                           </tr>
 
-                          {/* OTHER */}
-
+                          {/* OTHER ALLOWANCE */}
                           <tr>
-
                             <td></td>
-
-                            <td>
-                              Other Allowance
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                otherAllowance
-                              )}
-                              /-
-                            </td>
-
-                            <td>
-                              {formatAmount(
-                                annualOtherAllowance
-                              )}
-                              /-
-                            </td>
-
+                            <td>Other Allowance</td>
+                            <td>{formatAmount(otherAllowance)}/-</td>
+                            <td>{formatAmount(annualOtherAllowance)}/-</td>
                           </tr>
 
-                          {/* GROSS */}
-
+                          {/* GROSS SALARY */}
                           <tr>
-
                             <td></td>
-
                             <td>
-                              <strong>
-                                ANNUAL FIXED GROSS
-                                SALARY (A)
-                              </strong>
+                              <strong>ANNUAL FIXED GROSS SALARY (A)</strong>
                             </td>
-
                             <td>
-                              <strong>
-                                {formatAmount(
-                                  monthlySalary
-                                )}
-                                /-
-                              </strong>
+                              <strong>{formatAmount(monthlySalary)}/-</strong>
                             </td>
-
                             <td>
-                              <strong>
-                                {formatAmount(
-                                  annualSalary
-                                )}
-                                /-
-                              </strong>
+                              <strong>{formatAmount(annualSalary)}/-</strong>
                             </td>
-
                           </tr>
 
-                          {/* DEDUCTION */}
-
+                          {/* B - DEDUCTIONS */}
                           <tr>
-
+                            <td>B</td>
                             <td>
-                              B
+                              <strong>Employee Deductions</strong>
                             </td>
-
-                            <td>
-                              <strong>
-                                Deduction
-                              </strong>
-                            </td>
-
                             <td></td>
-
                             <td></td>
-
                           </tr>
 
+                          {/* PROFESSIONAL TAX */}
                           <tr>
-
                             <td></td>
-
-                            <td>
-                              Professional Tax*
-                            </td>
-
-                            <td>
-                              200/-
-                            </td>
-
-                            <td>
-                              2,500/-
-                            </td>
-
+                            <td>Professional Tax (PT)</td>
+                            <td>{formatAmount(pt)}/-</td>
+                            <td>{formatAmount(annualPt)}/-</td>
                           </tr>
 
+                          {/* PF */}
                           <tr>
-
                             <td></td>
+                            <td>Provident Fund (PF)</td>
+                            <td>{formatAmount(pf)}/-</td>
+                            <td>{formatAmount(annualPf)}/-</td>
+                          </tr>
 
-                            <td>
-                              Provident Fund (PF)**
-                            </td>
-
-                            <td>
-                              1,800/-
-                            </td>
-
-                            <td>
-                              21,600/-
-                            </td>
-
+                          {/* EMPLOYEE ESIC */}
+                          <tr>
+                            <td></td>
+                            <td>Employee ESIC</td>
+                            <td>{formatAmount(employeeEsic)}/-</td>
+                            <td>{formatAmount(annualEmployeeEsic)}/-</td>
                           </tr>
 
                           {/* TOTAL DEDUCTION */}
-
                           <tr>
-
                             <td></td>
-
                             <td>
-                              <strong>
-                                TOTAL DEDUCTION (B)
-                              </strong>
+                              <strong>TOTAL DEDUCTION (B)</strong>
                             </td>
-
                             <td>
-                              <strong>
-                                2,000/-
-                              </strong>
+                              <strong>{formatAmount(totalDeduction)}/-</strong>
                             </td>
-
                             <td>
-                              <strong>
-                                24,100/-
-                              </strong>
+                              <strong>{formatAmount(annualTotalDeduction)}/-</strong>
                             </td>
+                          </tr>
 
+                          {/* NET SALARY */}
+                          <tr>
+                            <td>C</td>
+                            <td>
+                              <strong>NET SALARY (A-B)</strong>
+                            </td>
+                            <td>
+                              <strong>{formatAmount(netSalary)}/-</strong>
+                            </td>
+                            <td>
+                              <strong>{formatAmount(annualNetSalary)}/-</strong>
+                            </td>
+                          </tr>
+
+                          {/* EMPLOYER CONTRIBUTION */}
+                          <tr>
+                            <td>D</td>
+                            <td>
+                              <strong>Employer Contribution</strong>
+                            </td>
+                            <td></td>
+                            <td></td>
+                          </tr>
+
+                          {/* EMPLOYER ESIC */}
+                          <tr>
+                            <td></td>
+                            <td>Employer ESIC</td>
+                            <td>{formatAmount(employerEsic)}/-</td>
+                            <td>{formatAmount(annualEmployerEsic)}/-</td>
                           </tr>
 
                           {/* CTC */}
-
                           <tr>
-
+                            <td>E</td>
                             <td>
-                              C
+                              <strong>TOTAL COST TO COMPANY (CTC)</strong>
                             </td>
-
                             <td>
-                              <strong>
-                                COST TO COMPANY (A-B)
-                              </strong>
+                              <strong>{formatAmount(monthlyCtc)}/-</strong>
                             </td>
-
                             <td>
-                              <strong>
-                                {formatAmount(
-                                  Math.max(
-                                    monthlySalary -
-                                    2000,
-                                    0
-                                  )
-                                )}
-                                /-
-                              </strong>
+                              <strong>{formatAmount(annualCtc)}/-</strong>
                             </td>
-
-                            <td>
-                              <strong>
-                                {formatAmount(
-                                  Math.max(
-                                    annualSalary -
-                                    24100,
-                                    0
-                                  )
-                                )}
-                                /-
-                              </strong>
-                            </td>
-
                           </tr>
-
                         </tbody>
-
                       </table>
 
-                      <div className="gap"></div>
 
-                      <p>
-                        *Professional Tax deduction
-                        for the month of February will
-                        be ₹300.
-                      </p>
 
-                      <div className="small-gap"></div>
-
-                      <p>
-                        **The PF deduction consists of
-                        both employee and employer
-                        contributions.
-                      </p>
 
                       <p className="footer">
                         {selectedCompany.address}
@@ -1419,6 +1355,41 @@ const OfferLetter = () => {
                       <div className="salary-description">
 
                         <p>
+                          *Professional Tax deduction
+                          for the month of February will
+                          be ₹300.
+                        </p>
+
+
+                        <div className="gap"></div>
+                        <div className="salary-description">
+
+                          <p>
+                            * Professional Tax is ₹200 per month.
+                          </p>
+
+
+                          <div className="gap"></div>
+                          <p>
+                            ** Provident Fund (PF) is calculated based on the applicable salary criteria.
+                          </p>
+
+
+                          <div className="gap"></div>
+                          <p>
+                            *** ESIC is applicable when Basic Salary + DA is ₹21,000 or below.
+                          </p>
+
+                          <p>
+                            Employee ESIC is deducted from the employee's salary.
+                            Employer ESIC is a company contribution and is not deducted
+                            from employee take-home salary.
+                          </p>
+
+                        </div>
+
+                        <div className="gap"></div>
+                        <p>
                           <strong>
                             I. Basic :
                           </strong>{" "}
@@ -1465,21 +1436,20 @@ const OfferLetter = () => {
 
                       </div>
 
+
+
+
                       <div className="gap"></div>
-
-                      <div className="salary-description">
-
-                        <p>
-                          <strong>
-                            Income Tax :
-                          </strong>{" "}
-                          Income tax and Professional tax
-                          will be deducted at source as per
-                          the rules applicable.
-                        </p>
-
-                      </div>
-
+                      <p>
+                        <strong>
+                          IV. Special Allowance :
+                        </strong>{" "}
+                        This will vary as it is based on
+                        the difference between your gross
+                        salary and other components that
+                        make up the entire salary. It is
+                        a fully taxable component.
+                      </p>
                       <div className="gap"></div>
 
                       <p className="footer">
