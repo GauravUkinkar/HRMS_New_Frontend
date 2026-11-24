@@ -133,7 +133,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
           link: "/offerLettermanagement",
         },
         {
-          name: "Generate Joining Letter",
+          name: "Joining Letter",
           link: "/joiningLetterManagement",
         },
         {

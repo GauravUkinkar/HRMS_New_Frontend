@@ -118,9 +118,7 @@ const JoiningLetterManagement = () => {
     }
   };
 
-  // =====================================================
-  // DELETE OFFER LETTER
-  // =====================================================
+
 
   const handleDeleteOfferLetter = async (oid) => {
     if (oid === null || oid === undefined) {
@@ -165,17 +163,13 @@ const JoiningLetterManagement = () => {
     }
   };
 
-  // =====================================================
-  // GET DATA ON PAGE LOAD
-  // =====================================================
+
 
   useEffect(() => {
     getAllOfficialLetters();
   }, []);
 
-  // =====================================================
-  // TABLE COLUMNS
-  // =====================================================
+
 
   const columns = [
     // EMPLOYEE NAME
@@ -277,7 +271,7 @@ const JoiningLetterManagement = () => {
 
     // OFFER DATE
     {
-      title: "Offer Date",
+      title: "Issued Date",
 
       dataIndex: "issuedDate",
 
@@ -303,35 +297,7 @@ const JoiningLetterManagement = () => {
       ),
     },
 
-    // EMPLOYEE TYPE
-    {
-      title: "Employee Type",
 
-      dataIndex: "employeeType",
-
-      key: "employeeType",
-
-      width: 160,
-
-      render: (type) => <Tag>{type || "N/A"}</Tag>,
-    },
-
-    // SALARY
-    {
-      title: "Salary",
-
-      dataIndex: "salary",
-
-      key: "salary",
-
-      width: 150,
-
-      render: (salary) => {
-        if (!salary) return "N/A";
-
-        return `₹${Number(salary).toLocaleString("en-IN")}`;
-      },
-    },
 
     // ACTIONS
     {
@@ -368,9 +334,7 @@ const JoiningLetterManagement = () => {
     },
   ];
 
-  // =====================================================
-  // UI
-  // =====================================================
+
 
   return (
     <MainPanel

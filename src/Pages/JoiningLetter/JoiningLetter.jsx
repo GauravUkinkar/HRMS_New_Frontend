@@ -41,7 +41,7 @@ const companyConfig = {
     location: "Pune",
   },
 
-  "Pandoza Solutions Pvt.Ltd.": {
+  "Pandoza Solutions Pvt.Ltd": {
     logo: panLogo,
     watermark: panWatermark,
     address: "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
@@ -265,7 +265,7 @@ const JoiningLetter = () => {
 
   const selectedCompany =
     companyConfig[formData.companyName] ||
-    companyConfig["Pandoza Solutions Pvt.Ltd."];
+    companyConfig["Pandoza Solutions Pvt.Ltd"];
 
   // =====================================================
   // HANDLE CHANGE
@@ -567,8 +567,8 @@ const JoiningLetter = () => {
                 The Indian Journey
               </MenuItem>
 
-              <MenuItem value="Pandoza Solutions Pvt.Ltd.">
-                Pandoza Solutions Pvt.Ltd.
+              <MenuItem value="Pandoza Solutions Pvt.Ltd">
+                Pandoza Solutions Pvt.Ltd
               </MenuItem>
 
               <MenuItem value="Akka Foundation">
