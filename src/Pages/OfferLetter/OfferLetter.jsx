@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import "./OfferLetter.scss";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
@@ -22,6 +22,8 @@ import { MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { UserContext } from "../../../Context";
+
 
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -156,6 +158,7 @@ const InternshipOfferLetter = ({
 
 const OfferLetter = () => {
   const navigate = useNavigate();
+    const { user } = useContext(UserContext);
 
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
@@ -652,7 +655,18 @@ const OfferLetter = () => {
   };
   return (
     <>
-      <MainPanel>
+      <MainPanel
+                    breadcrumbs={[
+        { label: "Dashboard", link: "/dashboard" },
+        { label: "Joining Letter" },
+      ]}
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "ADMIN"
+          ? "Admin Dashboard"
+          : " "
+      }>
         <div className="offerletter-parent parent">
           <div className="offerletter-cont cont">
             <form

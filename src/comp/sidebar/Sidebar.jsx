@@ -13,7 +13,7 @@ import { LuSquareUser } from "react-icons/lu";
 import { MdPayments } from "react-icons/md";
 import { LuCalendarCheck } from "react-icons/lu";
 import { IoIosNotifications } from "react-icons/io";
-
+import { SlCalender } from "react-icons/sl";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -134,7 +134,7 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
         },
         {
           name: "Generate Joining Letter",
-          link: "/joiningLetter",
+          link: "/joiningLetterManagement",
         },
         {
           name: "Generate Employee ID Card",
@@ -195,8 +195,11 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
       icon: <HiOutlineDocumentCheck />,
       name: "ViewApprovals",
       link: "/viewApprovals",
-      
-
+    },
+    {
+      icon:<SlCalender />,
+      name:"Holiday Calender",
+      link:"/holidayCalender"
     }
   ];
 
