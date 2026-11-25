@@ -82,7 +82,8 @@ const initialFormData = {
   companyName: "",
   employeeName: "",
   employeeId: "",
-  effectiveDate: "",
+  uid: "",
+
   hrManagerName: "",
   salary: "",
   costtoCompany: "",
@@ -379,37 +380,38 @@ const selectedCompany =
   // HANDLE EMPLOYEE CHANGE
   // =====================================================
 
-  const handleEmployeeChange = (e) => {
-    const employeeName = e.target.value;
+const handleEmployeeChange = (e) => {
+  const employeeName = e.target.value;
 
-    const selectedEmployee = employee.find(
-      (emp) => emp.employeeName === employeeName
-    );
+  const selectedEmployee = employee.find(
+    (emp) => emp.employeeName === employeeName
+  );
 
-    console.log("SELECTED EMPLOYEE:", selectedEmployee);
+  console.log("SELECTED EMPLOYEE:", selectedEmployee);
 
-    if (!selectedEmployee) {
-      setFormData((prev) => ({
-        ...prev,
-        employeeName: "",
-        employeeId: "",
-        designation: "",
-        costtoCompany: "",
-        salary: "",
-      }));
-
-      return;
-    }
-
+  if (!selectedEmployee) {
     setFormData((prev) => ({
       ...prev,
-      employeeName: selectedEmployee.employeeName || "",
-      employeeId: selectedEmployee.employeeId || "",
-      designation: selectedEmployee.designation || "",
-      costtoCompany: selectedEmployee.costtoCompany || "",
-      salary: selectedEmployee.employeeSalary || "",
+      employeeName: "",
+      employeeId: "",
+      uid: "",
+      designation: "",
+      costtoCompany: "",
+      salary: "",
     }));
-  };
+    return;
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    employeeName: selectedEmployee.employeeName || "",
+    employeeId: selectedEmployee.employeeId || "",
+    uid: selectedEmployee.uid ?? "",
+    designation: selectedEmployee.designation || "",
+    costtoCompany: selectedEmployee.costtoCompany || "",
+    salary: selectedEmployee.employeeSalary || "",
+  }));
+};
 
   // =====================================================
   // HANDLE INPUT CHANGE
@@ -550,129 +552,173 @@ const selectedCompany =
   // SUBMIT INCREMENT LETTER
   // =====================================================
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    try {
-      setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-      // STEP 1: GENERATE PDF
-      const pdfBlob = await generateIncrementLetterPDF();
+  try {
+    setLoading(true);
 
-      if (!pdfBlob) {
-        throw new Error("PDF generation failed");
-      }
+    // STEP 1: GENERATE PDF
+    const pdfBlob = await generateIncrementLetterPDF();
 
-      // STEP 2: CHECK PDF SIZE
-      const pdfSizeMB = pdfBlob.size / (1024 * 1024);
-
-      if (pdfSizeMB > 2) {
-        toast.error(
-          `PDF size is ${pdfSizeMB.toFixed(
-            2
-          )} MB. Maximum allowed size is 2 MB.`
-        );
-
-        return;
-      }
-
-      // STEP 3: CREATE PDF FILE
-      const employeeName =
-        formData.employeeName?.trim() || "Employee";
-
-      const pdfFile = new File(
-        [pdfBlob],
-        `${employeeName}_Increment_Letter.pdf`,
-        {
-          type: "application/pdf",
-        }
-      );
-
-      // STEP 4: CREATE DTO
-      const officialLetterDto = {
-        issuedDate: formData.issuedDate,
-        companyName: formData.companyName,
-        employeeName: formData.employeeName,
-        employeeId: formData.employeeId,
-        effectiveDate: formData.effectiveDate,
-        hrManagerName: formData.hrManagerName,
-        salary: Number(formData.salary) || 0,
-        costtoCompany: Number(formData.costtoCompany) || 0,
-        designation: formData.designation,
-        incrementPercentage: formData.incrementPercentage,
-        reviseCts: Number(formData.reviseCts) || 0,
-        documentName: "Increment Letter",
-      };
-
-      console.log(
-        "INCREMENT LETTER DTO:",
-        officialLetterDto
-      );
-
-      // STEP 5: CREATE FORMDATA
-      const formDataToSend = new FormData();
-
-      formDataToSend.append("file", pdfFile);
-
-      // This key must match the backend @RequestPart name.
-      formDataToSend.append(
-        "officialLetterDto",
-        JSON.stringify(officialLetterDto)
-      );
-
-      // STEP 6: API CALL
-      const apiUrl = `${BASE_URL}Admin/addOfficialLetter`;
-
-      console.log("INCREMENT LETTER API URL:", apiUrl);
-
-      const response = await axios.post(
-        apiUrl,
-        formDataToSend,
-        {
-          withCredentials: true,
-        }
-      );
-
-      console.log(
-        "INCREMENT LETTER API RESPONSE:",
-        response.data
-      );
-
-      // STEP 7: HANDLE SUCCESS
-      if (response.data?.status === "OK") {
-        toast.success(
-          response.data?.responseMessage ||
-            "Increment letter added successfully!"
-        );
-
-        setFormData({
-          ...initialFormData,
-          issuedDate: new Date().toISOString().split("T")[0],
-        });
-
-        setEmployee([]);
-      } else {
-        toast.error(
-          response.data?.responseMessage ||
-            "Failed to add increment letter"
-        );
-      }
-    } catch (error) {
-      console.error(
-        "INCREMENT LETTER API ERROR:",
-        error.response?.data || error
-      );
-
-      toast.error(
-        error.response?.data?.responseMessage ||
-          error.response?.data?.message ||
-          error.message ||
-          "Something went wrong while adding increment letter"
-      );
-    } finally {
-      setLoading(false);
+    if (!pdfBlob) {
+      throw new Error("PDF generation failed");
     }
-  };
+
+    // STEP 2: CHECK PDF SIZE
+    const pdfSizeMB = pdfBlob.size / (1024 * 1024);
+
+    if (pdfSizeMB > 2) {
+      toast.error(
+        `PDF size is ${pdfSizeMB.toFixed(2)} MB. Maximum allowed size is 2 MB.`
+      );
+      return;
+    }
+
+    // STEP 3: CREATE PDF FILE
+    const employeeName =
+      formData.employeeName?.trim() || "Employee";
+
+    const pdfFile = new File(
+      [pdfBlob],
+      `${employeeName}_Increment_Letter.pdf`,
+      {
+        type: "application/pdf",
+      }
+    );
+
+    // STEP 4: CREATE DTO
+    const data = {
+      issuedDate: formData.issuedDate,
+      employeeName: formData.employeeName,
+      employeeId: formData.employeeId,
+      uid: Number(formData.uid),
+
+      salary: Number(formData.salary) || 0,
+      hrManagerName: formData.hrManagerName,
+      designation: formData.designation,
+
+      gender: formData.gender || "Other",
+
+      effectiveDate: formData.effectiveDate,
+
+      incrementPercentage:
+        Number(formData.incrementPercentage) || 0,
+
+      previousCtc: Number(formData.costtoCompany) || 0,
+
+      reviseCts: Number(formData.reviseCts) || 0,
+    };
+
+    console.log("INCREMENT LETTER DTO:", data);
+
+    // STEP 5: CREATE FORMDATA
+    const formDataToSend = new FormData();
+
+    formDataToSend.append("file", pdfFile);
+    formDataToSend.append("data", JSON.stringify(data));
+
+    // STEP 6: API CALL
+    const apiUrl = `${BASE_URL}Admin/addIncreamentLetter`;
+
+    console.log("INCREMENT LETTER API URL:", apiUrl);
+
+    const response = await axios.post(
+      apiUrl,
+      formDataToSend,
+      {
+        withCredentials: true,
+      }
+    );
+
+    // STEP 7: CHECK RESPONSE
+    console.log(
+      "INCREMENT LETTER HTTP STATUS:",
+      response.status
+    );
+
+    console.log(
+      "INCREMENT LETTER API RESPONSE:",
+      response.data
+    );
+
+    const responseData = response.data;
+
+    const backendStatus = String(
+      responseData?.status ?? ""
+    ).toUpperCase();
+
+    const successStatuses = [
+      "OK",
+      "SUCCESS",
+      "CREATED",
+      "200",
+      "201",
+      "TRUE",
+    ];
+
+    const failureStatuses = [
+      "FAILED",
+      "FAILURE",
+      "ERROR",
+      "FALSE",
+      "BAD_REQUEST",
+    ];
+
+    const isSuccess =
+      response.status >= 200 &&
+      response.status < 300 &&
+      (
+        responseData?.status === undefined ||
+        responseData?.status === null ||
+        successStatuses.includes(backendStatus)
+      ) &&
+      !failureStatuses.includes(backendStatus);
+
+    if (isSuccess) {
+      toast.success(
+        responseData?.responseMessage ||
+        "Increment letter added successfully!"
+      );
+
+      setFormData({
+        ...initialFormData,
+        issuedDate: new Date().toISOString().split("T")[0],
+      });
+
+      setEmployee([]);
+    } else {
+      toast.error(
+        responseData?.responseMessage ||
+        responseData?.message ||
+        "Failed to add increment letter"
+      );
+    }
+
+  } catch (error) {
+    console.error(
+      "INCREMENT LETTER API ERROR:",
+      error.response?.data || error
+    );
+
+    console.error(
+      "INCREMENT LETTER HTTP STATUS:",
+      error.response?.status
+    );
+
+    toast.error(
+      error.response?.data?.responseMessage ||
+      error.response?.data?.message ||
+      error.message ||
+      "Something went wrong while adding increment letter"
+    );
+
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // =====================================================
   // UI
@@ -749,9 +795,9 @@ const selectedCompany =
                   No employees found
                 </MenuItem>
               ) : (
-                employee.map((emp, index) => (
+                employee.map((emp ) => (
                   <MenuItem
-                    key={emp.employeeId || emp.eid || index}
+
                     value={emp.employeeName}
                   >
                     {emp.employeeName}
