@@ -96,12 +96,6 @@ export const routes = [
     comp: AddLeave,
     adminonly: true,
   },
-  {
-    name: "EmployeeICard",
-    path: "/employeeicard",
-    comp: EmployeeICard,
-    adminonly: true,
-  },
 
   {
     name: "Empviewdoc",
@@ -149,6 +143,14 @@ export const routes = [
     name: "Add Employee",
     path: "/addEmployee",
     comp: AddEmployee,
+    adminonly: true,
+    employeeonly: false,
+  },
+
+  {
+    name: "EmployeeICard",
+    path: "/employeeicard",
+    comp: EmployeeICard,
     adminonly: true,
     employeeonly: false,
   },
@@ -265,7 +267,7 @@ export const routes = [
     adminonly: true,
     employeeonly: false,
   },
-    {
+  {
     name: "JoiningLetterManagement",
     path: "/joiningLettermanagement",
     comp: JoiningLetterManagement,
