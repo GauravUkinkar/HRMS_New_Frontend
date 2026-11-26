@@ -2,10 +2,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import axios from "axios";
-import { toast } from "react-toastify";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
+import { UserContext } from "../../../Context";
 import "./TerminationLetter.scss";
 
 import {
@@ -35,6 +34,9 @@ import nvmLogo from "../../assets/nvm-logo.png";
 
 import right_corner from "../../assets/right-corner.png";
 import left_corner from "../../assets/left-corner.png";
+
+import axios from "axios";
+import { toast } from "react-toastify";
 
 // Company configuration
 const companyConfig = {
@@ -75,29 +77,27 @@ const companyConfig = {
   },
 };
 
-const initialFormData = {
-  issuedDate: new Date().toISOString().split("T")[0],
-  companyName: "",
-  employeeName: "",
-  employeeId: "",
-  uid: "",
-  effectiveDate: "",
-  hrManagerName: "",
-  designation: "",
-  terminationType: "",
-  dateOfJoining: "",
-};
-
 const TerminationLetter = () => {
   const pdfRef = useRef(null);
 
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
   const [loading, setLoading] = useState(false);
+
   const [employee, setEmployee] = useState([]);
   const [employeeLoading, setEmployeeLoading] = useState(false);
 
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState({
+    issuedDate: new Date().toISOString().split("T")[0],
+    companyName: "",
+    employeeName: "",
+    uid: "",
+    effectiveDate: "",
+    designation: "",
+    terminationType: "",
+    dateOfJoining: "",
+    hrManagerName: "",
+  });
 
   const selectedCompany =
     companyConfig[formData.companyName] ||
@@ -109,7 +109,9 @@ const TerminationLetter = () => {
 
     const date = new Date(dateString);
 
-    if (isNaN(date.getTime())) return "";
+    if (isNaN(date.getTime())) {
+      return "";
+    }
 
     return date.toISOString().split("T")[0];
   };
@@ -146,7 +148,7 @@ const TerminationLetter = () => {
           }
         );
 
-        console.log("FULL EMPLOYEE API RESPONSE:", response.data);
+        console.log("FULL API RESPONSE:", response.data);
 
         if (response.data?.status === "OK") {
           const employeeData = response.data?.data || [];
@@ -158,10 +160,6 @@ const TerminationLetter = () => {
           setEmployee(employeeList);
 
           console.log("EMPLOYEE LIST:", employeeList);
-          console.log(
-            "EMPLOYEE LIST JSON:",
-            JSON.stringify(employeeList, null, 2)
-          );
         } else {
           setEmployee([]);
 
@@ -171,8 +169,6 @@ const TerminationLetter = () => {
         }
       } catch (error) {
         console.error("Get Employees By Company Error:", error);
-        console.error("Status:", error.response?.status);
-        console.error("Response:", error.response?.data);
 
         setEmployee([]);
 
@@ -197,13 +193,10 @@ const TerminationLetter = () => {
       (emp) => emp.employeeName === employeeName
     );
 
-    console.log("SELECTED EMPLOYEE:", selectedEmployee);
-
     if (!selectedEmployee) {
       setFormData((prev) => ({
         ...prev,
         employeeName: "",
-        employeeId: "",
         uid: "",
         designation: "",
         dateOfJoining: "",
@@ -215,12 +208,10 @@ const TerminationLetter = () => {
     setFormData((prev) => ({
       ...prev,
       employeeName: selectedEmployee.employeeName || "",
-      employeeId: selectedEmployee.employeeId || "",
       uid: selectedEmployee.uid ?? "",
       designation: selectedEmployee.designation || "",
-      dateOfJoining: formatDateForInput(
-        selectedEmployee.dateOfJoining || ""
-      ),
+      dateOfJoining:
+        formatDateForInput(selectedEmployee.dateOfJoining) || "",
     }));
   };
 
@@ -233,7 +224,6 @@ const TerminationLetter = () => {
         ...prev,
         companyName: value,
         employeeName: "",
-        employeeId: "",
         uid: "",
         designation: "",
         dateOfJoining: "",
@@ -250,7 +240,7 @@ const TerminationLetter = () => {
     }));
   };
 
-  // Generate termination letter PDF
+  // Generate PDF
   const generateTerminationLetterPDF = async () => {
     if (!pdfRef.current) {
       throw new Error("Termination letter preview not found");
@@ -338,30 +328,15 @@ const TerminationLetter = () => {
       return;
     }
 
-    // Validate UID
-    if (!formData.uid || !Number.isFinite(Number(formData.uid))) {
-      toast.error("Employee UID is missing. Please check employee details.");
-      return;
-    }
-
     // Validate required fields
     if (
       !formData.hrManagerName ||
       !formData.designation ||
       !formData.terminationType ||
-      !formData.effectiveDate ||
-      !formData.dateOfJoining
+      !formData.dateOfJoining ||
+      !formData.effectiveDate
     ) {
       toast.error("Please fill all required fields");
-      return;
-    }
-
-    // Validate dates
-    if (
-      new Date(formData.effectiveDate) <
-      new Date(formData.dateOfJoining)
-    ) {
-      toast.error("Effective date cannot be before date of joining");
       return;
     }
 
@@ -409,16 +384,17 @@ const TerminationLetter = () => {
       );
 
       // STEP 5: PREPARE DTO
+      // effectiveDate is intentionally excluded.
+      // It appears in the PDF but is not sent to the API.
       const data = {
         issuedDate: formData.issuedDate,
         companyName: formData.companyName,
         employeeName: formData.employeeName,
-        uid: Number(formData.uid),
-        effectiveDate: formData.effectiveDate,
+        uid: formData.uid ? Number(formData.uid) : null,
         hrManagerName: formData.hrManagerName,
         terminationType: formData.terminationType,
         designation: formData.designation,
-        dateOfjoining: formData.dateOfJoining,
+        dateOfJoining: formData.dateOfJoining,
         documentName: "Termination Letter",
       };
 
@@ -428,8 +404,8 @@ const TerminationLetter = () => {
       formDataToSend.append("file", pdfFile);
       formDataToSend.append("data", JSON.stringify(data));
 
-      console.log("TERMINATION LETTER DTO:", data);
-      console.log("PDF SIZE:", pdfSizeMB.toFixed(2), "MB");
+      console.log("Termination Letter DTO:", data);
+      console.log("PDF Size:", pdfSizeMB.toFixed(2), "MB");
 
       // STEP 7: CALL API
       const response = await axios.post(
@@ -440,7 +416,7 @@ const TerminationLetter = () => {
         }
       );
 
-      console.log("TERMINATION LETTER API RESPONSE:", response.data);
+      console.log("Termination Letter API Response:", response.data);
 
       // STEP 8: CHECK RESPONSE
       const responseStatus = String(
@@ -465,8 +441,15 @@ const TerminationLetter = () => {
 
       // STEP 10: RESET FORM
       setFormData({
-        ...initialFormData,
         issuedDate: new Date().toISOString().split("T")[0],
+        companyName: "",
+        employeeName: "",
+        uid: "",
+        effectiveDate: "",
+        hrManagerName: "",
+        designation: "",
+        terminationType: "",
+        dateOfJoining: "",
       });
 
       setEmployee([]);
@@ -545,7 +528,7 @@ const TerminationLetter = () => {
               ) : (
                 employee.map((emp, index) => (
                   <MenuItem
-                    key={emp.employeeId || emp.eid || index}
+                    key={emp.uid || emp.employeeId || index}
                     value={emp.employeeName}
                   >
                     {emp.employeeName}
@@ -554,14 +537,12 @@ const TerminationLetter = () => {
               )}
             </SelectInput>
 
-
-
             <Input
               label="Date of Joining"
-              type="date"
               name="dateOfJoining"
               value={formData.dateOfJoining}
               onChange={handleChange}
+              type="date"
               required
             />
 
@@ -629,7 +610,7 @@ const TerminationLetter = () => {
             <button
               className="btn"
               type="submit"
-              disabled={loading || employeeLoading}
+              disabled={loading}
             >
               {loading
                 ? "Generating & Submitting..."
@@ -676,7 +657,7 @@ const TerminationLetter = () => {
                 <p>Dear</p>
 
                 <h4>
-                  {formData.employeeName || "EMPLOYEE NAME"}
+                  {formData.employeeName || "Employee Name"}
                 </h4>
               </div>
 
@@ -728,15 +709,16 @@ const TerminationLetter = () => {
               <div className="gap"></div>
 
               <p>
-                We request you to cooperate with the HR and management team
-                during the exit and handover process to ensure a smooth
-                transition.
+                We request you to cooperate with the HR and management
+                team during the exit and handover process to ensure a
+                smooth transition.
               </p>
 
               <div className="gap"></div>
 
               <p>
-                We thank you for your contributions during your tenure with{" "}
+                We thank you for your contributions during your tenure
+                with{" "}
                 <strong>
                   {formData.companyName || "Company Name"}
                 </strong>{" "}

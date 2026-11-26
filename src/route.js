@@ -44,6 +44,7 @@ const LeaveApplication = lazy(() => import("./Pages/LeaveApplication/LeaveApplic
 const EmpLeaveManagement = lazy(() => import("./Pages/EmpLeaveManagement/EmpLeave"));
 const PayslipManagement = lazy(() => import("./Pages/PayslipManagement/Payslipmanagement"));
 const RegisterDevice = lazy(() => import("./Pages/RegisterDevice/RegisterDevice"));
+const JoiningLetterManagement = lazy(() => import("./Pages/JoiningLetter/JoiningLetterManagement"));
 
 export const routes = [
   {
