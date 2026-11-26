@@ -386,17 +386,21 @@ const TerminationLetter = () => {
       // STEP 5: PREPARE DTO
       // effectiveDate is intentionally excluded.
       // It appears in the PDF but is not sent to the API.
-      const data = {
-        issuedDate: formData.issuedDate,
-        companyName: formData.companyName,
-        employeeName: formData.employeeName,
-        uid: formData.uid ? Number(formData.uid) : null,
-        hrManagerName: formData.hrManagerName,
-        terminationType: formData.terminationType,
-        designation: formData.designation,
-        dateOfJoining: formData.dateOfJoining,
-        documentName: "Termination Letter",
-      };
+// STEP 5: PREPARE DTO
+const data = {
+  issuedDate: formData.issuedDate,
+  companyName: formData.companyName,
+  employeeName: formData.employeeName,
+  uid: formData.uid ? Number(formData.uid) : null,
+  hrManagerName: formData.hrManagerName,
+  terminationType: formData.terminationType,
+  designation: formData.designation,
+
+  // IMPORTANT: Match the exact backend DTO property name
+  dateOfjoining: formData.dateOfJoining,
+
+  documentName: "Termination Letter",
+};
 
       // STEP 6: CREATE FORMDATA
       const formDataToSend = new FormData();

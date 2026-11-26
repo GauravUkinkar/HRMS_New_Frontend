@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import "./Empviewdoc.scss";
 
@@ -29,91 +30,32 @@ const Empviewdoc = () => {
   // GET EMPLOYEE ID
   // =====================================================
 
-  // Admin:
-  // /Empviewdoc?employeeId=PSPL1173
-  //
-  // Employee:
-  // uses logged-in user's employeeId
-
   const selectedEmployeeId = searchParams.get("employeeId");
-
   const employeeId = selectedEmployeeId || user?.employeeId;
-
-  // =====================================================
-  // LOG USER + EMPLOYEE ID
-  // =====================================================
-
-  useEffect(() => {
-    console.log("Logged-in User:", user);
-    console.log("Selected Employee ID:", selectedEmployeeId);
-    console.log("Final Employee ID:", employeeId);
-  }, [user, selectedEmployeeId, employeeId]);
 
   // =====================================================
   // DOCUMENT LIST
   // =====================================================
 
   const documentList = [
-    {
-      key: "adharCard",
-      name: "Aadhar Card",
-    },
-    {
-      key: "aadharCard",
-      name: "Aadhar Card",
-    },
-    {
-      key: "panCard",
-      name: "Pan Card",
-    },
-    {
-      key: "tenthCertificate",
-      name: "10th Certificate",
-    },
-    {
-      key: "twelfthCertificate",
-      name: "12th Certificate",
-    },
-    {
-      key: "degreeCertificate",
-      name: "Degree Certificate",
-    },
-    {
-      key: "diplomaCertificate",
-      name: "Diploma Certificate",
-    },
+    { key: "adharCard", name: "Aadhar Card" },
+    { key: "aadharCard", name: "Aadhar Card" },
+    { key: "panCard", name: "PAN Card" },
+    { key: "tenthCertificate", name: "10th Certificate" },
+    { key: "twelfthCertificate", name: "12th Certificate" },
+    { key: "degreeCertificate", name: "Degree Certificate" },
+    { key: "diplomaCertificate", name: "Diploma Certificate" },
     {
       key: "latestEducationCertificateOrDegree",
       name: "Latest Education Certificate",
     },
-    {
-      key: "relievingLetter",
-      name: "Relieving Letter",
-    },
-    {
-      key: "experianceLetter",
-      name: "Experience Letter",
-    },
-    {
-      key: "experienceLetter",
-      name: "Experience Letter",
-    },
-    {
-      key: "bankStatement",
-      name: "Bank Statement",
-    },
-    {
-      key: "salarySlip1",
-      name: "Salary Slip 1",
-    },
-    {
-      key: "salarySlip2",
-      name: "Salary Slip 2",
-    },
-    {
-      key: "salarySlip3",
-      name: "Salary Slip 3",
-    },
+    { key: "relievingLetter", name: "Relieving Letter" },
+    { key: "experianceLetter", name: "Experience Letter" },
+    { key: "experienceLetter", name: "Experience Letter" },
+    { key: "bankStatement", name: "Bank Statement" },
+    { key: "salarySlip1", name: "Salary Slip 1" },
+    { key: "salarySlip2", name: "Salary Slip 2" },
+    { key: "salarySlip3", name: "Salary Slip 3" },
   ];
 
   // =====================================================
@@ -122,29 +64,27 @@ const Empviewdoc = () => {
 
   const getEmployeeDocuments = async () => {
     if (!employeeId) {
-      console.log("Employee ID not available");
-
       setDocuments({});
       setPreviewFile("");
       setPreviewName("");
-
       return;
     }
 
     try {
       setLoadingDocuments(true);
-
       setDocuments({});
       setPreviewFile("");
       setPreviewName("");
 
-      const url = `${BASE_URL}uploadDoc/getDocumentsByEmployeeId/${employeeId}`;
+      const baseUrl = String(BASE_URL || "").replace(/\/+$/, "");
 
-      console.log("====================================");
+      const url = `${baseUrl}/uploadDoc/getDocumentsByEmployeeId/${encodeURIComponent(
+        employeeId
+      )}`;
+
       console.log("Getting Employee Documents");
       console.log("Employee ID:", employeeId);
       console.log("Documents API URL:", url);
-      console.log("====================================");
 
       const res = await axios.get(url, {
         withCredentials: true,
@@ -156,16 +96,16 @@ const Empviewdoc = () => {
         setDocuments(res.data.data);
 
         console.log("Documents:", res.data.data);
+        console.log("Official Letters:", res.data.data.officialLetters);
       } else {
         setDocuments({});
-
         console.log("No documents found");
       }
     } catch (error) {
       console.error(
         "Get Documents Error:",
         error?.response?.status,
-        error?.response?.data || error,
+        error?.response?.data || error
       );
 
       setDocuments({});
@@ -189,31 +129,69 @@ const Empviewdoc = () => {
   // =====================================================
 
   useEffect(() => {
+    console.log("Logged-in User:", user);
+    console.log("Selected Employee ID:", selectedEmployeeId);
+    console.log("Final Employee ID:", employeeId);
+
     if (employeeId) {
       getEmployeeDocuments();
+    } else {
+      setDocuments({});
     }
   }, [employeeId]);
 
   // =====================================================
-  // ONLY SHOW AVAILABLE DOCUMENTS
+  // AVAILABLE REGULAR DOCUMENTS
   // =====================================================
 
-  const availableDocuments = documentList.filter((document, index, array) => {
-    const file = documents?.[document.key];
+  const availableDocuments = documentList.filter(
+    (document, index, array) => {
+      const file = documents?.[document.key];
 
-    // Don't show empty documents
-    if (file === null || file === undefined || String(file).trim() === "") {
-      return false;
+      if (
+        file === null ||
+        file === undefined ||
+        String(file).trim() === ""
+      ) {
+        return false;
+      }
+
+      // Avoid duplicate document names
+      return (
+        array.findIndex((item) => item.name === document.name) === index
+      );
     }
+  );
 
-    // Remove duplicate document names
-    return array.findIndex((item) => item.name === document.name) === index;
-  });
+  // =====================================================
+  // AVAILABLE OFFICIAL LETTERS
+  // =====================================================
+
   const availableOfficialLetters = Array.isArray(documents?.officialLetters)
     ? documents.officialLetters.filter(
-        (letter) => letter?.documentName?.trim() && letter?.documentUrl?.trim(),
+        (letter) =>
+          typeof letter?.documentName === "string" &&
+          letter.documentName.trim() !== "" &&
+          typeof letter?.documentUrl === "string" &&
+          letter.documentUrl.trim() !== ""
       )
     : [];
+
+  // =====================================================
+  // INCREMENT LETTER
+  // =====================================================
+
+  // Get the first available increment letter URL.
+  // If the API repeats the same URL in multiple official letter
+  // objects, it will still be displayed only once.
+
+  const incrementLetterUrl = Array.isArray(documents?.officialLetters)
+    ? documents.officialLetters.find(
+        (letter) =>
+          typeof letter?.incrementDocumenturl === "string" &&
+          letter.incrementDocumenturl.trim() !== ""
+      )?.incrementDocumenturl || ""
+    : "";
 
   // =====================================================
   // CREATE FILE URL
@@ -226,7 +204,6 @@ const Empviewdoc = () => {
 
     const filePathString = String(filePath).trim();
 
-    // Already complete URL
     if (
       filePathString.startsWith("http://") ||
       filePathString.startsWith("https://")
@@ -235,7 +212,6 @@ const Empviewdoc = () => {
     }
 
     const baseUrl = String(BASE_URL || "").replace(/\/+$/, "");
-
     const path = filePathString.replace(/^\/+/, "");
 
     return `${baseUrl}/${path}`;
@@ -264,7 +240,27 @@ const Empviewdoc = () => {
   // DOWNLOAD DOCUMENT
   // =====================================================
 
-  const handleDownload = async (filePath, documentName) => {
+  const downloadBlob = (blob, fileName, documentName) => {
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(blobUrl);
+
+    toast.success(`${documentName} downloaded successfully.`);
+  };
+
+  const handleDownload = async (
+    filePath,
+    documentName,
+    isOfficialLetter = false
+  ) => {
     try {
       if (!employeeId) {
         toast.error("Employee ID not available.");
@@ -276,49 +272,57 @@ const Empviewdoc = () => {
         return;
       }
 
-      const filePathString = String(filePath);
+      const fileUrl = getFileUrl(filePath);
 
-      // Get filename from URL/path
-      const fileName = filePathString.split("/").pop().split("\\").pop();
+      if (!fileUrl) {
+        toast.error("Invalid document URL.");
+        return;
+      }
+
+      const fileName = decodeURIComponent(
+        fileUrl.split("?")[0].split("/").pop()
+      );
 
       if (!fileName || !fileName.includes(".")) {
         toast.error("Invalid document file.");
         return;
       }
 
-      const downloadUrl = `${BASE_URL}uploadDoc/download/${employeeId}/${encodeURIComponent(
-        fileName,
-      )}`;
+      let response;
 
-      console.log("Download URL:", downloadUrl);
+      if (isOfficialLetter) {
+        // Official letters and increment letters use their direct URLs.
+        response = await axios.get(fileUrl, {
+          responseType: "blob",
+        });
+      } else {
+        // Regular documents use the backend download API.
+        const baseUrl = String(BASE_URL || "").replace(/\/+$/, "");
 
-      const response = await axios.get(downloadUrl, {
-        responseType: "blob",
-        withCredentials: true,
-      });
+        const downloadUrl = `${baseUrl}/uploadDoc/download/${encodeURIComponent(
+          employeeId
+        )}/${encodeURIComponent(fileName)}`;
+
+        console.log("Download URL:", downloadUrl);
+
+        response = await axios.get(downloadUrl, {
+          responseType: "blob",
+          withCredentials: true,
+        });
+      }
 
       const blob = new Blob([response.data], {
-        type: response.headers["content-type"] || "application/octet-stream",
+        type:
+          response.headers["content-type"] ||
+          "application/octet-stream",
       });
 
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-
-      link.href = blobUrl;
-      link.download = fileName;
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      document.body.removeChild(link);
-
-      window.URL.revokeObjectURL(blobUrl);
-
-      toast.success(`${documentName} downloaded successfully.`);
+      downloadBlob(blob, fileName, documentName);
     } catch (error) {
-      console.error("Download Error:", error?.response?.data || error);
+      console.error(
+        "Download Error:",
+        error?.response?.data || error
+      );
 
       if (error?.response?.status === 401) {
         toast.error("Unauthorized. Please login again.");
@@ -382,20 +386,33 @@ const Empviewdoc = () => {
     >
       {/* BACK BUTTON */}
 
-      <button type="button" className="back-btn" onClick={() => navigate(-1)}>
+      <button
+        type="button"
+        className="back-btn"
+        onClick={() => navigate(-1)}
+      >
         ← Back
       </button>
 
       <div className="view-doc">
         {/* HEADER */}
 
-        <h1>{selectedEmployeeId ? "Employee Documents" : "My Documents"}</h1>
+        <h1>
+          {selectedEmployeeId ? "Employee Documents" : "My Documents"}
+        </h1>
 
-        {/* EMPLOYEE ID */}
+        {/* EMPLOYEE DETAILS */}
 
         {employeeId && (
           <div className="document-employee-id">
             Employee ID: <strong>{employeeId}</strong>
+
+            {documents?.employeeName && (
+              <>
+                {" | "}
+                Employee Name: <strong>{documents.employeeName}</strong>
+              </>
+            )}
           </div>
         )}
 
@@ -403,13 +420,17 @@ const Empviewdoc = () => {
           {/* LOADING */}
 
           {loadingDocuments && (
-            <div className="document-loading">Loading Documents...</div>
+            <div className="document-loading">
+              Loading Documents...
+            </div>
           )}
 
           {/* NO EMPLOYEE ID */}
 
           {!loadingDocuments && !employeeId && (
-            <div className="no-documents">Employee ID not available.</div>
+            <div className="no-documents">
+              Employee ID not available.
+            </div>
           )}
 
           {/* NO DOCUMENTS */}
@@ -417,8 +438,11 @@ const Empviewdoc = () => {
           {!loadingDocuments &&
             employeeId &&
             availableDocuments.length === 0 &&
-            availableOfficialLetters.length === 0 && (
-              <div className="no-documents">No documents uploaded.</div>
+            availableOfficialLetters.length === 0 &&
+            !incrementLetterUrl && (
+              <div className="no-documents">
+                No documents uploaded.
+              </div>
             )}
 
           {/* DOCUMENTS */}
@@ -426,7 +450,8 @@ const Empviewdoc = () => {
           {!loadingDocuments &&
             employeeId &&
             (availableDocuments.length > 0 ||
-              availableOfficialLetters.length > 0) && (
+              availableOfficialLetters.length > 0 ||
+              !!incrementLetterUrl) && (
               <div className="document-preview-wrapper">
                 {/* DOCUMENT LIST */}
 
@@ -437,7 +462,10 @@ const Empviewdoc = () => {
                     const filePath = documents?.[document.key];
 
                     return (
-                      <div className="document-card" key={document.key}>
+                      <div
+                        className="document-card"
+                        key={document.key}
+                      >
                         <GrDocumentPdf className="pdf-icon" />
 
                         <p>{document.name}</p>
@@ -458,7 +486,11 @@ const Empviewdoc = () => {
                             type="button"
                             className="down"
                             onClick={() =>
-                              handleDownload(filePath, document.name)
+                              handleDownload(
+                                filePath,
+                                document.name,
+                                false
+                              )
                             }
                           >
                             <IoMdDownload />
@@ -472,7 +504,10 @@ const Empviewdoc = () => {
                   {/* OFFICIAL LETTERS */}
 
                   {availableOfficialLetters.map((letter, index) => (
-                    <div className="document-card" key={`official-${index}`}>
+                    <div
+                      className="document-card"
+                      key={`official-${index}`}
+                    >
                       <GrDocumentPdf className="pdf-icon" />
 
                       <p>{letter.documentName}</p>
@@ -484,7 +519,7 @@ const Empviewdoc = () => {
                           onClick={() =>
                             handlePreview(
                               letter.documentUrl,
-                              letter.documentName,
+                              letter.documentName
                             )
                           }
                         >
@@ -499,6 +534,7 @@ const Empviewdoc = () => {
                             handleDownload(
                               letter.documentUrl,
                               letter.documentName,
+                              true
                             )
                           }
                         >
@@ -508,6 +544,50 @@ const Empviewdoc = () => {
                       </div>
                     </div>
                   ))}
+
+                  {/* INCREMENT LETTER */}
+
+                  {incrementLetterUrl && (
+                    <div
+                      className="document-card"
+                      key="increment-letter"
+                    >
+                      <GrDocumentPdf className="pdf-icon" />
+
+                      <p>Increment Letter</p>
+
+                      <div className="btn-parent">
+                        <button
+                          type="button"
+                          className="pre"
+                          onClick={() =>
+                            handlePreview(
+                              incrementLetterUrl,
+                              "Increment Letter"
+                            )
+                          }
+                        >
+                          <MdOutlinePreview />
+                          Preview
+                        </button>
+
+                        <button
+                          type="button"
+                          className="down"
+                          onClick={() =>
+                            handleDownload(
+                              incrementLetterUrl,
+                              "Increment Letter",
+                              true
+                            )
+                          }
+                        >
+                          <IoMdDownload />
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* PREVIEW SECTION */}
@@ -518,16 +598,25 @@ const Empviewdoc = () => {
                       <div className="preview-header">
                         <h2>{previewName}</h2>
 
-                        <button type="button" onClick={closePreview}>
+                        <button
+                          type="button"
+                          onClick={closePreview}
+                        >
                           Close
                         </button>
                       </div>
 
                       <div className="preview-content">
                         {isImageFile(previewFile) ? (
-                          <img src={previewFile} alt={previewName} />
+                          <img
+                            src={previewFile}
+                            alt={previewName}
+                          />
                         ) : (
-                          <iframe src={previewFile} title={previewName} />
+                          <iframe
+                            src={previewFile}
+                            title={previewName}
+                          />
                         )}
                       </div>
                     </>

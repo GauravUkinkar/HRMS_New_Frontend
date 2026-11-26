@@ -1,4 +1,3 @@
-
 import React, { useContext, useMemo, useState, useEffect } from "react";
 import axios from "axios";
 import MainPanel from "../../comp/MainPanel/MainPanel";
@@ -15,6 +14,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  MenuItem,
 } from "@mui/material";
 
 import {
@@ -69,20 +69,61 @@ const Teams = () => {
   const [deletingTeamId, setDeletingTeamId] = useState(null);
   const [deletingMemberId, setDeletingMemberId] = useState(null);
 
-  // TEAM FORM CHANGE
-const handleTeamFormChange = (e) => {
-  const { name, value } = e.target;
+  const [leaderEmployees, setLeaderEmployees] = useState([]);
+  const [leaderLoading, setLeaderLoading] = useState(false);
 
-  setTeamForm((prev) => ({
-    ...prev,
-    [name]: name === "memberCount" ? Number(value) : value,
-  }));
-};
+  const fetchLeaderEmployees = async () => {
+    try {
+      setLeaderLoading(true);
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_USER_BACKEND_URL}/Admin/GetAllEmployee`,
+        {
+          withCredentials: true,
+        },
+      );
+      console.log("Get all employees response:", response.data);
+
+      const responseData = response.data;
+      const employees = Array.isArray(responseData)
+        ? responseData.map((item) => item?.data || item).filter(Boolean)
+        : Array.isArray(responseData?.data)
+          ? responseData.data.map((item) => item?.data || item).filter(Boolean)
+          : [];
+
+      setLeaderEmployees(employees);
+      if (employees.length === 0) {
+        toast.info("No employees found.");
+      }
+    } catch (error) {
+      console.error("Error fetching team leader employees:", error);
+
+      setLeaderEmployees([]);
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+          error.response?.data?.message ||
+          "Unable to fetch employees.",
+      );
+    } finally {
+      setLeaderLoading(false);
+    }
+  };
+
+  // TEAM FORM CHANGE
+  const handleTeamFormChange = (e) => {
+    const { name, value } = e.target;
+
+    setTeamForm((prev) => ({
+      ...prev,
+      [name]: name === "memberCount" ? Number(value) : value,
+    }));
+  };
 
   // FETCH MEMBERS BY TEAM NAME
   const fetchMembersByTeamName = async (
     teamName,
-    employeeList = teamMembers
+    employeeList = teamMembers,
   ) => {
     try {
       const response = await axios.get(
@@ -91,7 +132,7 @@ const handleTeamFormChange = (e) => {
           params: {
             TeamName: teamName,
           },
-        }
+        },
       );
 
       const members = Array.isArray(response.data)
@@ -101,7 +142,7 @@ const handleTeamFormChange = (e) => {
               const member = item.data;
 
               const employeeDetails = employeeList.find(
-                (emp) => emp.employeeId === member.employeeId
+                (emp) => emp.employeeId === member.employeeId,
               );
 
               return {
@@ -120,10 +161,7 @@ const handleTeamFormChange = (e) => {
 
       return members;
     } catch (error) {
-      console.error(
-        `Error fetching members for ${teamName}:`,
-        error
-      );
+      console.error(`Error fetching members for ${teamName}:`, error);
 
       return [];
     }
@@ -135,16 +173,10 @@ const handleTeamFormChange = (e) => {
       setTeamsLoading(true);
 
       const response = await axios.get(
-        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams"
+        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/getAllTeams",
       );
 
-      const teamColors = [
-        "blue",
-        "pink",
-        "green",
-        "purple",
-        "orange",
-      ];
+      const teamColors = ["blue", "pink", "green", "purple", "orange"];
 
       const teamsData = Array.isArray(response.data)
         ? response.data
@@ -167,17 +199,14 @@ const handleTeamFormChange = (e) => {
       // FETCH MEMBERS FOR EVERY TEAM
       const teamsWithMembers = await Promise.all(
         teamsData.map(async (team) => {
-          const members = await fetchMembersByTeamName(
-            team.name,
-            employeeList
-          );
+          const members = await fetchMembersByTeamName(team.name, employeeList);
 
           return {
             ...team,
             members: members.length,
             membersList: members,
           };
-        })
+        }),
       );
 
       setTeams(teamsWithMembers);
@@ -198,13 +227,11 @@ const handleTeamFormChange = (e) => {
 
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_USER_BACKEND_URL}/AuthController/GetAllEmployee`
+          `${import.meta.env.VITE_USER_BACKEND_URL}/AuthController/GetAllEmployee`,
         );
 
         employees = Array.isArray(response.data)
-          ? response.data
-              .map((item) => item.data)
-              .filter(Boolean)
+          ? response.data.map((item) => item.data).filter(Boolean)
           : [];
 
         setTeamMembers(employees);
@@ -220,99 +247,140 @@ const handleTeamFormChange = (e) => {
   }, []);
 
   // CREATE TEAM API
-const handleCreateTeam = async (e) => {
-  e.preventDefault();
+  const handleCreateTeam = async (e) => {
+    e.preventDefault();
 
-  if (!teamForm.name.trim() || !teamForm.manegerName.trim()) {
-    toast.error("Please enter team and team leader name.");
-    return;
-  }
+    if (!teamForm.name.trim() || !teamForm.manegerName.trim()) {
+      toast.error("Please enter team and team leader name.");
+      return;
+    }
 
+    try {
+      setCreatingTeam(true);
+
+      const payload = {
+        id: 0,
+        name: teamForm.name.trim(),
+        memberCount: Number(teamForm.memberCount),
+        manegerName: teamForm.manegerName.trim(),
+      };
+
+      const response = await axios.post(
+        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/addTeam",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      toast.success("Team created successfully!");
+
+      setCreateTeamOpen(false);
+
+      setTeamForm({
+        id: 0,
+        name: "",
+        memberCount: 0,
+        manegerName: "",
+      });
+
+      // Refresh teams without refreshing the page
+      await fetchTeams(teamMembers);
+    } catch (error) {
+      console.error("Error creating team:", error);
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+          error.response?.data?.message ||
+          "Unable to create team. Please try again.",
+      );
+    } finally {
+      setCreatingTeam(false);
+    }
+  };
+
+  // DELETE TEAM API
+const handleDeleteTeam = (team) => {
+  toast.info(
+    <div>
+      <p>
+        Are you sure you want to delete <strong>{team.name}</strong>?
+      </p>
+
+      <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+        <button
+          onClick={() => {
+            toast.dismiss();
+            confirmDeleteTeam(team);
+          }}
+          style={{
+            background: "#dc3545",
+            color: "#fff",
+            border: "none",
+            padding: "7px 14px",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Yes, Delete
+        </button>
+
+        <button
+          onClick={() => toast.dismiss()}
+          style={{
+            background: "#6c757d",
+            color: "#fff",
+            border: "none",
+            padding: "7px 14px",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>,
+    {
+      autoClose: false,
+      closeOnClick: false,
+      closeButton: true,
+    }
+  );
+};
+
+const confirmDeleteTeam = async (team) => {
   try {
-    setCreatingTeam(true);
+    setDeletingTeamId(team.id);
 
-    const payload = {
-      id: 0,
-      name: teamForm.name.trim(),
-      memberCount: Number(teamForm.memberCount),
-      manegerName: teamForm.manegerName.trim(),
-    };
-
-    const response = await axios.post(
-      "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/addTeam",
-      payload,
+    await axios.delete(
+      "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/dleteTeam",
       {
-        headers: {
-          "Content-Type": "application/json",
+        params: {
+          TeamId: team.id,
         },
       }
     );
 
-    toast.success("Team created successfully!");
+    toast.success("Team deleted successfully!");
 
-    setCreateTeamOpen(false);
+    if (selectedTeam?.id === team.id) {
+      closeDrawer();
+    }
 
-    setTeamForm({
-      id: 0,
-      name: "",
-      memberCount: 0,
-      manegerName: "",
-    });
-
-    // Refresh teams without refreshing the page
-    await fetchTeams(teamMembers);
-
+    await fetchTeams();
   } catch (error) {
-    console.error("Error creating team:", error);
+    console.error("Error deleting team:", error);
 
     toast.error(
-      error.response?.data?.responseMessage ||
       error.response?.data?.message ||
-      "Unable to create team. Please try again."
+        "Unable to delete team. Please try again."
     );
   } finally {
-    setCreatingTeam(false);
+    setDeletingTeamId(null);
   }
 };
-
-  // DELETE TEAM API
-  const handleDeleteTeam = async (team) => {
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete "${team.name}"?`
-    );
-
-    if (!confirmDelete) return;
-
-    try {
-      setDeletingTeamId(team.id);
-
-      await axios.delete(
-        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/dleteTeam",
-        {
-          params: {
-            TeamId: team.id,
-          },
-        }
-      );
-
-      toast.success("Team deleted successfully!");
-
-      if (selectedTeam?.id === team.id) {
-        closeDrawer();
-      }
-
-      await fetchTeams();
-    } catch (error) {
-      console.error("Error deleting team:", error);
-
-      toast.error(
-        error.response?.data?.message ||
-          "Unable to delete team. Please try again."
-      );
-    } finally {
-      setDeletingTeamId(null);
-    }
-  };
 
   // FILTER TEAMS
   const filteredTeams = useMemo(() => {
@@ -335,10 +403,7 @@ const handleCreateTeam = async (e) => {
   // SUMMARY COUNTS
   const totalTeams = teams.length;
 
-  const totalMembers = teams.reduce(
-    (total, team) => total + team.members,
-    0
-  );
+  const totalMembers = teams.reduce((total, team) => total + team.members, 0);
 
   const teamLeaders = teams.length;
 
@@ -364,9 +429,7 @@ const handleCreateTeam = async (e) => {
       setSelectedTeam(updatedTeam);
 
       setTeams((prevTeams) =>
-        prevTeams.map((item) =>
-          item.id === team.id ? updatedTeam : item
-        )
+        prevTeams.map((item) => (item.id === team.id ? updatedTeam : item)),
       );
     } catch (error) {
       console.error("Error fetching team members:", error);
@@ -391,64 +454,7 @@ const handleCreateTeam = async (e) => {
   };
 
   // DELETE TEAM MEMBER API
-  const handleDeleteMember = async (employeeId) => {
-    if (!selectedTeam || deletingMemberId) return;
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to remove this member?"
-    );
-
-    if (!confirmDelete) return;
-
-    try {
-      setDeletingMemberId(employeeId);
-
-      await axios.delete(
-        "https://internaltomcat.diwise.in/Pandoza_Admin/Admin/Team/deleteTeamMember",
-        {
-          params: {
-            EmployeeId: employeeId,
-            TeamId: selectedTeam.id,
-          },
-        }
-      );
-
-      // FETCH UPDATED TEAM MEMBERS
-      const updatedMembers = await fetchMembersByTeamName(
-        selectedTeam.name
-      );
-
-      const updatedTeam = {
-        ...selectedTeam,
-        members: updatedMembers.length,
-        membersList: updatedMembers,
-      };
-
-      // UPDATE DRAWER
-      setSelectedTeam(updatedTeam);
-
-      // UPDATE TEAM CARD
-      setTeams((prevTeams) =>
-        prevTeams.map((team) =>
-          team.id === updatedTeam.id
-            ? updatedTeam
-            : team
-        )
-      );
-
-      toast.success("Team member removed successfully!");
-    } catch (error) {
-      console.error("Error deleting team member:", error);
-
-      toast.error(
-        error.response?.data?.responseMessage ||
-          error.response?.data?.message ||
-          "Unable to remove team member."
-      );
-    } finally {
-      setDeletingMemberId(null);
-    }
-  };
 
   return (
     <MainPanel
@@ -464,16 +470,11 @@ const handleCreateTeam = async (e) => {
           : "Team Management"
       }
     >
-      <button
-        type="button"
-        className="back-btn"
-        onClick={() => navigate("/")}
-      >
+      <button type="button" className="back-btn" onClick={() => navigate("/")}>
         ← Back
       </button>
 
       <div className="team-management-page">
-
         {/* HEADER */}
         <div className="team-page-header">
           <div className="page-title-row">
@@ -489,7 +490,10 @@ const handleCreateTeam = async (e) => {
 
           <Button
             className="create-team-btn"
-            onClick={() => setCreateTeamOpen(true)}
+            onClick={() => {
+              setCreateTeamOpen(true);
+              fetchLeaderEmployees();
+            }}
           >
             Create Team
           </Button>
@@ -497,7 +501,6 @@ const handleCreateTeam = async (e) => {
 
         {/* SUMMARY CARDS */}
         <div className="team-summary-grid">
-
           <div className="summary-card">
             <div className="summary-icon blue">
               <FiUsers />
@@ -541,7 +544,6 @@ const handleCreateTeam = async (e) => {
               <h2>2</h2>
             </div>
           </div>
-
         </div>
 
         {/* SEARCH */}
@@ -572,26 +574,20 @@ const handleCreateTeam = async (e) => {
 
         {/* TEAM GRID */}
         <div className="team-grid">
-
           {teamsLoading ? (
             <div className="team-loading">
               <div className="team-spinner" />
               <p>Loading teams...</p>
             </div>
           ) : filteredTeams.length > 0 ? (
-
             filteredTeams.map((team) => (
               <div className="team-card" key={team.id}>
-
                 <div className={`team-card-top ${team.color}`} />
 
                 <div className="team-card-content">
-
                   {/* TEAM HEADER */}
                   <div className="team-card-header">
-
                     <div className="team-name-wrapper">
-
                       <div
                         className={`team-icon ${
                           colorClasses[team.color]?.icon || "team-blue"
@@ -610,12 +606,9 @@ const handleCreateTeam = async (e) => {
                         >
                           <span className="status-dot" />
 
-                          {team.members > 0
-                            ? "Active"
-                            : "No members"}
+                          {team.members > 0 ? "Active" : "No members"}
                         </span>
                       </div>
-
                     </div>
 
                     <IconButton
@@ -626,7 +619,6 @@ const handleCreateTeam = async (e) => {
                     >
                       <MdDelete />
                     </IconButton>
-
                   </div>
 
                   {/* TEAM LEADER */}
@@ -634,9 +626,7 @@ const handleCreateTeam = async (e) => {
                     <span>Team Leader</span>
 
                     <div className="leader-info">
-                      <Avatar>
-                        {team.leader.charAt(0).toUpperCase()}
-                      </Avatar>
+                      <Avatar>{team.leader.charAt(0).toUpperCase()}</Avatar>
 
                       <p>{team.leader}</p>
                     </div>
@@ -646,38 +636,29 @@ const handleCreateTeam = async (e) => {
 
                   {/* MEMBERS PREVIEW */}
                   {team.membersList.length > 0 ? (
-
                     <div className="team-member-preview">
-
                       <div className="avatar-stack">
-
-                        {team.membersList.slice(0, 4).map(
-                          (member, index) => (
-                            <Avatar
-                              key={member.employeeId}
-                              className={`avatar-${index}`}
-                            >
-                              {member.name.charAt(0).toUpperCase()}
-                            </Avatar>
-                          )
-                        )}
+                        {team.membersList.slice(0, 4).map((member, index) => (
+                          <Avatar
+                            key={member.employeeId}
+                            className={`avatar-${index}`}
+                          >
+                            {member.name.charAt(0).toUpperCase()}
+                          </Avatar>
+                        ))}
 
                         {team.membersList.length > 4 && (
                           <div className="more-members">
                             +{team.membersList.length - 4}
                           </div>
                         )}
-
                       </div>
 
                       <span className="member-count">
                         {team.membersList.length} Members
                       </span>
-
                     </div>
-
                   ) : (
-
                     <div className="empty-members">
                       <div className="empty-members-icon">
                         <FiUsers />
@@ -688,12 +669,10 @@ const handleCreateTeam = async (e) => {
                         <span>View team to check members</span>
                       </div>
                     </div>
-
                   )}
 
                   {/* FOOTER */}
                   <div className="team-card-footer">
-
                     <button
                       className="view-team-btn"
                       onClick={() => openTeam(team)}
@@ -701,42 +680,29 @@ const handleCreateTeam = async (e) => {
                       View Team
                       <FiArrowRight />
                     </button>
-
                   </div>
-
                 </div>
               </div>
             ))
-
           ) : (
-
             <div className="no-teams">
               <FiSearch />
               <h3>No teams found</h3>
-              <p>
-                Try changing your search or filter to find a team.
-              </p>
+              <p>Try changing your search or filter to find a team.</p>
             </div>
-
           )}
-
         </div>
 
         {/* CREATE TEAM DIALOG */}
         <Dialog
           open={createTeamOpen}
-          onClose={() =>
-            !creatingTeam && setCreateTeamOpen(false)
-          }
+          onClose={() => !creatingTeam && setCreateTeamOpen(false)}
           fullWidth
           maxWidth="sm"
           className="create-team-dialog"
         >
-
           <form onSubmit={handleCreateTeam}>
-
             <DialogTitle className="create-team-title">
-
               <div>
                 <h2>Create New Team</h2>
                 <p>Add a new team to your organization</p>
@@ -748,13 +714,10 @@ const handleCreateTeam = async (e) => {
               >
                 <FiX />
               </IconButton>
-
             </DialogTitle>
 
             <DialogContent>
-
               <div className="create-team-form">
-
                 <TextField
                   fullWidth
                   label="Team Name"
@@ -767,20 +730,33 @@ const handleCreateTeam = async (e) => {
 
                 <TextField
                   fullWidth
-                  label="Team Leader Name"
+                  select
+                  label="Select Team Leader"
                   name="manegerName"
                   value={teamForm.manegerName}
                   onChange={handleTeamFormChange}
-                  placeholder="Enter manager name"
                   required
-                />
-
+                  disabled={leaderLoading}
+                >
+                  {leaderLoading ? (
+                    <MenuItem disabled>Loading employees...</MenuItem>
+                  ) : leaderEmployees.length > 0 ? (
+                    leaderEmployees.map((emp, index) => (
+                      <MenuItem
+                        key={emp.uid || emp.employeeId || index}
+                        value={emp.employeeName}
+                      >
+                        {emp.employeeName}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>No employees found</MenuItem>
+                  )}
+                </TextField>
               </div>
-
             </DialogContent>
 
             <DialogActions className="create-team-actions">
-
               <Button
                 onClick={() => setCreateTeamOpen(false)}
                 disabled={creatingTeam}
@@ -797,11 +773,8 @@ const handleCreateTeam = async (e) => {
               >
                 {creatingTeam ? "Creating..." : "Create Team"}
               </Button>
-
             </DialogActions>
-
           </form>
-
         </Dialog>
 
         {/* TEAM DRAWER */}
@@ -811,16 +784,11 @@ const handleCreateTeam = async (e) => {
           onClose={closeDrawer}
           className="team-drawer"
         >
-
           {selectedTeam && (
-
             <div className="drawer-content">
-
               {/* DRAWER HEADER */}
               <div className="drawer-header">
-
                 <div className="drawer-title">
-
                   <div
                     className={`drawer-team-icon ${
                       colorClasses[selectedTeam.color]?.icon || "team-blue"
@@ -834,30 +802,22 @@ const handleCreateTeam = async (e) => {
 
                     <span>
                       {selectedTeam.members}{" "}
-                      {selectedTeam.members === 1
-                        ? "Member"
-                        : "Members"}
+                      {selectedTeam.members === 1 ? "Member" : "Members"}
                     </span>
                   </div>
-
                 </div>
 
                 <IconButton onClick={closeDrawer}>
                   <FiX />
                 </IconButton>
-
               </div>
 
               {/* TEAM LEADER */}
               <div className="drawer-leader-card">
-
                 <span>TEAM LEADER</span>
 
                 <div className="drawer-leader">
-
-                  <Avatar>
-                    {selectedTeam.leader.charAt(0).toUpperCase()}
-                  </Avatar>
+                  <Avatar>{selectedTeam.leader.charAt(0).toUpperCase()}</Avatar>
 
                   <div>
                     <strong>{selectedTeam.leader}</strong>
@@ -867,14 +827,11 @@ const handleCreateTeam = async (e) => {
                       Team Leader
                     </p>
                   </div>
-
                 </div>
-
               </div>
 
               {/* MEMBERS HEADER */}
               <div className="drawer-members-header">
-
                 <div>
                   <h3>Team Members</h3>
 
@@ -884,31 +841,19 @@ const handleCreateTeam = async (e) => {
                       : `${selectedTeam.membersList.length} employees`}
                   </span>
                 </div>
-
               </div>
 
               {/* MEMBERS LIST */}
               {membersLoading ? (
-
                 <div className="team-members-loader">
                   <div className="team-spinner" />
                   <p>Loading team members...</p>
                 </div>
-
               ) : selectedTeam.membersList.length > 0 ? (
-
                 <div className="members-list">
-
                   {selectedTeam.membersList.map((member) => (
-
-                    <div
-                      className="member-row"
-                      key={member.employeeId}
-                    >
-
-                      <Avatar>
-                        {member.name.charAt(0).toUpperCase()}
-                      </Avatar>
+                    <div className="member-row" key={member.employeeId}>
+                      <Avatar>{member.name.charAt(0).toUpperCase()}</Avatar>
 
                       <div className="member-details">
                         <strong>{member.name}</strong>
@@ -918,61 +863,26 @@ const handleCreateTeam = async (e) => {
                       <div className="member-role">
                         <span>{member.role}</span>
                       </div>
-
-                      {/* DELETE MEMBER */}
-                      <button
-                        className="delete-member-btn"
-                        onClick={() =>
-                          handleDeleteMember(member.employeeId)
-                        }
-                        title="Delete Member"
-                        disabled={
-                          deletingMemberId === member.employeeId ||
-                          deletingMemberId !== null
-                        }
-                      >
-                        {deletingMemberId === member.employeeId ? (
-                          "..."
-                        ) : (
-                          <MdDelete />
-                        )}
-                      </button>
-
                     </div>
-
                   ))}
-
                 </div>
-
               ) : (
-
                 <div className="drawer-empty">
-
                   <div>
                     <FiUsers />
                   </div>
 
                   <h3>No members assigned</h3>
 
-                  <p>
-                    This team currently doesn't have any members.
-                  </p>
-
+                  <p>This team currently doesn't have any members.</p>
                 </div>
-
               )}
-
             </div>
-
           )}
-
         </Drawer>
-
       </div>
-
     </MainPanel>
   );
 };
 
 export default Teams;
-

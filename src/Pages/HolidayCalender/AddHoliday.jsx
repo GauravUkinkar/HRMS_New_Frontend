@@ -1,4 +1,3 @@
-
 import React, { useContext, useState } from "react";
 import axios from "axios";
 import { Button, DatePicker, Input, Radio } from "antd";
@@ -39,67 +38,73 @@ const AddHoliday = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!formData.date) {
-      toast.error("Please select a holiday date");
-      return;
-    }
+  if (!formData.date) {
+    toast.error("Please select a holiday date");
+    return;
+  }
 
-    if (!formData.description.trim()) {
-      toast.error("Please enter a holiday description");
-      return;
-    }
+  if (!formData.description.trim()) {
+    toast.error("Please enter a holiday description");
+    return;
+  }
 
-    const payload = {
+  const payload = [
+    {
       id: 0,
       date: formData.date.format("YYYY-MM-DD"),
       day: formData.day,
       discription: formData.description.trim(),
       status: formData.status,
-    };
+    },
+  ];
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const response = await axios.post(
-        `${BASE_URL}Admin/AddHoliday`,
-        payload,
-        {
-          withCredentials: true,
-        }
+    const formDataToSend = new FormData();
+    formDataToSend.append("data", JSON.stringify(payload));
+
+    const response = await axios.post(
+      `${BASE_URL}Admin/AddHoliday`,
+      formDataToSend,
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (response.data?.status === "CREATED") {
+      toast.success(
+        response.data?.responseMessage || "Holiday data saved successfully"
       );
 
-      if (response.data?.status === "OK") {
-        toast.success(
-          response.data?.responseMessage || "Holiday added successfully!"
-        );
-
-        navigate("/holidayCalender");
-      } else {
-        toast.error(
-          response.data?.responseMessage ||
+      navigate("/holidayCalender");
+    } else {
+      toast.error(
+        response.data?.responseMessage ||
           response.data?.message ||
           "Failed to add holiday"
-        );
-      }
-    } catch (error) {
-      console.error("Add Holiday API Error:", error.response?.data || error);
+      );
+    }
+  } catch (error) {
+    console.error("Add Holiday API Error:", error.response?.data || error);
 
-      toast.error(
-        error.response?.data?.responseMessage ||
+    toast.error(
+      error.response?.data?.responseMessage ||
         error.response?.data?.message ||
         "Something went wrong while adding holiday"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   const isEmployee =
-    String(user?.role || user?.crmRole || "").trim().toUpperCase() ===
-    "EMPLOYEE";
+    String(user?.role || user?.crmRole || "")
+      .trim()
+      .toUpperCase() === "EMPLOYEE";
 
   return (
     <MainPanel
@@ -124,7 +129,6 @@ const AddHoliday = () => {
 
         <form className="add-holiday-card" onSubmit={handleSubmit}>
           <div className="holiday-form-grid">
-
             <div className="holiday-field">
               <label>
                 Holiday Date <span>*</span>
@@ -196,7 +200,6 @@ const AddHoliday = () => {
                 <Radio value="CANCELLED">Cancelled</Radio>
               </Radio.Group>
             </div>
-
           </div>
 
           <div className="holiday-form-footer">
