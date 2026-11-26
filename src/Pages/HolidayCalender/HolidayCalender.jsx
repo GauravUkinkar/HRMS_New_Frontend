@@ -1,6 +1,10 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import { Table, Tag, Button, Modal } from "antd";
-import { PlusOutlined, StopOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 import { toast } from "react-toastify";
 import MainPanel from "../../comp/MainPanel/MainPanel";
@@ -9,17 +13,21 @@ import { UserContext } from "../../../Context";
 import { useNavigate } from "react-router-dom";
 
 const HolidayCalender = () => {
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const { user } = useContext(UserContext);
+
   const [holidays, setHolidays] = useState([]);
   const [loader, setLoader] = useState(false);
-  const isAdmin = ["ADMIN", "SUPERADMIN"].includes(
-    String(user?.role || user?.crmRole || "")
-      .trim()
-      .toUpperCase(),
-  );
 
+  // Get user role
+  const userRole = String(user?.role || user?.crmRole || "")
+    .trim()
+    .toUpperCase();
 
+  // Only ADMIN and SUPERADMIN can add holidays
+  const isAdmin = ["ADMIN", "SUPERADMIN"].includes(userRole);
+
+  // Cancel Holiday
   const handleCancelHoliday = (record) => {
     Modal.confirm({
       title: "Cancel Holiday",
@@ -27,38 +35,43 @@ const HolidayCalender = () => {
       okText: "Yes, Cancel",
       okButtonProps: { danger: true },
       cancelText: "No",
-      onOk: async () => {
-        // Call your holiday cancellation API here.
-        toast.info("Connect the Cancel Holiday API here.");
-      },
-    });
-  };
 
-  const handleDeleteHoliday = (record) => {
-    Modal.confirm({
-      title: "Delete Holiday",
-      content: `Are you sure you want to delete "${record.description}"?`,
-      okText: "Delete",
-      okButtonProps: { danger: true },
-      cancelText: "No",
       onOk: async () => {
-        const holidayId = record ?? record.holidayId;
-        if (HolidayId) {
-          toast.error("Holiday ID not found")
+        try {
+          const response = await axios.delete(
+            `https://userservice.pandozasolutions.com/Admin/DeleteHoliday/${record.id}`,
+            {
+              withCredentials:true,
+            }
+          );
+          toast.success(
+            response.data?.responseMessage ||
+            "Hoiliday cancelled successfully!"
+          );
+          getHolidays();
+        } catch (error) {
+          console.error(
+            error.response?.data || error
+          );
+          toast.error(
+            error.response?.data?.responseMessage ||
+            "Unable to cancel holiday"
+          );
         }
-       
-        toast.info("Connect the Delete Holiday API here.");
       },
     });
   };
 
+  // Get All Holidays API
   const getHolidays = async () => {
     try {
       setLoader(true);
 
       const response = await axios.get(
         "https://userservice.pandozasolutions.com/AuthController/GetAllHoliday",
-        { withCredentials: true },
+        {
+          withCredentials: true,
+        }
       );
 
       console.log("Holiday API Response:", response.data);
@@ -78,12 +91,15 @@ const HolidayCalender = () => {
             return {
               ...holiday,
               key: holiday.id ?? holiday.holidayId ?? index,
+
               date:
                 holiday.date ||
                 holiday.holidayDate ||
                 holiday.holiday_date ||
                 "",
+
               day: holiday.day || "",
+
               description:
                 holiday.discription ||
                 holiday.description ||
@@ -91,15 +107,17 @@ const HolidayCalender = () => {
                 holiday.name ||
                 holiday.holiday ||
                 "",
+
               status: holiday.status || "",
             };
-          }),
+          })
       );
     } catch (error) {
       console.error("Holiday API Error:", error);
+
       toast.error(
         error.response?.data?.responseMessage ||
-          "Unable to fetch holiday details",
+        "Unable to fetch holiday details"
       );
     } finally {
       setLoader(false);
@@ -110,12 +128,14 @@ const HolidayCalender = () => {
     getHolidays();
   }, []);
 
+  // Table Columns
   const columns = [
     {
       title: "Date",
       dataIndex: "date",
       key: "date",
       width: 180,
+
       render: (date) => {
         if (!date) return "-";
 
@@ -130,20 +150,27 @@ const HolidayCalender = () => {
           : date;
       },
     },
+
     {
       title: "Day",
       dataIndex: "day",
       key: "day",
       width: 150,
-      render: (day) => (day ? <Tag color="blue">{day}</Tag> : "-"),
+
+      render: (day) =>
+        day ? <Tag color="blue">{day}</Tag> : "-",
     },
+
     {
       title: "Description",
       dataIndex: "description",
       key: "description",
       width: 500,
+
       render: (description) => description || "-",
     },
+
+    // Actions visible only to ADMIN and SUPERADMIN
     ...(isAdmin
       ? [
           {
@@ -151,30 +178,26 @@ const HolidayCalender = () => {
             key: "actions",
             width: 180,
             align: "center",
+
             render: (_, record) => (
               <div
-                style={{ display: "flex", gap: 8, justifyContent: "center" }}
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  justifyContent: "center",
+                }}
               >
                 <Button
                   danger
                   size="small"
                   icon={<StopOutlined />}
                   disabled={
-                    String(record.status || "").toUpperCase() === "CANCELLED"
+                    String(record.status || "").toUpperCase() ===
+                    "CANCELLED"
                   }
                   onClick={() => handleCancelHoliday(record)}
                 >
                   Cancel
-                </Button>
-
-                <Button
-                  danger
-                  type="primary"
-                  size="small"
-                  icon={<DeleteOutlined />}
-                  onClick={() => handleDeleteHoliday(record)}
-                >
-                  Delete
                 </Button>
               </div>
             ),
@@ -190,9 +213,7 @@ const HolidayCalender = () => {
         { label: "Holiday Calendar" },
       ]}
       title={
-        String(user?.role || user?.crmRole || "")
-          .trim()
-          .toUpperCase() === "EMPLOYEE"
+        userRole === "EMPLOYEE"
           ? "Employee Dashboard"
           : "Admin Dashboard"
       }
@@ -200,26 +221,27 @@ const HolidayCalender = () => {
       <button
         type="button"
         className="back-btn"
-        onClick={() => {
-          window.location.href = "/";
-        }}
+        onClick={() => navigate("/")}
       >
         ← Back
       </button>
+
       <div className="calender-header">
         <h2>Holiday Calendar</h2>
 
+        {/* Add Holiday button only for ADMIN and SUPERADMIN */}
         {isAdmin && (
-  <Button
-    className="add"
-    type="button"
-    icon={<PlusOutlined />}
-    onClick={() => navigate("/addHoliday")}
-  >
-    Add Holiday
-  </Button>
+          <Button
+            className="add"
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate("/addHoliday")}
+          >
+            Add Holiday
+          </Button>
         )}
       </div>
+
       <div className="holiday-table">
         <Table
           columns={columns}
@@ -230,7 +252,8 @@ const HolidayCalender = () => {
           scroll={{ x: 830 }}
           rowClassName={(record, index) =>
             `${index % 2 === 0 ? "table-row-light" : "table-row-dark"} ${
-              String(record.status || "").toUpperCase() === "CANCELLED"
+              String(record.status || "").toUpperCase() ===
+              "CANCELLED"
                 ? "cancelled-holiday"
                 : ""
             }`

@@ -1,8 +1,9 @@
+
 import React, { useContext, useState } from "react";
+import axios from "axios";
 import { Button, DatePicker, Input, Radio } from "antd";
 import {
   CalendarOutlined,
-
   SaveOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
@@ -14,6 +15,8 @@ import { UserContext } from "../../../Context";
 import "./AddHoliday.scss";
 
 const { TextArea } = Input;
+
+const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
 const AddHoliday = () => {
   const { user } = useContext(UserContext);
@@ -49,9 +52,49 @@ const AddHoliday = () => {
       return;
     }
 
-    // Connect your Add Holiday API here.
-    // API endpoint and payload format are not yet provided.
-    toast.info("Please connect the Add Holiday API to save this holiday.");
+    const payload = {
+      id: 0,
+      date: formData.date.format("YYYY-MM-DD"),
+      day: formData.day,
+      discription: formData.description.trim(),
+      status: formData.status,
+    };
+
+    try {
+      setLoading(true);
+
+      const response = await axios.post(
+        `${BASE_URL}Admin/AddHoliday`,
+        payload,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.data?.status === "OK") {
+        toast.success(
+          response.data?.responseMessage || "Holiday added successfully!"
+        );
+
+        navigate("/holidayCalender");
+      } else {
+        toast.error(
+          response.data?.responseMessage ||
+          response.data?.message ||
+          "Failed to add holiday"
+        );
+      }
+    } catch (error) {
+      console.error("Add Holiday API Error:", error.response?.data || error);
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+        error.response?.data?.message ||
+        "Something went wrong while adding holiday"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isEmployee =
@@ -81,6 +124,7 @@ const AddHoliday = () => {
 
         <form className="add-holiday-card" onSubmit={handleSubmit}>
           <div className="holiday-form-grid">
+
             <div className="holiday-field">
               <label>
                 Holiday Date <span>*</span>
@@ -152,6 +196,7 @@ const AddHoliday = () => {
                 <Radio value="CANCELLED">Cancelled</Radio>
               </Radio.Group>
             </div>
+
           </div>
 
           <div className="holiday-form-footer">

@@ -46,7 +46,6 @@ const PayslipManagement = lazy(() => import("./Pages/PayslipManagement/Payslipma
 const RegisterDevice = lazy(() => import("./Pages/RegisterDevice/RegisterDevice"));
 
 export const routes = [
-
   {
     name: "All Employees",
     path: "/empList",
@@ -59,7 +58,6 @@ export const routes = [
     name: "RegisterDevice",
     path: "/registerDevice",
     comp: RegisterDevice,
-
   },
 
   {
@@ -90,7 +88,6 @@ export const routes = [
     name: "Viewdoc",
     path: "/Viewdoc",
     comp: Viewdoc,
-
   },
   {
     name: "AddLeave",
@@ -109,20 +106,17 @@ export const routes = [
     name: "Empviewdoc",
     path: "/Empviewdoc",
     comp: Empviewdoc,
-
   },
 
   {
     name: "LeaveManagement",
     path: "/leaveManagement",
     comp: LeaveManagement,
-
   },
   {
     name: "LeaveApplication",
     path: "/leaveApplication",
     comp: LeaveApplication,
-
   },
 
   {
@@ -136,9 +130,7 @@ export const routes = [
     name: "EmpLeaveManagement",
     path: "/empLeaveManagement",
     comp: EmpLeaveManagement,
-
   },
-
 
   /* =====================================================
      ADMIN
@@ -272,6 +264,13 @@ export const routes = [
     adminonly: true,
     employeeonly: false,
   },
+    {
+    name: "JoiningLetterManagement",
+    path: "/joiningLettermanagement",
+    comp: JoiningLetterManagement,
+    adminonly: true,
+    employeeonly: false,
+  },
 
   {
     name: "IncrementLetter",
@@ -344,27 +343,22 @@ export const routes = [
     name: "ViewApprovals",
     path: "/viewApprovals",
     comp: ViewApprovals,
-
   },
   {
     name: "TeamManagement",
     path: "/teamManagement",
     comp: TeamManagement,
     adminonly: true,
-
   },
   {
     name: "HolidayCalender",
     path: "/holidayCalender",
     comp: HolidayCalender,
-
-
   },
   {
     name: "AddHoliday",
     path: "/addHoliday",
     comp: AddHoliday,
-
-
+    adminonly: true,
   },
 ];

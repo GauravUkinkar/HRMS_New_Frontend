@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+
+import React, { useContext, useEffect, useState } from "react";
 import "./OfferLetterManagement.scss";
 
 import MainPanel from "../../comp/MainPanel/MainPanel";
-
+import { UserContext } from "../../../Context";
 import { Table, Avatar, Space, Tag } from "antd";
 
 import {
   SearchOutlined,
   EyeOutlined,
-  EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
 
@@ -18,13 +18,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
+import { toast } from "react-toastify";
+
 const OfferLetterManagement = () => {
   const navigate = useNavigate();
-
+  const { user } = useContext(UserContext);
   const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
   const [offerLetters, setOfferLetters] = useState([]);
-
   const [loader, setLoader] = useState(false);
 
   // =====================================================
@@ -36,21 +37,34 @@ const OfferLetterManagement = () => {
       setLoader(true);
 
       const response = await axios.get(
-        `${BASE_URL}Admin/getAllOfficialLetters`,
+        `${BASE_URL}Admin/getAll`,
         {
           withCredentials: true,
-        },
+        }
       );
 
       console.log("Offer Letter API Response:", response.data);
 
-      const letters = response.data.map((item, index) => {
-        const data = item?.data || {};
+      // Extract actual data array from API response
+      const apiData = Array.isArray(response.data?.data)
+        ? response.data.data
+        : [];
 
+      // Filter ONLY Offer Letter documents
+      const filteredLetters = apiData.filter(
+        (item) =>
+          String(item?.documentName || "")
+            .trim()
+            .toLowerCase() === "offer letter"
+      );
+
+      // Format API data
+      const letters = filteredLetters.map((data, index) => {
         return {
-          key: data.oid || data.id || index + 1,
+          key: `${data.documentPath || "offer"}-${index}`,
 
-          oid: data.oid || data.id || index + 1,
+          // Keep actual backend ID
+          oid: data.oid ?? data.id ?? null,
 
           employeeName: data.employeeName || "N/A",
 
@@ -64,7 +78,7 @@ const OfferLetterManagement = () => {
 
           issuedDate: data.issuedDate || "N/A",
 
-          salary: data.salary || 0,
+          salary: data.salary ?? 0,
 
           gender: data.gender || "N/A",
 
@@ -72,18 +86,32 @@ const OfferLetterManagement = () => {
 
           hrManagerName: data.hrManagerName || "N/A",
 
-          // Keep complete API object
+          documentName: data.documentName || "N/A",
+
+          documentPath: data.documentPath || "",
+
+          email: data.email || "",
+
           originalData: data,
         };
       });
 
-      console.log("Formatted Offer Letters:", letters);
+      console.log("Filtered Offer Letters:", letters);
 
       setOfferLetters(letters);
-    } catch (error) {
-      console.log("STATUS:", error.response?.status);
 
-      console.log("ERROR:", error.response?.data || error);
+    } catch (error) {
+      console.error(
+        "Get Offer Letters Error:",
+        error.response?.data || error
+      );
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+        "Unable to fetch offer letters"
+      );
+
+      setOfferLetters([]);
     } finally {
       setLoader(false);
     }
@@ -94,13 +122,13 @@ const OfferLetterManagement = () => {
   // =====================================================
 
   const handleDeleteOfferLetter = async (oid) => {
-    if (!oid) {
-      console.error("Offer Letter ID is missing");
+    if (oid === null || oid === undefined) {
+      toast.error("Offer Letter ID is missing");
       return;
     }
 
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this offer letter?",
+      "Are you sure you want to delete this offer letter?"
     );
 
     if (!confirmDelete) return;
@@ -110,22 +138,29 @@ const OfferLetterManagement = () => {
         `${BASE_URL}Admin/deleteOfficialLetter/${oid}`,
         {
           withCredentials: true,
-        },
+        }
       );
 
       console.log("Delete Offer Letter Response:", response.data);
 
-      alert("Offer letter deleted successfully");
+      toast.success(
+        response.data?.responseMessage ||
+        "Offer letter deleted successfully"
+      );
 
-      // Refresh table
       getAllOfficialLetters();
+
     } catch (error) {
       console.error(
         "Delete Offer Letter Error:",
-        error.response?.data || error,
+        error.response?.data || error
       );
 
-      alert(error.response?.data?.message || "Failed to delete offer letter");
+      toast.error(
+        error.response?.data?.responseMessage ||
+        error.response?.data?.message ||
+        "Failed to delete offer letter"
+      );
     }
   };
 
@@ -142,10 +177,7 @@ const OfferLetterManagement = () => {
   // =====================================================
 
   const columns = [
-    // ===================================================
     // EMPLOYEE NAME
-    // ===================================================
-
     {
       title: (
         <>
@@ -178,13 +210,17 @@ const OfferLetterManagement = () => {
 
         return (
           <Space>
-            <Avatar className="avatar">{initials.toUpperCase()}</Avatar>
+            <Avatar className="avatar">
+              {initials.toUpperCase()}
+            </Avatar>
 
             <span>{name}</span>
           </Space>
         );
       },
     },
+
+    // COMPANY NAME
     {
       title: (
         <>
@@ -199,10 +235,7 @@ const OfferLetterManagement = () => {
       width: 260,
     },
 
-    // ===================================================
     // DESIGNATION
-    // ===================================================
-
     {
       title: "Designation",
 
@@ -215,10 +248,7 @@ const OfferLetterManagement = () => {
       render: (designation) => designation || "N/A",
     },
 
-    // ===================================================
     // DEPARTMENT
-    // ===================================================
-
     {
       title: "Department",
 
@@ -231,6 +261,7 @@ const OfferLetterManagement = () => {
       render: (department) => department || "N/A",
     },
 
+    // JOINING DATE
     {
       title: "Joining Date",
 
@@ -240,101 +271,139 @@ const OfferLetterManagement = () => {
 
       width: 160,
 
-      render: (date) => {
-        if (!date || date === "N/A") {
-          return "N/A";
-        }
-
-        return date;
-      },
+      render: (date) => date || "N/A",
     },
+
+    // OFFER DATE
     {
       title: "Offer Date",
+
       dataIndex: "issuedDate",
+
       key: "issuedDate",
+
       width: 160,
 
-      render: (date) => {
-        if (!date || date === "N/A") {
-          return "N/A";
-        }
-        return date;
-      },
+      render: (date) => date || "N/A",
     },
+
+    // DOCUMENT TYPE
+    {
+      title: "Document Type",
+
+      dataIndex: "documentName",
+
+      key: "documentName",
+
+      width: 160,
+
+      render: (type) => (
+        <Tag color="green">{type}</Tag>
+      ),
+    },
+
+    // EMPLOYEE TYPE
     {
       title: "Employee Type",
+
       dataIndex: "employeeType",
+
       key: "employeeType",
+
       width: 160,
+
       render: (type) => <Tag>{type || "N/A"}</Tag>,
     },
+
+    // SALARY
     {
       title: "Salary",
+
       dataIndex: "salary",
+
       key: "salary",
+
       width: 150,
+
       render: (salary) => {
-        if (!salary) {
-          return "N/A";
-        }
+        if (!salary) return "N/A";
 
         return `₹${Number(salary).toLocaleString("en-IN")}`;
       },
     },
+
+    // ACTIONS
     {
       title: "Actions",
+
       key: "actions",
+
       width: 140,
+
       fixed: "right",
+
       render: (_, record) => (
         <Space size="middle">
-          {/* VIEW */}
 
+          {/* VIEW */}
           <EyeOutlined
             className="view"
             title="View Offer Letter"
             onClick={() => {
-              console.log("Selected Offer Letter:", record);
-
               navigate(`/offerLetter/view/${record.oid}`);
             }}
           />
-
-          {/* EDIT */}
-
-          <EditOutlined
-            className="edit"
-            title="Edit Offer Letter"
-            onClick={() => {
-              console.log("Edit Offer Letter:", record);
-
-              navigate(`/offerLetter/edit/${record.oid}`);
-            }}
-          />
-
           {/* DELETE */}
-
           <DeleteOutlined
             className="delete"
             title="Delete Offer Letter"
-            onClick={() => handleDeleteOfferLetter(record.oid)}
+            onClick={() =>
+              handleDeleteOfferLetter(record.oid)
+            }
           />
+
         </Space>
       ),
     },
   ];
 
+  // =====================================================
+  // UI
+  // =====================================================
+
   return (
-    <MainPanel>
-      <button type="button" className="back-btn" onClick={() => navigate("/")}>
+    <MainPanel
+          breadcrumbs={[
+        { label: "Dashboard", link: "/dashboard" },
+        { label: "Offer Letter Management" },
+      ]}
+      title={
+        String(user?.role || user?.crmRole || "")
+          .trim()
+          .toUpperCase() === "ADMIN"
+          ? "Admin Dashboard"
+          : " "
+      }
+    >
+      <button
+        type="button"
+        className="back-btn"
+        onClick={() => navigate("/")}
+      >
         ← Back
       </button>
+
       <div className="offerlettermanagement">
+
         <div className="page-header">
+
           <h2>Offer Letter Management</h2>
+
           <div className="btn-group">
+
             <div className="count">
-              Total Offer Letters: <span>{offerLetters.length}</span>
+              Total Offer Letters:{" "}
+              <span>{offerLetters.length}</span>
             </div>
 
             <Link to="/offerLetter">
@@ -343,32 +412,37 @@ const OfferLetterManagement = () => {
               </span>{" "}
               Add Offer Letter
             </Link>
+
           </div>
+
         </div>
+
       </div>
 
       <Table
         loading={loader}
         columns={columns}
         dataSource={offerLetters}
+        rowKey="key"
         bordered
         scroll={{
           x: "max-content",
         }}
         pagination={{
           pageSize: 5,
-
           showSizeChanger: true,
-
           pageSizeOptions: ["5", "10", "20", "50"],
 
           showTotal: (total, range) =>
             `${range[0]}-${range[1]} of ${total} offer letters`,
         }}
         rowClassName={(_, index) =>
-          index % 2 === 0 ? "table-row-light" : "table-row-dark"
+          index % 2 === 0
+            ? "table-row-light"
+            : "table-row-dark"
         }
       />
+
     </MainPanel>
   );
 };

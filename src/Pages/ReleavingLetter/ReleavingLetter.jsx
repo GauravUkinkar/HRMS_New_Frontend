@@ -61,7 +61,7 @@ const companyConfig = {
     email: "info@pandozasolutions.com",
   },
 
-  "Nvm Infratech Pvt.Ltd": {
+  "Nvm Infratech": {
     logo: nvmLogo,
     watermark: nvmWatermark,
     address: "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
@@ -86,6 +86,7 @@ const ReleavingLetter = () => {
     issuedDate: new Date().toISOString().split("T")[0],
     companyName: "",
     employeeName: "",
+    uid:"",
     designation: "",
     dateOfJoining: "",
     endDate: "",
@@ -180,32 +181,34 @@ const ReleavingLetter = () => {
   };
 
   // Employee selection
-  const handleEmployeeChange = (e) => {
-    const employeeName = e.target.value;
+const handleEmployeeChange = (e) => {
+  const employeeName = e.target.value;
 
-    const selectedEmployee = employee.find(
-      (emp) => emp.employeeName === employeeName
-    );
+  const selectedEmployee = employee.find(
+    (emp) => emp.employeeName === employeeName
+  );
 
-    if (!selectedEmployee) {
-      setFormData((prev) => ({
-        ...prev,
-        employeeName: "",
-        designation: "",
-        dateOfJoining: "",
-      }));
-
-      return;
-    }
-
+  if (!selectedEmployee) {
     setFormData((prev) => ({
       ...prev,
-      employeeName: selectedEmployee.employeeName || "",
-      designation: selectedEmployee.designation || "",
-      dateOfJoining:
-        formatDateForInput(selectedEmployee.dateOfJoining) || "",
+      employeeName: "",
+      uid: "",
+      designation: "",
+      dateOfJoining: "",
     }));
-  };
+
+    return;
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    employeeName: selectedEmployee.employeeName || "",
+    uid: selectedEmployee.uid ?? "",
+    designation: selectedEmployee.designation || "",
+    dateOfJoining:
+      formatDateForInput(selectedEmployee.dateOfJoining) || "",
+  }));
+};
 
   // Form input changes
   const handleChange = (e) => {
@@ -216,6 +219,7 @@ const ReleavingLetter = () => {
         ...prev,
         companyName: value,
         employeeName: "",
+        uid:"",
         designation: "",
         dateOfJoining: "",
         endDate: "",
@@ -310,44 +314,149 @@ const ReleavingLetter = () => {
   };
 
   // Submit and download PDF directly
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!formData.companyName || !formData.employeeName) {
-      toast.error("Please select company and employee");
+  if (!formData.companyName || !formData.employeeName) {
+    toast.error("Please select company and employee");
+    return;
+  }
+
+  if (
+    formData.uid === "" ||
+    formData.uid === null ||
+    !formData.designation ||
+    !formData.dateOfJoining ||
+    !formData.endDate ||
+    !formData.hrManagerName
+  ) {
+    toast.error("Please fill all required fields");
+    return;
+  }
+
+  if (!pdfRef.current) {
+    toast.error("Unable to generate PDF");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    // STEP 1: GENERATE PDF
+    const pdf = await generateReleavingLetterPDF();
+
+    if (!pdf) {
+      throw new Error("PDF generation failed");
+    }
+
+    // STEP 2: CONVERT PDF TO BLOB
+    const pdfBlob = pdf.output("blob");
+
+    if (!pdfBlob) {
+      throw new Error("PDF conversion failed");
+    }
+
+    // STEP 3: CHECK PDF SIZE
+    const pdfSizeMB = pdfBlob.size / (1024 * 1024);
+
+    if (pdfSizeMB > 2) {
+      toast.error("PDF size must be less than 2 MB");
       return;
     }
 
-    if (!formData.endDate || !formData.hrManagerName) {
-      toast.error("Please fill all required fields");
-      return;
+    // STEP 4: CREATE PDF FILE
+    const safeEmployeeName = formData.employeeName
+      .trim()
+      .replace(/[^a-zA-Z0-9]/g, "_");
+
+    const pdfFile = new File(
+      [pdfBlob],
+      `Relieving_Letter_${safeEmployeeName}.pdf`,
+      {
+        type: "application/pdf",
+      }
+    );
+
+    // STEP 5: PREPARE DTO
+    const data = {
+      issuedDate: formData.issuedDate,
+      companyName: formData.companyName,
+      employeeName: formData.employeeName,
+      uid: Number(formData.uid),
+      designation: formData.designation,
+      dateOfjoining: formData.dateOfJoining,
+      endDate: formData.endDate,
+      hrManagerName: formData.hrManagerName,
+      documentName: "Relieving Letter",
+    };
+
+    // STEP 6: CREATE FORMDATA
+    const formDataToSend = new FormData();
+
+    formDataToSend.append("file", pdfFile);
+    formDataToSend.append("data", JSON.stringify(data));
+
+    console.log("Relieving Letter DTO:", data);
+    console.log("PDF Size:", pdfSizeMB.toFixed(2), "MB");
+
+    // STEP 7: CALL API
+    const response = await axios.post(
+      `${BASE_URL}Admin/addOfficialLetter`,
+      formDataToSend,
+      {
+        withCredentials: true,
+      }
+    );
+
+    console.log("Relieving Letter API Response:", response.data);
+
+    // STEP 8: CHECK RESPONSE
+    const responseStatus = String(
+      response.data?.status || ""
+    ).toUpperCase();
+
+    if (
+      ["FAILED", "FAILURE", "ERROR", "FALSE"].includes(responseStatus) ||
+      response.data?.status === false
+    ) {
+      throw new Error(
+        response.data?.responseMessage ||
+          "Failed to submit relieving letter"
+      );
     }
 
-    if (!pdfRef.current) {
-      toast.error("Unable to generate PDF");
-      return;
-    }
+    // STEP 9: SUCCESS
+    toast.success(
+      response.data?.responseMessage ||
+        "Relieving letter submitted successfully!"
+    );
 
-    try {
-      setLoading(true);
+    // STEP 10: RESET FORM
+    setFormData({
+      issuedDate: new Date().toISOString().split("T")[0],
+      companyName: "",
+      employeeName: "",
+      uid: "",
+      designation: "",
+      dateOfJoining: "",
+      endDate: "",
+      hrManagerName: "",
+    });
 
-      const pdf = await generateReleavingLetterPDF();
+    setEmployee([]);
+  } catch (error) {
+    console.error("Relieving Letter Submission Error:", error);
 
-      const employeeName = formData.employeeName
-        .trim()
-        .replace(/[^a-zA-Z0-9]/g, "_");
-
-      pdf.save(`Relieving_Letter_${employeeName}.pdf`);
-
-      toast.success("Relieving letter PDF downloaded successfully!");
-    } catch (error) {
-      console.error("PDF Download Error:", error);
-
-      toast.error("Unable to download PDF");
-    } finally {
-      setLoading(false);
-    }
-  };
+    toast.error(
+      error.response?.data?.responseMessage ||
+        error.response?.data?.message ||
+        error.message ||
+        "Unable to submit relieving letter"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <MainPanel>
@@ -384,8 +493,8 @@ const ReleavingLetter = () => {
                 Akka Foundation
               </MenuItem>
 
-              <MenuItem value="Nvm Infratech Pvt.Ltd">
-                Nvm Infratech Pvt.Ltd
+              <MenuItem value="Nvm Infratech">
+                Nvm Infratech
               </MenuItem>
             </SelectInput>
 
@@ -455,7 +564,7 @@ const ReleavingLetter = () => {
               type="submit"
               disabled={loading}
             >
-              {loading ? "Downloading..." : "Submit"}
+              {loading ? "Generating & Submitting..." : "Submit"}
             </button>
           </form>
 

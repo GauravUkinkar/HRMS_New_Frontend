@@ -165,7 +165,7 @@ const Empviewdoc = () => {
       console.error(
         "Get Documents Error:",
         error?.response?.status,
-        error?.response?.data || error
+        error?.response?.data || error,
       );
 
       setDocuments({});
@@ -198,27 +198,22 @@ const Empviewdoc = () => {
   // ONLY SHOW AVAILABLE DOCUMENTS
   // =====================================================
 
-  const availableDocuments = documentList.filter(
-    (document, index, array) => {
-      const file = documents?.[document.key];
+  const availableDocuments = documentList.filter((document, index, array) => {
+    const file = documents?.[document.key];
 
-      // Don't show empty documents
-      if (
-        file === null ||
-        file === undefined ||
-        String(file).trim() === ""
-      ) {
-        return false;
-      }
-
-      // Remove duplicate document names
-      return (
-        array.findIndex(
-          (item) => item.name === document.name
-        ) === index
-      );
+    // Don't show empty documents
+    if (file === null || file === undefined || String(file).trim() === "") {
+      return false;
     }
-  );
+
+    // Remove duplicate document names
+    return array.findIndex((item) => item.name === document.name) === index;
+  });
+  const availableOfficialLetters = Array.isArray(documents?.officialLetters)
+    ? documents.officialLetters.filter(
+        (letter) => letter?.documentName?.trim() && letter?.documentUrl?.trim(),
+      )
+    : [];
 
   // =====================================================
   // CREATE FILE URL
@@ -284,11 +279,7 @@ const Empviewdoc = () => {
       const filePathString = String(filePath);
 
       // Get filename from URL/path
-      const fileName = filePathString
-        .split("/")
-        .pop()
-        .split("\\")
-        .pop();
+      const fileName = filePathString.split("/").pop().split("\\").pop();
 
       if (!fileName || !fileName.includes(".")) {
         toast.error("Invalid document file.");
@@ -296,7 +287,7 @@ const Empviewdoc = () => {
       }
 
       const downloadUrl = `${BASE_URL}uploadDoc/download/${employeeId}/${encodeURIComponent(
-        fileName
+        fileName,
       )}`;
 
       console.log("Download URL:", downloadUrl);
@@ -307,9 +298,7 @@ const Empviewdoc = () => {
       });
 
       const blob = new Blob([response.data], {
-        type:
-          response.headers["content-type"] ||
-          "application/octet-stream",
+        type: response.headers["content-type"] || "application/octet-stream",
       });
 
       const blobUrl = window.URL.createObjectURL(blob);
@@ -329,17 +318,12 @@ const Empviewdoc = () => {
 
       toast.success(`${documentName} downloaded successfully.`);
     } catch (error) {
-      console.error(
-        "Download Error:",
-        error?.response?.data || error
-      );
+      console.error("Download Error:", error?.response?.data || error);
 
       if (error?.response?.status === 401) {
         toast.error("Unauthorized. Please login again.");
       } else if (error?.response?.status === 403) {
-        toast.error(
-          "You don't have permission to download this document."
-        );
+        toast.error("You don't have permission to download this document.");
       } else if (error?.response?.status === 404) {
         toast.error("Document file not found.");
       } else {
@@ -353,9 +337,7 @@ const Empviewdoc = () => {
   // =====================================================
 
   const isImageFile = (fileUrl) => {
-    return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(
-      fileUrl
-    );
+    return /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(fileUrl);
   };
 
   // =====================================================
@@ -400,22 +382,14 @@ const Empviewdoc = () => {
     >
       {/* BACK BUTTON */}
 
-      <button
-        type="button"
-        className="back-btn"
-        onClick={() => navigate(-1)}
-      >
+      <button type="button" className="back-btn" onClick={() => navigate(-1)}>
         ← Back
       </button>
 
       <div className="view-doc">
         {/* HEADER */}
 
-        <h1>
-          {selectedEmployeeId
-            ? "Employee Documents"
-            : "My Documents"}
-        </h1>
+        <h1>{selectedEmployeeId ? "Employee Documents" : "My Documents"}</h1>
 
         {/* EMPLOYEE ID */}
 
@@ -429,78 +403,64 @@ const Empviewdoc = () => {
           {/* LOADING */}
 
           {loadingDocuments && (
-            <div className="document-loading">
-              Loading Documents...
-            </div>
+            <div className="document-loading">Loading Documents...</div>
           )}
 
           {/* NO EMPLOYEE ID */}
 
           {!loadingDocuments && !employeeId && (
-            <div className="no-documents">
-              Employee ID not available.
-            </div>
+            <div className="no-documents">Employee ID not available.</div>
           )}
 
           {/* NO DOCUMENTS */}
 
           {!loadingDocuments &&
             employeeId &&
-            availableDocuments.length === 0 && (
-              <div className="no-documents">
-                No documents uploaded.
-              </div>
+            availableDocuments.length === 0 &&
+            availableOfficialLetters.length === 0 && (
+              <div className="no-documents">No documents uploaded.</div>
             )}
+
+          {/* DOCUMENTS */}
 
           {/* DOCUMENTS */}
 
           {!loadingDocuments &&
             employeeId &&
-            availableDocuments.length > 0 && (
+            (availableDocuments.length > 0 ||
+              availableOfficialLetters.length > 0) && (
               <div className="document-preview-wrapper">
                 {/* DOCUMENT LIST */}
 
                 <div className="document-list">
+                  {/* REGULAR DOCUMENTS */}
+
                   {availableDocuments.map((document) => {
-                    const filePath =
-                      documents?.[document.key];
+                    const filePath = documents?.[document.key];
 
                     return (
-                      <div
-                        className="document-card"
-                        key={document.key}
-                      >
+                      <div className="document-card" key={document.key}>
                         <GrDocumentPdf className="pdf-icon" />
 
                         <p>{document.name}</p>
 
                         <div className="btn-parent">
-                          {/* PREVIEW */}
-
                           <button
                             type="button"
                             className="pre"
                             onClick={() =>
-                              handlePreview(
-                                filePath,
-                                document.name
-                              )
+                              handlePreview(filePath, document.name)
                             }
                           >
                             <MdOutlinePreview />
                             Preview
                           </button>
 
-                          {/* DOWNLOAD */}
-
                           <button
                             type="button"
                             className="down"
                             onClick={() =>
-                              handleDownload(
-                                filePath,
-                                document.name
-                              )
+                              handleDownload(filePath, document.name)
                             }
                           >
                             <IoMdDownload />
@@ -510,6 +470,46 @@ const Empviewdoc = () => {
                       </div>
                     );
                   })}
+
+                  {/* OFFICIAL LETTERS */}
+
+                  {availableOfficialLetters.map((letter, index) => (
+                    <div className="document-card" key={`official-${index}`}>
+                      <GrDocumentPdf className="pdf-icon" />
+
+                      <p>{letter.documentName}</p>
+
+                      <div className="btn-parent">
+                        <button
+                          type="button"
+                          className="pre"
+                          onClick={() =>
+                            handlePreview(
+                              letter.documentUrl,
+                              letter.documentName,
+                            )
+                          }
+                        >
+                          <MdOutlinePreview />
+                          Preview
+                        </button>
+
+                        <button
+                          type="button"
+                          className="down"
+                          onClick={() =>
+                            handleDownload(
+                              letter.documentUrl,
+                              letter.documentName,
+                            )
+                          }
+                        >
+                          <IoMdDownload />
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 {/* PREVIEW SECTION */}
@@ -517,47 +517,26 @@ const Empviewdoc = () => {
                 <div className="preview-section">
                   {previewFile ? (
                     <>
-                      {/* PREVIEW HEADER */}
-
                       <div className="preview-header">
                         <h2>{previewName}</h2>
 
-                        <button
-                          type="button"
-                          onClick={closePreview}
-                        >
+                        <button type="button" onClick={closePreview}>
                           Close
                         </button>
                       </div>
 
-                      {/* PREVIEW CONTENT */}
-
                       <div className="preview-content">
                         {isImageFile(previewFile) ? (
-                          <img
-                            src={previewFile}
-                            alt={previewName}
-                          />
-                        ) : isPdfFile(previewFile) ? (
-                          <iframe
-                            src={previewFile}
-                            title={previewName}
-                          />
+                          <img src={previewFile} alt={previewName} />
                         ) : (
-                          <iframe
-                            src={previewFile}
-                            title={previewName}
-                          />
+                          <iframe src={previewFile} title={previewName} />
                         )}
                       </div>
                     </>
                   ) : (
                     <div className="preview-empty">
                       <MdOutlinePreview />
-
-                      <p>
-                        Select Preview to view the document
-                      </p>
+                      <p>Select Preview to view the document</p>
                     </div>
                   )}
                 </div>

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./ExperienceLetter.scss";
@@ -9,11 +8,7 @@ import Input from "../../comp/input/Input";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
-import {
-  FaGlobe,
-  FaLocationDot,
-  FaPhoneVolume,
-} from "react-icons/fa6";
+import { FaGlobe, FaLocationDot, FaPhoneVolume } from "react-icons/fa6";
 
 import { Link } from "react-router-dom";
 import { IoIosMail } from "react-icons/io";
@@ -64,7 +59,7 @@ const companyConfig = {
     email: "info@pandozasolutions.com",
   },
 
-  "Nvm Infratech Pvt.Ltd": {
+  "Nvm Infratech": {
     logo: nvmLogo,
     watermark: nvmWatermark,
     address: "214, 10 BIZ PARK, VIMANNAGAR, PUNE – 411014",
@@ -88,6 +83,7 @@ const ExperienceLetter = () => {
     companyName: "",
     employeeName: "",
     employeeId: "",
+    uid: "",
     designation: "",
     startDate: "",
     endDate: "",
@@ -116,7 +112,7 @@ const ExperienceLetter = () => {
               companyName: formData.companyName,
             },
             withCredentials: true,
-          }
+          },
         );
 
         console.log("FULL API RESPONSE:", response.data);
@@ -134,9 +130,7 @@ const ExperienceLetter = () => {
         } else {
           setEmployee([]);
 
-          toast.error(
-            response.data?.responseMessage || "No Employees found"
-          );
+          toast.error(response.data?.responseMessage || "No Employees found");
         }
       } catch (error) {
         console.error("Get Employees By Company Error:", error);
@@ -146,7 +140,7 @@ const ExperienceLetter = () => {
         toast.error(
           error.response?.data?.responseMessage ||
             error.response?.data?.message ||
-            "Unable to fetch employees"
+            "Unable to fetch employees",
         );
       } finally {
         setEmployeeLoading(false);
@@ -187,7 +181,7 @@ const ExperienceLetter = () => {
     const employeeName = e.target.value;
 
     const selectedEmployee = employee.find(
-      (emp) => emp.employeeName === employeeName
+      (emp) => emp.employeeName === employeeName,
     );
 
     console.log("SELECTED EMPLOYEE:", selectedEmployee);
@@ -197,6 +191,7 @@ const ExperienceLetter = () => {
         ...prev,
         employeeName: "",
         employeeId: "",
+        uid: "",
         designation: "",
         startDate: "",
       }));
@@ -208,6 +203,7 @@ const ExperienceLetter = () => {
       ...prev,
       employeeName: selectedEmployee.employeeName || "",
       employeeId: selectedEmployee.employeeId || "",
+      uid: selectedEmployee.uid ?? "",
       designation: selectedEmployee.designation || "",
       startDate: formatDateForInput(selectedEmployee.dateOfJoining) || "",
     }));
@@ -223,6 +219,7 @@ const ExperienceLetter = () => {
         companyName: value,
         employeeName: "",
         employeeId: "",
+        uid: "",
         designation: "",
         startDate: "",
         endDate: "",
@@ -248,9 +245,7 @@ const ExperienceLetter = () => {
     }
 
     // Wait for images to load
-    const images = Array.from(
-      pdfRef.current.querySelectorAll("img")
-    );
+    const images = Array.from(pdfRef.current.querySelectorAll("img"));
 
     await Promise.all(
       images.map((img) => {
@@ -262,7 +257,7 @@ const ExperienceLetter = () => {
           img.onload = resolve;
           img.onerror = resolve;
         });
-      })
+      }),
     );
 
     const canvas = await html2canvas(pdfRef.current, {
@@ -291,10 +286,7 @@ const ExperienceLetter = () => {
     const imageHeight = canvas.height;
 
     // Fit letter inside A4
-    const ratio = Math.min(
-      pdfWidth / imageWidth,
-      pdfHeight / imageHeight
-    );
+    const ratio = Math.min(pdfWidth / imageWidth, pdfHeight / imageHeight);
 
     const finalWidth = imageWidth * ratio;
     const finalHeight = imageHeight * ratio;
@@ -309,19 +301,23 @@ const ExperienceLetter = () => {
       finalWidth,
       finalHeight,
       undefined,
-      "FAST"
+      "FAST",
     );
 
     return pdf;
   };
 
   // Submit and download PDF directly
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // STEP 1: VALIDATE FORM
     if (
       !formData.companyName ||
       !formData.employeeName ||
+      !formData.uid ||
+      !formData.designation ||
       !formData.startDate ||
       !formData.endDate ||
       !formData.hrManagerName
@@ -338,19 +334,129 @@ const ExperienceLetter = () => {
     try {
       setLoading(true);
 
+      // STEP 2: GENERATE PDF
       const pdf = await generateExperienceLetterPDF();
 
+      if (!pdf) {
+        throw new Error("PDF generation failed");
+      }
+
+      // STEP 3: CONVERT PDF TO BLOB
+      const pdfBlob = pdf.output("blob");
+
+      if (!pdfBlob) {
+        throw new Error("Unable to convert PDF to Blob");
+      }
+
+      // STEP 4: CHECK PDF SIZE
+      const pdfSizeMB = pdfBlob.size / (1024 * 1024);
+
+      if (pdfSizeMB > 2) {
+        toast.error(
+          `PDF size is ${pdfSizeMB.toFixed(2)} MB. Maximum allowed size is 2 MB.`,
+        );
+        return;
+      }
+
+      // STEP 5: CREATE PDF FILE
       const employeeName = formData.employeeName
         .trim()
         .replace(/[^a-zA-Z0-9]/g, "_");
 
-      pdf.save(`Experience_Letter_${employeeName}.pdf`);
+      const pdfFile = new File(
+        [pdfBlob],
+        `Experience_Letter_${employeeName}.pdf`,
+        {
+          type: "application/pdf",
+        },
+      );
 
-      toast.success("Experience letter PDF downloaded successfully!");
+      // STEP 6: CREATE BACKEND DTO
+      const data = {
+        issuedDate: formData.issuedDate,
+        companyName: formData.companyName,
+        employeeName: formData.employeeName,
+        uid: Number(formData.uid),
+        designation: formData.designation,
+        dateOfjoining: formData.startDate,
+        endDate: formData.endDate,
+        hrManagerName: formData.hrManagerName,
+        documentName: "Experience Letter",
+      };
+
+      console.log("EXPERIENCE LETTER DTO:", data);
+
+      // STEP 7: CREATE FORMDATA
+      const formDataToSend = new FormData();
+
+      formDataToSend.append("file", pdfFile);
+      formDataToSend.append("data", JSON.stringify(data));
+
+      // STEP 8: API CALL
+      const apiUrl = `${BASE_URL}Admin/addOfficialLetter`;
+
+      console.log("EXPERIENCE LETTER API URL:", apiUrl);
+
+      const response = await axios.post(apiUrl, formDataToSend, {
+        withCredentials: true,
+      });
+
+      // STEP 9: HANDLE RESPONSE
+      console.log("EXPERIENCE LETTER HTTP STATUS:", response.status);
+
+      console.log("EXPERIENCE LETTER API RESPONSE:", response.data);
+
+      const responseData = response.data;
+
+      const backendStatus = String(responseData?.status ?? "").toUpperCase();
+
+      const isSuccess =
+        response.status >= 200 &&
+        response.status < 300 &&
+        !["FAILED", "FAILURE", "ERROR", "FALSE"].includes(backendStatus) &&
+        responseData?.status !== false;
+
+      if (isSuccess) {
+        toast.success(
+          responseData?.responseMessage ||
+            "Experience letter added successfully!",
+        );
+
+        // STEP 10: RESET FORM
+        setFormData({
+          issuedDate: new Date().toISOString().split("T")[0],
+          companyName: "",
+          employeeName: "",
+          employeeId: "",
+          uid: "",
+          designation: "",
+          startDate: "",
+          endDate: "",
+          hrManagerName: "",
+        });
+
+        setEmployee([]);
+      } else {
+        toast.error(
+          responseData?.responseMessage ||
+            responseData?.message ||
+            "Failed to add experience letter",
+        );
+      }
     } catch (error) {
-      console.error("EXPERIENCE LETTER PDF ERROR:", error);
+      console.error(
+        "EXPERIENCE LETTER API ERROR:",
+        error.response?.data || error,
+      );
 
-      toast.error("Unable to download experience letter PDF");
+      console.error("EXPERIENCE LETTER HTTP STATUS:", error.response?.status);
+
+      toast.error(
+        error.response?.data?.responseMessage ||
+          error.response?.data?.message ||
+          error.message ||
+          "Something went wrong while adding experience letter",
+      );
     } finally {
       setLoading(false);
     }
@@ -360,12 +466,8 @@ const ExperienceLetter = () => {
     <MainPanel>
       <div className="experienceletter-parent parent">
         <div className="experienceletter-cont cont">
-
           {/* FORM */}
-          <form
-            className="left-experience"
-            onSubmit={handleSubmit}
-          >
+          <form className="left-experience" onSubmit={handleSubmit}>
             <Input
               label="Experience Letter Date"
               type="date"
@@ -382,20 +484,16 @@ const ExperienceLetter = () => {
               label="Select Company Name"
               required
             >
-              <MenuItem value="The Indian Journey">
-                The Indian Journey
-              </MenuItem>
+              <MenuItem value="The Indian Journey">The Indian Journey</MenuItem>
 
               <MenuItem value="Pandoza Solutions Pvt.Ltd">
                 Pandoza Solutions Pvt.Ltd
               </MenuItem>
 
-              <MenuItem value="Akka Foundation">
-                Akka Foundation
-              </MenuItem>
+              <MenuItem value="Akka Foundation">Akka Foundation</MenuItem>
 
-              <MenuItem value="Nvm Infratech Pvt.Ltd">
-                Nvm Infratech Pvt.Ltd
+              <MenuItem value="Nvm Infratech">
+                Nvm Infratech
               </MenuItem>
             </SelectInput>
 
@@ -407,13 +505,9 @@ const ExperienceLetter = () => {
               required
             >
               {employeeLoading ? (
-                <MenuItem disabled>
-                  Loading employees...
-                </MenuItem>
+                <MenuItem disabled>Loading employees...</MenuItem>
               ) : employee.length === 0 ? (
-                <MenuItem disabled>
-                  No employees found
-                </MenuItem>
+                <MenuItem disabled>No employees found</MenuItem>
               ) : (
                 employee.map((emp, index) => (
                   <MenuItem
@@ -460,26 +554,15 @@ const ExperienceLetter = () => {
               required
             />
 
-            <button
-              className="btn"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? "Downloading..." : "Submit"}
+            <button className="btn" type="submit" disabled={loading}>
+              {loading ? "Generating & Submitting..." : "Submit"}
             </button>
           </form>
 
           {/* EXPERIENCE LETTER PREVIEW */}
           <div className="right-experience">
-            <div
-              className="experience-pdf-page"
-              ref={pdfRef}
-            >
-              <img
-                className="leftcorner"
-                src={left_corner}
-                alt="left-corner"
-              />
+            <div className="experience-pdf-page" ref={pdfRef}>
+              <img className="leftcorner" src={left_corner} alt="left-corner" />
 
               <img
                 className="pan-water-mark"
@@ -507,41 +590,26 @@ const ExperienceLetter = () => {
               <div className="name">
                 <p>Dear</p>
 
-                <h4>
-                  {formData.employeeName || "Employee Name"}
-                </h4>
+                <h4>{formData.employeeName || "Employee Name"}</h4>
               </div>
 
               <div className="gap"></div>
 
               <p>
                 This is to certify that{" "}
-                <strong>
-                  {formData.employeeName || "Employee Name"}
-                </strong>{" "}
-                was employed with{" "}
-                <strong>
-                  {formData.companyName || "Company Name"}
-                </strong>{" "}
-                as a{" "}
-                <strong>
-                  {formData.designation || "Designation"}
-                </strong>{" "}
-                from{" "}
-                <strong>
-                  {formatPreviewDate(formData.startDate)}
-                </strong>{" "}
-                to{" "}
-                <strong>
-                  {formatPreviewDate(formData.endDate)}
-                </strong>.
+                <strong>{formData.employeeName || "Employee Name"}</strong> was
+                employed with{" "}
+                <strong>{formData.companyName || "Company Name"}</strong> as a{" "}
+                <strong>{formData.designation || "Designation"}</strong> from{" "}
+                <strong>{formatPreviewDate(formData.startDate)}</strong> to{" "}
+                <strong>{formatPreviewDate(formData.endDate)}</strong>.
               </p>
 
               <div className="gap"></div>
 
               <p>
-                During his tenure with the organization, he was responsible
-                for carrying out his assigned duties and responsibilities
+                During his tenure with the organization, he was responsible for
+                carrying out his assigned duties and responsibilities
                 efficiently and professionally.
               </p>
 
@@ -549,25 +617,21 @@ const ExperienceLetter = () => {
 
               <p>
                 We found him to be sincere, hardworking, dedicated, and
-                committed towards his work. His conduct and performance
-                during his employment were satisfactory.
+                committed towards his work. His conduct and performance during
+                his employment were satisfactory.
               </p>
 
               <div className="gap"></div>
 
               <p>
-                We truly appreciate your performance and look forward to
-                your continued contribution to the growth and success of{" "}
-                <strong>
-                  {formData.companyName || "Company Name"}
-                </strong>.
+                We truly appreciate your performance and look forward to your
+                continued contribution to the growth and success of{" "}
+                <strong>{formData.companyName || "Company Name"}</strong>.
               </p>
 
               <div className="gap"></div>
 
-              <p>
-                We wish him all the very best for his future endeavour .
-              </p>
+              <p>We wish him all the very best for his future endeavour .</p>
 
               <div className="gap"></div>
               <div className="gap"></div>
@@ -576,9 +640,7 @@ const ExperienceLetter = () => {
 
               <p>Sincerely</p>
 
-              <h4>
-                For {formData.companyName || "Company Name"}
-              </h4>
+              <h4>For {formData.companyName || "Company Name"}</h4>
 
               <div className="gap"></div>
               <div className="gap"></div>
@@ -587,9 +649,7 @@ const ExperienceLetter = () => {
 
               <p>HR Admin &amp; Finance</p>
 
-              <p>
-                {formData.hrManagerName || "HR Manager"}
-              </p>
+              <p>{formData.hrManagerName || "HR Manager"}</p>
 
               {/* FOOTER */}
               <div className="footer">
@@ -603,9 +663,7 @@ const ExperienceLetter = () => {
                   </div>
 
                   <div className="address">
-                    <h4>
-                      {formData.companyName || "Company Name"}
-                    </h4>
+                    <h4>{formData.companyName || "Company Name"}</h4>
 
                     <p>
                       {selectedCompany.address}
@@ -652,15 +710,11 @@ const ExperienceLetter = () => {
                     <p>{selectedCompany.location}</p>
                   </Link>
 
-                  <img
-                    src={right_corner}
-                    alt="right-corner"
-                  />
+                  <img src={right_corner} alt="right-corner" />
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </MainPanel>
