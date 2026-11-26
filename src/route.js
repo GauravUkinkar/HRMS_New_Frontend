@@ -4,97 +4,46 @@ import Profile from "./Pages/EmployeeProfile/Profile";
 import EditEmployee from "./Pages/AddEmployee/EditEmployee";
 import EditSalary from "./Pages/AddSalary/EditSalary";
 import UserList from "./Pages/UserList/UserList";
-
 import Leave_details from "./Pages/LeaveManagement/Leave_details";
+import EmployeeICard from "./Pages/EmployeeICard/EmployeeICard";
 
 const Payslip = lazy(() => import("./Pages/Payslip/Payslip"));
-const HolidayCalender = lazy(
-  () => import("./Pages/HolidayCalender/HolidayCalender"),
-);
+const HolidayCalender = lazy(() => import("./Pages/HolidayCalender/HolidayCalender"));
 const AddLeave = lazy(() => import("./Pages/LeaveManagement/AddLeave"));
-
 const EmpList = lazy(() => import("./Pages/EmpList/EmpList"));
-const LeaveManagement = lazy(
-  () => import("./Pages/LeaveManagement/LeaveManagement"),
-);
+const LeaveManagement = lazy(() => import("./Pages/LeaveManagement/LeaveManagement"));
 const TeamManagement = lazy(() => import("./Pages/TeamManagement/Teams"));
-
 const AddEmployee = lazy(() => import("./Pages/AddEmployee/AddEmployee"));
 const AddHoliday = lazy(() => import("./Pages/HolidayCalender/AddHoliday"));
-
 const OfficialNotes = lazy(() => import("./Pages/OfficialNotes/OfficialNotes"));
-
 const SalaryDetails = lazy(() => import("./Pages/AddEmployee/SalaryDetails"));
-
 const UploadDoc = lazy(() => import("./Pages/UploadDoc/UploadDoc"));
-
 const Viewdoc = lazy(() => import("./Pages/Viewdoc/Viewdoc"));
-
 const Empviewdoc = lazy(() => import("./Pages/Empviewdoc/Empviewdoc"));
-
 const AdminDash = lazy(() => import("./Pages/AdminDash/AdminDash"));
-
-const Generatesalary = lazy(
-  () => import("./Pages/Generatesalary/Generatesalary"),
-);
-const ApprovalLetter = lazy(
-  () => import("./Pages/ApprovalLetter/ApprovalLetter"),
-);
+const Generatesalary = lazy(() => import("./Pages/Generatesalary/Generatesalary"));
+const ApprovalLetter = lazy(() => import("./Pages/ApprovalLetter/ApprovalLetter"));
 const EditApproval = lazy(() => import("./Pages/ApprovalLetter/EditApproval"));
 const ViewApprovals = lazy(() => import("./Pages/ViewApprovals/ViewApproval"));
-
 const Attendance = lazy(() => import("./Pages/Attendence/Attendance"));
 const EmpAttendance = lazy(() => import("./Pages/EmpAttendance/EmpAttendance"));
-
 const AddSalary = lazy(() => import("./Pages/AddSalary/AddSalary"));
-
-const SalaryManagement = lazy(
-  () => import("./Pages/SalaryManagement/SalaryManagement"),
-);
-
+const SalaryManagement = lazy(() => import("./Pages/SalaryManagement/SalaryManagement"));
 const OfferLetter = lazy(() => import("./Pages/OfferLetter/OfferLetter"));
 const JoiningLetter = lazy(() => import("./Pages/JoiningLetter/JoiningLetter"));
 const WarningLetter = lazy(() => import("./Pages/WarningLetter/WarningLetter"));
-
-const OfferLetterManagement = lazy(
-  () => import("./Pages/OfferLetterManagement/OfferLetterManagement"),
-);
-const JoiningLetterManagement = lazy(
-  () => import("./Pages/JoiningLetter/JoiningLetterManagement"),
-);
-
-const IncrementLetter = lazy(
-  () => import("./Pages/IncrementLetter/IncrementLetter"),
-);
-const ExperienceLetter = lazy(
-  () => import("./Pages/ExperienceLetter/ExperienceLetter"),
-);
-const ReleavingLetter = lazy(
-  () => import("./Pages/ReleavingLetter/ReleavingLetter"),
-);
-const InternshipLetter = lazy(
-  () => import("./Pages/InternshipLetter/Internshipletter"),
-);
-const PromotionLetter = lazy(
-  () => import("./Pages/PromotionLetter/PromotionLetter"),
-);
-const TerminationLetter = lazy(
-  () => import("./Pages/TerminationLetter/TerminationLetter"),
-);
-
+const OfferLetterManagement = lazy(() => import("./Pages/OfferLetterManagement/OfferLetterManagement"));
+const IncrementLetter = lazy(() => import("./Pages/IncrementLetter/IncrementLetter"));
+const ExperienceLetter = lazy(() => import("./Pages/ExperienceLetter/ExperienceLetter"));
+const ReleavingLetter = lazy(() => import("./Pages/ReleavingLetter/ReleavingLetter"));
+const InternshipLetter = lazy(() => import("./Pages/InternshipLetter/Internshipletter"));
+const PromotionLetter = lazy(() => import("./Pages/PromotionLetter/PromotionLetter"));
+const TerminationLetter = lazy(() => import("./Pages/TerminationLetter/TerminationLetter"));
 const Empdashboard = lazy(() => import("./Pages/Empdashboard/Empdashboard"));
-const LeaveApplication = lazy(
-  () => import("./Pages/LeaveApplication/LeaveApplication"),
-);
-const EmpLeaveManagement = lazy(
-  () => import("./Pages/EmpLeaveManagement/EmpLeave"),
-);
-const PayslipManagement = lazy(
-  () => import("./Pages/PayslipManagement/Payslipmanagement"),
-);
-const RegisterDevice = lazy(
-  () => import("./Pages/RegisterDevice/RegisterDevice"),
-);
+const LeaveApplication = lazy(() => import("./Pages/LeaveApplication/LeaveApplication"));
+const EmpLeaveManagement = lazy(() => import("./Pages/EmpLeaveManagement/EmpLeave"));
+const PayslipManagement = lazy(() => import("./Pages/PayslipManagement/Payslipmanagement"));
+const RegisterDevice = lazy(() => import("./Pages/RegisterDevice/RegisterDevice"));
 
 export const routes = [
   {
@@ -144,6 +93,12 @@ export const routes = [
     name: "AddLeave",
     path: "/addLeave",
     comp: AddLeave,
+    adminonly: true,
+  },
+  {
+    name: "EmployeeICard",
+    path: "/employeeicard",
+    comp: EmployeeICard,
     adminonly: true,
   },
 
