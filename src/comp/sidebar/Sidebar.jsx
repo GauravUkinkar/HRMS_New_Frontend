@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { HiOutlineDocumentCheck } from "react-icons/hi2";
+import { FaUser } from "react-icons/fa6";
 
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
 
@@ -168,6 +169,10 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
           name: "Generate Internship Letter",
           link: "/internshipLetter",
         },
+        {
+          name: "Employee ID Card",
+          link: "/employeeicard",
+        },
       ],
     },
 
@@ -197,9 +202,9 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
       link: "/viewApprovals",
     },
     {
-      icon:<SlCalender />,
-      name:"Holiday Calender",
-      link:"/holidayCalender"
+      icon: <SlCalender />,
+      name: "Holiday Calender",
+      link: "/holidayCalender"
     }
   ];
 
@@ -259,63 +264,63 @@ const Sidebar = ({ active, setActive, closeSidebar }) => {
     }
   };
 
-const logout = async () => {
-  try {
-    await axios.post(
-      `${BASE_URL}AuthController/logout`,
-      {},
+  const logout = async () => {
+    try {
+      await axios.post(
+        `${BASE_URL}AuthController/logout`,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+
+      navigate("/login");
+    }
+  };
+
+  const confirmLogout = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    toast(
+      ({ closeToast }) => (
+        <div className="logout_confirm">
+          <div className="logout_message">
+            Are you sure you want to logout?
+          </div>
+
+          <div className="logout_actions">
+            <button
+              className="logout_cancel"
+              onClick={closeToast}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="logout_ok"
+              onClick={async () => {
+                closeToast();
+                await logout();
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      ),
       {
-        withCredentials: true,
+        position: "bottom-left",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
       },
     );
-
-    navigate("/login");
-  } catch (error) {
-    console.error("Logout failed:", error);
-
-    navigate("/login");
-  }
-};
-
-const confirmLogout = (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  toast(
-    ({ closeToast }) => (
-      <div className="logout_confirm">
-        <div className="logout_message">
-          Are you sure you want to logout?
-        </div>
-
-        <div className="logout_actions">
-          <button
-            className="logout_cancel"
-            onClick={closeToast}
-          >
-            Cancel
-          </button>
-
-          <button
-            className="logout_ok"
-            onClick={async () => {
-              closeToast();
-              await logout();
-            }}
-          >
-            OK
-          </button>
-        </div>
-      </div>
-    ),
-    {
-      position: "bottom-left",
-      autoClose: false,
-      closeOnClick: false,
-      closeButton: false,
-    },
-  );
-};
+  };
 
   if (roleLoading) {
     return (
@@ -424,21 +429,21 @@ const confirmLogout = (e) => {
       </div>
 
 
-<div className="bottom_section" >
-  <Link className="logout" to="/login" onClick={confirmLogout}>
-    <span>
-      <LuLogOut />
-    </span>
+      <div className="bottom_section" >
+        <Link className="logout" to="/login" onClick={confirmLogout}>
+          <span>
+            <LuLogOut />
+          </span>
 
-    <span className="nav_text">Logout</span>
-  </Link>
+          <span className="nav_text">Logout</span>
+        </Link>
 
-  <div className="version">
-    <span>V 1.0</span>
-  </div>
-</div>
+        <div className="version">
+          <span>V 1.1</span>
+        </div>
+      </div>
     </div>
-  ); 
+  );
 };
 
 export default Sidebar;

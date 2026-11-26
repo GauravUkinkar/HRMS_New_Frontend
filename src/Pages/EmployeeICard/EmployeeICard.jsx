@@ -1,18 +1,46 @@
 
-import { useContext, useRef, useState, useEffect } from "react";
+import React, {
+    useContext,
+    useRef,
+    useState,
+    useEffect,
+} from "react";
+
 import { useNavigate } from "react-router-dom";
 import MainPanel from "../../comp/MainPanel/MainPanel";
 import "./EmployeeiCard.scss";
+
 import img1 from "../../assets/offer-logo-pan.png";
 import img2 from "../../assets/tij-logo.png";
 import img3 from "../../assets/nvm-logo.png";
 import img4 from "../../assets/akka-foundation.png";
-import { Space, Table, Input, Button, Tooltip, Modal } from "antd";
-import { SearchOutlined, EyeOutlined } from "@ant-design/icons";
+
+import {
+    Space,
+    Table,
+    Input,
+    Button,
+    Tooltip,
+    Modal,
+} from "antd";
+
+import {
+    SearchOutlined,
+    EyeOutlined,
+    FilePdfOutlined,
+} from "@ant-design/icons";
+
 import { UserContext } from "../../../Context";
 import axios from "axios";
 import { toast } from "react-toastify";
+
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
 const BASE_URL = import.meta.env.VITE_USER_BACKEND_URL;
+///
+const ICARD_API = "";
+
 const companyBranding = {
     pandoza: {
         name: "Pandoza Solutions PVT. LTD.",
@@ -21,6 +49,7 @@ const companyBranding = {
         secondary: "#07518a",
         accent: "#e6f5fc",
     },
+
     indianJourney: {
         name: "The Indian Journey",
         logo: img2,
@@ -28,6 +57,7 @@ const companyBranding = {
         secondary: "#6bf349",
         accent: "#e8ffea",
     },
+
     nvm: {
         name: "NVM Infratech",
         logo: img3,
@@ -35,6 +65,7 @@ const companyBranding = {
         secondary: "#142d55",
         accent: "#edf2fa",
     },
+
     akka: {
         name: "Akka Foundation",
         logo: img4,
@@ -67,11 +98,15 @@ const getCompanyBranding = (companyName = "") => {
 const EmployeeICard = () => {
     const navigate = useNavigate();
     const { user } = useContext(UserContext);
+
     const [allemployee, setAllEmployee] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [viewModal, setViewModal] = useState(false);
+    const [generating, setGenerating] = useState(false);
+
     const searchInput = useRef(null);
+    const idCardRef = useRef(null);
 
     const formatName = (name = "") => {
         return String(name)
@@ -81,7 +116,6 @@ const EmployeeICard = () => {
     };
 
     const getFirstAndLastName = (name = "") => {
-
         const nameParts = formatName(name)
             .split(/\s+/)
             .filter(Boolean);
@@ -97,6 +131,7 @@ const EmployeeICard = () => {
 
     const getAllEmployee = async () => {
         setLoading(true);
+
         try {
             const res = await axios.get(
                 `${BASE_URL}Admin/GetAllEmployee`,
@@ -109,6 +144,7 @@ const EmployeeICard = () => {
                 ? res.data
                     .map((item, index) => {
                         const employee = item?.data || {};
+
                         return {
                             key:
                                 employee.uid ||
@@ -126,7 +162,6 @@ const EmployeeICard = () => {
                             bloodGroup: employee.bloodGroup || "",
                             photo: employee.image || "",
                         };
-
                     })
                     .filter(
                         (item) => item.empId || item.uid
@@ -136,17 +171,15 @@ const EmployeeICard = () => {
             setAllEmployee(employees);
         } catch (error) {
             console.error("Get All Employee Error:", error);
+
             toast.error(
                 error?.response?.data?.message ||
                 "Failed to load employees"
             );
 
             setAllEmployee([]);
-
         } finally {
-
             setLoading(false);
-
         }
     };
 
@@ -160,12 +193,108 @@ const EmployeeICard = () => {
     };
 
     const handleCloseModal = () => {
+        if (generating) return;
+
         setViewModal(false);
         setSelectedEmployee(null);
     };
 
-    const getColumnSearchProps = (dataIndex) => ({
+    const handleGenerateICard = async () => {
+        if (!selectedEmployee) {
+            toast.error("Please select an employee");
+            return;
+        }
 
+        if (!selectedEmployee.empId) {
+            toast.error("Employee ID is missing");
+            return;
+        }
+
+        if (!ICARD_API.trim()) {
+            toast.error("Please add the Employee ID Card API endpoint");
+            return;
+        }
+
+        if (!idCardRef.current) {
+            toast.error("Employee ID Card is not available");
+            return;
+        }
+
+        setGenerating(true);
+
+        try {
+            const cardElement = idCardRef.current;
+
+            const canvas = await html2canvas(cardElement, {
+                scale: 3,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: "#ffffff",
+                logging: false,
+                imageTimeout: 15000,
+            });
+
+            const imageData = canvas.toDataURL("image/jpeg", 1);
+
+            const pdfWidth = 85.6;
+            const pdfHeight = 136.5;
+
+            const pdf = new jsPDF({
+                orientation: "portrait",
+                unit: "mm",
+                format: [pdfWidth, pdfHeight],
+            });
+
+            pdf.addImage(
+                imageData,
+                "JPEG",
+                0,
+                0,
+                pdfWidth,
+                pdfHeight
+            );
+
+            const pdfBlob = pdf.output("blob");
+
+            const fileName = `${selectedEmployee.empId}_ID_Card.pdf`;
+
+            const formData = new FormData();
+
+            formData.append("file", pdfBlob, fileName);
+
+            formData.append(
+                "data",
+                JSON.stringify({
+                    employeeId: selectedEmployee.empId,
+                    documentName: fileName,
+                })
+            );
+
+            const response = await axios.post(
+                `${BASE_URL}${ICARD_API}`,
+                formData,
+                {
+                    withCredentials: true,
+                }
+            );
+
+            toast.success(
+                response?.data?.message ||
+                "Employee ID Card generated successfully"
+            );
+        } catch (error) {
+            console.error("Generate Employee ID Card Error:", error);
+
+            toast.error(
+                error?.response?.data?.message ||
+                "Failed to generate Employee ID Card"
+            );
+        } finally {
+            setGenerating(false);
+        }
+    };
+
+    const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({
             setSelectedKeys,
             selectedKeys,
@@ -173,7 +302,6 @@ const EmployeeICard = () => {
             clearFilters,
             close,
         }) => (
-
             <div
                 style={{
                     padding: 8,
@@ -181,7 +309,6 @@ const EmployeeICard = () => {
                 }}
                 onKeyDown={(event) => event.stopPropagation()}
             >
-
                 <Input
                     ref={searchInput}
                     placeholder={`Search ${dataIndex}`}
@@ -202,7 +329,6 @@ const EmployeeICard = () => {
                 />
 
                 <Space>
-
                     <Button
                         type="primary"
                         icon={<SearchOutlined />}
@@ -231,11 +357,8 @@ const EmployeeICard = () => {
                     >
                         Close
                     </Button>
-
                 </Space>
-
             </div>
-
         ),
 
         filterIcon: (filtered) => (
@@ -247,7 +370,6 @@ const EmployeeICard = () => {
         ),
 
         onFilter: (value, record) => {
-
             const recordValue = record?.[dataIndex];
 
             const searchableValue =
@@ -261,19 +383,15 @@ const EmployeeICard = () => {
         },
 
         onFilterDropdownOpenChange: (visible) => {
-
             if (visible) {
                 setTimeout(() => {
                     searchInput.current?.select();
                 }, 100);
             }
-
         },
-
     });
 
     const columns = [
-
         {
             title: "Company Name",
             dataIndex: "company",
@@ -281,7 +399,6 @@ const EmployeeICard = () => {
             width: 220,
             ...getColumnSearchProps("company"),
         },
-
         {
             title: "Emp ID",
             dataIndex: "empId",
@@ -289,7 +406,6 @@ const EmployeeICard = () => {
             width: 130,
             ...getColumnSearchProps("empId"),
         },
-
         {
             title: "Name",
             dataIndex: "name",
@@ -298,7 +414,6 @@ const EmployeeICard = () => {
             ...getColumnSearchProps("name"),
             render: (name) => formatName(name),
         },
-
         {
             title: "Mail ID",
             dataIndex: "email",
@@ -306,7 +421,6 @@ const EmployeeICard = () => {
             width: 240,
             ...getColumnSearchProps("email"),
         },
-
         {
             title: "Designation",
             dataIndex: "designation",
@@ -314,7 +428,6 @@ const EmployeeICard = () => {
             width: 170,
             ...getColumnSearchProps("designation"),
         },
-
         {
             title: "Phone No.",
             dataIndex: "phone",
@@ -322,7 +435,6 @@ const EmployeeICard = () => {
             width: 150,
             ...getColumnSearchProps("phone"),
         },
-
         {
             title: "Blood Group",
             dataIndex: "bloodGroup",
@@ -330,7 +442,6 @@ const EmployeeICard = () => {
             width: 130,
             ...getColumnSearchProps("bloodGroup"),
         },
-
         {
             title: "Address",
             dataIndex: "address",
@@ -338,14 +449,12 @@ const EmployeeICard = () => {
             width: 220,
             ...getColumnSearchProps("address"),
         },
-
         {
             title: "Actions",
             key: "actions",
             width: 100,
             fixed: "right",
             align: "center",
-
             render: (_, record) => (
                 <Space size="middle">
                     <Tooltip title="View Employee ID Card">
@@ -357,7 +466,6 @@ const EmployeeICard = () => {
                 </Space>
             ),
         },
-
     ];
 
     const selectedBrand = selectedEmployee
@@ -365,21 +473,17 @@ const EmployeeICard = () => {
         : companyBranding.pandoza;
 
     return (
-
         <>
-
             <MainPanel
-
                 breadcrumbs={[
                     {
                         label: "Dashboard",
-                        link: "/dashboard",
+                        link: "/",
                     },
                     {
                         label: "Employee ID Card",
                     },
                 ]}
-
                 title={
                     String(
                         user?.role ||
@@ -391,9 +495,7 @@ const EmployeeICard = () => {
                         ? "Admin Dashboard"
                         : ""
                 }
-
             >
-
                 <button
                     type="button"
                     className="back-btn"
@@ -403,20 +505,15 @@ const EmployeeICard = () => {
                 </button>
 
                 <div className="employeeicard-parent">
-
                     <div className="page-header">
-
                         <h2>Employee ID Card</h2>
 
                         <div className="btn-group">
-
                             <div className="count">
                                 Total Number Of Employees:
                                 <span>{allemployee.length}</span>
                             </div>
-
                         </div>
-
                     </div>
 
                     <Table
@@ -443,7 +540,6 @@ const EmployeeICard = () => {
                                 : "table-row-dark"
                         }
                     />
-
                 </div>
 
                 <Modal
@@ -453,7 +549,19 @@ const EmployeeICard = () => {
                     onCancel={handleCloseModal}
                     footer={[
                         <Button
+                            key="generate"
+                            type="primary"
+                            icon={<FilePdfOutlined />}
+                            loading={generating}
+                            disabled={generating}
+                            onClick={handleGenerateICard}
+                        >
+                            Generate
+                        </Button>,
+
+                        <Button
                             key="close"
+                            disabled={generating}
                             onClick={handleCloseModal}
                         >
                             Close
@@ -461,11 +569,12 @@ const EmployeeICard = () => {
                     ]}
                     centered
                     width={490}
+                    closable={!generating}
+                    maskClosable={!generating}
                 >
-
                     {selectedEmployee && (
-
                         <div
+                            ref={idCardRef}
                             className="employee-id-card"
                             style={{
                                 "--card-primary": selectedBrand.primary,
@@ -473,7 +582,6 @@ const EmployeeICard = () => {
                                 "--card-accent": selectedBrand.accent,
                             }}
                         >
-
                             <div className="employee-card-sidebar">
                                 <h2>
                                     {selectedBrand.name}
@@ -481,53 +589,40 @@ const EmployeeICard = () => {
                             </div>
 
                             <div className="employee-card-content">
-
                                 <div className="employee-company">
-
                                     <img
                                         src={selectedBrand.logo}
                                         alt={selectedBrand.name}
+                                        crossOrigin="anonymous"
                                         onError={(e) => {
                                             e.currentTarget.onerror = null;
                                             e.currentTarget.src = img1;
                                         }}
                                     />
-
                                 </div>
 
                                 <div className="employee-card-photo">
-
                                     <img
-                                        src={
-                                            selectedEmployee.photo ||
-                                            ""
-                                        }
+                                        src={selectedEmployee.photo || ""}
                                         alt={formatName(selectedEmployee.name)}
-
                                     />
-
                                 </div>
 
                                 <div className="employee-card-name">
-
                                     <h2>
-
                                         {getFirstAndLastName(selectedEmployee.name).firstName}{" "}
 
                                         <span>
                                             {getFirstAndLastName(selectedEmployee.name).lastName}
                                         </span>
-
                                     </h2>
 
                                     <p>
                                         ({selectedEmployee.designation})
                                     </p>
-
                                 </div>
 
                                 <div className="employee-card-details">
-
                                     <div className="employee-card-row">
                                         <span>Emp Id</span>
                                         <strong>:</strong>
@@ -559,33 +654,22 @@ const EmployeeICard = () => {
                                             {selectedEmployee.bloodGroup || "N/A"}
                                         </p>
                                     </div>
-
                                 </div>
 
                                 <div className="employee-card-address">
-
                                     <h3>Address</h3>
 
                                     <p>
                                         {selectedEmployee.address || "N/A"}
                                     </p>
-
                                 </div>
-
                             </div>
-
                         </div>
-
                     )}
-
                 </Modal>
-
             </MainPanel>
-
         </>
-
     );
-
 };
 
 export default EmployeeICard;
