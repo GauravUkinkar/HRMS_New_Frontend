@@ -423,8 +423,6 @@ const Empviewdoc = () => {
 
           {/* DOCUMENTS */}
 
-          {/* DOCUMENTS */}
-
           {!loadingDocuments &&
             employeeId &&
             (availableDocuments.length > 0 ||
